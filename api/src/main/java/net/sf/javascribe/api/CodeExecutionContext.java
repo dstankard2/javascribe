@@ -4,13 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-/*
-import net.sf.jsom.CodeGenerationException;
-import net.sf.jsom.CodeSnippet;
-import net.sf.jsom.VariableType;
-import net.sf.jsom.VariableTypeResolver;
-*/
-
 public class CodeExecutionContext {
 	private HashMap<String,String> variables = new HashMap<String,String>();
 	private TypeResolver types = null;
