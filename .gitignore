@@ -3,3 +3,11 @@
 
 /api/.settings
 /api/bin
+/engine/.project
+/engine/bin
+/engine/.classpath
+
+/launchers/.project
+/launchers/.settings
+/launchers/bin
+/launchers/.classpath
