@@ -1,0 +1,32 @@
+
+<project name="JavaScribe Processor API" default="build" basedir=".">
+	<property name="dev.root">.</property>
+	
+	<path id="api.classpath">
+	</path>
+	
+	<target name="init">
+		<delete file="${dist.root}\lib\api.jar"/>
+		<mkdir dir="${build.root}\api\classes"/>
+	</target>
+	
+	<target name="create.api.jar">
+		<javac
+			srcdir="${dev.root}/src/main/java"
+			classpathref="api.classpath"
+			includes="**\*.java"
+			fork="true"
+			destdir="${build.root}\api\classes"
+			target="1.7"
+		>
+		</javac>
+		<jar destfile="${dist.root}\lib\api.jar" basedir="${build.root}\api\classes"/>
+	</target>
+	
+	<target name="build">
+		<antcall target="init"/>
+		<antcall target="create.api.jar"/>
+	</target>
+
+</project>
+
