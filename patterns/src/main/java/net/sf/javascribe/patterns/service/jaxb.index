@@ -1,0 +1,9 @@
+CallBusinessRuleOperation
+CallValidationRuleOperation
+ErrorCaseOperation
+InvalidCaseOperation
+JpaTxRenderer
+JpaTxOperation
+NestingOperation
+Service
+ServiceOperation

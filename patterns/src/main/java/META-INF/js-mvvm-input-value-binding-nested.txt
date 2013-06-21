@@ -1,0 +1,18 @@
+
+this.view.${element}.onchange=function() {
+if (${holder}!=null) {
+this.model.${setter};
+}
+}.bind(${pageName});
+this.controller.addEventListener('${event}',
+	function() {
+		if (${holder}!=null) {
+			if (this.view.${element}.value != this.model.${getter}) {
+				this.view.${element}.value = this.model.${getter};
+			}
+		} else {
+			this.view.${element}.value = null;
+		}
+	}.bind(${pageName})
+);
+

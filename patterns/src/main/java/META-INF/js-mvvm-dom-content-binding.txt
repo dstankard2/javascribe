@@ -1,0 +1,5 @@
+this.controller.addEventListener('${event}',
+	function() {
+		this.view.${element}.innerHTML = ${function};
+	}.bind(${pageName})
+);

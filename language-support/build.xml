@@ -1,0 +1,34 @@
+
+<project name="JavaScribe Built-In Language Support" default="build" basedir=".">
+	<property name="dev.root">.</property>
+	
+	<path id="langsupport.classpath">
+		<pathelement location="${dist.root}/lib/api.jar"/>
+		<pathelement location="${dist.root}/lib/jsom.jar"/>
+	</path>
+	
+	<target name="init">
+		<delete file="${dist.root}\lib\language-support.jar"/>
+		<mkdir dir="${build.root}\langsupport\classes"/>
+	</target>
+	
+	<target name="create.langsupport.jar">
+		<javac
+			srcdir="${dev.root}/src/main/java"
+			classpathref="langsupport.classpath"
+			includes="**\*.java"
+			fork="true"
+			destdir="${build.root}\langsupport\classes"
+			target="1.7"
+		>
+		</javac>
+		<jar destfile="${dist.root}\lib\langsupport.jar" basedir="${build.root}\langsupport\classes"/>
+	</target>
+	
+	<target name="build">
+		<antcall target="init"/>
+		<antcall target="create.langsupport.jar"/>
+	</target>
+
+</project>
+

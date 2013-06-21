@@ -1,0 +1,36 @@
+
+<project name="JavaScribe Patterns" default="build" basedir=".">
+	<property name="dev.root">.</property>
+	
+	<path id="patterns.classpath">
+		<pathelement location="${dist.root}/lib/api.jar"/>
+		<pathelement location="${dist.root}/lib/jsom.jar"/>
+		<pathelement location="${dist.root}/lib/langsupport.jar"/>
+		<pathelement location="${dist.root}/lib/other-xsd.jar"/>
+	</path>
+	
+	<target name="init">
+		<delete file="${dist.root}\lib\patterns.jar"/>
+		<mkdir dir="${build.root}\patterns\classes"/>
+	</target>
+	
+	<target name="create.patterns.jar">
+		<javac
+			srcdir="${dev.root}/src/main/java"
+			classpathref="patterns.classpath"
+			includes="**\*.java"
+			fork="true"
+			destdir="${build.root}\patterns\classes"
+			target="1.7"
+		>
+		</javac>
+		<jar destfile="${dist.root}\lib\patterns.jar" basedir="${build.root}\patterns\classes"/>
+	</target>
+	
+	<target name="build">
+		<antcall target="init"/>
+		<antcall target="create.patterns.jar"/>
+	</target>
+
+</project>
+

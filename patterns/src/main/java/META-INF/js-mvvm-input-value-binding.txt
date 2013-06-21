@@ -1,0 +1,12 @@
+
+this.view.${element}.onchange=function() {
+	this.model.${setter};
+}.bind(${pageName});
+this.controller.addEventListener('${event}',
+	function() {
+		if (this.view.${element}.value != this.model.${getter}) {
+			this.view.${element}.value = this.model.${getter};
+		}
+	}.bind(${pageName})
+);
+
