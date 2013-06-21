@@ -11,3 +11,15 @@
 /launchers/.settings
 /launchers/bin
 /launchers/.classpath
+/dist/.project
+/dist/bin
+/dist/.classpath
+
+/language-support/.project
+/language-support/.settings
+/language-support/bin
+/language-support/.classpath
+/patterns/.project
+/patterns/.settings
+/patterns/bin
+/patterns/.classpath
