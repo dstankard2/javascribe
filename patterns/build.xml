@@ -24,6 +24,9 @@
 			target="1.7"
 		>
 		</javac>
+		<copy overwrite="true" todir="${build.root}\patterns\classes\META-INF">
+			<fileset dir=".\bin\META-INF"/>
+		</copy>
 		<jar destfile="${dist.root}\lib\patterns.jar" basedir="${build.root}\patterns\classes"/>
 	</target>
 	

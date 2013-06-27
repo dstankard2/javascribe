@@ -20,6 +20,8 @@
 			target="1.7"
 		>
 		</javac>
+		<copy file=".\bin\net\sf\javascribe\api\config\jaxb.index" overwrite="true" 
+		tofile="${build.root}\patterns\classes\net\sf\javascribe\api\config\jaxb.index"/>
 		<jar destfile="${dist.root}\lib\api.jar" basedir="${build.root}\api\classes"/>
 	</target>
 	

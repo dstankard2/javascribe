@@ -9,7 +9,7 @@ public class JavascribeAntTask extends Task {
 	String zipFile = null;
 	String javascribeHome = null;
 
-    public void execute() throws BuildException {
+	public void execute() throws BuildException {
     	if (zipFile==null) {
     		throw new BuildException("Javascribe Ant Task requires attribute 'zipFile'");
     	}
@@ -27,9 +27,18 @@ public class JavascribeAntTask extends Task {
     	try {
     		new JavascribeLauncher(javascribeHome).invokeJavascribe(f);
     	} catch(Exception e) {
+    		e.printStackTrace();
     		throw new BuildException("Javascribe invokation failed",e);
     	}
     }
     
+    public void setZipFile(String zipFile) {
+		this.zipFile = zipFile;
+	}
+
+	public void setJavascribeHome(String javascribeHome) {
+		this.javascribeHome = javascribeHome;
+	}
+
 }
 
