@@ -63,7 +63,14 @@ public class EntityManagerUtils {
 	public static String getEntityName(String databaseObjectNameResolver,String tableName,GeneratorContext ctx) throws JavascribeException {
 		HashMap<String,DatabaseObjectNameResolver> map = getNameResolvers(ctx);
 		if (map.get(databaseObjectNameResolver)==null) {
-			throw new JavascribeException("Couldn't find database object name resolver '"+databaseObjectNameResolver+"'");
+			String nameString = "";
+			boolean first = true;
+			for(String s : map.keySet()) {
+				if (!first) nameString = nameString + ',';
+				else first = false;
+				nameString = nameString + s;
+			}
+			throw new JavascribeException("Couldn't find database object name resolver '"+databaseObjectNameResolver+"'.  Valid values are: "+nameString);
 		}
 		return map.get(databaseObjectNameResolver).getEntityName(tableName);
 	}
@@ -108,118 +115,19 @@ public class EntityManagerUtils {
 		}
 		DatabaseSchemaReader reader = schemaReaders.get(databaseType);
 		if (reader==null) {
-			throw new JavascribeException("No schema reader found for database type '"+databaseType+"'");
+			String nameString = "";
+			boolean first = true;
+			for(String s : schemaReaders.keySet()) {
+				if (!first) nameString = nameString + ',';
+				else first = false;
+				nameString = nameString + s;
+			}
+			throw new JavascribeException("No schema reader found for database type '"+databaseType+"'.  Valid values are "+nameString);
 		}
 		ret = reader.readSchema(url, username, password, catalog, ctx);
 
 		return ret;
 	}
-
-	/*
-	public static List<Entity> readSchema(GeneratorContext ctx) throws JavascribeException {
-		List<Entity> ret = new ArrayList<Entity>();
-
-		String driverClass = ctx.getRequiredProperty(EntityManagerProcessor.JPA_DRIVER);
-		String jdbcUrl = ctx.getRequiredProperty(EntityManagerProcessor.JPA_URL);
-		String jdbcUsername = ctx.getRequiredProperty(EntityManagerProcessor.JPA_USERNAME);
-		String jdbcPassword = ctx.getRequiredProperty(EntityManagerProcessor.JPA_PASSWORD);
-		String jdbcCatalog = ctx.getRequiredProperty(EntityManagerProcessor.CONNECT_JPA_CATALOG);
-		String versionField = ctx.getRequiredProperty(EntityManagerProcessor.JPA_VERSION_FIELD);
-
-		Connection conn = null;
-
-		try {
-			Class.forName(driverClass);
-			conn = DriverManager.getConnection(jdbcUrl, jdbcUsername, jdbcPassword);
-
-			List<String> tableNames = EntityManagerUtils.findTableNames(conn,jdbcCatalog);
-			for(String s : tableNames) {
-				Entity entity = EntityManagerUtils.readTable(conn,jdbcCatalog,s,versionField);
-				ret.add(entity);
-			}
-		} catch(Exception e) {
-			throw new JavascribeException("Error adding types",e);
-		} finally {
-			if (conn!=null) {
-				try { conn.close(); } catch(Exception e) { }
-			}
-		}
-		return ret;
-	}
-	*/
-
-	/*
-	public static List<String> findTableNames(Connection conn,String catalog) throws Exception {
-		List<String> ret = new ArrayList<String>();
-		Statement stmt = null;
-		ResultSet res = null;
-
-		try {
-			stmt = conn.createStatement();
-			res = stmt.executeQuery("show tables in "+catalog);
-			while(res.next()) {
-				ret.add(res.getString(1));
-			}
-		} finally {
-			try { res.close(); } catch(Exception e) { }
-			try { stmt.close(); } catch(Exception e) { }
-		}
-
-		return ret;
-	}
-	*/
-
-	/*
-	public static Entity readTable(Connection conn,String schema,String tableName,String versionField) throws SQLException {
-		PreparedStatement pstmt = null;
-		ResultSet res = null;
-		Entity entity = new Entity();
-
-		try {
-			entity.name = tableName;
-			entity.lowerCamelName = Character.toLowerCase(tableName.charAt(0))+tableName.substring(1);
-			pstmt = conn.prepareStatement("show columns in "+schema+"."+tableName);
-			res = pstmt.executeQuery();
-			while(res.next()) {
-				EntityAttrib att = new EntityAttrib();
-				if ((versionField!=null) && (res.getString(1).equals(versionField))) {
-					entity.versionField = res.getString(1);
-					continue;
-				}
-				att.name = res.getString(1);
-				entity.attributes.put(att.name, att);
-				String s = res.getString(3);
-				if (s.equals("NO")) att.isNull = true;
-				s = res.getString(2);
-				if (s.indexOf("bigint")>=0) {
-					att.type = "longint";
-				} else if (s.indexOf("int")>=0) {
-					att.type = "integer";
-				} else if (s.indexOf("varchar")==0) {
-					att.type = "string";
-					int end = s.indexOf(')');
-					att.size = s.substring(8,end);
-				} else if (s.indexOf("datetime")==0) {
-					att.type = "timestamp";
-				} else if (s.indexOf("date")==0) {
-					att.type = "date";
-				} else if (s.indexOf("text")==0) {
-					att.type = "string";
-				} else {
-					System.out.println("Found no type for "+s);
-				}
-			}
-		} finally {
-			if (res!=null) {
-				try { res.close(); } catch(Exception e) { }
-			}
-			if (pstmt!=null) {
-				try { pstmt.close(); } catch(Exception e) { }
-			}
-		}
-		return entity;
-	}
-	*/
 
 }
 

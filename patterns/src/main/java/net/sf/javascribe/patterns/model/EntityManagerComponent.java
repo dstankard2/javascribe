@@ -34,11 +34,11 @@ public class EntityManagerComponent extends ComponentBase {
 	public static final String ENTITY_PACKAGE = "net.sf.javascribe.patterns.model.EntityManagerComponent.pkg";
 	public static final String SHOW_SQL = "net.sf.javascribe.patterns.model.EntityManagerComponent.showSql";
 
-	public static final String CATALOG = "net.sf.javascribe.patterns.model.EntityManager.codegen.catalog";
-	public static final String NAME_RESOLVER = "net.sf.javascribe.patterns.model.EntityManager.databaseObjectNameResolver";
+	public static final String CATALOG = "net.sf.javascribe.patterns.model.EntityManagerComponent.codegen.catalog";
+	public static final String NAME_RESOLVER = "net.sf.javascribe.patterns.model.EntityManagerComponent.databaseObjectNameResolver";
 	public static final String SCHEMA_READERS = "net.sf.javascribe.patterns.model.SchemaReaders";
-	public static final String NAME_RESOLVERS = "net.sf.javascribe.patterns.model.EntityManager.DatabaseObjectNameResolvers";
-	public static final String DATABASE_TYPE = "net.sf.javascribe.patterns.model.EntityManager.databaseType";
+	public static final String NAME_RESOLVERS = "net.sf.javascribe.patterns.model.EntityManagerComponent.DatabaseObjectNameResolvers";
+	public static final String DATABASE_TYPE = "net.sf.javascribe.patterns.model.EntityManagerComponent.databaseType";
 
 	public int getPriority() { return CorePatternConstants.PRIORITY_ENTITY_MANAGER; }
 	

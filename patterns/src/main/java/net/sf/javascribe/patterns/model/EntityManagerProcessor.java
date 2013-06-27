@@ -63,7 +63,7 @@ public class EntityManagerProcessor {
 		Java5ClassConstructor con = new Java5ClassConstructor(types, entityName);
 
 		src.getPublicClass().setClassName(entityName);
-		src.setPackageName(JavaUtils.findPackageName(ctx, ctx.getRequiredProperty("net.sf.javascribe.patterns.model.EntityManagerComponent.jpaEntityPackage")));
+		src.setPackageName(JavaUtils.findPackageName(ctx, ctx.getRequiredProperty(EntityManagerComponent.ENTITY_PACKAGE)));
 		JsomUtils.addJavaFile(src, ctx);
 
 		src.getPublicClass().addMethod(con);
@@ -151,7 +151,7 @@ public class EntityManagerProcessor {
 		for(DatabaseTableColumn col : table.getColumns()) {
 			String prop = EntityManagerUtils.getAttributeName(col.getName(), ctx, comp);
 			ctx.addAttribute(prop, col.getJavaType());
-			type.addAttribute(prop, col.getType());
+			type.addAttribute(prop, col.getJavaType());
 		}
 
 		ctx.getTypes().addType(type);
