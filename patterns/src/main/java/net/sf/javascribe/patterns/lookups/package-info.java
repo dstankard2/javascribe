@@ -1,7 +1,7 @@
 @XmlSchema(
-    namespace = "http://javascribe.sf.net/comps/lookups",
+    namespace = "http://javascribe.sf.net/patterns/lookups",
     elementFormDefault = XmlNsForm.QUALIFIED,
-    xmlns={@XmlNs(prefix="lookups", namespaceURI="http://javascribe.sf.net/comps/lookups")}
+    xmlns={@XmlNs(prefix="lookups", namespaceURI="http://javascribe.sf.net/patterns/lookups")}
 )
 package net.sf.javascribe.patterns.lookups;
  

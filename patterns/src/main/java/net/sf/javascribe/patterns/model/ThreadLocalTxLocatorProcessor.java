@@ -47,7 +47,8 @@ public class ThreadLocalTxLocatorProcessor {
 		}
 
 		TextSourceFile src = new TextSourceFile();
-		JavaUtils.setJavaPath(src, ctx, pkg, className);
+		src.setPath(JavaUtils.getJavaFilePath(ctx, pkg+'.'+className));
+//		JavaUtils.setJavaPath(src, ctx, pkg, className);
 		src.getSource().append(TX_LOCATOR_TEMPLATE);
 		replace(src.getSource(),"${pkg}",pkg);
 		replace(src.getSource(),"${className}",className);

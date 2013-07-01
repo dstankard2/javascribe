@@ -13,6 +13,7 @@ public class WebServletFilterProcessor {
 	@ProcessorMethod(componentClass=WebServletFilter.class)
 	public void process(WebServletFilter filter,GeneratorContext ctx) throws JavascribeException {
 		WebXmlFile webXml = null;
+		ctx.setLanguageSupport("Java");
 		
 		System.out.println("Processing web servlet filter '"+filter.getName()+"'");
 

@@ -95,6 +95,10 @@ public class MySql55SchemaReader implements DatabaseSchemaReader {
 				} else {
 					System.out.println("Found no type for "+s);
 				}
+				s = res.getString(4);
+				if ((s!=null) && (s.equals("PRI"))) {
+					table.setPrimaryKeyColumn(col.getName());
+				}
 			}
 		} finally {
 			if (res!=null) {

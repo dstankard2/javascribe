@@ -1,7 +1,7 @@
 @XmlSchema(
-    namespace = "http://javascribe.sf.net/comps/classification",
+    namespace = "http://javascribe.sf.net/patterns/classification",
     elementFormDefault = XmlNsForm.QUALIFIED,
-    xmlns={@XmlNs(prefix="cl", namespaceURI="http://javascribe.sf.net/comps/classification")}
+    xmlns={@XmlNs(prefix="cl", namespaceURI="http://javascribe.sf.net/patterns/classification")}
 )
 package net.sf.javascribe.patterns.classification;
  

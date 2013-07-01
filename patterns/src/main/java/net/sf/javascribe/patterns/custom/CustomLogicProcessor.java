@@ -34,12 +34,12 @@ public class CustomLogicProcessor {
 
 	private static final String CUSTOM_LOGIC_PKG = "net.sf.javascribe.patterns.custom.CustomLogic.pkg";
 
-	private LocatedJavaServiceObjectType processJavaFile(File f,GeneratorContext ctx,CustomLogic component,String locatorClassName) throws IOException,JavascribeException {
+	private CustomLogicObjectType processJavaFile(File f,GeneratorContext ctx,CustomLogic component,String locatorClassName) throws IOException,JavascribeException {
 		String className = null;
 		String pkg = component.getPkg();
 
 		className = f.getName().substring(0,f.getName().length()-5);
-		LocatedJavaServiceObjectType ret = new LocatedJavaServiceObjectType(locatorClassName,className,pkg,className);
+		CustomLogicObjectType ret = new CustomLogicObjectType(locatorClassName,className,pkg,className);
 		ret.setClassName(className);
 		ret.setPkg(pkg);
 
@@ -212,7 +212,6 @@ public class CustomLogicProcessor {
 			locatorFile.setPackageName(pkg);
 			locatorFile.getPublicClass().setClassName(locatorName);
 			Java5ClassConstructor con = JsomUtils.createConstructor(locatorFile, ctx);
-			con.setAccessLevel("private");
 			locatorFile.getPublicClass().addMethod(con);
 			JsomUtils.addJavaFile(locatorFile, ctx);
 		}

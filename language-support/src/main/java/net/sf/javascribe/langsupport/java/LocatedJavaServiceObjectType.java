@@ -8,7 +8,7 @@ import net.sf.javascribe.api.JavascribeException;
  * @author Dave
  */
 public class LocatedJavaServiceObjectType extends JavaServiceObjectType implements Injectable {
-	private String locatorClass = null;
+	protected String locatorClass = null;
 	
 	public LocatedJavaServiceObjectType(String locatorClass,String serviceName,String pkg,String className) {
 		super(serviceName,pkg,className);

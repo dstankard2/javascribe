@@ -1,7 +1,7 @@
 @XmlSchema(
-    namespace = "http://javascribe.sf.net/comps/custom",
+    namespace = "http://javascribe.sf.net/patterns/custom",
     elementFormDefault = XmlNsForm.QUALIFIED,
-    xmlns={@XmlNs(prefix="custom", namespaceURI="http://javascribe.sf.net/comps/custom")}
+    xmlns={@XmlNs(prefix="custom", namespaceURI="http://javascribe.sf.net/patterns/custom")}
 )
 package net.sf.javascribe.patterns.custom;
  

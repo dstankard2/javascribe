@@ -1,7 +1,7 @@
 @XmlSchema(
-    namespace = "http://javascribe.sf.net/comps/translator",
+    namespace = "http://javascribe.sf.net/patterns/translator",
     elementFormDefault = XmlNsForm.QUALIFIED,
-    xmlns={@XmlNs(prefix="tr", namespaceURI="http://javascribe.sf.net/comps/translator")}
+    xmlns={@XmlNs(prefix="tr", namespaceURI="http://javascribe.sf.net/patterns/translator")}
 )
 package net.sf.javascribe.patterns.translator;
  

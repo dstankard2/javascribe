@@ -1,7 +1,7 @@
 @XmlSchema(
-    namespace = "http://javascribe.sf.net/comps/data-object",
+    namespace = "http://javascribe.sf.net/patterns/data-object",
     elementFormDefault = XmlNsForm.QUALIFIED,
-    xmlns={@XmlNs(prefix="comps", namespaceURI="http://javascribe.sf.net/comps/data-object")}
+    xmlns={@XmlNs(prefix="comps", namespaceURI="http://javascribe.sf.net/patterns/data-object")}
 )
 package net.sf.javascribe.patterns.dataobject;
  

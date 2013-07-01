@@ -9,54 +9,36 @@ import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.GeneratorContext;
 import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.api.JavascribeException;
-import net.sf.javascribe.api.SourceFile;
 import net.sf.javascribe.api.expressions.ExpressionUtil;
 import net.sf.javascribe.api.expressions.ValueExpression;
 
 public class JavaUtils {
 
-	private static final String JAVA_ROOT = "net.sf.javascribe.langsupport.java.root";
-
-	public static void setJavaPath(SourceFile src,GeneratorContext ctx,String pkg,String className) throws JavascribeException {
-		String path = ctx.getBuildRoot()+File.separatorChar+ctx.getRequiredProperty(JAVA_ROOT);
-
-		path = pkg+'.'+className;
-		path = path.replace('.', File.separatorChar)+".java";
-		path = ctx.getBuildRoot()+File.separatorChar+ctx.getRequiredProperty(JAVA_ROOT)+File.separatorChar+path;
-		
-		src.setPath(path);
-	}
+	private static final String JAVA_ROOT_PKG = "net.sf.javascribe.langsupport.java.rootPkg";
+	private static final String JAVA_ROOT_DIR = "net.sf.javascribe.langsupport.java.rootDir";
 
 	public static void addJavaFile(JavaSourceFile file,GeneratorContext ctx) throws JavascribeException {
-		file.setSourceRootPath(ctx.getBuildRoot()+File.separatorChar+ctx.getRequiredProperty(JAVA_ROOT));
+		file.setSourceRootPath(ctx.getBuildRoot()+File.separatorChar+ctx.getRequiredProperty(JAVA_ROOT_DIR));
 		ctx.addSourceFile(file);
 	}
 	
 	public static JavaSourceFile getJavaFile(String className,GeneratorContext ctx) throws JavascribeException {
 		JavaSourceFile ret = null;
 		
-		String path = ctx.getBuildRoot()+File.separatorChar+ctx.getRequiredProperty(JAVA_ROOT)+File.separatorChar;
-		path = path + className.replace('.', File.separatorChar)+".java";
+		String path = ctx.getBuildRoot()+File.separatorChar
+				+ctx.getRequiredProperty(JAVA_ROOT_DIR)+File.separatorChar+className;
+		path = path.replace('.',File.separatorChar)+".java";
 		ret = (JavaSourceFile)ctx.getSourceFile(path);
 		
 		return ret;
 	}
 	
-	public static String findJavaPath(GeneratorContext ctx,String pkg,String className) throws JavascribeException {
-		return ctx.getRequiredProperty(JAVA_ROOT)+File.separatorChar+pkg.replace('.', File.separatorChar)+
-				File.separatorChar+className+".java";
-	}
-
-	public static String findWebRootPath(GeneratorContext ctx) throws JavascribeException {
-		return ctx.getRequiredProperty("web.root");
-	}
-	
 	public static String findPackageName(GeneratorContext ctx,String subpkg) throws JavascribeException {
-		return ctx.getRequiredProperty("net.sf.javascribe.langsupport.java.pkg")+'.'+subpkg;
+		return ctx.getRequiredProperty(JAVA_ROOT_PKG)+'.'+subpkg;
 	}
 	
 	public static String getJavaFilePath(GeneratorContext ctx,String className) throws JavascribeException {
-		String ret = ctx.getRequiredProperty("build.root")+File.separatorChar+ctx.getRequiredProperty("java.root")+File.separatorChar+className;
+		String ret = ctx.getBuildRoot()+File.separatorChar+ctx.getRequiredProperty(JAVA_ROOT_DIR)+File.separatorChar+className;
 		ret = ret.replace('.', File.separatorChar)+".java";
 		return ret;
 	}

@@ -1,7 +1,7 @@
 @XmlSchema(
-    namespace = "http://javascribe.sf.net/comps/quartz",
+    namespace = "http://javascribe.sf.net/patterns/quartz",
     elementFormDefault = XmlNsForm.QUALIFIED,
-    xmlns={@XmlNs(prefix="quartz", namespaceURI="http://javascribe.sf.net/comps/quartz")}
+    xmlns={@XmlNs(prefix="quartz", namespaceURI="http://javascribe.sf.net/patterns/quartz")}
 )
 package net.sf.javascribe.patterns.quartz;
  

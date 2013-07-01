@@ -35,6 +35,7 @@ public class WebServletProcessor {
 		String pkg = null;
 		
 		try {
+			ctx.setLanguageSupport("Java");
 			// Set instance variables
 			className = servlet.getName();
 			System.out.println("Processing web servlet with path '"+className+"'");
