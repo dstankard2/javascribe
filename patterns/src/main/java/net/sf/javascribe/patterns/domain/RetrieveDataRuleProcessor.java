@@ -101,7 +101,7 @@ public class RetrieveDataRuleProcessor {
 			}
 
 			// Get package for domain logic
-			String pkg = JavaUtils.findPackageName(ctx, ctx.getRequiredProperty("domainLogic.pkg"));
+			String pkg = JavaUtils.findPackageName(ctx, ctx.getRequiredProperty(RetrieveDataRule.DOMAIN_LOGIC_PKG));
 
 			Java5SourceFile locatorFile = null;
 			Java5SourceFile serviceFile = null;

@@ -16,6 +16,8 @@ import net.sf.javascribe.patterns.CorePatternConstants;
 @XmlType(name="dataObject",propOrder={ })
 public class DataObject extends ComponentBase {
 
+	public static final String DATA_OBJECT_PKG = "net.sf.javascribe.patterns.dataobject.DataObject.pkg";
+
 	@XmlAttribute
 	private String name = null;
 	

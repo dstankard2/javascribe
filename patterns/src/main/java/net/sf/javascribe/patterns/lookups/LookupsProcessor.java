@@ -64,7 +64,7 @@ public class LookupsProcessor {
 
 	private void processEntity(String pkg,GeneratorContext ctx,Entity e,Java5ClassDefinition locatorClass,ServiceLocator locatorType) throws JavascribeException,CodeGenerationException {
 		Java5SourceFile src = null;
-		String lookupClassName = e.getName()+"Lookup";
+		String lookupClassName = e.getName()+"Lookups";
 		LookupType type = null;
 
 		src = JsomUtils.getJavaFile(pkg+'.'+lookupClassName, ctx);

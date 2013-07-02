@@ -23,11 +23,9 @@ import net.sf.jsom.java5.Java5DataObjectSourceFile;
 @Processor
 public class DataObjectProcessor {
 
-	private static final String DATA_OBJECT_PKG = "net.sf.javascribe.patterns.dataobject.DataObject.pkg";
-
 	@ProcessorMethod(componentClass=DataObject.class)
 	public void process(DataObject comp,GeneratorContext ctx) throws JavascribeException {
-		String pkg = JavaUtils.findPackageName(ctx, ctx.getRequiredProperty(DATA_OBJECT_PKG));
+		String pkg = JavaUtils.findPackageName(ctx, ctx.getRequiredProperty(DataObject.DATA_OBJECT_PKG));
 		JavaBeanType type = null;
 		Java5DataObjectSourceFile src = null;
 		

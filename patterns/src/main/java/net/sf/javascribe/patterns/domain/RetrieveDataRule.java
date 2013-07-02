@@ -16,6 +16,7 @@ import net.sf.javascribe.patterns.CorePatternConstants;
 @XmlType(name="retrieveDataRule",propOrder={ })
 public class RetrieveDataRule extends ComponentBase {
 
+	public static final String DOMAIN_LOGIC_PKG = "net.sf.javascribe.patterns.domain.pkg";
 	@Override
 	public int getPriority() { return CorePatternConstants.PRIORITY_RETRIEVE_DATA_RULE; }
 	
