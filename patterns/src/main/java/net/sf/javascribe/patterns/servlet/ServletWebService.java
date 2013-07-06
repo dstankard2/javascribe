@@ -16,11 +16,16 @@ import net.sf.javascribe.patterns.CorePatternConstants;
 @XmlType(name="servletWebService",propOrder={ })
 public class ServletWebService extends ComponentBase {
 
+	public int getPriority() { return CorePatternConstants.PRIORITY_SERVLET_WEB_SERVICE; }
+
 	@XmlAttribute
 	private String webServiceModule = "";
 
 	@XmlAttribute
 	private String filters = "";
+
+	@XmlAttribute
+	private String requestBody = "";
 
 	@XmlAttribute
 	private String path = "";
@@ -39,8 +44,17 @@ public class ServletWebService extends ComponentBase {
 
 	@XmlAttribute
 	private String returnFormat = "";
+	
+	@XmlAttribute
+	private String httpMethod = "";
 
-	public int getPriority() { return CorePatternConstants.PRIORITY_SERVLET_WEB_SERVICE; }
+	public String getHttpMethod() {
+		return httpMethod;
+	}
+
+	public void setHttpMethod(String httpMethod) {
+		this.httpMethod = httpMethod;
+	}
 
 	public String getWebServiceModule() {
 		return webServiceModule;
@@ -104,6 +118,14 @@ public class ServletWebService extends ComponentBase {
 
 	public void setFilters(String filters) {
 		this.filters = filters;
+	}
+
+	public String getRequestBody() {
+		return requestBody;
+	}
+
+	public void setRequestBody(String requestBody) {
+		this.requestBody = requestBody;
 	}
 
 }

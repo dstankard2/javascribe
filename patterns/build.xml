@@ -30,9 +30,16 @@
 		<jar destfile="${dist.root}\lib\patterns.jar" basedir="${build.root}\patterns\classes"/>
 	</target>
 	
+	<target name="copy.third.party.runtime.dependancies">
+		<copy todir="${dist.root}\runtime-dependancies" overwrite="true">
+			<fileset dir="${dev.root}\runtime_deps"/>
+		</copy>
+	</target>
+
 	<target name="build">
 		<antcall target="init"/>
 		<antcall target="create.patterns.jar"/>
+		<antcall target="copy.third.party.runtime.dependancies"/>
 	</target>
 
 </project>

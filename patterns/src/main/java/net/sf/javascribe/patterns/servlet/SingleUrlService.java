@@ -8,6 +8,8 @@ public class SingleUrlService {
 	List<String> queryParams = new ArrayList<String>();
 	String returnFormat = null;
 	String returnType = null;
+	String requestMethod = null;
+	String requestBody = null;
 	
 	public String getPath() {
 		return path;
@@ -32,6 +34,18 @@ public class SingleUrlService {
 	}
 	public void setReturnType(String returnType) {
 		this.returnType = returnType;
+	}
+	public String getRequestMethod() {
+		return requestMethod;
+	}
+	public void setRequestMethod(String requestMethod) {
+		this.requestMethod = requestMethod;
+	}
+	public String getRequestBody() {
+		return requestBody;
+	}
+	public void setRequestBody(String requestBody) {
+		this.requestBody = requestBody;
 	}
 	
 }

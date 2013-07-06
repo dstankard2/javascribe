@@ -67,7 +67,7 @@ public class ClassificationProcessor {
 		
 		System.out.println("Processing classification '"+classification.getName()+"'");
 
-		pkg = JavaUtils.findPackageName(ctx, ctx.getRequiredProperty("classification.pkg"));
+		pkg = JavaUtils.findPackageName(ctx, ctx.getRequiredProperty(Classification.CLASSIFICATION_PKG));
 		className = classification.getName();
 
 		classifications = (Map<String,Classification>)ctx.getObject("Classifications");

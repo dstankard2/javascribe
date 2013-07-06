@@ -3,6 +3,7 @@ package net.sf.javascribe.patterns.servlet;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sf.javascribe.api.AttributeHolder;
 import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.GeneratorContext;
 import net.sf.javascribe.api.JavascribeException;
@@ -77,8 +78,21 @@ public class ServletWebServiceProcessor {
 			methodCode.append("String template = \""+webService.getPath()+"\";\n");
 			methodCode.append("params = retrieveParameters(template,path);\n");
 			methodCode.append("if (params!=null) {\n");
-			methodCode.append("_requestProcessed = true;\n");
 
+			// Determine if this web service requires a HTTP method.
+			String httpMethod = null;
+			if (webService.getHttpMethod().trim().length()>0) {
+				httpMethod = webService.getHttpMethod();
+				if ((!httpMethod.equalsIgnoreCase("POST")) && (!httpMethod.equalsIgnoreCase("GET"))
+						&& (!httpMethod.equalsIgnoreCase("PUT")) && (!httpMethod.equalsIgnoreCase("DELETE"))) {
+					throw new JavascribeException("URL web service supports HTTP methods POST, PUT, GET, DELETE");
+				}
+				httpMethod = httpMethod.toUpperCase();
+				methodCode.append("if (request.getMethod().equals(\""+httpMethod+"\")) {\n");
+			}
+			
+			methodCode.append("_requestProcessed = true;\n");
+			
 			// Read query parameters into local variables.
 			String params = webService.getQueryParams();
 			if (params.trim().length()>0) {
@@ -95,6 +109,27 @@ public class ServletWebServiceProcessor {
 				String t = ctx.getAttributeType(p);
 				if (t==null) throw new JavascribeException("Found unrecognized web service path parameter '"+p+"'");
 				appendPathParamCode(ctx,p,t,methodCode,execCtx);
+			}
+			
+			// Read request body.
+			if (webService.getRequestBody().trim().length()>0) {
+				String attr = webService.getRequestBody();
+				String t = ctx.getAttributeType(attr);
+				if (t==null) {
+					throw new JavascribeException("Servlet web servlet request body is an unrecognized attribute");
+				}
+				JavaVariableType ty = (JavaVariableType)ctx.getType(t);
+				if (!(ty instanceof AttributeHolder)) {
+					throw new JavascribeException("Request body of a servlet web service must be a data object");
+				}
+				if (execCtx.getVariableType(t)!=null) {
+					throw new JavascribeException("Unable to process servlet WS request body - an attribute with this name already exists in the current code execution context");
+				}
+				methodCode.addImport(ty.getImport());
+				methodCode.append(ty.declare(attr, execCtx).getCodeText());
+				methodCode.addImport("org.codehaus.jackson.map.ObjectMapper");
+				methodCode.append("ObjectMapper _objectMapper = new ObjectMapper();\n");
+				methodCode.append(attr+" = _objectMapper.readValue(request.getReader(),"+ty.getClassName()+".class);\n");
 			}
 
 			// Read user session data if it is there.
@@ -174,6 +209,9 @@ public class ServletWebServiceProcessor {
 			}
 
 			// Done
+			if (httpMethod!=null) {
+				methodCode.append("}\n");
+			}
 			methodCode.append("}\n}\n// End of WebService "+webService.getPath()+'\n');
 
 			// Add web service type.

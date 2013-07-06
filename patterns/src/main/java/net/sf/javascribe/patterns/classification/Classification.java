@@ -16,6 +16,8 @@ import net.sf.javascribe.patterns.CorePatternConstants;
 @XmlType(name="classification",propOrder={ })
 public class Classification extends ComponentBase {
 
+	public static final String CLASSIFICATION_PKG = "net.sf.javascribe.patterns.classification.Classification.pkg";
+
 	@XmlAttribute
 	private String name = "";
 	
