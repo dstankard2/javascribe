@@ -182,7 +182,6 @@ public class JavascribeEngine {
 			def = reader.readApplication(zip);
 			CodeGenerator generator = new CodeGenerator(engineProps,def);
 			generator.generate();
-			System.out.println("Test");
 		} catch(IOException e) {
 			throw new JavascribeException("Exception while running Javascribe",e);
 		} catch(JAXBException e) {
