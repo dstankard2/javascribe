@@ -27,10 +27,10 @@ public class EntityRelationships extends ComponentBase {
 	private List<Relationship> rel = new ArrayList<Relationship>();
 	
 	@XmlAttribute
-	private String entityManager = null;
+	private String entityManager = "";
 
 	@XmlAttribute
-	private String jpaDaoFactory = null;
+	private String jpaDaoFactory = "";
 
 	public String getEntityManager() {
 		return entityManager;

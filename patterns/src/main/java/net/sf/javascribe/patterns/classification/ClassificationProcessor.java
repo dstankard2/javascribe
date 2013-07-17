@@ -34,7 +34,7 @@ public class ClassificationProcessor {
 		l = (List<String>)ctx.getObject(DATA_OBJECTS);
 		if (l==null) {
 			l = new ArrayList<String>();
-			ctx.addObject(DATA_OBJECTS, l);
+			ctx.putObject(DATA_OBJECTS, l);
 		}
 		
 		l.add(comp.getName());
@@ -47,7 +47,7 @@ public class ClassificationProcessor {
 		l = (List<String>)ctx.getObject(DATA_OBJECTS);
 		if (l==null) {
 			l = new ArrayList<String>();
-			ctx.addObject(DATA_OBJECTS, l);
+			ctx.putObject(DATA_OBJECTS, l);
 		}
 		
 		List<DatabaseTable> tables = EntityManagerUtils.readTables(comp, ctx);
@@ -76,7 +76,7 @@ public class ClassificationProcessor {
 			ctx.addComponent(new ClassificationFinalizerComp());
 			ctx.addComponent(new ClassificationAttributeProcessingComp());
 			classifications = new HashMap<String,Classification>();
-			ctx.addObject("Classifications", classifications);
+			ctx.putObject("Classifications", classifications);
 		}
 		
 		if (classification.getName()==null) {

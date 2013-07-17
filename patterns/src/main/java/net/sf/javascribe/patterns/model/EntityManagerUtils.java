@@ -34,7 +34,7 @@ public class EntityManagerUtils {
 			ret = (HashMap<String,DatabaseObjectNameResolver>)ctx.getObject(EntityManagerComponent.NAME_RESOLVERS);
 			if (ret==null) {
 				ret = new HashMap<String,DatabaseObjectNameResolver>();
-				ctx.addObject(EntityManagerComponent.NAME_RESOLVERS, ret);
+				ctx.putObject(EntityManagerComponent.NAME_RESOLVERS, ret);
 				List<Class<?>> resolvers = ctx.getEngineProperties().getScannedClassesOfInterface(DatabaseObjectNameResolver.class);
 				for(Class<?> cl : resolvers) {
 					DatabaseObjectNameResolver inst = (DatabaseObjectNameResolver)cl.newInstance();
@@ -103,7 +103,7 @@ public class EntityManagerUtils {
 			schemaReaders = (HashMap<String,DatabaseSchemaReader>)ctx.getObject(EntityManagerComponent.SCHEMA_READERS);
 			if (schemaReaders==null) {
 				schemaReaders = new HashMap<String,DatabaseSchemaReader>();
-				ctx.addObject(EntityManagerComponent.SCHEMA_READERS, schemaReaders);
+				ctx.putObject(EntityManagerComponent.SCHEMA_READERS, schemaReaders);
 				List<Class<?>> readers = ctx.getEngineProperties().getScannedClassesOfInterface(DatabaseSchemaReader.class);
 				for(Class<?> cl : readers) {
 					DatabaseSchemaReader inst = (DatabaseSchemaReader)cl.newInstance();

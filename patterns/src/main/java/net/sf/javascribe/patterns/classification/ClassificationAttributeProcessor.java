@@ -42,7 +42,7 @@ public class ClassificationAttributeProcessor {
 			processClassification(s,classification,ctx,processed,classifications,classificationNames);
 		}
 
-		ctx.addObject("ClassificationNames", classificationNames);
+		ctx.putObject("ClassificationNames", classificationNames);
 		} catch(CodeGenerationException e) {
 			throw new JavascribeException("JSOM exception while processing component",e);
 		}

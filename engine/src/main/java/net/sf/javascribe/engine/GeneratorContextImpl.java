@@ -124,7 +124,7 @@ public class GeneratorContextImpl implements GeneratorContext {
 		return addedComponents;
 	}
 
-	public void addObject(String name, Object object) {
+	public void putObject(String name, Object object) {
 		objects.put(name, object);
 	}
 

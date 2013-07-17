@@ -54,7 +54,7 @@ public class PageUtils {
 		ret = (StringBuilder)ctx.getObject(objectName);
 		if (ret==null) {
 			ret = new StringBuilder();
-			ctx.addObject(objectName, ret);
+			ctx.putObject(objectName, ret);
 			ret.append(pageName+".init = function() {\n");
 		}
 		
@@ -106,7 +106,7 @@ public class PageUtils {
 		ret = (HashMap<String,Element>)ctx.getObject(VIEW_ELEMENTS+'.'+pageName);
 		if (ret==null) {
 			ret = new HashMap<String,Element>();
-			ctx.addObject(VIEW_ELEMENTS+'.'+pageName, ret);
+			ctx.putObject(VIEW_ELEMENTS+'.'+pageName, ret);
 		}
 		
 		return ret;
@@ -119,7 +119,7 @@ public class PageUtils {
 		ret = (HashMap<String,String>)ctx.getObject(MODEL_ATTRIBUTES+"."+pageName);
 		if (ret==null) {
 			ret = new HashMap<String,String>();
-			ctx.addObject(MODEL_ATTRIBUTES+"."+pageName, ret);
+			ctx.putObject(MODEL_ATTRIBUTES+"."+pageName, ret);
 		}
 		
 		return ret;

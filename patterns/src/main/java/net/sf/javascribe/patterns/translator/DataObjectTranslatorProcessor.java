@@ -28,6 +28,16 @@ import net.sf.jsom.java5.Java5SourceFile;
 public class DataObjectTranslatorProcessor {
 
 	public static final String DATA_OBJECT_TRANSLATOR_PKG = "net.sf.javascribe.patterns.translator.DataObjectTranslator.pkg";
+
+	// Process translation strategies.  They must be cached in the GeneratorContext
+	@ProcessorMethod(componentClass=TranslationStrategy.class)
+	public void process(TranslationStrategy comp,GeneratorContext ctx) throws JavascribeException {
+		ctx.setLanguageSupport("Java");
+		if (comp.getName().trim().length()==0) {
+			throw new JavascribeException("A translation strategy must have a 'name' attribute");
+		}
+		DataObjectTranslatorUtils.storeTranslationStrategy(comp, ctx);
+	}
 	
 	@ProcessorMethod(componentClass=DataObjectTranslator.class)
 	public void process(DataObjectTranslator comp,GeneratorContext ctx) throws JavascribeException {
@@ -47,6 +57,9 @@ public class DataObjectTranslatorProcessor {
 		}
 		if (!(var instanceof JavaBeanType)) {
 			throw new JavascribeException("Result '"+returnType+"' is not a data object");
+		}
+		if (comp.getStrategy().trim().length()==0) {
+			throw new JavascribeException("Found no translation strategy for data translator");
 		}
 
 		try {
@@ -90,6 +103,17 @@ public class DataObjectTranslatorProcessor {
 			JsomUtils.merge(body, (JavaCode)resultType.declare("_ret", execCtx));
 			JsomUtils.merge(body, (JavaCode)resultType.instantiate("_ret", null, execCtx));
 
+			List<FieldTranslator> trans = DataObjectTranslatorUtils.geTranslationStrategy(comp.getStrategy(), ctx);
+			
+			for(FieldTranslator tr : trans) {
+				JavaCode append = tr.translateFields(resultType, "_ret", execCtx, attribs);
+				JsomUtils.merge(body, append);
+				if (attribs.size()==0) break;
+			}
+			
+			if (attribs.size()>0) {
+				throw new JavascribeException("Could not translate field '"+attribs.get(0)+"'");
+			}
 			for(String a : attribs) {
 				boolean done = false;
 				// Check inputs for a match

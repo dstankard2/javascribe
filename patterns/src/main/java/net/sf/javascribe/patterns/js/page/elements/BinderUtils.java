@@ -123,7 +123,7 @@ public class BinderUtils {
 		
 		if (ret==null) {
 			ret = new HashMap<String,ElementBinderEntry>();
-			ctx.addObject(ELEMENT_BINDERS, ret);
+			ctx.putObject(ELEMENT_BINDERS, ret);
 			List<Class<?>> classes = ctx.getEngineProperties().getScannedClassesOfAnnotation(ElementBinder.class);
 			for(Class<?> cl : classes) {
 				ElementBinder b = cl.getAnnotation(ElementBinder.class);

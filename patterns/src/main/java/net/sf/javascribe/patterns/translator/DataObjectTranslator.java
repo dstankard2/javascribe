@@ -27,6 +27,16 @@ public class DataObjectTranslator extends ComponentBase {
 	private String object = null;
 	@XmlAttribute
 	private String name = null;
+	@XmlAttribute
+	private String strategy = null;
+
+	public String getStrategy() {
+		return strategy;
+	}
+
+	public void setStrategy(String strategy) {
+		this.strategy = strategy;
+	}
 
 	public String getObject() {
 		return object;

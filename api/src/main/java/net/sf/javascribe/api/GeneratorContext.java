@@ -16,7 +16,7 @@ public interface GeneratorContext {
 	public void addAttribute(String name,String type) throws JavascribeException;
 	public EngineProperties getEngineProperties();
 
-	public void addObject(String name,Object object);
+	public void putObject(String name,Object object);
 	public Object getObject(String name);
 	public void addComponent(ComponentBase component);
 

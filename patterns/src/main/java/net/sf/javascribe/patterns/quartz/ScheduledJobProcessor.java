@@ -82,7 +82,7 @@ public class ScheduledJobProcessor {
 				listenerFile.getPublicClass().addMethod(destroyMethod);
 
 				// Add component for scheduled job finalizer
-				ctx.addObject("ListenerFile", listenerFile);
+				ctx.putObject("ListenerFile", listenerFile);
 				ctx.addComponent(new ScheduledJobDone());
 			} else {
 				initMethod = (Java5DeclaredMethod)listenerFile.getPublicClass().getDeclaredMethod("contextInitialized");
