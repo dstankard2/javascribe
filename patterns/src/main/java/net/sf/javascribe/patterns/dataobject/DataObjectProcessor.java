@@ -3,7 +3,7 @@ package net.sf.javascribe.patterns.dataobject;
 import java.util.List;
 
 import net.sf.javascribe.api.Attribute;
-import net.sf.javascribe.api.GeneratorContext;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.api.annotation.Processor;
@@ -24,7 +24,7 @@ import net.sf.jsom.java5.Java5DataObjectSourceFile;
 public class DataObjectProcessor {
 
 	@ProcessorMethod(componentClass=DataObject.class)
-	public void process(DataObject comp,GeneratorContext ctx) throws JavascribeException {
+	public void process(DataObject comp,ProcessorContext ctx) throws JavascribeException {
 		String pkg = JavaUtils.findPackageName(ctx, ctx.getRequiredProperty(DataObject.DATA_OBJECT_PKG));
 		JavaBeanType type = null;
 		Java5DataObjectSourceFile src = null;

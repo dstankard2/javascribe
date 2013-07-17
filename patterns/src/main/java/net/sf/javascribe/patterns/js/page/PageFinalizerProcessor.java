@@ -1,6 +1,6 @@
 package net.sf.javascribe.patterns.js.page;
 
-import net.sf.javascribe.api.GeneratorContext;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.annotation.Processor;
 import net.sf.javascribe.api.annotation.ProcessorMethod;
@@ -12,7 +12,7 @@ import net.sf.javascribe.langsupport.javascript.JavascriptSourceFile;
 public class PageFinalizerProcessor {
 
 	@ProcessorMethod(componentClass=PageFinalizer.class)
-	public void process(PageFinalizer comp,GeneratorContext ctx) throws JavascribeException {
+	public void process(PageFinalizer comp,ProcessorContext ctx) throws JavascribeException {
 		
 		System.out.println("Finalizing page '"+comp.getPageName()+"'");
 

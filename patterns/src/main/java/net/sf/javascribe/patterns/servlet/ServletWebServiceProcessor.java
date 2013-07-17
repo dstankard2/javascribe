@@ -5,7 +5,7 @@ import java.util.List;
 
 import net.sf.javascribe.api.AttributeHolder;
 import net.sf.javascribe.api.CodeExecutionContext;
-import net.sf.javascribe.api.GeneratorContext;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.api.VariableType;
@@ -35,7 +35,7 @@ public class ServletWebServiceProcessor {
 	public static final String SERVLET_WEB_SERVICE_PKG = "net.sf.javascribe.patterns.servlet.ServletWebService.pkg";
 
 	@ProcessorMethod(componentClass=ServletWebService.class)
-	public void process(ServletWebService webService,GeneratorContext ctx) throws JavascribeException {
+	public void process(ServletWebService webService,ProcessorContext ctx) throws JavascribeException {
 		Java5SourceFile src = null;
 		UrlWebServiceType type = null;
 		
@@ -223,7 +223,7 @@ public class ServletWebServiceProcessor {
 		}
 	}
 
-	private void appendPathParamCode(GeneratorContext ctx,String param,String typeName,Java5CompatibleCodeSnippet code,CodeExecutionContext execCtx) throws CodeGenerationException,JavascribeException {
+	private void appendPathParamCode(ProcessorContext ctx,String param,String typeName,Java5CompatibleCodeSnippet code,CodeExecutionContext execCtx) throws CodeGenerationException,JavascribeException {
 		JavaVariableType type = (JavaVariableType)ctx.getType(typeName);
 
 		if (type==null) throw new JavascribeException("Found path parameter of unsupported type '"+typeName+"'");
@@ -262,7 +262,7 @@ public class ServletWebServiceProcessor {
 		return ret;
 	}
 
-	private void modifyWebXml(GeneratorContext ctx,ServletWebService webService,String pkg,String className) throws JavascribeException {
+	private void modifyWebXml(ProcessorContext ctx,ServletWebService webService,String pkg,String className) throws JavascribeException {
 		boolean exists = WebUtils.webXmlHasServlet(ctx, webService.getWebServiceModule());
 		WebXmlFile webXml = WebUtils.getWebXml(ctx);
 		String mod = webService.getWebServiceModule();
@@ -288,7 +288,7 @@ public class ServletWebServiceProcessor {
 		}
 	}
 
-	private Java5DeclaredMethod initWebServiceFile(Java5SourceFile src,GeneratorContext ctx) throws CodeGenerationException {
+	private Java5DeclaredMethod initWebServiceFile(Java5SourceFile src,ProcessorContext ctx) throws CodeGenerationException {
 		Java5DeclaredMethod serviceMethod = null;
 		
 		serviceMethod = new Java5DeclaredMethod(new JavascribeVariableTypeResolver(ctx));

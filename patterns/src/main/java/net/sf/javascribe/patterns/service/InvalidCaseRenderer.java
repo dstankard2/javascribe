@@ -1,15 +1,15 @@
 package net.sf.javascribe.patterns.service;
 
 import net.sf.javascribe.api.CodeExecutionContext;
-import net.sf.javascribe.api.GeneratorContext;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.jsom.java5.Java5CodeSnippet;
 
 public class InvalidCaseRenderer implements NestingServiceOperationRenderer {
 	InvalidCaseOperation op = null;
-	GeneratorContext ctx = null;
+	ProcessorContext ctx = null;
 	
-	public void setGeneratorContext(GeneratorContext ctx) {
+	public void setGeneratorContext(ProcessorContext ctx) {
 		this.ctx = ctx;
 	}
 	

@@ -1,6 +1,6 @@
 package net.sf.javascribe.patterns.model;
 
-import net.sf.javascribe.api.GeneratorContext;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.TextSourceFile;
 import net.sf.javascribe.api.annotation.Processor;
@@ -13,7 +13,7 @@ import net.sf.jsom.java5.Java5TypeImpl;
 @Scannable
 @Processor
 public class ThreadLocalTxLocatorProcessor {
-	GeneratorContext ctx = null;
+	ProcessorContext ctx = null;
 	ThreadLocalTxLocator component = null;
 	String pu = null;
 	String name = null;
@@ -21,7 +21,7 @@ public class ThreadLocalTxLocatorProcessor {
 	String className = null;
 
 	@ProcessorMethod(componentClass=ThreadLocalTxLocator.class)
-	public void process(ThreadLocalTxLocator comp,GeneratorContext ctx) throws JavascribeException {
+	public void process(ThreadLocalTxLocator comp,ProcessorContext ctx) throws JavascribeException {
 		this.ctx = ctx;
 		ctx.setLanguageSupport("Java");
 		component = comp;

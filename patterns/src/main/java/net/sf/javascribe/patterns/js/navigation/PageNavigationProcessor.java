@@ -2,7 +2,7 @@ package net.sf.javascribe.patterns.js.navigation;
 
 import java.util.List;
 
-import net.sf.javascribe.api.GeneratorContext;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.annotation.Processor;
 import net.sf.javascribe.api.annotation.ProcessorMethod;
@@ -18,7 +18,7 @@ import net.sf.javascribe.patterns.js.page.PageUtils;
 public class PageNavigationProcessor {
 
 	@ProcessorMethod(componentClass=PageNavigation.class)
-	public void process(PageNavigation comp,GeneratorContext ctx) throws JavascribeException {
+	public void process(PageNavigation comp,ProcessorContext ctx) throws JavascribeException {
 		
 		ctx.setLanguageSupport("Javascript");
 		

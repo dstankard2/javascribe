@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.javascribe.api.GeneratorContext;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.api.annotation.Processor;
@@ -28,7 +28,7 @@ public class ClassificationProcessor {
 	public static final String DATA_OBJECTS = "Classification_DataObjects";
 
 	@ProcessorMethod(componentClass=DataObject.class)
-	public void processDataObject(DataObject comp,GeneratorContext ctx) {
+	public void processDataObject(DataObject comp,ProcessorContext ctx) {
 		List<String> l = null;
 
 		l = (List<String>)ctx.getObject(DATA_OBJECTS);
@@ -41,7 +41,7 @@ public class ClassificationProcessor {
 	}
 	
 	@ProcessorMethod(componentClass=EntityManagerComponent.class)
-	public void processDataObject(EntityManagerComponent comp,GeneratorContext ctx) throws JavascribeException {
+	public void processDataObject(EntityManagerComponent comp,ProcessorContext ctx) throws JavascribeException {
 		List<String> l = null;
 
 		l = (List<String>)ctx.getObject(DATA_OBJECTS);
@@ -58,7 +58,7 @@ public class ClassificationProcessor {
 	}
 	
 	@ProcessorMethod(componentClass=Classification.class)
-	public void process(Classification classification,GeneratorContext ctx) throws JavascribeException {
+	public void process(Classification classification,ProcessorContext ctx) throws JavascribeException {
 
 		JavaBeanType type = null;
 		Map<String,Classification> classifications = null;

@@ -2,7 +2,7 @@ package net.sf.javascribe.patterns.classification;
 
 import java.util.List;
 
-import net.sf.javascribe.api.GeneratorContext;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.annotation.Processor;
 import net.sf.javascribe.api.annotation.ProcessorMethod;
@@ -22,12 +22,12 @@ import net.sf.jsom.java5.Java5DataObjectSourceFile;
 @Scannable
 @Processor
 public class ClassificationFinalizer {
-	GeneratorContext ctx = null;
+	ProcessorContext ctx = null;
 	List<String> dataObjectNames = null;
 	List<String> classificationNames = null;
 	
 	@ProcessorMethod(componentClass=ClassificationFinalizerComp.class)
-	public void process(GeneratorContext ctx) throws JavascribeException {
+	public void process(ProcessorContext ctx) throws JavascribeException {
 		this.ctx = ctx;
 		dataObjectNames = (List<String>)ctx.getObject(ClassificationProcessor.DATA_OBJECTS);
 		classificationNames = (List<String>)ctx.getObject("ClassificationNames");

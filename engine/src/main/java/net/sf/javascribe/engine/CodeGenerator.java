@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.javascribe.api.GeneratorContext;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.LanguageSupport;
 import net.sf.javascribe.api.SourceFile;
@@ -82,7 +82,7 @@ public class CodeGenerator {
 					//throw new JavascribeException("Found no processors for component class '"+name+"'");
 				}
 				else {
-					GeneratorContextImpl generatorContext = new GeneratorContextImpl(def.getBuildRoot(),engineProperties,languageSupport,systemAttributes,typeMap,sourceFiles,properties,objects);
+					ProcessorContextImpl generatorContext = new ProcessorContextImpl(def.getBuildRoot(),engineProperties,languageSupport,systemAttributes,typeMap,sourceFiles,properties,objects);
 					for(ProcessorEntry entry : currentProcessors) {
 						applyProcessor(comp,generatorContext,entry);
 					}
@@ -97,7 +97,7 @@ public class CodeGenerator {
 		}
 	}
 
-	private void applyProcessor(ComponentBase component,GeneratorContextImpl ctx,ProcessorEntry processorEntry) throws JavascribeException {
+	private void applyProcessor(ComponentBase component,ProcessorContextImpl ctx,ProcessorEntry processorEntry) throws JavascribeException {
 		Class<?> processorClass = processorEntry.getProcessorClass();
 		Object processor = null;
 
@@ -109,7 +109,7 @@ public class CodeGenerator {
 			for(int i=0;i<types.length;i++) {
 				if (ComponentBase.class.isAssignableFrom(types[i])) {
 					args[i] = component;
-				} else if (types[i]==GeneratorContext.class) {
+				} else if (types[i]==ProcessorContext.class) {
 					args[i] = ctx;
 				} else {
 					throw new JavascribeException("In processor method, found unsupported parameter of class '"+types[i].getCanonicalName()+"'");

@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.sf.javascribe.api.CodeExecutionContext;
-import net.sf.javascribe.api.GeneratorContext;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.expressions.ExpressionUtil;
@@ -17,12 +17,12 @@ public class JavaUtils {
 	private static final String JAVA_ROOT_PKG = "net.sf.javascribe.langsupport.java.rootPkg";
 	private static final String JAVA_ROOT_DIR = "net.sf.javascribe.langsupport.java.rootDir";
 
-	public static void addJavaFile(JavaSourceFile file,GeneratorContext ctx) throws JavascribeException {
+	public static void addJavaFile(JavaSourceFile file,ProcessorContext ctx) throws JavascribeException {
 		file.setSourceRootPath(ctx.getBuildRoot()+File.separatorChar+ctx.getRequiredProperty(JAVA_ROOT_DIR));
 		ctx.addSourceFile(file);
 	}
 	
-	public static JavaSourceFile getJavaFile(String className,GeneratorContext ctx) throws JavascribeException {
+	public static JavaSourceFile getJavaFile(String className,ProcessorContext ctx) throws JavascribeException {
 		JavaSourceFile ret = null;
 		
 		String path = ctx.getBuildRoot()+File.separatorChar
@@ -33,11 +33,11 @@ public class JavaUtils {
 		return ret;
 	}
 	
-	public static String findPackageName(GeneratorContext ctx,String subpkg) throws JavascribeException {
+	public static String findPackageName(ProcessorContext ctx,String subpkg) throws JavascribeException {
 		return ctx.getRequiredProperty(JAVA_ROOT_PKG)+'.'+subpkg;
 	}
 	
-	public static String getJavaFilePath(GeneratorContext ctx,String className) throws JavascribeException {
+	public static String getJavaFilePath(ProcessorContext ctx,String className) throws JavascribeException {
 		String ret = ctx.getBuildRoot()+File.separatorChar+ctx.getRequiredProperty(JAVA_ROOT_DIR)+File.separatorChar+className;
 		ret = ret.replace('.', File.separatorChar)+".java";
 		return ret;

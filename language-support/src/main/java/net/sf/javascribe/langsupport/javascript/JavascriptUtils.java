@@ -2,12 +2,12 @@ package net.sf.javascribe.langsupport.javascript;
 
 import java.io.File;
 
-import net.sf.javascribe.api.GeneratorContext;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 
 public class JavascriptUtils {
 
-	public static JavascriptSourceFile getSourceFile(GeneratorContext ctx) throws JavascribeException {
+	public static JavascriptSourceFile getSourceFile(ProcessorContext ctx) throws JavascribeException {
 		JavascriptSourceFile ret = null;
 		
 		String jsFilePath = ctx.getBuildRoot() + File.separatorChar + ctx.getRequiredProperty("javascript.file");
@@ -21,7 +21,7 @@ public class JavascriptUtils {
 		return ret;
 	}
 	
-	public static boolean isMin(GeneratorContext ctx) {
+	public static boolean isMin(ProcessorContext ctx) {
 		boolean ret = false;
 		String prop = ctx.getProperty("javascript.min");
 
@@ -70,7 +70,7 @@ public class JavascriptUtils {
 		return ret;
 	}
 	
-	public static void addJavaScriptTypes(GeneratorContext ctx) throws JavascribeException {
+	public static void addJavaScriptTypes(ProcessorContext ctx) throws JavascribeException {
 		if (ctx.getTypes().getType("var")==null) {
 			ctx.getTypes().addType(new VarVariableType());
 		}

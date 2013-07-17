@@ -10,7 +10,7 @@ import java.util.Map;
 
 import net.sf.javascribe.api.expressions.ExpressionUtil;
 import net.sf.javascribe.api.expressions.ValueExpression;
-import net.sf.javascribe.api.GeneratorContext;
+import net.sf.javascribe.api.ProcessorContext;
 
 public class JavascribeUtils {
 
@@ -74,7 +74,7 @@ public class JavascribeUtils {
 		return null;
 	}
 	
-	public static HashMap<String,String> readParameters(GeneratorContext ctx,String paramString) throws JavascribeException {
+	public static HashMap<String,String> readParameters(ProcessorContext ctx,String paramString) throws JavascribeException {
 		HashMap<String,String> ret = new HashMap<String,String>();
 		String params[] = paramString.split(",");
 		
@@ -88,7 +88,7 @@ public class JavascribeUtils {
 		return ret;
 	}
 	
-	public static List<Attribute> readAttributes(GeneratorContext ctx,String attribs) throws JavascribeException {
+	public static List<Attribute> readAttributes(ProcessorContext ctx,String attribs) throws JavascribeException {
 		List<Attribute> ret = new ArrayList<Attribute>();
 
 		// Return empty list for empty string

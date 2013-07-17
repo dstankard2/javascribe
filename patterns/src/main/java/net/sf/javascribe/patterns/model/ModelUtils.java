@@ -1,6 +1,6 @@
 package net.sf.javascribe.patterns.model;
 
-import net.sf.javascribe.api.GeneratorContext;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.langsupport.java.JavaUtils;
 
@@ -12,11 +12,11 @@ public class ModelUtils {
 		return entityManagerName+"DaoFactory";
 	}
 
-	public static String getDaoPackage(GeneratorContext ctx) throws JavascribeException {
+	public static String getDaoPackage(ProcessorContext ctx) throws JavascribeException {
 		return JavaUtils.findPackageName(ctx, ctx.getRequiredProperty(JpaDaoFactoryProcessor.DAO_PACKAGE_PROPERTY));
 	}
 	
-	public static EntityManagerLocator getDefaultEntityManagerLocator(String pu,GeneratorContext ctx) throws JavascribeException {
+	public static EntityManagerLocator getDefaultEntityManagerLocator(String pu,ProcessorContext ctx) throws JavascribeException {
 		String name = ctx.getRequiredProperty("net.sf.javascribe.patterns.model.EntityManagerComponent.defaultEntityManagerLocator."+pu);
 		EntityManagerLocator loc = (EntityManagerLocator)ctx.getType(name);
 		

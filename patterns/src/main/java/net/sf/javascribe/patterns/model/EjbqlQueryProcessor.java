@@ -4,7 +4,7 @@ import java.util.List;
 
 import net.sf.javascribe.api.Attribute;
 import net.sf.javascribe.api.CodeExecutionContext;
-import net.sf.javascribe.api.GeneratorContext;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.api.annotation.Processor;
@@ -28,10 +28,10 @@ import net.sf.jsom.java5.Java5Type;
 public class EjbqlQueryProcessor {
 	public static final String EJBQL_QUERY_PKG = "net.sf.javascribe.patterns.model.EjbqlQuery.pkg";
 	EjbqlQuery query = null;
-	GeneratorContext ctx = null;
+	ProcessorContext ctx = null;
 
 	@ProcessorMethod(componentClass=EjbqlQuery.class)
-	public void process(EjbqlQuery comp,GeneratorContext ctx) throws JavascribeException {
+	public void process(EjbqlQuery comp,ProcessorContext ctx) throws JavascribeException {
 		this.ctx = ctx;
 		query = comp;
 

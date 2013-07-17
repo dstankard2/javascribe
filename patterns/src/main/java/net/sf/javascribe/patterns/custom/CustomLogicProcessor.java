@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import net.sf.javascribe.api.CodeExecutionContext;
-import net.sf.javascribe.api.GeneratorContext;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.api.VariableType;
@@ -34,7 +34,7 @@ public class CustomLogicProcessor {
 
 	private static final String CUSTOM_LOGIC_PKG = "net.sf.javascribe.patterns.custom.CustomLogic.pkg";
 
-	private CustomLogicObjectType processJavaFile(File f,GeneratorContext ctx,CustomLogic component,String locatorClassName) throws IOException,JavascribeException {
+	private CustomLogicObjectType processJavaFile(File f,ProcessorContext ctx,CustomLogic component,String locatorClassName) throws IOException,JavascribeException {
 		String className = null;
 		String pkg = component.getPkg();
 
@@ -58,7 +58,7 @@ public class CustomLogicProcessor {
 		return ret;
 	}
 
-	private void processDeclarationAtLocation(StringBuilder s,int index,JavaServiceObjectType obj,GeneratorContext ctx,CustomLogic component) throws JavascribeException {
+	private void processDeclarationAtLocation(StringBuilder s,int index,JavaServiceObjectType obj,ProcessorContext ctx,CustomLogic component) throws JavascribeException {
 		int end = 0;
 		end = s.indexOf("{", index+1);
 
@@ -84,7 +84,7 @@ public class CustomLogicProcessor {
 		}
 	}
 
-	private String findReturnType(String line,GeneratorContext ctx) {
+	private String findReturnType(String line,ProcessorContext ctx) {
 		int begin = 7;
 		int end = line.indexOf(' ', begin+1);
 		String name = line.substring(begin, end);
@@ -93,7 +93,7 @@ public class CustomLogicProcessor {
 		return ret;
 	}
 
-	private String findType(String typeString,GeneratorContext ctx) {
+	private String findType(String typeString,ProcessorContext ctx) {
 		String ret = null;
 
 		if (typeString.startsWith("List<")) {
@@ -131,7 +131,7 @@ public class CustomLogicProcessor {
 		return ret;
 	}
 
-	private void addParameters(JavaOperation op,String line,GeneratorContext ctx,CustomLogic component) throws JavascribeException {
+	private void addParameters(JavaOperation op,String line,ProcessorContext ctx,CustomLogic component) throws JavascribeException {
 		int start = line.indexOf('(');
 		int end = line.indexOf(')');
 		String sub = line.substring(start+1, end);
@@ -173,7 +173,7 @@ public class CustomLogicProcessor {
 	}
 
 	@ProcessorMethod(componentClass=CustomLogic.class)
-	public void process(CustomLogic component,GeneratorContext ctx) throws JavascribeException {
+	public void process(CustomLogic component,ProcessorContext ctx) throws JavascribeException {
 		List<LocatedJavaServiceObjectType> domainServices = new ArrayList<LocatedJavaServiceObjectType>();
 
 		ctx.setLanguageSupport("Java");
@@ -240,7 +240,7 @@ public class CustomLogicProcessor {
 
 	}
 
-	private void initDependencies(GeneratorContext ctx,String resultName, LocatedJavaServiceObjectType service, Java5CodeSnippet code, CodeExecutionContext execCtx,List<LocatedJavaServiceObjectType> domainServices) throws JavascribeException,CodeGenerationException {
+	private void initDependencies(ProcessorContext ctx,String resultName, LocatedJavaServiceObjectType service, Java5CodeSnippet code, CodeExecutionContext execCtx,List<LocatedJavaServiceObjectType> domainServices) throws JavascribeException,CodeGenerationException {
 		for(String dep : service.getDependancyNames()) {
 			String var = JavaUtils.findAttributeName(dep);
 			VariableType type = execCtx.getType(dep);

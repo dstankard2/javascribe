@@ -5,7 +5,7 @@ import java.util.List;
 import net.sf.javascribe.api.Attribute;
 import net.sf.javascribe.api.AttributeHolder;
 import net.sf.javascribe.api.CodeExecutionContext;
-import net.sf.javascribe.api.GeneratorContext;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.api.VariableType;
@@ -31,7 +31,7 @@ public class DataObjectTranslatorProcessor {
 
 	// Process translation strategies.  They must be cached in the GeneratorContext
 	@ProcessorMethod(componentClass=TranslationStrategy.class)
-	public void process(TranslationStrategy comp,GeneratorContext ctx) throws JavascribeException {
+	public void process(TranslationStrategy comp,ProcessorContext ctx) throws JavascribeException {
 		ctx.setLanguageSupport("Java");
 		if (comp.getName().trim().length()==0) {
 			throw new JavascribeException("A translation strategy must have a 'name' attribute");
@@ -40,7 +40,7 @@ public class DataObjectTranslatorProcessor {
 	}
 	
 	@ProcessorMethod(componentClass=DataObjectTranslator.class)
-	public void process(DataObjectTranslator comp,GeneratorContext ctx) throws JavascribeException {
+	public void process(DataObjectTranslator comp,ProcessorContext ctx) throws JavascribeException {
 		ctx.setLanguageSupport("Java");
 		
 		String returnType = comp.getReturnType();

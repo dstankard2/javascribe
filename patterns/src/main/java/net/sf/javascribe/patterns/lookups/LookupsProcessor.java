@@ -2,7 +2,7 @@ package net.sf.javascribe.patterns.lookups;
 
 import java.util.List;
 
-import net.sf.javascribe.api.GeneratorContext;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.annotation.Processor;
 import net.sf.javascribe.api.annotation.ProcessorMethod;
@@ -26,7 +26,7 @@ public class LookupsProcessor {
 	private static final String PROPERTY_LOOKUPS_PKG = "net.sf.javascribe.patterns.lookups.Lookups.pkg";
 
 	@ProcessorMethod(componentClass=Lookups.class)
-	public void processLookups(Lookups lookups,GeneratorContext ctx) throws JavascribeException {
+	public void processLookups(Lookups lookups,ProcessorContext ctx) throws JavascribeException {
 
 		ctx.setLanguageSupport("Java");
 		System.out.println("Processing Lookups definition");
@@ -62,7 +62,7 @@ public class LookupsProcessor {
 		}
 	}
 
-	private void processEntity(String pkg,GeneratorContext ctx,Entity e,Java5ClassDefinition locatorClass,ServiceLocator locatorType) throws JavascribeException,CodeGenerationException {
+	private void processEntity(String pkg,ProcessorContext ctx,Entity e,Java5ClassDefinition locatorClass,ServiceLocator locatorType) throws JavascribeException,CodeGenerationException {
 		Java5SourceFile src = null;
 		String lookupClassName = e.getName()+"Lookups";
 		LookupType type = null;

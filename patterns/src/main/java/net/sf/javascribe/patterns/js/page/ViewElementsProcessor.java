@@ -5,7 +5,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.sf.javascribe.api.GeneratorContext;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.annotation.Processor;
 import net.sf.javascribe.api.annotation.ProcessorMethod;
@@ -21,7 +21,7 @@ import net.sf.javascribe.patterns.js.page.elements.BinderUtils;
 public class ViewElementsProcessor {
 
 	@ProcessorMethod(componentClass=ViewElements.class)
-	public void process(ViewElements comp,GeneratorContext ctx) throws JavascribeException {
+	public void process(ViewElements comp,ProcessorContext ctx) throws JavascribeException {
 		ctx.setLanguageSupport("Javascript");
 		if ((comp.getPageName()==null) || (comp.getPageName().trim().length()==0)) {
 			throw new JavascribeException("ViewElements requires a pageName");

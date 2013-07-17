@@ -1,6 +1,6 @@
 package net.sf.javascribe.patterns.custom;
 
-import net.sf.javascribe.api.GeneratorContext;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.annotation.Processor;
 import net.sf.javascribe.api.annotation.ProcessorMethod;
@@ -13,7 +13,7 @@ import net.sf.javascribe.langsupport.java.JavaVariableTypeImpl;
 public class JavaTypesProcessor {
 
 	@ProcessorMethod(componentClass=JavaTypes.class)
-	public void process(JavaTypes types,GeneratorContext ctx) throws JavascribeException {
+	public void process(JavaTypes types,ProcessorContext ctx) throws JavascribeException {
 		ctx.setLanguageSupport("Java");
 		JavaVariableType type = null;
 		

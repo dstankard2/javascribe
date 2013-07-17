@@ -1,6 +1,6 @@
 package net.sf.javascribe.patterns.js.page;
 
-import net.sf.javascribe.api.GeneratorContext;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.annotation.Processor;
 import net.sf.javascribe.api.annotation.ProcessorMethod;
@@ -14,7 +14,7 @@ import net.sf.javascribe.langsupport.javascript.JavascriptVariableType;
 public class PageFuncProcessor {
 
 	@ProcessorMethod(componentClass=PageFunc.class)
-	public void process(PageFunc func,GeneratorContext ctx) throws JavascribeException {
+	public void process(PageFunc func,ProcessorContext ctx) throws JavascribeException {
 
 		if ((func.getPageName()==null) || (func.getPageName().trim().length()==0)) {
 			throw new JavascribeException("Found an invalid page func with no pageName");

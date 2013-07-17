@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import net.sf.javascribe.api.GeneratorContext;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 
 public class DataObjectTranslatorUtils {
 
-	public static List<FieldTranslator> geTranslationStrategy(String name,GeneratorContext ctx) throws JavascribeException {
+	public static List<FieldTranslator> geTranslationStrategy(String name,ProcessorContext ctx) throws JavascribeException {
 		List<FieldTranslator> ret = null;
 		HashMap<String,List<FieldTranslator>> map = null;
 		
@@ -27,11 +27,11 @@ public class DataObjectTranslatorUtils {
 		return ret;
 	}
 
-	public static void storeTranslationStrategy(TranslationStrategy t,GeneratorContext ctx) {
+	public static void storeTranslationStrategy(TranslationStrategy t,ProcessorContext ctx) {
 		ctx.putObject(TranslationStrategy.TRANSLATION_STRATEGY+t.getName(), t);
 	}
 	
-	private static List<FieldTranslator> loadStrategy(String name,GeneratorContext ctx) throws JavascribeException {
+	private static List<FieldTranslator> loadStrategy(String name,ProcessorContext ctx) throws JavascribeException {
 		List<FieldTranslator> ret = new ArrayList<FieldTranslator>();
 		TranslationStrategy strat = (TranslationStrategy)ctx.getObject(TranslationStrategy.TRANSLATION_STRATEGY+name);
 		
@@ -50,7 +50,7 @@ public class DataObjectTranslatorUtils {
 		return ret;
 	}
 	
-	private static FieldTranslator getTranslator(String name,GeneratorContext ctx) throws JavascribeException {
+	private static FieldTranslator getTranslator(String name,ProcessorContext ctx) throws JavascribeException {
 		TranslationOperation ret = null;
 		List<Class<?>> classes = ctx.getEngineProperties().getScannedClassesOfInterface(FieldTranslator.class);
 

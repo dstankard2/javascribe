@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.sf.javascribe.api.CodeExecutionContext;
-import net.sf.javascribe.api.GeneratorContext;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.langsupport.java.JavaCode;
@@ -21,9 +21,9 @@ public class RuleResolver {
 	private HashMap<String,String> dependencyRefs = new HashMap<String,String>();
 	private int level = 1;
 	private CodeExecutionContext execCtx = null;
-	private GeneratorContext ctx = null;
+	private ProcessorContext ctx = null;
 	
-	public static RuleResolver getRuleResolver(String searchType,CodeExecutionContext execCtx,HashMap<String,String> dependencyRefs,GeneratorContext ctx) {
+	public static RuleResolver getRuleResolver(String searchType,CodeExecutionContext execCtx,HashMap<String,String> dependencyRefs,ProcessorContext ctx) {
 		RuleResolver ret = new RuleResolver();
 		
 		ret.dependencyRefs = dependencyRefs;
@@ -34,7 +34,7 @@ public class RuleResolver {
 		return ret;
 	}
 	
-	protected static RuleResolver getNestedRuleResolver(String searchType,CodeExecutionContext execCtx,HashMap<String,String> dependencyRefs,int level,GeneratorContext ctx) {
+	protected static RuleResolver getNestedRuleResolver(String searchType,CodeExecutionContext execCtx,HashMap<String,String> dependencyRefs,int level,ProcessorContext ctx) {
 		RuleResolver ret = getRuleResolver(searchType,execCtx,dependencyRefs,ctx);
 		ret.level = level+1;
 		

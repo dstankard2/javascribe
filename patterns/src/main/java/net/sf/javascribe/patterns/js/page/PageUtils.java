@@ -2,7 +2,7 @@ package net.sf.javascribe.patterns.js.page;
 
 import java.util.HashMap;
 
-import net.sf.javascribe.api.GeneratorContext;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.VariableType;
 import net.sf.javascribe.langsupport.javascript.JavascriptConstants;
@@ -10,7 +10,7 @@ import net.sf.javascribe.langsupport.javascript.JavascriptVariableType;
 
 public class PageUtils {
 
-	public static JavascriptVariableType getPageType(GeneratorContext ctx,String pageName) throws JavascribeException {
+	public static JavascriptVariableType getPageType(ProcessorContext ctx,String pageName) throws JavascribeException {
 		VariableType t = ctx.getType(JavascriptConstants.JS_TYPE+pageName);
 		JavascriptVariableType ret = null;
 		
@@ -24,7 +24,7 @@ public class PageUtils {
 		return ret;
 	}
 	
-	public static void ensureModel(GeneratorContext ctx,JavascriptVariableType pageType) throws JavascribeException {
+	public static void ensureModel(ProcessorContext ctx,JavascriptVariableType pageType) throws JavascribeException {
 		if (pageType.getAttributeType("model")==null) {
 			String modelName = pageType.getName()+"_Model";
 			JavascriptVariableType type = new JavascriptVariableType(modelName);
@@ -33,7 +33,7 @@ public class PageUtils {
 		}
 	}
 	
-	public static JavascriptVariableType getModelType(GeneratorContext ctx,String pageName) throws JavascribeException {
+	public static JavascriptVariableType getModelType(ProcessorContext ctx,String pageName) throws JavascribeException {
 		JavascriptVariableType ret = null;
 		JavascriptVariableType pageType = getPageType(ctx, pageName);
 		
@@ -46,7 +46,7 @@ public class PageUtils {
 		return ret;
 	}
 	
-	public static StringBuilder getInitFunction(GeneratorContext ctx,String pageName) throws JavascribeException {
+	public static StringBuilder getInitFunction(ProcessorContext ctx,String pageName) throws JavascribeException {
 		StringBuilder ret = null;
 //		String jsFile = ctx.getRequiredProperty("javascript.file");
 		String objectName = "initFunc_"+pageName;
@@ -99,7 +99,7 @@ public class PageUtils {
 	}
 	*/
 	
-	public static HashMap<String,Element> getViewElements(GeneratorContext ctx,String pageName) {
+	public static HashMap<String,Element> getViewElements(ProcessorContext ctx,String pageName) {
 		HashMap<String,Element> ret = null;
 		final String VIEW_ELEMENTS = "com.dave.components.js.page.ViewElements";
 		
@@ -112,7 +112,7 @@ public class PageUtils {
 		return ret;
 	}
 
-	public static HashMap<String,String> getModelAttributes(GeneratorContext ctx,String pageName) {
+	public static HashMap<String,String> getModelAttributes(ProcessorContext ctx,String pageName) {
 		HashMap<String,String> ret = null;
 		final String MODEL_ATTRIBUTES = "com.dave.components.js.page.ModelAttributes";
 		

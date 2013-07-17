@@ -3,7 +3,7 @@ package net.sf.javascribe.patterns.quartz;
 import java.util.HashMap;
 
 import net.sf.javascribe.api.CodeExecutionContext;
-import net.sf.javascribe.api.GeneratorContext;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.api.annotation.Processor;
@@ -33,7 +33,7 @@ public class ScheduledJobProcessor {
 	public static final String SCHEDULED_JOB_PKG = "net.sf.javascribe.patterns.quartz.ScheduledJob.pkg";
 
 	@ProcessorMethod(componentClass=ScheduledJob.class)
-	public void process(ScheduledJob job,GeneratorContext ctx) throws JavascribeException {
+	public void process(ScheduledJob job,ProcessorContext ctx) throws JavascribeException {
 		Java5SourceFile processFile = null;
 		Java5SourceFile listenerFile = null;
 		String pkg = null;
@@ -143,7 +143,7 @@ public class ScheduledJobProcessor {
 		}
 	}
 
-	private void addQuartzTypes(GeneratorContext ctx) throws JavascribeException {
+	private void addQuartzTypes(ProcessorContext ctx) throws JavascribeException {
 		if (ctx.getTypes().getType("Scheduler")==null) {
 			ctx.getTypes().addType(new JsomJava5TypeImpl("Scheduler","org.quartz.Scheduler","Scheduler"));
 		}

@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.javascribe.api.GeneratorContext;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.api.annotation.Processor;
@@ -27,7 +27,7 @@ import net.sf.jsom.java5.NVPAnnotationArgument;
 public class EntityManagerProcessor {
 
 	@ProcessorMethod(componentClass=EntityManagerComponent.class)
-	public void process(EntityManagerComponent comp,GeneratorContext ctx) throws JavascribeException {
+	public void process(EntityManagerComponent comp,ProcessorContext ctx) throws JavascribeException {
 		List<DatabaseTable> tables = null;
 		PersistenceUnitConfig puConfig = null;
 
@@ -56,7 +56,7 @@ public class EntityManagerProcessor {
 		}
 	}
 
-	private void addEntityRowClass(DatabaseTable table,GeneratorContext ctx,EntityManagerComponent comp) throws CodeGenerationException,JavascribeException {
+	private void addEntityRowClass(DatabaseTable table,ProcessorContext ctx,EntityManagerComponent comp) throws CodeGenerationException,JavascribeException {
 		JavascribeVariableTypeResolver types = new JavascribeVariableTypeResolver(ctx);
 		Java5DataObjectSourceFile src = new Java5DataObjectSourceFile(types);
 		String entityName = EntityManagerUtils.getEntityName(table.getName(), ctx, comp);
@@ -99,7 +99,7 @@ public class EntityManagerProcessor {
 		}
 	}
 
-	private void addEntityManagerType(List<DatabaseTable> tables,EntityManagerComponent comp,GeneratorContext ctx) throws JavascribeException {
+	private void addEntityManagerType(List<DatabaseTable> tables,EntityManagerComponent comp,ProcessorContext ctx) throws JavascribeException {
 		List<String> entityNames = new ArrayList<String>();
 		
 		for(DatabaseTable tab : tables) {
@@ -111,7 +111,7 @@ public class EntityManagerProcessor {
 		ctx.addAttribute(comp.getRef(), comp.getName());
 	}
 
-	private PersistenceUnitConfig createPersistenceUnit(EntityManagerComponent comp,GeneratorContext ctx) throws JavascribeException {
+	private PersistenceUnitConfig createPersistenceUnit(EntityManagerComponent comp,ProcessorContext ctx) throws JavascribeException {
 		String cfgPath = ctx.getBuildRoot()+File.separatorChar+"persistence.xml";
 		PersistenceUnitConfig ret = null;
 
@@ -138,11 +138,11 @@ public class EntityManagerProcessor {
 		return ret;
 	}
 
-	private String getEntityPackage(GeneratorContext ctx) throws JavascribeException {
+	private String getEntityPackage(ProcessorContext ctx) throws JavascribeException {
 		return JavaUtils.findPackageName(ctx, ctx.getRequiredProperty(EntityManagerComponent.ENTITY_PACKAGE));
 	}
 
-	private void addEntityRowType(PersistenceUnitConfig puConfig,GeneratorContext ctx,DatabaseTable table,EntityManagerComponent comp) throws JavascribeException {
+	private void addEntityRowType(PersistenceUnitConfig puConfig,ProcessorContext ctx,DatabaseTable table,EntityManagerComponent comp) throws JavascribeException {
 		String pkg = getEntityPackage(ctx);
 		String entity = null;
 		

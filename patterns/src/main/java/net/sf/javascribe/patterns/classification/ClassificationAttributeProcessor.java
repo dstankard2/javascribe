@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 import net.sf.javascribe.api.Attribute;
-import net.sf.javascribe.api.GeneratorContext;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.api.annotation.Processor;
@@ -26,7 +26,7 @@ import net.sf.jsom.java5.Java5MethodSignature;
 public class ClassificationAttributeProcessor {
 
 	@ProcessorMethod(componentClass=ClassificationAttributeProcessingComp.class)
-	public void process(ClassificationAttributeProcessingComp comp,GeneratorContext ctx) throws JavascribeException {
+	public void process(ClassificationAttributeProcessingComp comp,ProcessorContext ctx) throws JavascribeException {
 		Map<String,Classification> classifications = null;
 		
 		classifications = (Map<String,Classification>)ctx.getObject("Classifications");
@@ -48,7 +48,7 @@ public class ClassificationAttributeProcessor {
 		}
 	}
 
-	protected void processClassification(String name,Classification classification,GeneratorContext ctx,List<String> processed,Map<String,Classification> classifications,List<String> classificationNames) throws CodeGenerationException,JavascribeException {
+	protected void processClassification(String name,Classification classification,ProcessorContext ctx,List<String> processed,Map<String,Classification> classifications,List<String> classificationNames) throws CodeGenerationException,JavascribeException {
 		Java5DataObjectSourceFile src = null;
 		String pkg = null;
 		String className = null;

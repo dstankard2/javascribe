@@ -3,7 +3,7 @@ package net.sf.javascribe.patterns.service;
 import java.util.HashMap;
 
 import net.sf.javascribe.api.CodeExecutionContext;
-import net.sf.javascribe.api.GeneratorContext;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.langsupport.java.JavaOperation;
@@ -17,9 +17,9 @@ import net.sf.jsom.java5.Java5CodeSnippet;
 
 public class CallBusinessRuleRenderer implements ServiceOperationRenderer {
 	CallBusinessRuleOperation op = null;
-	GeneratorContext ctx = null;
+	ProcessorContext ctx = null;
 
-	public void setGeneratorContext(GeneratorContext ctx) {
+	public void setGeneratorContext(ProcessorContext ctx) {
 		this.ctx = ctx;
 	}
 

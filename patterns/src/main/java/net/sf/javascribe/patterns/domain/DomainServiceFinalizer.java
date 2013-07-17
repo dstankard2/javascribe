@@ -2,7 +2,7 @@ package net.sf.javascribe.patterns.domain;
 
 import java.util.List;
 
-import net.sf.javascribe.api.GeneratorContext;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.annotation.Processor;
 import net.sf.javascribe.api.annotation.ProcessorMethod;
@@ -19,7 +19,7 @@ import net.sf.jsom.java5.Java5SourceFile;
 public class DomainServiceFinalizer {
 
 	@ProcessorMethod(componentClass=DomainObjectFinalizer.class)
-	public void process(DomainObjectFinalizer comp,GeneratorContext ctx) throws JavascribeException {
+	public void process(DomainObjectFinalizer comp,ProcessorContext ctx) throws JavascribeException {
 		ctx.setLanguageSupport("Java");
 		
 		System.out.println("Finalizing Domain Service "+comp.getServiceObjectName());

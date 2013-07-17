@@ -3,7 +3,7 @@ package net.sf.javascribe.patterns.servlet;
 import java.io.File;
 
 import net.sf.javascribe.api.CodeExecutionContext;
-import net.sf.javascribe.api.GeneratorContext;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.langsupport.java.ExceptionType;
 import net.sf.javascribe.langsupport.java.JavaCode;
@@ -15,12 +15,12 @@ import net.sf.jsom.java5.Java5CompatibleCodeSnippet;
 
 public class WebUtils {
 
-	private static String getWebXmlPath(GeneratorContext ctx) {
+	private static String getWebXmlPath(ProcessorContext ctx) {
 		return ctx.getBuildRoot()+File.separatorChar+"www"+File.separatorChar+"WEB-INF"+
 		File.separatorChar+"web.xml";
 	}
 	
-	public static WebXmlFile getWebXml(GeneratorContext ctx) throws JavascribeException {
+	public static WebXmlFile getWebXml(ProcessorContext ctx) throws JavascribeException {
 		WebXmlFile ret = null;
 
 		ret = getWebXmlSourceFile(ctx);
@@ -34,12 +34,12 @@ public class WebUtils {
 		return ret;
 	}
 	
-	public static void addContextListener(GeneratorContext ctx,String className) throws JavascribeException {
+	public static void addContextListener(ProcessorContext ctx,String className) throws JavascribeException {
 		WebXmlFile webXml = getWebXml(ctx);
 		webXml.addContextListener(className);
 	}
 	
-	private static WebXmlFile getWebXmlSourceFile(GeneratorContext ctx) {
+	private static WebXmlFile getWebXmlSourceFile(ProcessorContext ctx) {
 		WebXmlFile ret = null;
 		String path = getWebXmlPath(ctx);
 		
@@ -47,7 +47,7 @@ public class WebUtils {
 		return ret;
 	}
 	
-	public static boolean webXmlHasServlet(GeneratorContext ctx,String servletName) throws JavascribeException {
+	public static boolean webXmlHasServlet(ProcessorContext ctx,String servletName) throws JavascribeException {
 		WebXmlFile src = getWebXml(ctx);
 		
 		return src.getServlet(servletName) != null;
@@ -71,7 +71,7 @@ public class WebUtils {
 	}
 */
 	
-	public static void addHttpTypes(GeneratorContext ctx) throws JavascribeException {
+	public static void addHttpTypes(ProcessorContext ctx) throws JavascribeException {
 		JavaVariableTypeImpl type = null;
 		
 		if (ctx.getTypes().getType("HttpServletRequest")==null) {
@@ -102,7 +102,7 @@ public class WebUtils {
 	// Given a variable of type HttpServletRequest named request, read the parameter of the 
 	// given name with the given type and in the given executionContext.  Append the code to 
 	// the specified code snippet.
-	public static void handleQueryParam(GeneratorContext ctx,String name,String typeName,Java5CompatibleCodeSnippet code,CodeExecutionContext execCtx) throws JavascribeException,CodeGenerationException {
+	public static void handleQueryParam(ProcessorContext ctx,String name,String typeName,Java5CompatibleCodeSnippet code,CodeExecutionContext execCtx) throws JavascribeException,CodeGenerationException {
 		JavaVariableType type = (JavaVariableType)ctx.getType(typeName);
 
 		if (type==null) {

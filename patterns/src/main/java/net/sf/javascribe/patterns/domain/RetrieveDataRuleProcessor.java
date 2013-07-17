@@ -6,7 +6,7 @@ import java.util.List;
 
 import net.sf.javascribe.api.Attribute;
 import net.sf.javascribe.api.CodeExecutionContext;
-import net.sf.javascribe.api.GeneratorContext;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.api.VariableType;
@@ -38,7 +38,7 @@ public class RetrieveDataRuleProcessor {
 	public static final String SERVICE_OBJECT_DEPENDENCIES = "retrieveDataRule.dependencies";
 
 	@ProcessorMethod(componentClass=RetrieveDataRule.class)
-	public void process(RetrieveDataRule comp,GeneratorContext ctx) throws JavascribeException {
+	public void process(RetrieveDataRule comp,ProcessorContext ctx) throws JavascribeException {
 
 		ctx.setLanguageSupport("Java");
 

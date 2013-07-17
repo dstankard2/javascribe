@@ -3,7 +3,7 @@ package net.sf.javascribe.patterns.model;
 import java.util.List;
 
 import net.sf.javascribe.api.CodeExecutionContext;
-import net.sf.javascribe.api.GeneratorContext;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.api.annotation.Processor;
@@ -27,7 +27,7 @@ public class JpaDaoFactoryProcessor {
 
 	public static final String DAO_PACKAGE_PROPERTY = "net.sf.javascribe.patterns.model.JpaDaoFactory.daoPackage";
 
-	private GeneratorContext ctx = null;
+	private ProcessorContext ctx = null;
 	private JpaDaoFactory component = null;
 	private String modelPkg = null;
 	private String daoFactoryClass = null;
@@ -38,7 +38,7 @@ public class JpaDaoFactoryProcessor {
 	private String ref = null;
 
 	@ProcessorMethod(componentClass=JpaDaoFactory.class)
-	public void process(JpaDaoFactory comp,GeneratorContext ctx) throws JavascribeException {
+	public void process(JpaDaoFactory comp,ProcessorContext ctx) throws JavascribeException {
 		this.ctx = ctx;
 		ctx.setLanguageSupport("Java");
 		this.component = comp;

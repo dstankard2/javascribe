@@ -9,7 +9,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.javascribe.api.GeneratorContext;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.annotation.Scannable;
 import net.sf.javascribe.patterns.model.DatabaseSchemaReader;
@@ -26,7 +26,7 @@ public class MySql55SchemaReader implements DatabaseSchemaReader {
 
 	@Override
 	public List<DatabaseTable> readSchema(String url, String username,
-			String password,String catalog, GeneratorContext ctx) throws JavascribeException {
+			String password,String catalog, ProcessorContext ctx) throws JavascribeException {
 		List<DatabaseTable> ret = new ArrayList<DatabaseTable>();
 		Connection conn = null;
 		String versionField = null;

@@ -3,7 +3,7 @@ package net.sf.javascribe.langsupport.java.jsom;
 import java.util.List;
 
 import net.sf.javascribe.api.CodeExecutionContext;
-import net.sf.javascribe.api.GeneratorContext;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.langsupport.java.JavaCode;
 import net.sf.javascribe.langsupport.java.JavaOperation;
@@ -20,11 +20,11 @@ import net.sf.jsom.java5.Java5Type;
 
 public class JsomUtils {
 
-	public static void addJavaFile(Java5SourceFile file,GeneratorContext ctx) throws JavascribeException {
+	public static void addJavaFile(Java5SourceFile file,ProcessorContext ctx) throws JavascribeException {
 		JavaUtils.addJavaFile(new JsomJavaSourceFile(file), ctx);
 	}
 	
-	public static Java5SourceFile getJavaFile(String className,GeneratorContext ctx) throws JavascribeException {
+	public static Java5SourceFile getJavaFile(String className,ProcessorContext ctx) throws JavascribeException {
 		JsomJavaSourceFile file = null;
 		
 		file = (JsomJavaSourceFile)JavaUtils.getJavaFile(className, ctx);
@@ -46,12 +46,12 @@ public class JsomUtils {
 		return ret;
 	}
 	
-	public static Java5ClassConstructor createConstructor(Java5SourceFile src,GeneratorContext ctx) {
+	public static Java5ClassConstructor createConstructor(Java5SourceFile src,ProcessorContext ctx) {
 		Java5ClassConstructor ret = new Java5ClassConstructor(new JavascribeVariableTypeResolver(ctx.getTypes()),src.getPublicClass().getClassName());
 		return ret;
 	}
 	
-	public static Java5SourceFile createJavaSourceFile(GeneratorContext ctx) {
+	public static Java5SourceFile createJavaSourceFile(ProcessorContext ctx) {
 		Java5SourceFile file = null;
 		JavascribeVariableTypeResolver res = new JavascribeVariableTypeResolver(ctx);
 

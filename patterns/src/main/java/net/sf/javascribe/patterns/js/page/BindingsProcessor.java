@@ -5,7 +5,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.sf.javascribe.api.GeneratorContext;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.annotation.Processor;
 import net.sf.javascribe.api.annotation.ProcessorMethod;
@@ -21,7 +21,7 @@ import net.sf.javascribe.patterns.js.page.elements.ElementBinderContext;
 public class BindingsProcessor {
 
 	@ProcessorMethod(componentClass=Bindings.class)
-	public void process(Bindings comp,GeneratorContext ctx) throws JavascribeException {
+	public void process(Bindings comp,ProcessorContext ctx) throws JavascribeException {
 		ctx.setLanguageSupport("Javascript");
 		
 		if ((comp.getPageName()==null) || (comp.getPageName().trim().length()==0)) {
@@ -83,7 +83,7 @@ public class BindingsProcessor {
 		}
 	}
 
-	private String handleBinding(Object binder,GeneratorContext ctx,String pageName,Binding binding,Method method) throws JavascribeException {
+	private String handleBinding(Object binder,ProcessorContext ctx,String pageName,Binding binding,Method method) throws JavascribeException {
 		ElementBinderContext bctx = ElementBinderContext.newInstance(ctx, pageName);
 		String ret = null;
 		

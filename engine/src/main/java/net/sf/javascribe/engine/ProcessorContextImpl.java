@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.sf.javascribe.api.EngineProperties;
-import net.sf.javascribe.api.GeneratorContext;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.LanguageSupport;
 import net.sf.javascribe.api.SourceFile;
@@ -13,7 +13,7 @@ import net.sf.javascribe.api.TypeResolver;
 import net.sf.javascribe.api.VariableType;
 import net.sf.javascribe.api.config.ComponentBase;
 
-public class GeneratorContextImpl implements GeneratorContext {
+public class ProcessorContextImpl implements ProcessorContext {
 	EnginePropertiesImpl engineProps = null;
 	Map<String,LanguageSupport> languageSupport = null;
 	Map<String,TypeResolverImpl> typeMap = null;
@@ -25,7 +25,7 @@ public class GeneratorContextImpl implements GeneratorContext {
 	List<ComponentBase> addedComponents = new ArrayList<ComponentBase>();
 	Map<String,Object> objects = null;
 	
-	public GeneratorContextImpl(String buildRoot,EnginePropertiesImpl props,Map<String,LanguageSupport> languageSupport,Map<String,String> systemAttributes,Map<String,TypeResolverImpl> typeMap,List<SourceFile> sourceFiles,Map<String,String> properties,Map<String,Object> objects) {
+	public ProcessorContextImpl(String buildRoot,EnginePropertiesImpl props,Map<String,LanguageSupport> languageSupport,Map<String,String> systemAttributes,Map<String,TypeResolverImpl> typeMap,List<SourceFile> sourceFiles,Map<String,String> properties,Map<String,Object> objects) {
 		engineProps = props;
 		this.languageSupport = languageSupport;
 		this.systemAttributes = systemAttributes;

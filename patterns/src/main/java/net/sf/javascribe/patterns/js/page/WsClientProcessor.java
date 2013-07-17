@@ -3,7 +3,7 @@ package net.sf.javascribe.patterns.js.page;
 import java.util.HashMap;
 
 import net.sf.javascribe.api.AttributeHolder;
-import net.sf.javascribe.api.GeneratorContext;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.VariableType;
 import net.sf.javascribe.api.annotation.Processor;
@@ -22,7 +22,7 @@ import net.sf.javascribe.patterns.servlet.UrlWebServiceType;
 public class WsClientProcessor {
 
 	@ProcessorMethod(componentClass=WsClient.class)
-	public void process(WsClient comp,GeneratorContext ctx) throws JavascribeException {
+	public void process(WsClient comp,ProcessorContext ctx) throws JavascribeException {
 
 		if ((comp.getPageName()==null) || (comp.getPageName().trim().length()==0)) {
 			throw new JavascribeException("Found a web service client with no pageName");
@@ -147,7 +147,7 @@ public class WsClientProcessor {
 		code.append("}.bind("+comp.getPageName()+");\n");
 	}
 
-	private SingleUrlService findUrlService(GeneratorContext ctx,String module,String service) throws JavascribeException {
+	private SingleUrlService findUrlService(ProcessorContext ctx,String module,String service) throws JavascribeException {
 		
 		SingleUrlService ret = null;
 		UrlWebServiceType srv = null;

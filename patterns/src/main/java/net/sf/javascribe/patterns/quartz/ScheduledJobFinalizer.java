@@ -1,6 +1,6 @@
 package net.sf.javascribe.patterns.quartz;
 
-import net.sf.javascribe.api.GeneratorContext;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.annotation.Processor;
 import net.sf.javascribe.api.annotation.ProcessorMethod;
@@ -14,7 +14,7 @@ import net.sf.jsom.java5.Java5SourceFile;
 public class ScheduledJobFinalizer {
 	
 	@ProcessorMethod(componentClass=ScheduledJobDone.class)
-	public void process(GeneratorContext ctx) throws JavascribeException {
+	public void process(ProcessorContext ctx) throws JavascribeException {
 		Java5SourceFile listenerFile = null;
 		Java5DeclaredMethod initMethod = null;
 

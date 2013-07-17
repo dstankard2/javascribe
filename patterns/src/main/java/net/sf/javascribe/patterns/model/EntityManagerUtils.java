@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import net.sf.javascribe.api.GeneratorContext;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 
 public class EntityManagerUtils {
 
-	public static String getDatabaseType(EntityManagerComponent comp,GeneratorContext ctx) throws JavascribeException {
+	public static String getDatabaseType(EntityManagerComponent comp,ProcessorContext ctx) throws JavascribeException {
 		if (comp.getDatabaseType().trim().length()>0) {
 			return comp.getDatabaseType();
 		} else if (ctx.getProperty(EntityManagerComponent.DATABASE_TYPE)!=null) {
@@ -18,7 +18,7 @@ public class EntityManagerUtils {
 		throw new JavascribeException("Could not find databaseType in EntityManager component or in property '"+EntityManagerComponent.DATABASE_TYPE+"'");
 	}
 	
-	public static String getCatalog(EntityManagerComponent comp,GeneratorContext ctx) throws JavascribeException {
+	public static String getCatalog(EntityManagerComponent comp,ProcessorContext ctx) throws JavascribeException {
 		if (comp.getCatalog().trim().length()>0) {
 			return comp.getCatalog();
 		} else if (ctx.getProperty(EntityManagerComponent.CATALOG)!=null) {
@@ -27,7 +27,7 @@ public class EntityManagerUtils {
 		throw new JavascribeException("Could not find catalog in EntityManager component or in property '"+EntityManagerComponent.CATALOG+"'");
 	}
 	
-	private static HashMap<String,DatabaseObjectNameResolver> getNameResolvers(GeneratorContext ctx) throws JavascribeException {
+	private static HashMap<String,DatabaseObjectNameResolver> getNameResolvers(ProcessorContext ctx) throws JavascribeException {
 		HashMap<String,DatabaseObjectNameResolver> ret = null;
 		
 		try {
@@ -48,19 +48,19 @@ public class EntityManagerUtils {
 		return ret;
 	}
 
-	public static String getAttributeName(String tableFieldName,GeneratorContext ctx,EntityManagerComponent comp) throws JavascribeException {
+	public static String getAttributeName(String tableFieldName,ProcessorContext ctx,EntityManagerComponent comp) throws JavascribeException {
 		String databaseObectNameResolver = ctx.getRequiredProperty(EntityManagerComponent.NAME_RESOLVER);
 
 		return getAttributeName(databaseObectNameResolver,tableFieldName,ctx);
 	}
 
-	public static String getEntityName(String tableName,GeneratorContext ctx,EntityManagerComponent comp) throws JavascribeException {
+	public static String getEntityName(String tableName,ProcessorContext ctx,EntityManagerComponent comp) throws JavascribeException {
 		String databaseObectNameResolver = ctx.getRequiredProperty(EntityManagerComponent.NAME_RESOLVER);
 
 		return getEntityName(databaseObectNameResolver,tableName,ctx);
 	}
 
-	public static String getEntityName(String databaseObjectNameResolver,String tableName,GeneratorContext ctx) throws JavascribeException {
+	public static String getEntityName(String databaseObjectNameResolver,String tableName,ProcessorContext ctx) throws JavascribeException {
 		HashMap<String,DatabaseObjectNameResolver> map = getNameResolvers(ctx);
 		if (map.get(databaseObjectNameResolver)==null) {
 			String nameString = "";
@@ -75,7 +75,7 @@ public class EntityManagerUtils {
 		return map.get(databaseObjectNameResolver).getEntityName(tableName);
 	}
 
-	public static String getAttributeName(String databaseObjectNameResolver,String tableFieldName,GeneratorContext ctx) throws JavascribeException {
+	public static String getAttributeName(String databaseObjectNameResolver,String tableFieldName,ProcessorContext ctx) throws JavascribeException {
 		HashMap<String,DatabaseObjectNameResolver> map = getNameResolvers(ctx);
 		if (map.get(databaseObjectNameResolver)==null) {
 			throw new JavascribeException("Couldn't find database object name resolver '"+databaseObjectNameResolver+"'");
@@ -83,7 +83,7 @@ public class EntityManagerUtils {
 		return map.get(databaseObjectNameResolver).getAttributeName(tableFieldName);
 	}
 
-	public static List<DatabaseTable> readTables(EntityManagerComponent comp,GeneratorContext ctx) throws JavascribeException {
+	public static List<DatabaseTable> readTables(EntityManagerComponent comp,ProcessorContext ctx) throws JavascribeException {
 		List<DatabaseTable> ret = null;
 		String databaseType = getDatabaseType(comp, ctx);
 		String catalog = getCatalog(comp, ctx);
@@ -95,7 +95,7 @@ public class EntityManagerUtils {
 		return ret;
 	}
 
-	public static List<DatabaseTable> readTables(String databaseType,GeneratorContext ctx,String url,String username,String password,String catalog) throws JavascribeException {
+	public static List<DatabaseTable> readTables(String databaseType,ProcessorContext ctx,String url,String username,String password,String catalog) throws JavascribeException {
 		List<DatabaseTable> ret = new ArrayList<DatabaseTable>();
 		HashMap<String,DatabaseSchemaReader> schemaReaders = null;
 

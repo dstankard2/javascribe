@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.javascribe.api.GeneratorContext;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.patterns.js.page.ElementBinderEntry;
 
@@ -116,7 +116,7 @@ public class BinderUtils {
 		return ret;
 	}
 	
-	public static Map<String,ElementBinderEntry> getElementBinders(GeneratorContext ctx) throws JavascribeException {
+	public static Map<String,ElementBinderEntry> getElementBinders(ProcessorContext ctx) throws JavascribeException {
 		Map<String,ElementBinderEntry> ret = null;
 		
 		ret = (Map<String,ElementBinderEntry>)ctx.getObject(ELEMENT_BINDERS);

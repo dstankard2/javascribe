@@ -4,7 +4,7 @@ import java.util.List;
 
 import net.sf.javascribe.api.Attribute;
 import net.sf.javascribe.api.CodeExecutionContext;
-import net.sf.javascribe.api.GeneratorContext;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.api.annotation.Processor;
@@ -29,7 +29,7 @@ public class ServiceProcessor {
 	public static final String SERVICE_PKG = "net.sf.javascribe.patterns.service.Service.pkg";
 
 	@ProcessorMethod(componentClass=Service.class)
-	public void process(Service service,GeneratorContext ctx) throws JavascribeException {
+	public void process(Service service,ProcessorContext ctx) throws JavascribeException {
 		String servicePkg = JavaUtils.findPackageName(ctx, ctx.getRequiredProperty(SERVICE_PKG));
 		String serviceName = service.getModule()+"Service";
 		
@@ -64,7 +64,7 @@ public class ServiceProcessor {
 		}
 	}
 
-	private void handleService(GeneratorContext ctx,Service service,JavaServiceObjectType type,Java5SourceFile src,String resultName) throws CodeGenerationException,JavascribeException {
+	private void handleService(ProcessorContext ctx,Service service,JavaServiceObjectType type,Java5SourceFile src,String resultName) throws CodeGenerationException,JavascribeException {
 		List<Attribute> params = null;
 		Java5DeclaredMethod method = new Java5DeclaredMethod(new JavascribeVariableTypeResolver(ctx));
 		CodeExecutionContext execCtx = new CodeExecutionContext(null,ctx.getTypes());
@@ -91,7 +91,7 @@ public class ServiceProcessor {
 		type.addMethod(JsomUtils.createJavaOperation(method));
 	}
 
-	private void appendServiceCode(GeneratorContext ctx,Service service,Java5CodeSnippet code,CodeExecutionContext execCtx) throws CodeGenerationException,JavascribeException {
+	private void appendServiceCode(ProcessorContext ctx,Service service,Java5CodeSnippet code,CodeExecutionContext execCtx) throws CodeGenerationException,JavascribeException {
 		List<ServiceOperation> ops = service.getServiceOperation();
 		Java5CodeSnippet addition = null;
 
@@ -99,7 +99,7 @@ public class ServiceProcessor {
 		code.merge(addition);
 	}
 
-	private Java5CodeSnippet processOperations(GeneratorContext ctx,List<ServiceOperation> ops,CodeExecutionContext execCtx) throws CodeGenerationException,JavascribeException {
+	private Java5CodeSnippet processOperations(ProcessorContext ctx,List<ServiceOperation> ops,CodeExecutionContext execCtx) throws CodeGenerationException,JavascribeException {
 		Java5CodeSnippet ret = new Java5CodeSnippet();
 		ServiceOperationRenderer renderer = null;
 		NestingServiceOperationRenderer nestingRenderer = null;
@@ -131,7 +131,7 @@ public class ServiceProcessor {
 		return ret;
 	}
 
-	private String handleResult(GeneratorContext ctx,Service service,String servicePkg) throws JavascribeException {
+	private String handleResult(ProcessorContext ctx,Service service,String servicePkg) throws JavascribeException {
 		JsomJavaBeanType obj = null;
 		Java5DataObjectSourceFile src = new Java5DataObjectSourceFile(new JavascribeVariableTypeResolver(ctx.getTypes()));
 		String resultName = null;
@@ -168,7 +168,7 @@ public class ServiceProcessor {
 		return resultName;
 	}
 
-	private void readOperationsForResult(GeneratorContext ctx,JavaBeanType obj, Java5DataObjectSourceFile src, 
+	private void readOperationsForResult(ProcessorContext ctx,JavaBeanType obj, Java5DataObjectSourceFile src, 
 			List<ServiceOperation> ops) throws JavascribeException,CodeGenerationException {
 		for(ServiceOperation op : ops) {
 			if (op instanceof ResultServiceOperation) {

@@ -1,7 +1,7 @@
 package net.sf.javascribe.patterns.service;
 
 import net.sf.javascribe.api.CodeExecutionContext;
-import net.sf.javascribe.api.GeneratorContext;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.langsupport.java.jsom.JavascribeJavaCodeSnippet;
 import net.sf.javascribe.patterns.model.EntityManagerLocator;
@@ -10,12 +10,12 @@ import net.sf.jsom.java5.Java5CodeSnippet;
 
 public class JpaTxRenderer implements NestingServiceOperationRenderer {
 	JpaTxOperation op = null;
-	GeneratorContext ctx = null;
+	ProcessorContext ctx = null;
 	boolean commit = false;
 	EntityManagerLocator locator = null;
 	String txRef = null;
 
-	public void setGeneratorContext(GeneratorContext ctx) {
+	public void setGeneratorContext(ProcessorContext ctx) {
 		this.ctx = ctx;
 	}
 

@@ -2,7 +2,7 @@ package net.sf.javascribe.patterns.model;
 
 import java.util.List;
 
-import net.sf.javascribe.api.GeneratorContext;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.api.annotation.Processor;
@@ -26,7 +26,7 @@ public class EntityRelationshipsProcessor {
 	private static final String HAS_MANY = " has many ";
 
 	@ProcessorMethod(componentClass=EntityRelationships.class)
-	public void process(EntityRelationships comp,GeneratorContext ctx) throws JavascribeException {
+	public void process(EntityRelationships comp,ProcessorContext ctx) throws JavascribeException {
 
 		ctx.setLanguageSupport("Java");
 		

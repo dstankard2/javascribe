@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import net.sf.javascribe.api.GeneratorContext;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.api.annotation.Scannable;
@@ -33,7 +33,7 @@ public class CallBusinessRuleOperation extends ServiceOperation implements Resul
 	private String rule = null;
 
 	@Override
-	public String getResultType(GeneratorContext ctx) throws JavascribeException {
+	public String getResultType(ProcessorContext ctx) throws JavascribeException {
 		String obj = JavascribeUtils.getObjectName(rule);
 		String ruleName = JavascribeUtils.getRuleName(rule);
 		JavaServiceObjectType type = (JavaServiceObjectType)ctx.getTypes().getType(obj);
@@ -49,7 +49,7 @@ public class CallBusinessRuleOperation extends ServiceOperation implements Resul
 	}
 
 	@Override
-	public String getResultName(GeneratorContext ctx) {
+	public String getResultName(ProcessorContext ctx) {
 		return result;
 	}
 	

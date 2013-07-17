@@ -2,7 +2,7 @@ package net.sf.javascribe.api;
 
 import net.sf.javascribe.api.config.ComponentBase;
 
-public interface GeneratorContext {
+public interface ProcessorContext {
 
 	public void setLanguageSupport(String languageName) throws JavascribeException;
 	public String getProperty(String name);

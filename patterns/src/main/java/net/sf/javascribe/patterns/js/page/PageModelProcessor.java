@@ -2,7 +2,7 @@ package net.sf.javascribe.patterns.js.page;
 
 import java.util.HashMap;
 
-import net.sf.javascribe.api.GeneratorContext;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.annotation.Processor;
 import net.sf.javascribe.api.annotation.ProcessorMethod;
@@ -16,7 +16,7 @@ import net.sf.javascribe.langsupport.javascript.JavascriptVariableType;
 public class PageModelProcessor {
 
 	@ProcessorMethod(componentClass=PageModel.class)
-	public void process(PageModel model,GeneratorContext ctx) throws JavascribeException {
+	public void process(PageModel model,ProcessorContext ctx) throws JavascribeException {
 		ctx.setLanguageSupport("Javascript");
 		if ((model.getPageName()==null) || (model.getPageName().trim().length()==0)) {
 			throw new JavascribeException("Found a page model with no pageName specified.");

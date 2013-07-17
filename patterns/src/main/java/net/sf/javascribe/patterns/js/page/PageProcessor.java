@@ -1,6 +1,6 @@
 package net.sf.javascribe.patterns.js.page;
 
-import net.sf.javascribe.api.GeneratorContext;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.annotation.Processor;
 import net.sf.javascribe.api.annotation.ProcessorMethod;
@@ -17,7 +17,7 @@ import net.sf.javascribe.patterns.CorePatternConstants;
 public class PageProcessor {
 
 	@ProcessorMethod(componentClass=Page.class)
-	public void process(Page page,GeneratorContext ctx) throws JavascribeException {
+	public void process(Page page,ProcessorContext ctx) throws JavascribeException {
 		ctx.setLanguageSupport("Javascript");
 		if (page.getPageName()==null) {
 			throw new JavascribeException("Found a page with no pageName");

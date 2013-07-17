@@ -4,7 +4,7 @@ import java.util.List;
 
 import net.sf.javascribe.api.Attribute;
 import net.sf.javascribe.api.CodeExecutionContext;
-import net.sf.javascribe.api.GeneratorContext;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.api.annotation.Processor;
@@ -30,7 +30,7 @@ public class WebServletProcessor {
 	public static final String WEB_SERVLET_PKG = "net.sf.javascribe.patterns.servlet.WebServlet.pkg";
 
 	@ProcessorMethod(componentClass=WebServlet.class)
-	public void process(WebServlet servlet,GeneratorContext ctx) throws JavascribeException {
+	public void process(WebServlet servlet,ProcessorContext ctx) throws JavascribeException {
 		String className = null;
 		String pkg = null;
 		
@@ -51,7 +51,7 @@ public class WebServletProcessor {
 
 	}
 
-	private void createServletClass(GeneratorContext ctx,String pkg,String className,WebServlet servlet) throws JavascribeException,CodeGenerationException {
+	private void createServletClass(ProcessorContext ctx,String pkg,String className,WebServlet servlet) throws JavascribeException,CodeGenerationException {
 		Java5SourceFile servletFile = null;
 		JavascribeVariableTypeResolver types = new JavascribeVariableTypeResolver(ctx.getTypes());
 		Java5DeclaredMethod method = new Java5DeclaredMethod(types);
@@ -165,7 +165,7 @@ public class WebServletProcessor {
 
 	}
 
-	private void modifyWebXml(GeneratorContext ctx,WebServlet servlet,String pkg,String className) throws JavascribeException {
+	private void modifyWebXml(ProcessorContext ctx,WebServlet servlet,String pkg,String className) throws JavascribeException {
 		WebXmlFile webXml = null;
 
 		// Add servlet element to web.xml

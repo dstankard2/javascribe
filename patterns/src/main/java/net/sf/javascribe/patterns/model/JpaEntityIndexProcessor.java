@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.javascribe.api.Attribute;
-import net.sf.javascribe.api.GeneratorContext;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.api.annotation.Processor;
@@ -25,7 +25,7 @@ public class JpaEntityIndexProcessor {
 	public static final String DAO_PACKAGE_PROPERTY = "net.sf.javascribe.patterns.model.JpaDaoFactory.pkg";
 
 	@ProcessorMethod(componentClass=JpaEntityIndex.class)
-	public void process(JpaEntityIndex comp,GeneratorContext ctx) throws JavascribeException {
+	public void process(JpaEntityIndex comp,ProcessorContext ctx) throws JavascribeException {
 		Java5SourceFile daoFile = null;
 		JavaServiceObjectType daoType = null;
 		EntityManagerType emType = null;

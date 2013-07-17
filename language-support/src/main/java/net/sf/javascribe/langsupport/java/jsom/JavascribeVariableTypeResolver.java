@@ -1,6 +1,6 @@
 package net.sf.javascribe.langsupport.java.jsom;
 
-import net.sf.javascribe.api.GeneratorContext;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.TypeResolver;
 import net.sf.javascribe.langsupport.java.JavaVariableType;
 import net.sf.jsom.VariableType;
@@ -15,7 +15,7 @@ public class JavascribeVariableTypeResolver extends VariableTypeResolver {
 		this.types = types;
 	}
 	
-	public JavascribeVariableTypeResolver(GeneratorContext ctx) {
+	public JavascribeVariableTypeResolver(ProcessorContext ctx) {
 		this.types = ctx.getTypes();
 	}
 	
