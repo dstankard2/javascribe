@@ -46,7 +46,7 @@ public class PageNavigationProcessor {
 		src.getSource().append(comp.getName()+".switchPage = function(pageName,data) {\n")
 			.append("if (this.currentPage!=null) {\n")
 			.append("var temp = this.currentPage;\n")
-			.append("$('#'+this.currentDiv).hide('"+comp.getHideEffect()+"',{},400,function() { "+comp.getName()+".showPage(pageName,data); });\n");
+			.append("$('#'+this.currentDiv).hide('"+comp.getHide()+"',{},400,function() { "+comp.getName()+".showPage(pageName,data); });\n");
 
 		boolean first = true;
 		for(Page p : comp.getPage()) {
@@ -95,7 +95,7 @@ public class PageNavigationProcessor {
 			showPageCode.append("}\n");
 		}
 		showPageCode.append("else { alert('Unrecognized page '+this.currentPage); return; }\n");
-		showPageCode.append("$('#'+this.currentDiv).show('"+comp.getShowEffect()+"',{},400,null);\n");
+		showPageCode.append("$('#'+this.currentDiv).show('"+comp.getShow()+"',{},400,null);\n");
 		showPageCode.append("}.bind("+comp.getName()+");\n");
 		
 		refreshPageCode.append(comp.getName()+".refreshCurrentPage = function() {\n")

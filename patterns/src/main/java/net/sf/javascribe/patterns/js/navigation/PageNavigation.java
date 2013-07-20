@@ -30,10 +30,10 @@ public class PageNavigation extends ComponentBase {
 	private String name = "";
 	
 	@XmlAttribute
-	private String hideEffect = "";
+	private String hide = "";
 	
 	@XmlAttribute
-	private String showEffect = "";
+	private String show = "";
 
 	public List<Page> getPage() {
 		return page;
@@ -51,20 +51,20 @@ public class PageNavigation extends ComponentBase {
 		this.name = name;
 	}
 
-	public String getHideEffect() {
-		return hideEffect;
+	public String getHide() {
+		return hide;
 	}
 
-	public void setHideEffect(String hideEffect) {
-		this.hideEffect = hideEffect;
+	public void setHide(String hide) {
+		this.hide = hide;
 	}
 
-	public String getShowEffect() {
-		return showEffect;
+	public String getShow() {
+		return show;
 	}
 
-	public void setShowEffect(String showEffect) {
-		this.showEffect = showEffect;
+	public void setShow(String show) {
+		this.show = show;
 	}
 	
 }
