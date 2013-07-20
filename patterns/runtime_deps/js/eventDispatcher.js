@@ -27,7 +27,7 @@ function JSController() {
 		var i;
 
 		if (data==null) data = { };
-		var event = new MVCEvent(name,data);
+		var event = new JSEvent(name,data);
 		for(i=0;i<list.length;i++) {
 			list[i](event);
 		}

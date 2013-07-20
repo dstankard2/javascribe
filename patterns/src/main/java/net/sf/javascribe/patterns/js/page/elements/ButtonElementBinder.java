@@ -17,9 +17,13 @@ public class ButtonElementBinder extends InputElementBinder {
 		String ret = null;
 		Map<String,String> values = new HashMap<String,String>();
 		String target = binding.getTarget();
+		String fn = BinderUtils.getTargetAccessString(target, ctx, true);
 		
+		if (fn.endsWith("()")) {
+			fn = fn.substring(0, fn.length()-2);
+		}
 		values.put("element",binding.getElement());
-		values.put("function",BinderUtils.getTargetAccessString(target, ctx, true));
+		values.put("function",fn);
 
 		ret = JavascribeUtils.basicTemplating("js-mvvm-button-onclick-binding.txt", values);
 

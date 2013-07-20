@@ -1,6 +1,6 @@
 this.controller.addEventListener('${event}',
 	function() {
-		if (${function}) this.view.${element}.disabled=null;
+		if (${function}==true) this.view.${element}.disabled=null;
 		else this.view.${element}.disabled='disabled';
 	}.bind(${pageName})
 );

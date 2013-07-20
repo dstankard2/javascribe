@@ -20,12 +20,16 @@ public class ElementBinderContext {
 		this.modelAttributes = modelAttributes;
 		this.pageName = pageName;
 		this.pageType = (JavascriptVariableType)ctx.getType(JavascriptConstants.JS_TYPE+pageName);
-		this.modelType = (JavascriptVariableType)ctx.getType(pageType.getAttributeType("model"));
+		if (pageType.getAttributeType("model")!=null)
+			this.modelType = (JavascriptVariableType)ctx.getType(pageType.getAttributeType("model"));
 	}
 	
 	public static ElementBinderContext newInstance(ProcessorContext ctx,String pageName) throws JavascribeException {
 		ElementBinderContext ret = null;
 
+		if (ctx.getType(JavascriptConstants.JS_TYPE+pageName)==null) {
+			throw new JavascribeException("Couldn't initialize bindings - no page called '"+pageName+"' found");
+		}
 		HashMap<String,String> modelAttributes = PageUtils.getModelAttributes(ctx, pageName);
 		ret = new ElementBinderContext(ctx,modelAttributes,pageName);
 		
