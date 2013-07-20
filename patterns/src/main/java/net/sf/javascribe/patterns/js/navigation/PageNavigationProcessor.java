@@ -71,7 +71,10 @@ public class PageNavigationProcessor {
 			JavascriptVariableType pageType = PageUtils.getPageType(ctx, p.getName());
 			if (pageType==null) throw new JavascribeException("Could not find type for page '"+p.getName()+"'");
 			String modelTypeName = pageType.getAttributeType("model");
-			JavascriptVariableType modelType = (JavascriptVariableType)ctx.getType(modelTypeName);
+			JavascriptVariableType modelType = null;
+			if (modelTypeName!=null) {
+				modelType = (JavascriptVariableType)ctx.getType(modelTypeName);
+			}
 			// Append to showPage
 			if (first) first = false;
 			else showPageCode.append("else ");
