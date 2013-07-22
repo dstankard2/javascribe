@@ -157,7 +157,7 @@ public class ServletWebServiceProcessor {
 
 				JavaServiceObjectType obj = (JavaServiceObjectType)ctx.getType(objName);
 				if (obj==null) {
-					throw new JavascribeException("Couldn't find business object type '"+obj+"'");
+					throw new JavascribeException("Couldn't find business object type '"+objName+"'");
 				}
 				JavaOperation op = obj.getMethod(ruleName);
 				if (op==null) {
