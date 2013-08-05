@@ -17,9 +17,13 @@ public class AnchorElementBinder extends DivElementBinder {
 		String ret = null;
 		Map<String,String> values = new HashMap<String,String>();
 		String target = binding.getTarget();
+		String func = BinderUtils.getTargetAccessString(target, ctx, true);
 
+		if (func.startsWith("this.")) {
+			func = ctx.getPageName()+'.'+func.substring(5);
+		}
 		values.put("element",binding.getElement());
-		values.put("function",BinderUtils.getTargetAccessString(target, ctx, true));
+		values.put("function",func);
 
 		ret = JavascribeUtils.basicTemplating("js-mvvm-anchor-href-binding.txt", values);
 

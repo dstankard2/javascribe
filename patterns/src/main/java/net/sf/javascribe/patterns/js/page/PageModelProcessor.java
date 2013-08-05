@@ -40,38 +40,7 @@ public class PageModelProcessor {
 			String typeName = ctx.getAttributeType(name);
 			if (typeName==null) typeName = "var";
 			addModelAttribute(modelType, modelAttributes, name, typeName, code, a.getOnChange(), pageName);
-/*
-			modelType.addVariableAttribute(name, "var");
-			String onChange = a.getOnChange();
-			if ((a.getName()==null) || (a.getName().trim().length()==0)) {
-				throw new JavascribeException("Found a model attribute with no name");
-			}
-			if (modelAttributes.get(name)!=null) {
-				throw new JavascribeException("Cannot have the same attribute twice in a model");
-			}
-			String attr = "" + Character.toUpperCase(name.charAt(0)) + name.substring(1);
-			if (!first) code.append(",");
-			code.append(name+" : null\n");
-			code.append(",get"+attr+" : function get"+attr+"() { return this."+name+"; }\n");
-			code.append(",set"+attr+" : function set"+attr+"(val) {\nvar oldValue = this."+name+";\nif (oldValue==val) return;\nthis."+name+" = val;\n");
-			if ((onChange!=null) && (onChange.trim().length()>0)) {
-				String vals[] = onChange.split(",");
-				for(String v : vals) {
-					code.append(pageName+".controller.dispatch(\""+v+"\",{ oldValue : oldValue, value : this."+name+" });\n");
-				}
-			}
-			code.append(pageName+".controller.dispatch(\""+name+"Changed\",{ oldValue : oldValue, value : this."+name+"});\n");
-			code.append("}\n");
-			if (ctx.getAttributeType(name)==null) {
-				throw new JavascribeException("Couldn't find type for attribute '"+name+"'");
-			}
-			modelAttributes.put(name, ctx.getAttributeType(name));
-
-			first = false;
-*/
 		}
-
-//		code.append("};\n");
 	}
 
 	public static void addModelAttribute(JavascriptVariableType modelType,HashMap<String,String> modelAttributes,String name,String typeName,StringBuilder code,String onChange,String pageName) throws JavascribeException {
@@ -81,7 +50,6 @@ public class PageModelProcessor {
 		if (modelType.getAttributeType(name)!=null) {
 			// Attribute is already there.  No work to do.
 			return;
-//			throw new JavascribeException("Cannot have the same attribute twice in a model");
 		}
 		
 		modelType.addVariableAttribute(name, "var");
@@ -91,7 +59,7 @@ public class PageModelProcessor {
 				.append(pageName).append(".model.get").append(attr)
 				.append(" = function() {return this.").append(name).append(";}.bind("+pageName+".model);\n");
 
-		code.append(pageName).append(".model.set"+attr+" = function set"+attr+"(val) {\nvar oldValue = this."+name+";\nif (oldValue==val) return;\nthis."+name+" = val;\n");
+		code.append(pageName).append(".model.set"+attr+" = function(val) {\nvar oldValue = this."+name+";\nif (oldValue==val) return;\nthis."+name+" = val;\n");
 		if ((onChange!=null) && (onChange.trim().length()>0)) {
 			String vals[] = onChange.split(",");
 			for(String v : vals) {

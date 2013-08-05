@@ -54,7 +54,7 @@ public class PageNavigationProcessor {
 				if (first) first = false;
 				else src.getSource().append("else ");
 				src.getSource().append("if (temp=='"+p.getName()+"') {\n");
-				src.getSource().append(p.getName()+".controller.dispatch('"+p.getOnHide()+"');\n");
+				src.getSource().append(p.getName()+".controller.dispatch('"+p.getOnHide()+"'); }\n");
 			}
 		}
 		
