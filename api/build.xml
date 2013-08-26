@@ -15,6 +15,7 @@
 			srcdir="${dev.root}/src/main/java"
 			classpathref="api.classpath"
 			includes="**\*.java"
+			debug="true"
 			fork="true"
 			destdir="${build.root}\api\classes"
 			target="1.7"

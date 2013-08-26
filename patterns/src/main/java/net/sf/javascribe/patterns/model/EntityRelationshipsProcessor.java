@@ -30,6 +30,11 @@ public class EntityRelationshipsProcessor {
 
 		ctx.setLanguageSupport("Java");
 		
+		boolean orderByPk = false;
+		if (ctx.getProperty(EntityRelationships.ORDERBY_PK)!=null) {
+			orderByPk = true;
+		}
+		
 		if (comp.getEntityManager().trim().length()==0) {
 			throw new JavascribeException("EntityRelationships must have an entity manager specified.");
 		}
@@ -167,9 +172,17 @@ public class EntityRelationshipsProcessor {
 					ownedDaoSource.getPublicClass().addMethod(method);
 					code.addImport("javax.persistence.Query");
 					code.append("Query _query = entityManager.createQuery(\"select _owned from ")
-							.append(ownerName+" as _owner, "+ownedName+" as _owned where _owner.")
+							.append(ownedName+" as _owned where _owned."+ownerIdField)
+							.append(" = :ownerIdField");
+/*
+					.append(ownerName+" as _owner, "+ownedName+" as _owned where _owner.")
 							.append(ownerIdField+" = _owned."+ownerIdField+" and _owner."+ownerIdField)
 							.append(" = :ownerIdField\");\n");
+					*/
+					if (orderByPk) {
+						code.append(" order by "+ownedIdField);
+					}
+					code.append("\");\n");
 					code.append("_query.setParameter(\"ownerIdField\","+ownerIdField+");\n");
 					code.addImport("java.util.List");
 					code.addImport(ownedType.getImport());

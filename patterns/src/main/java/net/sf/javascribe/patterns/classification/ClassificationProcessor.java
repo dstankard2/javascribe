@@ -5,13 +5,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.JavascribeUtils;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.annotation.Processor;
 import net.sf.javascribe.api.annotation.ProcessorMethod;
 import net.sf.javascribe.api.annotation.Scannable;
 import net.sf.javascribe.api.config.ComponentBase;
+import net.sf.javascribe.api.config.Property;
 import net.sf.javascribe.langsupport.java.JavaBeanType;
 import net.sf.javascribe.langsupport.java.JavaUtils;
 import net.sf.javascribe.langsupport.java.jsom.JsomJavaBeanType;
@@ -65,6 +66,7 @@ public class ClassificationProcessor {
 		String className = null;
 		String pkg = null;
 		
+		ctx.setLanguageSupport("Java");
 		System.out.println("Processing classification '"+classification.getName()+"'");
 
 		pkg = JavaUtils.findPackageName(ctx, ctx.getRequiredProperty(Classification.CLASSIFICATION_PKG));
@@ -73,8 +75,12 @@ public class ClassificationProcessor {
 		classifications = (Map<String,Classification>)ctx.getObject("Classifications");
 		
 		if (classifications==null) {
-			ctx.addComponent(new ClassificationFinalizerComp());
-			ctx.addComponent(new ClassificationAttributeProcessingComp());
+			Property prop = new Property(Classification.CLASSIFICATION_PKG,ctx.getRequiredProperty(Classification.CLASSIFICATION_PKG));
+			ComponentBase comp = new ClassificationFinalizerComp();
+			comp.getProperty().add(prop);
+			ctx.addComponent(comp);
+			comp = new ClassificationAttributeProcessingComp();
+			comp.getProperty().add(prop);
 			classifications = new HashMap<String,Classification>();
 			ctx.putObject("Classifications", classifications);
 		}

@@ -20,6 +20,8 @@ import net.sf.javascribe.patterns.CorePatternConstants;
 @XmlType(name="entityRelationships",propOrder={ "rel" })
 public class EntityRelationships extends ComponentBase {
 
+	public static final String ORDERBY_PK = "net.sf.javascribe.patterns.model.EntityRelationships.orderByPK";
+
 	@Override
 	public int getPriority() { return CorePatternConstants.PRIORITY_ENTITY_RELATIONSHIPS; }
 	

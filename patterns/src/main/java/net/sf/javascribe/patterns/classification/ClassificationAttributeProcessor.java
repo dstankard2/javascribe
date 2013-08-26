@@ -56,7 +56,7 @@ public class ClassificationAttributeProcessor {
 
 		if (classification==null) throw new JavascribeException("No classification named '"+name+"' found");
 
-		pkg = JavaUtils.findPackageName(ctx, ctx.getRequiredProperty("classification.pkg"));
+		pkg = JavaUtils.findPackageName(ctx, ctx.getRequiredProperty(Classification.CLASSIFICATION_PKG));
 		className = classification.getName();
 		processed.add(classification.getName());
 		

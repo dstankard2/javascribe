@@ -7,10 +7,12 @@ import net.sf.javascribe.api.JavascribeException;
 
 public class JavascriptUtils {
 
+	public static final String JAVASCRIPT_FILE = "net.sf.javascribe.langsupport.javascript.file";
+
 	public static JavascriptSourceFile getSourceFile(ProcessorContext ctx) throws JavascribeException {
 		JavascriptSourceFile ret = null;
 		
-		String jsFilePath = ctx.getBuildRoot() + File.separatorChar + ctx.getRequiredProperty("javascript.file");
+		String jsFilePath = ctx.getBuildRoot() + File.separatorChar + ctx.getRequiredProperty(JAVASCRIPT_FILE);
 		ret = (JavascriptSourceFile)ctx.getSourceFile(jsFilePath);
 		if (ret==null) {
 			ret = new JavascriptSourceFile(false);

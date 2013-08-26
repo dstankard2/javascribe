@@ -43,6 +43,9 @@ public class PageNavigationProcessor {
 		StringBuilder showPageCode = new StringBuilder();
 		StringBuilder refreshPageCode = new StringBuilder();
 		
+		src.getSource().append(comp.getName()+".hideCurrentPage = function() {\n")
+			.append("if (this.currentPage!=null) {\n")
+			.append("$('#'+this.currentDiv).hide('"+comp.getHide()+"',{},400);\n}\n};\n");
 		src.getSource().append(comp.getName()+".switchPage = function(pageName,data) {\n")
 			.append("if (this.currentPage!=null) {\n")
 			.append("var temp = this.currentPage;\n")

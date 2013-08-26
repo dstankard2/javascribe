@@ -16,6 +16,7 @@
 			srcdir="${dev.root}/src/main/java"
 			classpathref="engine.classpath"
 			includes="**\*.java"
+			debug="true"
 			fork="true"
 			destdir="${build.root}\engine\classes"
 			target="1.7"

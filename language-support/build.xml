@@ -17,6 +17,7 @@
 			srcdir="${dev.root}/src/main/java"
 			classpathref="langsupport.classpath"
 			includes="**\*.java"
+			debug="true"
 			fork="true"
 			destdir="${build.root}\langsupport\classes"
 			target="1.7"
