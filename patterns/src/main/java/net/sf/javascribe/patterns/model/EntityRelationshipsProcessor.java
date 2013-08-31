@@ -151,7 +151,7 @@ public class EntityRelationshipsProcessor {
 					System.out.println("Processing ONE TO MANY relationship between "+ownerName+" and "+ownedName);
 					// Owned type must have a FK to the owner type
 					if (ownedType.getAttributeType(ownerIdField)==null) {
-						throw new JavascribeException("Error: In a 1-to-many relationship, the aggregated entity must have a FK to the owner entity");
+						throw new JavascribeException("Error: In a 1-to-many relationship, the type "+ownedType.getName()+" should have a foreign key "+ownerIdField+" to entity "+ownerType.getName());
 					}
 
 					String ownedPluralName = "";

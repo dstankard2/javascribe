@@ -29,6 +29,7 @@ public class ClassificationAttributeProcessor {
 	public void process(ClassificationAttributeProcessingComp comp,ProcessorContext ctx) throws JavascribeException {
 		Map<String,Classification> classifications = null;
 		
+		ctx.setLanguageSupport("Java");
 		classifications = (Map<String,Classification>)ctx.getObject("Classifications");
 
 		Set<String> names = classifications.keySet();
@@ -55,6 +56,7 @@ public class ClassificationAttributeProcessor {
 		JavascribeVariableTypeResolver types = new JavascribeVariableTypeResolver(ctx);
 
 		if (classification==null) throw new JavascribeException("No classification named '"+name+"' found");
+		if (processed.contains(name)) return;
 
 		pkg = JavaUtils.findPackageName(ctx, ctx.getRequiredProperty(Classification.CLASSIFICATION_PKG));
 		className = classification.getName();

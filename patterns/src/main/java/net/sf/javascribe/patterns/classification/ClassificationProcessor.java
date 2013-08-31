@@ -81,6 +81,7 @@ public class ClassificationProcessor {
 			ctx.addComponent(comp);
 			comp = new ClassificationAttributeProcessingComp();
 			comp.getProperty().add(prop);
+			ctx.addComponent(comp);
 			classifications = new HashMap<String,Classification>();
 			ctx.putObject("Classifications", classifications);
 		}
