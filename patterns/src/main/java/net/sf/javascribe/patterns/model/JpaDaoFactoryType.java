@@ -82,21 +82,21 @@ public class JpaDaoFactoryType extends JavaServiceObjectType implements ServiceL
 	}
 
 	@Override
-	public JavaCode getService(String locatorInstanceName,String serviceName,String serviceInstanceName,CodeExecutionContext execCtx) throws JavascribeException {
-		JavaCodeImpl ret = new JavaCodeImpl();
+	public String getService(String locatorInstanceName,String serviceName,String serviceInstanceName,CodeExecutionContext execCtx) throws JavascribeException {
+		StringBuilder build = new StringBuilder();
 		
-		ret.appendCodeText(serviceInstanceName+" = "+locatorInstanceName+".get"+serviceName+"();\n");
+		build.append(serviceInstanceName+" = "+locatorInstanceName+".get"+serviceName+"();\n");
 		
-		return ret;
+		return build.toString();
 	}
 
 	@Override
-	public JavaCode getService(String locatorInstanceName,String serviceName,CodeExecutionContext execCtx) throws JavascribeException {
-		JavaCodeImpl ret = new JavaCodeImpl();
+	public String getService(String locatorInstanceName,String serviceName,CodeExecutionContext execCtx) throws JavascribeException {
+		StringBuilder build = new StringBuilder();
 
-		ret.appendCodeText(locatorInstanceName+".get"+serviceName+"()");
+		build.append(locatorInstanceName+".get"+serviceName+"()");
 
-		return ret;
+		return build.toString();
 	}
 	/** End of ServiceLocator implementation **/
 

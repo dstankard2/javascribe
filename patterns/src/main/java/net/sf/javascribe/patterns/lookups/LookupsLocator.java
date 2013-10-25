@@ -6,7 +6,6 @@ import java.util.List;
 import net.sf.javascribe.api.Code;
 import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JavascribeException;
-import net.sf.javascribe.langsupport.java.JavaCode;
 import net.sf.javascribe.langsupport.java.ServiceLocator;
 import net.sf.javascribe.langsupport.java.jsom.JsomJavaCode;
 import net.sf.jsom.java5.Java5CodeSnippet;
@@ -68,24 +67,24 @@ public class LookupsLocator implements ServiceLocator {
 	}
 
 	@Override
-	public JavaCode getService(String factoryInstanceName, String serviceName,
+	public String getService(String factoryInstanceName, String serviceName,
 			String serviceInstanceName, CodeExecutionContext execCtx)
 			throws JavascribeException {
-		Java5CodeSnippet ret = new Java5CodeSnippet();
+		StringBuilder build = new StringBuilder();
 		
-		ret.append(serviceInstanceName+" = "+factoryInstanceName+".get"+serviceName+"();\n");
+		build.append(serviceInstanceName+" = "+factoryInstanceName+".get"+serviceName+"();\n");
 
-		return new JsomJavaCode(ret);
+		return build.toString();
 	}
 
 	@Override
-	public JavaCode getService(String factoryInstanceName, String serviceName,
+	public String getService(String factoryInstanceName, String serviceName,
 			CodeExecutionContext execCtx) throws JavascribeException {
-		Java5CodeSnippet ret = new Java5CodeSnippet();
+		StringBuilder build = new StringBuilder();
 		
-		ret.append(factoryInstanceName+".get"+serviceName+"();\n");
+		build.append(factoryInstanceName+".get"+serviceName+"();\n");
 
-		return new JsomJavaCode(ret);
+		return build.toString();
 	}
 
 }
