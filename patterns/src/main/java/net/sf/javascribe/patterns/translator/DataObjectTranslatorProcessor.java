@@ -106,7 +106,7 @@ public class DataObjectTranslatorProcessor {
 			List<FieldTranslator> trans = DataObjectTranslatorUtils.geTranslationStrategy(comp.getStrategy(), ctx);
 			
 			for(FieldTranslator tr : trans) {
-				JavaCode append = tr.translateFields(resultType, "_ret", execCtx, attribs);
+				JavaCode append = tr.translateFields(resultType, "_ret", execCtx, ctx,attribs);
 				JsomUtils.merge(body, append);
 				if (attribs.size()==0) break;
 			}

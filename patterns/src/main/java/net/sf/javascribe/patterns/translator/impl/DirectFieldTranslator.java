@@ -6,6 +6,7 @@ import java.util.List;
 import net.sf.javascribe.api.AttributeHolder;
 import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JavascribeException;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.VariableType;
 import net.sf.javascribe.api.annotation.Scannable;
 import net.sf.javascribe.langsupport.java.JavaCode;
@@ -23,10 +24,11 @@ public class DirectFieldTranslator implements FieldTranslator {
 
 	@Override
 	public JavaCode translateFields(AttributeHolder targetType,
-			String targetVarName, CodeExecutionContext execCtx,
+			String targetVarName, CodeExecutionContext execCtx,ProcessorContext ctx,
 			List<String> fieldsToTranslate) throws JavascribeException {
 		Java5CodeSnippet ret = new Java5CodeSnippet();
 		List<String> remove = new ArrayList<String>();
+
 		
 		for(String f : fieldsToTranslate) {
 			boolean done = false;
