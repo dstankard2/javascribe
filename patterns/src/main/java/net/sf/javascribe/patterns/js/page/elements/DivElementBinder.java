@@ -17,6 +17,22 @@ public class DivElementBinder {
 		return pageName+".view."+elementName+" = document.getElementById(\""+elementName+"\");\n";
 	}
 	
+	@ElementBinding(bindingType="class")
+	public String divClassBinding(Binding binding,ElementBinderContext ctx) throws JavascribeException {
+		String ret = null;
+		Map<String,String> values = new HashMap<String,String>();
+		String target = binding.getTarget();
+		String event = binding.getEvent();
+		
+		values.put("element",binding.getElement());
+		values.put("pageName", ctx.getPageName());
+		values.put("function",BinderUtils.getTargetAccessString(target, ctx, false));
+		values.put("event", BinderUtils.getEventToTrigger(target, event, ctx, false));
+		
+		ret = JavascribeUtils.basicTemplating("js-mvvm-dom-class-binding.txt", values);
+		
+		return ret;
+	}
 	@ElementBinding(bindingType="display")
 	public String divDisplayBinding(Binding binding,ElementBinderContext ctx) throws JavascribeException {
 		String ret = null;

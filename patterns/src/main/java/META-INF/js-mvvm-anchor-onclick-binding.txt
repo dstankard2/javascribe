@@ -1,0 +1,3 @@
+this.view.${element}.onclick=function() {
+	${function};
+};

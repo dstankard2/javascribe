@@ -1,1 +1,1 @@
-document.getElementById('${element}').href='javascript:${function};';
+this.view.${element}.href='javascript:${function};';

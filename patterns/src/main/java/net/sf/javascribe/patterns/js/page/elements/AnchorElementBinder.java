@@ -12,6 +12,24 @@ import net.sf.javascribe.patterns.js.page.Binding;
 @ElementBinder(elementType="anchor")
 public class AnchorElementBinder extends DivElementBinder {
 
+	@ElementBinding(bindingType="onclick")
+	public String anchorOnclickBinding(Binding binding,ElementBinderContext ctx) throws JavascribeException {
+		String ret = null;
+		Map<String,String> values = new HashMap<String,String>();
+		String target = binding.getTarget();
+		String func = BinderUtils.getTargetAccessString(target, ctx, true);
+
+		if (func.startsWith("this.")) {
+			func = ctx.getPageName()+'.'+func.substring(5);
+		}
+		values.put("element",binding.getElement());
+		values.put("function",func);
+
+		ret = JavascribeUtils.basicTemplating("js-mvvm-anchor-onclick-binding.txt", values);
+
+		return ret;
+	}
+	
 	@ElementBinding(bindingType="href")
 	public String anchorHrefBinding(Binding binding,ElementBinderContext ctx) throws JavascribeException {
 		String ret = null;
