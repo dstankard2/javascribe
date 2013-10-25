@@ -14,7 +14,6 @@ import net.sf.javascribe.api.annotation.Processor;
 import net.sf.javascribe.api.annotation.ProcessorMethod;
 import net.sf.javascribe.api.annotation.Scannable;
 import net.sf.javascribe.api.config.ComponentBase;
-import net.sf.javascribe.langsupport.java.JavaCode;
 import net.sf.javascribe.langsupport.java.JavaServiceObjectType;
 import net.sf.javascribe.langsupport.java.JavaUtils;
 import net.sf.javascribe.langsupport.java.LocatedJavaServiceObjectType;
@@ -205,8 +204,8 @@ public class RetrieveDataRuleProcessor {
 					ServiceLocator loc = (ServiceLocator)type;
 					List<String> getServices = loc.getAvailableServices();
 					for(String g : getServices) {
-						JavaCode code = loc.getService(d.getName(), g, execCtx);
-						availableObjects.put(g, code.getCodeText());
+						String code = loc.getService(d.getName(), g, execCtx);
+						availableObjects.put(g, code);
 					}
 				}
 			}
