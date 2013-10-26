@@ -112,7 +112,7 @@ public class DependencyScanTranslator implements FieldTranslator {
 				continue;
 			}
 			JavaOperation op = srv.getMethod(n);
-			if (attemptInvoke(op,targetVarName,targetType,execCtx,ref,code)) {
+			if (attemptInvoke(op,targetVarName,field,targetType,execCtx,ref,code)) {
 				return true;
 			}
 		}
@@ -120,12 +120,13 @@ public class DependencyScanTranslator implements FieldTranslator {
 		return false;
 	}
 	
-	private boolean attemptInvoke(JavaOperation op,String targetVarName,AttributeHolder targetType,CodeExecutionContext execCtx,String ref,Java5CodeSnippet code) {
+	private boolean attemptInvoke(JavaOperation op,String targetVarName,String attribName,AttributeHolder targetType,CodeExecutionContext execCtx,String ref,Java5CodeSnippet code) {
 		String result = null;
 		
 		try {
-			result = JavaUtils.callJavaOperation(null, ref, op, execCtx, null);
-			code.append(result);
+			result = JavaUtils.callJavaOperation(null, ref, op, execCtx, null,false).trim();
+			String c = targetType.getCodeToSetAttribute(targetVarName, attribName, result.trim(), execCtx).trim();
+			code.append(c+";\n");
 		} catch(JavascribeException e) {
 			return false;
 		}
