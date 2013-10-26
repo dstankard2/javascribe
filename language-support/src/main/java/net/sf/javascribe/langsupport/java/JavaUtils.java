@@ -52,6 +52,10 @@ public class JavaUtils {
 	}
 
 	public static String callJavaOperation(String resultName,String objName,JavaOperation op,CodeExecutionContext execCtx,Map<String,String> explicitParams) throws JavascribeException {
+		return callJavaOperation(resultName,objName,op,execCtx,explicitParams,true);
+	}
+
+	public static String callJavaOperation(String resultName,String objName,JavaOperation op,CodeExecutionContext execCtx,Map<String,String> explicitParams,boolean addSemicolon) throws JavascribeException {
 		StringBuilder build = new StringBuilder();
 		
 		build.append(objName).append('.');
@@ -76,10 +80,11 @@ public class JavaUtils {
 			ValueExpression expr = ExpressionUtil.buildExpressionFromCode(build.toString(),op.getReturnType());
 			build = new StringBuilder();
 			build.append(ExpressionUtil.evaluateSetExpression(resultName, expr, execCtx));
-			build.append(";\n");
-		} else {
-			build.append(";\n");
 		}
+		if (addSemicolon) {
+			build.append(';');
+		}
+		build.append('\n');
 
 		return build.toString();
 	}
