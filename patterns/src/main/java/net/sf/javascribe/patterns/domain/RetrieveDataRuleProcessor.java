@@ -32,10 +32,6 @@ import net.sf.jsom.java5.Java5SourceFile;
 @Processor
 public class RetrieveDataRuleProcessor {
 
-	public static final String SERVICE_LOCATOR_PROPERTY = "retrieveDataRule.domainLogicLocatorClass";
-	public static final String SERVICE_OBJECT_PROPEPTY = "retrieveDataRule.serviceObj";
-	public static final String SERVICE_OBJECT_DEPENDENCIES = "retrieveDataRule.dependencies";
-
 	@ProcessorMethod(componentClass=RetrieveDataRule.class)
 	public void process(RetrieveDataRule comp,ProcessorContext ctx) throws JavascribeException {
 
@@ -48,20 +44,20 @@ public class RetrieveDataRuleProcessor {
 			String serviceLocatorName = null;
 			if (comp.getServiceLocator().trim().length()>0) {
 				serviceLocatorName = comp.getServiceLocator();
-			} else if (ctx.getProperty(SERVICE_LOCATOR_PROPERTY)!=null) {
-				serviceLocatorName = ctx.getProperty(SERVICE_LOCATOR_PROPERTY);
+			} else if (ctx.getProperty(RetrieveDataRule.DOMAIN_LOGIC_LOCATOR_CLASS)!=null) {
+				serviceLocatorName = ctx.getProperty(RetrieveDataRule.DOMAIN_LOGIC_LOCATOR_CLASS);
 			} else {
-				throw new JavascribeException("Service Locator Name must be specified in the component on in property 'retrieveDataRule.serviceLocator'");
+				throw new JavascribeException("Service Locator Name must be specified in the component or in property '"+RetrieveDataRule.DOMAIN_LOGIC_LOCATOR_CLASS+"'");
 			}
 
 			// Read business object name
 			String serviceObjName = null;
 			if (comp.getServiceObj().trim().length()>0) {
 				serviceObjName = comp.getServiceObj();
-			} else if (ctx.getProperty(SERVICE_OBJECT_PROPEPTY)!=null) {
-				serviceObjName = ctx.getProperty(SERVICE_OBJECT_PROPEPTY);
+			} else if (ctx.getProperty(RetrieveDataRule.DOMAIN_LOGIC_SERVICE_OBJ)!=null) {
+				serviceObjName = ctx.getProperty(RetrieveDataRule.DOMAIN_LOGIC_SERVICE_OBJ);
 			} else {
-				throw new JavascribeException("Service Locator Name must be specified in the component on in property 'retrieveDataRule.serviceLocator'");
+				throw new JavascribeException("Service Object Name must be specified in the component or in property '"+RetrieveDataRule.DOMAIN_LOGIC_SERVICE_OBJ+"'");
 			}
 
 			// Read rule name
@@ -92,8 +88,8 @@ public class RetrieveDataRuleProcessor {
 			if (comp.getDependencies().trim().length()>0) {
 				depNames = comp.getDependencies();
 				deps = JavascribeUtils.readAttributes(ctx, depNames);
-			} else if (ctx.getProperty(SERVICE_OBJECT_DEPENDENCIES)!=null) {
-				depNames = ctx.getProperty(SERVICE_OBJECT_DEPENDENCIES);
+			} else if (ctx.getProperty(RetrieveDataRule.DOMAIN_LOGIC_DEPENDENCIES)!=null) {
+				depNames = ctx.getProperty(RetrieveDataRule.DOMAIN_LOGIC_DEPENDENCIES);
 				deps = JavascribeUtils.readAttributes(ctx, depNames);
 			} else {
 				deps = new ArrayList<Attribute>();
