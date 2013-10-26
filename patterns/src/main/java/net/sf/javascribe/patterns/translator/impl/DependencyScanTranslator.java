@@ -80,7 +80,6 @@ public class DependencyScanTranslator implements FieldTranslator {
 			} 
 		}
 		
-		
 		for(String f : fieldsToTranslate) {
 			for(String dep : deps.keySet()) {
 				JavaVariableType type = deps.get(dep);
@@ -89,6 +88,7 @@ public class DependencyScanTranslator implements FieldTranslator {
 					boolean result = tryServiceObject(srv,targetVarName,f,dep,ret,execCtx);
 					if (result) {
 						remove.add(f);
+						break;
 					}
 				}
 			}

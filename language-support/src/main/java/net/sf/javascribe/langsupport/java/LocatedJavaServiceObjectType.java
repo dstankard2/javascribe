@@ -18,13 +18,19 @@ public class LocatedJavaServiceObjectType extends JavaServiceObjectType implemen
 	public String getLocatorClass() {
 		return locatorClass;
 	}
+	
+	@Override
+	public JavaCode instantiate(String name, String value,CodeExecutionContext execCtx) throws JavascribeException {
+		// TODO Auto-generated method stub
+		return getInstance(name,execCtx);
+	}
 
 	@Override
 	public JavaCode getInstance(String varName,CodeExecutionContext execCtx) throws JavascribeException {
 		JavaCodeImpl ret = new JavaCodeImpl();
 
 		ret.addImport(getImport());
-		ret.appendCodeText(varName+" = "+locatorClass+".get"+getName()+"();\n");
+		ret.appendCodeText(varName+" = new "+locatorClass+"().get"+getName()+"();\n");
 
 		return ret;
 	}

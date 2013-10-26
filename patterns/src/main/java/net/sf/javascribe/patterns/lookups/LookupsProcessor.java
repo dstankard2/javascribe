@@ -2,12 +2,13 @@ package net.sf.javascribe.patterns.lookups;
 
 import java.util.List;
 
+import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.api.ProcessorContext;
-import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.annotation.Processor;
 import net.sf.javascribe.api.annotation.ProcessorMethod;
 import net.sf.javascribe.api.annotation.Scannable;
+import net.sf.javascribe.langsupport.java.JavaOperation;
 import net.sf.javascribe.langsupport.java.JavaUtils;
 import net.sf.javascribe.langsupport.java.ServiceLocator;
 import net.sf.javascribe.langsupport.java.jsom.JavascribeVariableTypeResolver;
@@ -68,7 +69,7 @@ public class LookupsProcessor {
 
 	private void processEntity(String pkg,ProcessorContext ctx,Entity e,Java5ClassDefinition locatorClass,ServiceLocator locatorType) throws JavascribeException,CodeGenerationException {
 		Java5SourceFile src = null;
-		String lookupClassName = e.getName()+"Lookups";
+		String lookupClassName = e.getName()+"Lookup";
 		LookupType type = null;
 
 		src = JsomUtils.getJavaFile(pkg+'.'+lookupClassName, ctx);
@@ -79,7 +80,7 @@ public class LookupsProcessor {
 			JsomUtils.addJavaFile(src, ctx);
 			locatorType.getAvailableServices().add(e.getName());
 			Java5DeclaredMethod method = new Java5DeclaredMethod(new JavascribeVariableTypeResolver(ctx));
-			method.setMethodName("get"+e.getName());
+			method.setMethodName("get"+lookupClassName);
 			method.setReturnType(lookupClassName);
 			Java5CodeSnippet code = new Java5CodeSnippet();
 			code.append("return new "+lookupClassName+"();\n");
@@ -135,6 +136,8 @@ public class LookupsProcessor {
 		}
 		code.append("}\nreturn ret;\n");
 		method.setMethodBody(code);
+		JavaOperation op = JsomUtils.createJavaOperation(method);
+		type.addMethod(op);
 	}
 
 	private static String findConstantName(String n,String v) {
