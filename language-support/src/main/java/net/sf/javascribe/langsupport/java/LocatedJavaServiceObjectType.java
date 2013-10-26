@@ -20,12 +20,6 @@ public class LocatedJavaServiceObjectType extends JavaServiceObjectType implemen
 	}
 	
 	@Override
-	public JavaCode instantiate(String name, String value,CodeExecutionContext execCtx) throws JavascribeException {
-		// TODO Auto-generated method stub
-		return getInstance(name,execCtx);
-	}
-
-	@Override
 	public JavaCode getInstance(String varName,CodeExecutionContext execCtx) throws JavascribeException {
 		JavaCodeImpl ret = new JavaCodeImpl();
 
