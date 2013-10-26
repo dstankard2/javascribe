@@ -32,8 +32,6 @@ import net.sf.jsom.java5.Java5SourceFile;
 @Processor
 public class ServletWebServiceProcessor {
 
-	public static final String SERVLET_WEB_SERVICE_PKG = "net.sf.javascribe.patterns.servlet.ServletWebService.pkg";
-
 	@ProcessorMethod(componentClass=ServletWebService.class)
 	public void process(ServletWebService webService,ProcessorContext ctx) throws JavascribeException {
 		Java5SourceFile src = null;
@@ -44,7 +42,7 @@ public class ServletWebServiceProcessor {
 		try {
 			System.out.println("Processing servlet web service with path '"+webService.getPath()+"'");
 
-			String servicePkg = JavaUtils.findPackageName(ctx, ctx.getRequiredProperty(SERVLET_WEB_SERVICE_PKG));
+			String servicePkg = JavaUtils.findPackageName(ctx, ctx.getRequiredProperty(ServletWebService.SERVLET_WEB_SERVICE_PKG));
 			String serviceTypeName = webService.getWebServiceModule();
 
 			// Add to the web service type
@@ -277,7 +275,7 @@ public class ServletWebServiceProcessor {
 		String filters = webService.getFilters();
 
 		if ((filters==null) || (filters.trim().length()==0)) {
-			filters = ctx.getProperty("servletWebService.defaultFilters");
+			filters = ctx.getProperty(ServletWebService.SERVLET_WEB_SERVICE_DEFAULT_FILTERS);
 		}
 
 		if ((filters!=null) && (filters.trim().length()>0)) {

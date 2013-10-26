@@ -16,6 +16,9 @@ import net.sf.javascribe.patterns.CorePatternConstants;
 @XmlType(name="servletWebService",propOrder={ })
 public class ServletWebService extends ComponentBase {
 
+	public static final String SERVLET_WEB_SERVICE_PKG = "net.sf.javascribe.patterns.servlet.ServletWebService.pkg";
+	public static final String SERVLET_WEB_SERVICE_DEFAULT_FILTERS = "net.sf.javascribe.patterns.servlet.ServletWebService.defaultFilters";
+
 	public int getPriority() { return CorePatternConstants.PRIORITY_SERVLET_WEB_SERVICE; }
 
 	@XmlAttribute
