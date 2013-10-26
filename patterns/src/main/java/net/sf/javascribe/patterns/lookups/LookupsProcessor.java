@@ -2,6 +2,7 @@ package net.sf.javascribe.patterns.lookups;
 
 import java.util.List;
 
+import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.annotation.Processor;
@@ -51,6 +52,9 @@ public class LookupsProcessor {
 			locatorType = new LookupsLocator(pkg, locatorClassName);
 			ctx.getTypes().addType(locatorType);
 			JsomUtils.addJavaFile(locatorFile, ctx);
+			ctx.addAttribute(JavascribeUtils.getLowerCamelName(locatorClassName), locatorClassName);
+		} else {
+			locatorType = (ServiceLocator)ctx.getType(locatorClassName);
 		}
 
 		for(Entity entity : lookups.getEntity()) {
@@ -81,6 +85,7 @@ public class LookupsProcessor {
 			code.append("return new "+lookupClassName+"();\n");
 			method.setMethodBody(code);
 			locatorClass.addMethod(method);
+			ctx.addAttribute(JavascribeUtils.getLowerCamelName(lookupClassName), lookupClassName);
 		}
 
 		type = (LookupType)ctx.getTypes().getType(lookupClassName);
@@ -107,9 +112,9 @@ public class LookupsProcessor {
 		method.setMethodBody(code);
 		method.setMethodName(methodName);
 		method.setReturnType("string");
-		method.addArg("integer", "value");
-		code.append("if (value==null) return null;\n");
-		code.append("String ret = null;\nswitch(value) {\n");
+		method.addArg("integer", f.getName());
+		code.append("if ("+f.getName()+"==null) return null;\n");
+		code.append("String ret = null;\nswitch("+f.getName()+") {\n");
 		src.getPublicClass().addMethod(method);
 
 		type.addMethod(JsomUtils.createJavaOperation(method));
