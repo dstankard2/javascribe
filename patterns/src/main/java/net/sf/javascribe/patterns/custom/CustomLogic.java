@@ -25,8 +25,11 @@ public class CustomLogic extends ComponentBase {
 	@XmlAttribute
 	private String serviceGroupName = "";
 	
+	@XmlAttribute
+	private int priority = CorePatternConstants.PRIORITY_CUSTOM_LOGIC;
+	
 	@Override
-	public int getPriority() { return CorePatternConstants.PRIORITY_CUSTOM_LOGIC; }
+	public int getPriority() { return priority; }
 	
 	public String getSrc() {
 		return src;

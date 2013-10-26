@@ -42,6 +42,7 @@ public class CustomLogicProcessor {
 		CustomLogicObjectType ret = new CustomLogicObjectType(locatorClassName,className,pkg,className);
 		ret.setClassName(className);
 		ret.setPkg(pkg);
+		ctx.addAttribute(JavascribeUtils.getLowerCamelName(className), className);
 
 		System.out.println("Processing Custom Logic class '"+className+"'");
 
