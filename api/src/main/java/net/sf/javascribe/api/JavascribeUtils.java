@@ -14,6 +14,12 @@ import net.sf.javascribe.api.ProcessorContext;
 
 public class JavascribeUtils {
 
+	public boolean isEmpty(String s) {
+		if (s==null) return true;
+		if (s.trim().length()==0) return true;
+		return false;
+	}
+	
 	public static String getLowerCamelName(String typeName) {
 		return Character.toLowerCase(typeName.charAt(0))+typeName.substring(1);
 	}
