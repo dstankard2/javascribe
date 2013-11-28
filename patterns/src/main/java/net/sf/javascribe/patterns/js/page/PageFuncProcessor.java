@@ -1,5 +1,7 @@
 package net.sf.javascribe.patterns.js.page;
 
+import org.apache.log4j.Logger;
+
 import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.annotation.Processor;
@@ -13,6 +15,8 @@ import net.sf.javascribe.langsupport.javascript.JavascriptVariableType;
 @Processor
 public class PageFuncProcessor {
 
+	private static final Logger log = Logger.getLogger(PageFuncProcessor.class);
+
 	@ProcessorMethod(componentClass=PageFunc.class)
 	public void process(PageFunc func,ProcessorContext ctx) throws JavascribeException {
 
@@ -23,7 +27,7 @@ public class PageFuncProcessor {
 			throw new JavascribeException("Found an invalid page func with no name");
 		}
 		
-		System.out.println("Processing fn '"+func.getPageName()+"'");
+		log.info("Processing fn '"+func.getPageName()+"."+func.getName()+"'");
 		
 		JavascriptSourceFile src = JavascriptUtils.getSourceFile(ctx);
 		

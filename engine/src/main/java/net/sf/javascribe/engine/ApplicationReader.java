@@ -21,8 +21,11 @@ import net.sf.javascribe.api.config.JavascribeConfig;
 import net.sf.javascribe.api.config.Property;
 import net.sf.javascribe.api.config.PropertyList;
 
+import org.apache.log4j.Logger;
+
 public class ApplicationReader {
 	private JAXBContext componentContext = null;
+	private Logger log = Logger.getLogger(ApplicationReader.class);
 	
 	public ApplicationReader(JAXBContext componentContext) {
 		this.componentContext = componentContext;
@@ -31,6 +34,7 @@ public class ApplicationReader {
 	public ApplicationDefinition readApplication(ZipFile zip) throws JavascribeException,IOException,JAXBException {
 		ApplicationDefinition ret = new ApplicationDefinition();
 		
+		log.debug("Reading application from ZIP file: "+zip.getName());
 		ret.setAttributes(readAttributes(zip));
 		JavascribeConfig config = readGeneratorConfig(zip);
 		if (config==null) throw new JavascribeException("Couldn't find META-INF/generator.xml in archive");

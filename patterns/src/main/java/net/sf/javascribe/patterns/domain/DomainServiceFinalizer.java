@@ -2,6 +2,8 @@ package net.sf.javascribe.patterns.domain;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.annotation.Processor;
@@ -18,11 +20,13 @@ import net.sf.jsom.java5.Java5SourceFile;
 @Processor
 public class DomainServiceFinalizer {
 
+	private static final Logger log = Logger.getLogger(DomainServiceFinalizer.class);
+	
 	@ProcessorMethod(componentClass=DomainObjectFinalizer.class)
 	public void process(DomainObjectFinalizer comp,ProcessorContext ctx) throws JavascribeException {
 		ctx.setLanguageSupport("Java");
 		
-		System.out.println("Finalizing Domain Service "+comp.getServiceObjectName());
+		log.info("Finalizing Domain Service "+comp.getServiceObjectName());
 		
 		LocatedJavaServiceObjectType type = 
 				(LocatedJavaServiceObjectType)ctx.getType(comp.getServiceObjectName());

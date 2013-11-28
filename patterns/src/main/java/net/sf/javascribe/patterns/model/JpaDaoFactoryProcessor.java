@@ -2,6 +2,8 @@ package net.sf.javascribe.patterns.model;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
@@ -24,6 +26,8 @@ import net.sf.jsom.java5.Java5SourceFile;
 @Scannable
 @Processor
 public class JpaDaoFactoryProcessor {
+
+	private static final Logger log = Logger.getLogger(JpaDaoFactoryProcessor.class);
 
 	public static final String DAO_PACKAGE_PROPERTY = "net.sf.javascribe.patterns.model.JpaDaoFactory.daoPackage";
 
@@ -50,7 +54,7 @@ public class JpaDaoFactoryProcessor {
 		entityManagerType = (EntityManagerType)ctx.getType(pu);
 		locatorType = (EntityManagerLocator)ctx.getType(component.getLocator());
 
-		System.out.println("Processing JPA Dao Factory '"+daoFactoryClass+"'");
+		log.info("Processing JPA Dao Factory '"+daoFactoryClass+"'");
 
 		if (!(entityManagerType instanceof EntityManagerType)) {
 			throw new JavascribeException("Could not find entity manager type "+component.getEntityManager());

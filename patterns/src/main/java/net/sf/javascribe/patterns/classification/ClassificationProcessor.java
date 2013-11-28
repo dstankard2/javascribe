@@ -22,10 +22,15 @@ import net.sf.javascribe.patterns.model.DatabaseTable;
 import net.sf.javascribe.patterns.model.EntityManagerComponent;
 import net.sf.javascribe.patterns.model.EntityManagerUtils;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 @Scannable
 @Processor
 public class ClassificationProcessor {
 
+	private static final Logger log = LogManager.getLogger(ClassificationProcessor.class);
+	
 	public static final String DATA_OBJECTS = "Classification_DataObjects";
 
 	@ProcessorMethod(componentClass=DataObject.class)
@@ -67,7 +72,7 @@ public class ClassificationProcessor {
 		String pkg = null;
 		
 		ctx.setLanguageSupport("Java");
-		System.out.println("Processing classification '"+classification.getName()+"'");
+		log.info("Processing classification '"+classification.getName()+"'");
 
 		pkg = JavaUtils.findPackageName(ctx, ctx.getRequiredProperty(Classification.CLASSIFICATION_PKG));
 		className = classification.getName();

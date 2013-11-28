@@ -2,6 +2,8 @@ package net.sf.javascribe.patterns.service;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import net.sf.javascribe.api.Attribute;
 import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.ProcessorContext;
@@ -26,6 +28,8 @@ import net.sf.jsom.java5.Java5SourceFile;
 @Processor
 public class ServiceProcessor {
 
+	private static final Logger log = Logger.getLogger(ServiceProcessor.class);
+
 	public static final String SERVICE_PKG = "net.sf.javascribe.patterns.service.Service.pkg";
 
 	@ProcessorMethod(componentClass=Service.class)
@@ -39,7 +43,7 @@ public class ServiceProcessor {
 			JavaServiceObjectType serviceType = null;
 			Java5SourceFile file = null;
 
-			System.out.println("Processing service "+service.getModule()+"."+service.getName());
+			log.info("Processing service "+service.getModule()+"."+service.getName());
 
 			String serviceResult = handleResult(ctx,service,servicePkg);
 

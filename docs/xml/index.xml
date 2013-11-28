@@ -1,0 +1,6 @@
+
+<patterns>
+	<pattern name="Retrieve Data Rule" id="RetrieveDataRule" />
+	<pattern name="Data Object" id="DataObject" />
+</patterns>
+

@@ -2,6 +2,8 @@ package net.sf.javascribe.patterns.js.page;
 
 import java.util.HashMap;
 
+import org.apache.log4j.Logger;
+
 import net.sf.javascribe.api.AttributeHolder;
 import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
@@ -21,6 +23,8 @@ import net.sf.javascribe.patterns.servlet.UrlWebServiceType;
 @Processor
 public class WsClientProcessor {
 
+	private static final Logger log = Logger.getLogger(WsClientProcessor.class);
+
 	@ProcessorMethod(componentClass=WsClient.class)
 	public void process(WsClient comp,ProcessorContext ctx) throws JavascribeException {
 
@@ -38,7 +42,7 @@ public class WsClientProcessor {
 
 		ctx.setLanguageSupport("Javascript");
 		
-		System.out.println("Processing WSClient on page '"+pageName+"': "+comp.getModule()+"."+comp.getService());
+		log.info("Processing WSClient on page '"+pageName+"': "+comp.getModule()+"."+comp.getService());
 		JavascriptSourceFile src = JavascriptUtils.getSourceFile(ctx);
 		StringBuilder code = src.getSource();
 		

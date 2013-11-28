@@ -2,6 +2,8 @@ package net.sf.javascribe.patterns.js.page;
 
 import java.util.HashMap;
 
+import org.apache.log4j.Logger;
+
 import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.annotation.Processor;
@@ -15,6 +17,8 @@ import net.sf.javascribe.langsupport.javascript.JavascriptVariableType;
 @Processor
 public class PageModelProcessor {
 
+	private static final Logger log = Logger.getLogger(PageModelProcessor.class);
+
 	@ProcessorMethod(componentClass=PageModel.class)
 	public void process(PageModel model,ProcessorContext ctx) throws JavascribeException {
 		ctx.setLanguageSupport("Javascript");
@@ -22,7 +26,7 @@ public class PageModelProcessor {
 			throw new JavascribeException("Found a page model with no pageName specified.");
 		}
 		
-		System.out.println("Processing model for page '"+model.getPageName()+"'");
+		log.info("Processing model for page '"+model.getPageName()+"'");
 		
 		JavascriptSourceFile src = JavascriptUtils.getSourceFile(ctx);
 

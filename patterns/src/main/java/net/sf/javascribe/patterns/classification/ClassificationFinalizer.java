@@ -2,14 +2,17 @@ package net.sf.javascribe.patterns.classification;
 
 import java.util.List;
 
-import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.annotation.Processor;
 import net.sf.javascribe.api.annotation.ProcessorMethod;
 import net.sf.javascribe.api.annotation.Scannable;
 import net.sf.javascribe.langsupport.java.JavaBeanType;
 import net.sf.javascribe.langsupport.java.jsom.JsomUtils;
 import net.sf.jsom.java5.Java5DataObjectSourceFile;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 /**
  * Once all the classifications have been read into the system, we want to go through the 
@@ -26,12 +29,14 @@ public class ClassificationFinalizer {
 	List<String> dataObjectNames = null;
 	List<String> classificationNames = null;
 	
+	private static Logger log = LogManager.getLogger(ClassificationFinalizer.class);
+	
 	@ProcessorMethod(componentClass=ClassificationFinalizerComp.class)
 	public void process(ProcessorContext ctx) throws JavascribeException {
 		this.ctx = ctx;
 		dataObjectNames = (List<String>)ctx.getObject(ClassificationProcessor.DATA_OBJECTS);
 		classificationNames = (List<String>)ctx.getObject("ClassificationNames");
-		System.out.println("Applying classification interfaces to Data Objects.");
+		log.info("Applying classification interfaces to Data Objects.");
 
 		if (dataObjectNames!=null) {
 			for(String s : dataObjectNames) {
@@ -45,15 +50,9 @@ public class ClassificationFinalizer {
 		JavaBeanType beanType = (JavaBeanType)ctx.getTypes().getType(typeName);
 		Java5DataObjectSourceFile src = (Java5DataObjectSourceFile)JsomUtils.getJavaFile(beanType.getImport(), ctx);
 
-//		System.out.println("Applying classifications to "+typeName);
-		// Iterate through the classification names backwards.
 		for(String s : classificationNames) {
-//		for(int i=classificationNames.size()-1;i>=0;i--) {
-//			String s = classificationNames.get(i);
-//			System.out.println("Testing classification "+s);
 			JavaBeanType classificationType = (JavaBeanType)ctx.getTypes().getType(s);
 			if (fitsClassification(beanType,classificationType)) {
-//				System.out.println("Applying interface '"+s+"' to bean '"+src.getPublicClass().getClassName()+"'");
 				src.getPublicClass().addImplementedInterface(classificationType.getImport());
 				break;
 			}

@@ -1,5 +1,7 @@
 package net.sf.javascribe.patterns.quartz;
 
+import org.apache.log4j.Logger;
+
 import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.annotation.Processor;
@@ -13,12 +15,14 @@ import net.sf.jsom.java5.Java5SourceFile;
 @Processor
 public class ScheduledJobFinalizer {
 	
+	private static final Logger log = Logger.getLogger(ScheduledJobProcessor.class);
+
 	@ProcessorMethod(componentClass=ScheduledJobDone.class)
 	public void process(ProcessorContext ctx) throws JavascribeException {
 		Java5SourceFile listenerFile = null;
 		Java5DeclaredMethod initMethod = null;
 
-		System.out.println("Finalizing scheduled jobs");
+		log.info("Finalizing scheduled jobs");
 		listenerFile = (Java5SourceFile)ctx.getObject("ListenerFile");
 		initMethod = (Java5DeclaredMethod)listenerFile.getPublicClass().getDeclaredMethod("contextInitialized");
 		Java5CompatibleCodeSnippet code = initMethod.getMethodBody();

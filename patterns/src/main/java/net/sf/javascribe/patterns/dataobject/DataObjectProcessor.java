@@ -2,6 +2,8 @@ package net.sf.javascribe.patterns.dataobject;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import net.sf.javascribe.api.Attribute;
 import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
@@ -23,6 +25,8 @@ import net.sf.jsom.java5.Java5DataObjectSourceFile;
 @Processor
 public class DataObjectProcessor {
 
+	private static final Logger log = Logger.getLogger(DataObjectProcessor.class);
+	
 	@ProcessorMethod(componentClass=DataObject.class)
 	public void process(DataObject comp,ProcessorContext ctx) throws JavascribeException {
 		String pkg = JavaUtils.findPackageName(ctx, ctx.getRequiredProperty(DataObject.DATA_OBJECT_PKG));
@@ -36,7 +40,7 @@ public class DataObjectProcessor {
 		if (comp.getAttributes()==null)
 			throw new JavascribeException("Attribute 'attributes' is required for DomainData");
 
-		System.out.println("Processing domain data object '"+comp.getName()+"'");
+		log.info("Processing domain data object '"+comp.getName()+"'");
 
 		try {
 			type = new JsomJavaBeanType(comp.getName(),pkg,comp.getName());

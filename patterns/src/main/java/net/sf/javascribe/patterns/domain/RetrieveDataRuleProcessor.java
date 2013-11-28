@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import net.sf.javascribe.api.Attribute;
 import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.ProcessorContext;
@@ -32,12 +34,14 @@ import net.sf.jsom.java5.Java5SourceFile;
 @Processor
 public class RetrieveDataRuleProcessor {
 
+	private static final Logger log = Logger.getLogger(RetrieveDataRuleProcessor.class);
+	
 	@ProcessorMethod(componentClass=RetrieveDataRule.class)
 	public void process(RetrieveDataRule comp,ProcessorContext ctx) throws JavascribeException {
 
 		ctx.setLanguageSupport("Java");
 
-		System.out.println("Processing retrieve data rule "+comp.getRule());
+		log.info("Processing retrieve data rule '"+comp.getServiceObj()+"."+comp.getRule()+"'");
 
 		try {
 			// Read service locator name

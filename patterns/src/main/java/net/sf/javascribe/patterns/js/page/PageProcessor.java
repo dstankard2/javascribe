@@ -1,5 +1,7 @@
 package net.sf.javascribe.patterns.js.page;
 
+import org.apache.log4j.Logger;
+
 import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.annotation.Processor;
@@ -16,6 +18,8 @@ import net.sf.javascribe.patterns.CorePatternConstants;
 @Processor
 public class PageProcessor {
 
+	private static final Logger log = Logger.getLogger(PageProcessor.class);
+
 	@ProcessorMethod(componentClass=Page.class)
 	public void process(Page page,ProcessorContext ctx) throws JavascribeException {
 		ctx.setLanguageSupport("Javascript");
@@ -23,13 +27,16 @@ public class PageProcessor {
 			throw new JavascribeException("Found a page with no pageName");
 		}
 
-		System.out.println("Processing page '"+page.getPageName()+"'");
+		log.info("Processing page '"+page.getPageName()+"'");
 
 		JavascriptSourceFile src = JavascriptUtils.getSourceFile(ctx);
 		src.getSource().append("var "+page.getPageName()+"={ };\n");
 		JavascriptVariableType type = new JavascriptVariableType(JavascriptConstants.JS_TYPE+page.getPageName());
 		ctx.getTypes().addType(type);
 		
+		StringBuilder init = PageUtils.getInitFunction(ctx, page.getPageName());
+		init.append("this.view.page = $('#"+page.getPageName()+"');\n");
+
 		ctx.addComponent(new PageFinalizer(page.getPageName(),src.getPath()));
 	}
 	

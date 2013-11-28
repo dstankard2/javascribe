@@ -4,9 +4,9 @@ import java.util.List;
 
 import net.sf.javascribe.api.Attribute;
 import net.sf.javascribe.api.CodeExecutionContext;
-import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.JavascribeUtils;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.annotation.Processor;
 import net.sf.javascribe.api.annotation.ProcessorMethod;
 import net.sf.javascribe.api.annotation.Scannable;
@@ -23,9 +23,14 @@ import net.sf.jsom.java5.Java5DeclaredMethod;
 import net.sf.jsom.java5.Java5SourceFile;
 import net.sf.jsom.java5.Java5Type;
 
+import org.apache.log4j.Logger;
+
 @Scannable
 @Processor
 public class EjbqlQueryProcessor {
+	
+	private static final Logger log = Logger.getLogger(EjbqlQueryProcessor.class);
+	
 	public static final String EJBQL_QUERY_PKG = "net.sf.javascribe.patterns.model.EjbqlQuery.pkg";
 	EjbqlQuery query = null;
 	ProcessorContext ctx = null;
@@ -46,7 +51,7 @@ public class EjbqlQueryProcessor {
 		String querySet = null;
 		EntityManagerType emType = null;
 
-		System.out.println("Processing EJBQL Query '"+query.getName()+"'");
+		log.info("Processing EJBQL Query '"+query.getName()+"'");
 
 		try {
 			pu = query.getPu();
@@ -92,6 +97,9 @@ public class EjbqlQueryProcessor {
 				src.getPublicClass().setClassName(className);
 				Java5ClassConstructor cons = new Java5ClassConstructor(types, className);
 				EntityManagerLocator loc = ModelUtils.getDefaultEntityManagerLocator(pu, ctx);
+				if (loc==null) {
+					throw new JavascribeException("Couldn't find default entity manager locator for Persstence Unit "+pu);
+				}
 				Java5CodeSnippet code = new Java5CodeSnippet();
 				JsomUtils.merge(code, loc.getEntityManager("this.tx", null));
 //				code.append("this.tx = tx;");

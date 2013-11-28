@@ -51,10 +51,12 @@ public class WebXmlFile implements SourceFile {
 	private List<JAXBElement<?>> servletList = new ArrayList<JAXBElement<?>>();
 	private List<JAXBElement<?>> servletMappingList = new ArrayList<JAXBElement<?>>();
 	private List<JAXBElement<?>> contextListenerList = new ArrayList<JAXBElement<?>>();
+	private JAXBElement<JspConfigType> jspConfigElt = null;
+	private JspConfigType jspConfig = null;
 	
 	private ObjectFactory factory = null;
 	private HashMap<String,ServletType> servlets = new HashMap<String,ServletType>();
-	private JspConfigType jspConfig = null;
+//	private JspConfigType jspConfig = null;
 	//    private List<String> welcomeFileList = new ArrayList<String>();
 	//    private WelcomeFileListType welcomeFileListType = null;
 
@@ -234,6 +236,10 @@ public class WebXmlFile implements SourceFile {
 		loc.setValue(location);
 		tld.setTaglibLocation(loc);
 		tld.setTaglibUri(n);
+		if (jspConfigElt==null) {
+			jspConfig = new JspConfigType();
+			jspConfigElt = factory.createWebAppTypeJspConfig(jspConfig);
+		}
 		jspConfig.getTaglib().add(tld);
 	}
 
@@ -250,6 +256,9 @@ public class WebXmlFile implements SourceFile {
 		itemList.addAll(filterMappingList);
 		itemList.addAll(servletList);
 		itemList.addAll(servletMappingList);
+		if (jspConfigElt!=null) {
+			itemList.add(jspConfigElt);
+		}
 		
 		try {
 			writer = new StringWriter();

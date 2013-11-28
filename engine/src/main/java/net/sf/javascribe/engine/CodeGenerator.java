@@ -10,15 +10,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.LanguageSupport;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.SourceFile;
 import net.sf.javascribe.api.config.ComponentBase;
 import net.sf.javascribe.api.config.ComponentSet;
 import net.sf.javascribe.api.config.Property;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 public class CodeGenerator {
+	private static Logger log = LogManager.getLogger(CodeGenerator.class);
+	
 	EnginePropertiesImpl engineProperties = null;
 	ApplicationDefinition def = null;
 	List<ComponentSet> compSets = null;
@@ -53,7 +58,7 @@ public class CodeGenerator {
 			compList.addAll(set.getComponent());
 		}
 
-		System.out.println("Found "+compList.size()+" components to process");
+		log.info("Found "+compList.size()+" components to process");
 		boolean resort = true; // Do we sort the compList?
 
 		while(!compList.isEmpty()) {
@@ -78,7 +83,7 @@ public class CodeGenerator {
 				toRemove.add(comp);
 				List<ProcessorEntry> currentProcessors = this.processors.get(name);
 				if (currentProcessors==null) {
-					System.out.println("WARNING: Found no processors for "+comp.getClass().getCanonicalName());
+					log.warn("WARNING: Found no processors for "+comp.getClass().getCanonicalName());
 					//throw new JavascribeException("Found no processors for component class '"+name+"'");
 				}
 				else {

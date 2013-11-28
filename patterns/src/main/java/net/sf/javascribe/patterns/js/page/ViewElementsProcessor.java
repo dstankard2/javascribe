@@ -5,6 +5,8 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.annotation.Processor;
@@ -20,13 +22,16 @@ import net.sf.javascribe.patterns.js.page.elements.BinderUtils;
 @Processor
 public class ViewElementsProcessor {
 
+	private static final Logger log = Logger.getLogger(ViewElementsProcessor.class);
+
 	@ProcessorMethod(componentClass=ViewElements.class)
 	public void process(ViewElements comp,ProcessorContext ctx) throws JavascribeException {
 		ctx.setLanguageSupport("Javascript");
 		if ((comp.getPageName()==null) || (comp.getPageName().trim().length()==0)) {
 			throw new JavascribeException("ViewElements requires a pageName");
 		}
-		System.out.println("Processing elements for page '"+comp.getPageName()+"'");
+		
+		log.info("Processing elements for page '"+comp.getPageName()+"'");
 
 		JavascriptVariableType pageType = PageUtils.getPageType(ctx, comp.getPageName());
 		JavascriptSourceFile src = JavascriptUtils.getSourceFile(ctx);

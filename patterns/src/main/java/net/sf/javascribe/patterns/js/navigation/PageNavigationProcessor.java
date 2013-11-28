@@ -2,6 +2,8 @@ package net.sf.javascribe.patterns.js.navigation;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.annotation.Processor;
@@ -17,6 +19,8 @@ import net.sf.javascribe.patterns.js.page.PageUtils;
 @Processor
 public class PageNavigationProcessor {
 
+	private static final Logger log = Logger.getLogger(PageNavigationProcessor.class);
+	
 	@ProcessorMethod(componentClass=PageNavigation.class)
 	public void process(PageNavigation comp,ProcessorContext ctx) throws JavascribeException {
 		
@@ -28,7 +32,7 @@ public class PageNavigationProcessor {
 					"Found a Page Navigation component with no name.");
 		}
 		
-		System.out.println("Processing Page Navigation '"+comp.getName()+"'");
+		log.info("Processing Page Navigation '"+comp.getName()+"'");
 		
 		JavascriptVariableType type = new JavascriptVariableType(
 				JavascriptConstants.JS_TYPE + comp.getName());

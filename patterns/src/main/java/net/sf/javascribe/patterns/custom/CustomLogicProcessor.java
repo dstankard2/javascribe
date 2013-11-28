@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import org.apache.log4j.Logger;
+
 import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
@@ -32,6 +34,8 @@ import net.sf.jsom.java5.Java5SourceFile;
 @Processor
 public class CustomLogicProcessor {
 
+	private static final Logger log = Logger.getLogger(CustomLogicProcessor.class);
+	
 	private static final String CUSTOM_LOGIC_PKG = "net.sf.javascribe.patterns.custom.CustomLogic.pkg";
 
 	private CustomLogicObjectType processJavaFile(File f,ProcessorContext ctx,CustomLogic component,String locatorClassName) throws IOException,JavascribeException {
@@ -44,7 +48,7 @@ public class CustomLogicProcessor {
 		ret.setPkg(pkg);
 		ctx.addAttribute(JavascribeUtils.getLowerCamelName(className), className);
 
-		System.out.println("Processing Custom Logic class '"+className+"'");
+		log.info("Processing Custom Logic class '"+className+"'");
 
 		StringBuilder fileContents = readFileContents(f);
 		int index = fileContents.indexOf("public class")+1;

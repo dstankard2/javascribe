@@ -2,6 +2,8 @@ package net.sf.javascribe.patterns.translator;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import net.sf.javascribe.api.Attribute;
 import net.sf.javascribe.api.AttributeHolder;
 import net.sf.javascribe.api.CodeExecutionContext;
@@ -27,6 +29,8 @@ import net.sf.jsom.java5.Java5SourceFile;
 @Processor
 public class DataObjectTranslatorProcessor {
 
+	private static final Logger log = Logger.getLogger(DataObjectTranslatorProcessor.class);
+
 	public static final String DATA_OBJECT_TRANSLATOR_PKG = "net.sf.javascribe.patterns.translator.DataObjectTranslator.pkg";
 
 	// Process translation strategies.  They must be cached in the GeneratorContext
@@ -48,7 +52,7 @@ public class DataObjectTranslatorProcessor {
 		Java5SourceFile src = null;
 		JavaServiceObjectType type = null;
 
-		System.out.println("Generating translator named "+comp.getObject()+'.'+comp.getName());
+		log.info("Generating translator named "+comp.getObject()+'.'+comp.getName());
 		
 		if (returnType==null) throw new JavascribeException("Data Translator requires a return type");
 		VariableType var = ctx.getTypes().getType(returnType);

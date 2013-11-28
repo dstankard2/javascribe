@@ -7,6 +7,7 @@
 		<pathelement location="${dist.root}/lib/jsom.jar"/>
 		<pathelement location="${dist.root}/lib/langsupport.jar"/>
 		<pathelement location="${dist.root}/lib/other-xsd.jar"/>
+		<pathelement location="${dist.root}/lib/log4j-1.2.17.jar"/>
 	</path>
 	
 	<target name="init">

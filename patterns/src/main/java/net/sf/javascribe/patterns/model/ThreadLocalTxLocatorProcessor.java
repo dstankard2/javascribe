@@ -1,5 +1,7 @@
 package net.sf.javascribe.patterns.model;
 
+import org.apache.log4j.Logger;
+
 import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.TextSourceFile;
@@ -20,6 +22,8 @@ public class ThreadLocalTxLocatorProcessor {
 	String pkg = null;
 	String className = null;
 
+	private static final Logger log = Logger.getLogger(ThreadLocalTxLocatorProcessor.class);
+	
 	@ProcessorMethod(componentClass=ThreadLocalTxLocator.class)
 	public void process(ThreadLocalTxLocator comp,ProcessorContext ctx) throws JavascribeException {
 		this.ctx = ctx;
@@ -34,7 +38,7 @@ public class ThreadLocalTxLocatorProcessor {
 		if (name==null) 
 			throw new JavascribeException("Found null name for Tx Locator");
 
-		System.out.println("Processing Thread Local TX Locator '"+name+"'");
+		log.info("Processing Thread Local TX Locator '"+name+"'");
 		
 		ThreadLocalTxLocatorType type = new ThreadLocalTxLocatorType(pu,pkg,className,name);
 		if (ctx.getTypes().getType(type.getName())!=null) {
@@ -48,7 +52,6 @@ public class ThreadLocalTxLocatorProcessor {
 
 		TextSourceFile src = new TextSourceFile();
 		src.setPath(JavaUtils.getJavaFilePath(ctx, pkg+'.'+className));
-//		JavaUtils.setJavaPath(src, ctx, pkg, className);
 		src.getSource().append(TX_LOCATOR_TEMPLATE);
 		replace(src.getSource(),"${pkg}",pkg);
 		replace(src.getSource(),"${className}",className);

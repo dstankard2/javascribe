@@ -2,6 +2,8 @@ package net.sf.javascribe.patterns.quartz;
 
 import java.util.HashMap;
 
+import org.apache.log4j.Logger;
+
 import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
@@ -30,6 +32,8 @@ import net.sf.jsom.java5.Java5SourceFile;
 @Processor
 public class ScheduledJobProcessor {
 
+	private static final Logger log = Logger.getLogger(ScheduledJobProcessor.class);
+
 	public static final String SCHEDULED_JOB_PKG = "net.sf.javascribe.patterns.quartz.ScheduledJob.pkg";
 
 	@ProcessorMethod(componentClass=ScheduledJob.class)
@@ -45,7 +49,7 @@ public class ScheduledJobProcessor {
 			throw new JavascribeException("Found scheduled process without name");
 		}
 		try {
-			System.out.println("Processing scheduled process '"+job.getName()+"'");
+			log.info("Processing scheduled process '"+job.getName()+"'");
 			addQuartzTypes(ctx);
 			WebUtils.addHttpTypes(ctx);
 			pkg = JavaUtils.findPackageName(ctx, ctx.getRequiredProperty(SCHEDULED_JOB_PKG));

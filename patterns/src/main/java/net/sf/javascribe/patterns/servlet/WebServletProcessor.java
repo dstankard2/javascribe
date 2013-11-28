@@ -2,6 +2,8 @@ package net.sf.javascribe.patterns.servlet;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import net.sf.javascribe.api.Attribute;
 import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.ProcessorContext;
@@ -27,6 +29,8 @@ import net.sf.jsom.java5.Java5SourceFile;
 @Processor
 public class WebServletProcessor {
 
+	private static final Logger log = Logger.getLogger(WebServletProcessor.class);
+
 	public static final String WEB_SERVLET_PKG = "net.sf.javascribe.patterns.servlet.WebServlet.pkg";
 
 	@ProcessorMethod(componentClass=WebServlet.class)
@@ -38,7 +42,7 @@ public class WebServletProcessor {
 			ctx.setLanguageSupport("Java");
 			// Set instance variables
 			className = servlet.getName();
-			System.out.println("Processing web servlet with path '"+className+"'");
+			log.info("Processing web servlet with path '"+className+"'");
 
 			pkg = JavaUtils.findPackageName(ctx, ctx.getRequiredProperty(WEB_SERVLET_PKG));
 

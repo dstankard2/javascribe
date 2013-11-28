@@ -1,0 +1,32 @@
+<project name="JavaScribe Docs" default="build" basedir=".">
+
+	<property name="dev.root">.</property>
+
+	<target name="init">
+		<mkdir dir="${dist.root}\docs"/>
+		<delete dir="${build.root}\docs"/>
+	</target>
+	
+	<target name="run.xsl">
+		<mkdir dir="${dist.root}\docs\patterns"/>
+		<xslt 
+			basedir="${dev.root}\xml" 
+			destdir="${dist.root}\docs\patterns"
+			style="component-html.xsl"
+		/>
+	</target>
+
+	<target name="copy.files">
+		<mkdir dir="${dist.root}\docs\css" />
+		<copy overwrite="true" todir="${dist.root}\docs\css">
+			<fileset dir="css"/>
+		</copy>
+	</target>
+
+	<target name="build">
+		<antcall target="init"/>
+		<antcall target="run.xsl"/>
+		<antcall target="copy.files"/>
+	</target>
+	
+</project>

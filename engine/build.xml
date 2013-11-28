@@ -4,6 +4,7 @@
 	
 	<path id="engine.classpath">
 		<pathelement location="${dist.root}/lib/api.jar"/>
+		<pathelement location="${dev.root}/../dist/lib/log4j-1.2.17.jar"/>
 	</path>
 	
 	<target name="init">

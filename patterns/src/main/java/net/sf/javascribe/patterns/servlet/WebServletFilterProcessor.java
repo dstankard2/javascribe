@@ -1,5 +1,7 @@
 package net.sf.javascribe.patterns.servlet;
 
+import org.apache.log4j.Logger;
+
 import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.annotation.Processor;
@@ -10,12 +12,14 @@ import net.sf.javascribe.api.annotation.Scannable;
 @Processor
 public class WebServletFilterProcessor {
 	
+	private static final Logger log = Logger.getLogger(WebServletFilterProcessor.class);
+
 	@ProcessorMethod(componentClass=WebServletFilter.class)
 	public void process(WebServletFilter filter,ProcessorContext ctx) throws JavascribeException {
 		WebXmlFile webXml = null;
 		ctx.setLanguageSupport("Java");
 		
-		System.out.println("Processing web servlet filter '"+filter.getName()+"'");
+		log.info("Processing web servlet filter '"+filter.getName()+"'");
 
 		if (filter.getName()==null) {
 			throw new JavascribeException("unable to find name of filter component");

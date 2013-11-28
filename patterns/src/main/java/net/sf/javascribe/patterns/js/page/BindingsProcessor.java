@@ -5,6 +5,8 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.annotation.Processor;
@@ -20,6 +22,8 @@ import net.sf.javascribe.patterns.js.page.elements.ElementBinderContext;
 @Processor
 public class BindingsProcessor {
 
+	private static final Logger log = Logger.getLogger(BindingsProcessor.class);
+
 	@ProcessorMethod(componentClass=Bindings.class)
 	public void process(Bindings comp,ProcessorContext ctx) throws JavascribeException {
 		ctx.setLanguageSupport("Javascript");
@@ -27,8 +31,8 @@ public class BindingsProcessor {
 		if ((comp.getPageName()==null) || (comp.getPageName().trim().length()==0)) {
 			throw new JavascribeException("Found Bindings spec with no pageName");
 		}
-		
-		System.out.println("Processing bindings for page '"+comp.getPageName()+"'");
+
+		log.info("Processing bindings for page '"+comp.getPageName()+"'");
 		
 		JavascriptSourceFile src = JavascriptUtils.getSourceFile(ctx);
 		JavascriptVariableType type = PageUtils.getPageType(ctx, comp.getPageName());

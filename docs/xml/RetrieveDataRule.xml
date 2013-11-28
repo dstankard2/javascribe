@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<component>
+	<name>Retrieve Data Rule</name>
+	<id>RetrieveDataRule</id>
+	<language>Java</language>
+	<description>
+<p>
+The retrieve data rule processor generates domain-level logic for a Java application which is 
+related to retrieving data and data objects from back end APIs.  The retrieve data rule scans 
+dependencies for APIs that return a desired return type, and attempts to invoke those with whatever 
+variables that available (parameters and dependencies).  The processor will scan dependencies in the 
+order that they are defined.
+</p>
+<p>
+Similar to other patterns that implicitly determine parameters to invoke business rules, the Retrieve 
+Data Rule processor will first scan available local variables, and then scan attributes of available 
+data objects.  For instance, to invoke UserDAO.getUser(userId) the processor will first look for a 
+local variable called "userId" and then, if that is not available, resort to using 
+"userObjectParameter.getUserId()".
+</p>
+<p>
+If a rule is found in the dependencies which returns the desired type but for which the parameters 
+are not available, the processor will recursively attempt to resolve for parameter types that are not 
+available.  The processor will perform this recursion up to 5 levels deep before giving up.
+</p>
+<p>
+The processor will throw an exception if it is unable to resolve a rule.
+</p>
+	</description>
+	<property required="true" name="net.sf.javascribe.patterns.domain.RetrieveDataRule.pkg">
+		<description>
+A sub-package location nested in the Java package specification.
+		</description>
+	</property>
+	<systemAttributes>
+	</systemAttributes>
+	<example>
+	</example>
+	
+</component>
+

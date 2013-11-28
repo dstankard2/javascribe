@@ -13,6 +13,9 @@ import java.util.zip.ZipFile;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
+import org.apache.log4j.PropertyConfigurator;
+import org.apache.log4j.xml.DOMConfigurator;
+
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.LanguageSupport;
 import net.sf.javascribe.api.annotation.Processor;
@@ -35,12 +38,15 @@ import net.sf.javascribe.api.config.ComponentSet;
 public class JavascribeEngine {
 	File[] libFiles = null;
 	String javascribeHome = null;
-	//	HashMap<String,List<ProcessorEntry>> processors = null;
-	//	HashMap<String,LanguageSupport> languageSupport = null;
 	EnginePropertiesImpl engineProperties = null;
 
 	public JavascribeEngine(File[] libFiles) {
 		this.libFiles = libFiles;
+	}
+
+	public JavascribeEngine(File[] libFiles,String javascribeHome) {
+		this.libFiles = libFiles;
+		this.javascribeHome = javascribeHome;
 	}
 
 	public JavascribeEngine(String javascribeHome) {
@@ -69,12 +75,21 @@ public class JavascribeEngine {
 			libFiles = null;
 		}
 	}
+	
+	private void initLog4j() {
+		String filename = javascribeHome + File.separatorChar + "conf" + 
+				File.separatorChar + "log4j.xml";
+//		PropertyConfigurator.configure(filename);
+		DOMConfigurator.configure(filename);
+	}
 
 	protected synchronized EnginePropertiesImpl getEngineProperties() throws JavascribeException {
 		if (this.engineProperties==null) {
 			if ((this.libFiles==null) && (this.javascribeHome==null)) {
 				throw new JavascribeException("Javascribe Engine has insufficient information to execute");
 			}
+
+			initLog4j();
 
 			if (libFiles==null) {
 				readLibs();

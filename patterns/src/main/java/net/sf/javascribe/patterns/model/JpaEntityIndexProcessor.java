@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.javascribe.api.Attribute;
-import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.JavascribeUtils;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.annotation.Processor;
 import net.sf.javascribe.api.annotation.ProcessorMethod;
 import net.sf.javascribe.api.annotation.Scannable;
@@ -18,10 +18,14 @@ import net.sf.jsom.java5.Java5CodeSnippet;
 import net.sf.jsom.java5.Java5DeclaredMethod;
 import net.sf.jsom.java5.Java5SourceFile;
 
+import org.apache.log4j.Logger;
+
 @Scannable
 @Processor
 public class JpaEntityIndexProcessor {
 
+	private static final Logger log = Logger.getLogger(JpaEntityIndexProcessor.class);
+	
 	public static final String DAO_PACKAGE_PROPERTY = "net.sf.javascribe.patterns.model.JpaDaoFactory.pkg";
 
 	@ProcessorMethod(componentClass=JpaEntityIndex.class)
@@ -45,7 +49,7 @@ public class JpaEntityIndexProcessor {
 			throw new JavascribeException("Found entity index '"+comp.getName()+"' with no name");
 		}
 		
-		System.out.println("Processing JPA index "+entityName+"."+comp.getName());
+		log.info("Processing JPA index "+entityName+"."+comp.getName());
 		emType = (EntityManagerType)ctx.getTypes().getType(comp.getEntityManager());
 		if (emType==null) {
 			throw new JavascribeException("Could not find Entity Manager '"+comp.getEntityManager()+"'");

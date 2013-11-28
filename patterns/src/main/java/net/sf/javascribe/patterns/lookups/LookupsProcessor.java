@@ -2,6 +2,8 @@ package net.sf.javascribe.patterns.lookups;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.api.ProcessorContext;
@@ -25,13 +27,15 @@ import net.sf.jsom.java5.Java5VariableDeclaration;
 @Processor
 public class LookupsProcessor {
 
+	private static final Logger log = Logger.getLogger(LookupsProcessor.class);
+
 	private static final String PROPERTY_LOOKUPS_PKG = "net.sf.javascribe.patterns.lookups.Lookups.pkg";
 
 	@ProcessorMethod(componentClass=Lookups.class)
 	public void processLookups(Lookups lookups,ProcessorContext ctx) throws JavascribeException {
 
 		ctx.setLanguageSupport("Java");
-		System.out.println("Processing Lookups definition");
+		log.info("Processing Lookups definition");
 
 		Java5SourceFile locatorFile = null;
 		ServiceLocator locatorType = null;
@@ -47,6 +51,7 @@ public class LookupsProcessor {
 		locatorFile = JsomUtils.getJavaFile(locatorClassName, ctx);
 
 		if (locatorFile==null) {
+			log.info("Creating locator class '"+locatorClassName+"' for lookups");
 			locatorFile = new Java5SourceFile(new JavascribeVariableTypeResolver(ctx));
 			locatorFile.setPackageName(pkg);
 			locatorFile.getPublicClass().setClassName(lookups.getLocator());
@@ -74,6 +79,7 @@ public class LookupsProcessor {
 
 		src = JsomUtils.getJavaFile(pkg+'.'+lookupClassName, ctx);
 		if (src==null) {
+			log.info("Adding lookup class for entity "+e.getName());
 			src = new Java5SourceFile(new JavascribeVariableTypeResolver(ctx.getTypes()));
 			src.setPackageName(pkg);
 			src.getPublicClass().setClassName(lookupClassName);

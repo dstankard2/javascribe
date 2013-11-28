@@ -17,6 +17,11 @@
 		<mkdir dir="${dist.root}"/>
 		<mkdir dir="${dist.root}\bin"/>
 		<mkdir dir="${dist.root}\lib"/>
+
+		<mkdir dir="${dist.root}\conf" />
+		<copy overwrite="true" todir="${dist.root}\conf">
+			<fileset dir="conf"/>
+		</copy>
 	</target>
 	
 	<target name="copy.third.party.libs">
@@ -35,6 +40,7 @@
 		<ant antfile="..\language-support\build.xml" dir="..\language-support"/>
 		<ant antfile="..\launchers\build.xml" dir="..\launchers"/>
 		<ant antfile="..\patterns\build.xml" dir="..\patterns"/>
+		<ant antfile="..\docs\build.xml" dir="..\docs"/>
 	</target>
 
 </project>

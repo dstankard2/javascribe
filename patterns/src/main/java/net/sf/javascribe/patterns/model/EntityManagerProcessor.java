@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.JavascribeUtils;
@@ -26,13 +28,15 @@ import net.sf.jsom.java5.NVPAnnotationArgument;
 @Processor
 public class EntityManagerProcessor {
 
+	private static final Logger log = Logger.getLogger(EntityManagerProcessor.class);
+	
 	@ProcessorMethod(componentClass=EntityManagerComponent.class)
 	public void process(EntityManagerComponent comp,ProcessorContext ctx) throws JavascribeException {
 		List<DatabaseTable> tables = null;
 		PersistenceUnitConfig puConfig = null;
 
 		try {
-			System.out.println("Processing Entity Manager '"+comp.getName()+"'");
+			log.info("Processing Entity Manager '"+comp.getName()+"'");
 			
 			ctx.setLanguageSupport("Java");
 

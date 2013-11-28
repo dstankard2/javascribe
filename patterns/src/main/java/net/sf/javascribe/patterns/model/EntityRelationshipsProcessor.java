@@ -2,6 +2,8 @@ package net.sf.javascribe.patterns.model;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.JavascribeUtils;
@@ -21,6 +23,8 @@ import net.sf.jsom.java5.Java5SourceFile;
 @Scannable
 @Processor
 public class EntityRelationshipsProcessor {
+
+	private static final Logger log = Logger.getLogger(EntityRelationshipsProcessor.class);
 
 	private static final String HAS_ONE = " has a ";
 	private static final String HAS_MANY = " has many ";
@@ -43,7 +47,7 @@ public class EntityRelationshipsProcessor {
 		}
 		String daoFactoryName = comp.getJpaDaoFactory();
 
-		System.out.println("Processing EntityRelationships for JPA DAO Factory '"+daoFactoryName+"'");
+		log.info("Processing EntityRelationships for JPA DAO Factory '"+daoFactoryName+"'");
 		List<Relationship> rels = comp.getRel();
 		if (rels.size()==0) return;
 
@@ -116,7 +120,7 @@ public class EntityRelationshipsProcessor {
 					code.addImport("javax.persistence.Query");
 					code.append("Query _query = entityManager.createQuery(\"select _owned from ")
 							.append(ownerName+" as _owner, "+ownedName+" as _owned where _owner.")
-							.append(ownedIdField+" = _owned."+ownedIdField+" and owner."+ownerIdField)
+							.append(ownedIdField+" = _owned."+ownedIdField+" and _owner."+ownerIdField)
 							.append(" = :ownerIdField\");\n");
 					code.append("_query.setParameter(\"ownerIdField\","+ownerIdField+");\n");
 					code.append(ownedName+" _ret = null;\n");

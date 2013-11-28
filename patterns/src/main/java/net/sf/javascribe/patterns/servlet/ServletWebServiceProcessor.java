@@ -3,6 +3,8 @@ package net.sf.javascribe.patterns.servlet;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import net.sf.javascribe.api.AttributeHolder;
 import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.ProcessorContext;
@@ -22,6 +24,7 @@ import net.sf.javascribe.langsupport.java.JavaUtils;
 import net.sf.javascribe.langsupport.java.JavaVariableType;
 import net.sf.javascribe.langsupport.java.jsom.JavascribeVariableTypeResolver;
 import net.sf.javascribe.langsupport.java.jsom.JsomUtils;
+import net.sf.javascribe.patterns.quartz.ScheduledJobProcessor;
 import net.sf.jsom.CodeGenerationException;
 import net.sf.jsom.java5.Java5CodeSnippet;
 import net.sf.jsom.java5.Java5CompatibleCodeSnippet;
@@ -32,6 +35,8 @@ import net.sf.jsom.java5.Java5SourceFile;
 @Processor
 public class ServletWebServiceProcessor {
 
+	private static final Logger log = Logger.getLogger(ServletWebServiceProcessor.class);
+
 	@ProcessorMethod(componentClass=ServletWebService.class)
 	public void process(ServletWebService webService,ProcessorContext ctx) throws JavascribeException {
 		Java5SourceFile src = null;
@@ -40,7 +45,7 @@ public class ServletWebServiceProcessor {
 		ctx.setLanguageSupport("Java");
 
 		try {
-			System.out.println("Processing servlet web service with path '"+webService.getPath()+"'");
+			log.info("Processing servlet web service with path '"+webService.getPath()+"'");
 
 			String servicePkg = JavaUtils.findPackageName(ctx, ctx.getRequiredProperty(ServletWebService.SERVLET_WEB_SERVICE_PKG));
 			String serviceTypeName = webService.getWebServiceModule();
