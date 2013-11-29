@@ -101,12 +101,12 @@ public class EntityRelationshipsProcessor {
 				String ownedIdField = JavascribeUtils.getLowerCamelName(ownedName)+"Id";
 
 				if (relType==1) {
-					System.out.println("Processing ONE TO ONE relationship between "+ownerName+" and "+ownedName);
+					log.info("Processing ONE TO ONE relationship between "+ownerName+" and "+ownedName);
 					// Owner type must have a FK to the owned type
 					if (ownerType.getAttributeType(ownedIdField)==null) {
 						throw new JavascribeException("Error: In a 1-to-1 relationship, the owning entity must have a FK to the aggregated entity");
 					}
-					
+
 					// Create "Owned OwnedDao.getOwned(ownerId)"
 					Java5DeclaredMethod method = new Java5DeclaredMethod(new JavascribeVariableTypeResolver(ctx));
 					method.setMethodName("get"+ownedName+"For"+ownerName);
@@ -152,7 +152,7 @@ public class EntityRelationshipsProcessor {
 					code.append("return _ret;");
 					
 				} else {
-					System.out.println("Processing ONE TO MANY relationship between "+ownerName+" and "+ownedName);
+					log.info("Processing ONE TO MANY relationship between "+ownerName+" and "+ownedName);
 					// Owned type must have a FK to the owner type
 					if (ownedType.getAttributeType(ownerIdField)==null) {
 						throw new JavascribeException("Error: In a 1-to-many relationship, the type "+ownedType.getName()+" should have a foreign key "+ownerIdField+" to entity "+ownerType.getName());

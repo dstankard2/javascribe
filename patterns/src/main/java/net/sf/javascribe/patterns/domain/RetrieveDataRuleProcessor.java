@@ -212,7 +212,7 @@ public class RetrieveDataRuleProcessor {
 			RuleResolver ruleResolver = RuleResolver.getRuleResolver(returnType, execCtx, availableObjects, ctx);
 			Java5CodeSnippet code = ruleResolver.resolve();
 			if (code==null) {
-				throw new JavascribeException("Couldn't resolve rule");
+				throw new JavascribeException("Couldn't resolve rule - couldn't resolve for return type '"+returnType+"'");
 			}
 			methodCode.merge(code);
 			methodCode.append("return "+JavascribeUtils.getLowerCamelName(returnType)+";\n");

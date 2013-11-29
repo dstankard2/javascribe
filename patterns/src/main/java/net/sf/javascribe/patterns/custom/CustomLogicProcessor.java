@@ -190,7 +190,7 @@ public class CustomLogicProcessor {
 		String locatorName = component.getServiceGroupName()+"Locator";
 		String locatorClassName = pkg+'.'+locatorName;
 
-		System.out.println("Processing custom logic group name '"+component.getServiceGroupName()+"'");
+		log.info("Processing custom logic group name '"+component.getServiceGroupName()+"'");
 
 		File dir = new File(component.getSrc());
 		if ((!dir.exists()) || (!dir.isDirectory())) {
