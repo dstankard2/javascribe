@@ -48,6 +48,9 @@ public class CorePatternConstants {
 	// Depends on entity manager
 	public static final int PRIORITY_JPA_DAO_FACTORY = 15000;
 	
+	// Depends on DAO Factory
+	public static final int PRIORITY_UPDATE_ENTITY_RULE = 16250;
+
 	// Depends on lookups.
 	public static final int PRIORITY_OPTION_LIST = 17500;
 	
