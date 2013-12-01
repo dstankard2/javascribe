@@ -5,24 +5,26 @@ import java.util.List;
 
 import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JavascribeException;
+import net.sf.javascribe.langsupport.java.Injectable;
 import net.sf.javascribe.langsupport.java.JavaCode;
 import net.sf.javascribe.langsupport.java.JavaCodeImpl;
-import net.sf.javascribe.langsupport.java.JavaServiceObjectType;
+import net.sf.javascribe.langsupport.java.JavaUtils;
 import net.sf.javascribe.langsupport.java.ServiceLocator;
 
-public class JpaDaoFactoryType extends JavaServiceObjectType implements ServiceLocator {
+public class JpaDaoFactoryType implements ServiceLocator,Injectable {
 	String pu = null;
 	String className = null;
 	String pkg = null;
 	List<String> entityNames = null;
 	String ref = null;
+	String name = null;
 
 	public JpaDaoFactoryType(String ref,String pu,String pkg,String className,List<String> entityNames) {
-		super(ModelUtils.getDaoFactoryTypeName(pu),pkg,ModelUtils.getDaoFactoryTypeName(pu));
 		this.pu = pu;
 		this.pkg = pkg;
 		this.className = className;
 		this.entityNames = entityNames;
+		this.name = ModelUtils.getDaoFactoryTypeName(pu);
 		this.ref = ref;
 	}
 	
@@ -60,6 +62,15 @@ public class JpaDaoFactoryType extends JavaServiceObjectType implements ServiceL
 		return pkg+'.'+className;
 	}
 
+	public JavaCode getInstance(String instanceName,CodeExecutionContext execCtx) throws JavascribeException {
+		JavaCode ret = new JavaCodeImpl();
+
+		ret = declare(instanceName,execCtx);
+		JavaUtils.append(ret, instantiate(instanceName, null, execCtx));
+		
+		return ret;
+	}
+	
 	public JavaCode getDaoFactory(String varName,CodeExecutionContext execCtx) {
 		JavaCodeImpl ret = new JavaCodeImpl();
 		

@@ -14,7 +14,7 @@ import net.sf.javascribe.api.JavascribeException;
  * This type is instantiated via the instantiate method (default constructor).
  * @author Dave
  */
-public class JavaServiceObjectType implements JavaVariableType {
+public class JavaServiceObjectType implements JavaVariableType,Injectable {
 	private String className = null;
 	private String pkg = null;
 	private String name = null;
@@ -87,6 +87,15 @@ public class JavaServiceObjectType implements JavaVariableType {
 		JavaCodeImpl ret = new JavaCodeImpl();
 		
 		ret.appendCodeText(name+" = new "+getClassName()+"();\n");
+		
+		return ret;
+	}
+
+	public JavaCode getInstance(String instanceName,CodeExecutionContext execCtx) throws JavascribeException {
+		JavaCode ret = new JavaCodeImpl();
+
+		ret = declare(instanceName,execCtx);
+		JavaUtils.append(ret, instantiate(instanceName, null, execCtx));
 		
 		return ret;
 	}

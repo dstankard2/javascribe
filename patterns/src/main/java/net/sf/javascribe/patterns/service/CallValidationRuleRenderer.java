@@ -56,7 +56,7 @@ public class CallValidationRuleRenderer implements NestingServiceOperationRender
 				ret.merge(JsomUtils.toJsomCode(type.declare(varName)));
 				if (type instanceof LocatedJavaServiceObjectType) {
 					LocatedJavaServiceObjectType locatedServiceType = (LocatedJavaServiceObjectType)type;
-					ret.merge(JsomUtils.toJsomCode(locatedServiceType.getInstance(varName, execCtx)));
+					ret.merge(JsomUtils.toJsomCode(locatedServiceType.locateService(varName, execCtx)));
 				} else {
 					ret.merge(JsomUtils.toJsomCode(type.instantiate(varName, null)));
 				}

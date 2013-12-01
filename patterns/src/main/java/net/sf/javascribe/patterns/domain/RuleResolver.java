@@ -84,6 +84,11 @@ public class RuleResolver {
 	
 	protected Java5CodeSnippet checkDependency(String typeName,String searchType,String instance) throws CodeGenerationException,JavascribeException {
 		Java5CodeSnippet ret = null;
+		
+		if (!(execCtx.getType(typeName) instanceof JavaServiceObjectType)) {
+			return null;
+		}
+
 		JavaServiceObjectType type = (JavaServiceObjectType)execCtx.getType(typeName);
 		List<String> methods = type.getOperationNames();
 		

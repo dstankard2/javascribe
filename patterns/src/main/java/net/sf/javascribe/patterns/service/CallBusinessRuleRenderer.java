@@ -51,7 +51,7 @@ public class CallBusinessRuleRenderer implements ServiceOperationRenderer {
 				ret.merge(new JavascribeJavaCodeSnippet(type.declare(varName)));
 				if (type instanceof LocatedJavaServiceObjectType) {
 					LocatedJavaServiceObjectType locatedServiceType = (LocatedJavaServiceObjectType)type;
-					ret.merge(new JavascribeJavaCodeSnippet(locatedServiceType.getInstance(varName, execCtx)));
+					ret.merge(new JavascribeJavaCodeSnippet(locatedServiceType.locateService(varName, execCtx)));
 				} else {
 					ret.merge(new JavascribeJavaCodeSnippet(type.instantiate(varName, null)));
 				}

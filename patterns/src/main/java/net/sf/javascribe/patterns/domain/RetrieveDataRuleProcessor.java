@@ -4,18 +4,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-
 import net.sf.javascribe.api.Attribute;
 import net.sf.javascribe.api.CodeExecutionContext;
-import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.JavascribeUtils;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.VariableType;
 import net.sf.javascribe.api.annotation.Processor;
 import net.sf.javascribe.api.annotation.ProcessorMethod;
 import net.sf.javascribe.api.annotation.Scannable;
 import net.sf.javascribe.api.config.ComponentBase;
+import net.sf.javascribe.langsupport.java.Injectable;
 import net.sf.javascribe.langsupport.java.JavaServiceObjectType;
 import net.sf.javascribe.langsupport.java.JavaUtils;
 import net.sf.javascribe.langsupport.java.LocatedJavaServiceObjectType;
@@ -30,6 +29,8 @@ import net.sf.jsom.java5.Java5CompatibleCodeSnippet;
 import net.sf.jsom.java5.Java5DeclaredMethod;
 import net.sf.jsom.java5.Java5SourceFile;
 
+import org.apache.log4j.Logger;
+
 @Scannable
 @Processor
 public class RetrieveDataRuleProcessor {
@@ -41,27 +42,25 @@ public class RetrieveDataRuleProcessor {
 
 		ctx.setLanguageSupport("Java");
 
-		log.info("Processing retrieve data rule '"+comp.getServiceObj()+"."+comp.getRule()+"'");
-
 		try {
 			// Read service locator name
 			String serviceLocatorName = null;
 			if (comp.getServiceLocator().trim().length()>0) {
 				serviceLocatorName = comp.getServiceLocator();
-			} else if (ctx.getProperty(RetrieveDataRule.DOMAIN_LOGIC_LOCATOR_CLASS)!=null) {
-				serviceLocatorName = ctx.getProperty(RetrieveDataRule.DOMAIN_LOGIC_LOCATOR_CLASS);
+			} else if (ctx.getProperty(DomainLogicCommon.DOMAIN_LOGIC_LOCATOR_CLASS)!=null) {
+				serviceLocatorName = ctx.getProperty(DomainLogicCommon.DOMAIN_LOGIC_LOCATOR_CLASS);
 			} else {
-				throw new JavascribeException("Service Locator Name must be specified in the component or in property '"+RetrieveDataRule.DOMAIN_LOGIC_LOCATOR_CLASS+"'");
+				throw new JavascribeException("Service Locator Name must be specified in the component or in property '"+DomainLogicCommon.DOMAIN_LOGIC_LOCATOR_CLASS+"'");
 			}
 
 			// Read business object name
 			String serviceObjName = null;
 			if (comp.getServiceObj().trim().length()>0) {
 				serviceObjName = comp.getServiceObj();
-			} else if (ctx.getProperty(RetrieveDataRule.DOMAIN_LOGIC_SERVICE_OBJ)!=null) {
-				serviceObjName = ctx.getProperty(RetrieveDataRule.DOMAIN_LOGIC_SERVICE_OBJ);
+			} else if (ctx.getProperty(DomainLogicCommon.DOMAIN_LOGIC_SERVICE_OBJ)!=null) {
+				serviceObjName = ctx.getProperty(DomainLogicCommon.DOMAIN_LOGIC_SERVICE_OBJ);
 			} else {
-				throw new JavascribeException("Service Object Name must be specified in the component or in property '"+RetrieveDataRule.DOMAIN_LOGIC_SERVICE_OBJ+"'");
+				throw new JavascribeException("Service Object Name must be specified in the component or in property '"+DomainLogicCommon.DOMAIN_LOGIC_SERVICE_OBJ+"'");
 			}
 
 			// Read rule name
@@ -70,6 +69,8 @@ public class RetrieveDataRuleProcessor {
 			if (ruleName.trim().length()==0) {
 				throw new JavascribeException("Attribute 'ruleName' is required on component Retrieve Data Rule");
 			}
+
+			log.info("Processing retrieve data rule '"+serviceObjName+"."+ruleName+"'");
 
 			// Read rule return type
 			String returnType = comp.getReturnType();
@@ -99,8 +100,9 @@ public class RetrieveDataRuleProcessor {
 				deps = new ArrayList<Attribute>();
 			}
 
+			log.info("Found dependencies as '"+depNames+"'");
 			// Get package for domain logic
-			String pkg = JavaUtils.findPackageName(ctx, ctx.getRequiredProperty(RetrieveDataRule.DOMAIN_LOGIC_PKG));
+			String pkg = JavaUtils.findPackageName(ctx, ctx.getRequiredProperty(DomainLogicCommon.DOMAIN_LOGIC_PKG));
 
 			Java5SourceFile locatorFile = null;
 			Java5SourceFile serviceFile = null;
@@ -173,10 +175,12 @@ public class RetrieveDataRuleProcessor {
 					code.append("this."+d.getName()+" = "+d.getName()+';');
 					setter.setMethodBody(code);
 					VariableType injType = ctx.getType(d.getType());
-					if ((injType==null) || (!(injType instanceof JavaServiceObjectType))) {
+					if ((injType==null) || (!(injType instanceof Injectable))) {
 						throw new JavascribeException("Dependency '"+d.getName()+"' is not an injectable type");
 					}
-					locatorCode.merge(JsomUtils.declareAndInstantiateObject((JavaServiceObjectType)injType, d.getName(), null));
+					Injectable i = (Injectable)injType;
+					JsomUtils.merge(locatorCode, i.getInstance(d.getName(), null));
+//					locatorCode.merge(JsomUtils.declareAndInstantiateObject((JavaServiceObjectType)injType, d.getName(), null));
 					locatorCode.append("_service.set"+depBigEndian+"("+d.getName()+");\n");
 				}
 			}

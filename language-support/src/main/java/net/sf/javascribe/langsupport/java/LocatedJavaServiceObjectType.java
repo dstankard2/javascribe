@@ -7,7 +7,7 @@ import net.sf.javascribe.api.JavascribeException;
  * A service represents a Java business logic service that is found via a service locator.
  * @author Dave
  */
-public class LocatedJavaServiceObjectType extends JavaServiceObjectType implements Injectable {
+public class LocatedJavaServiceObjectType extends JavaServiceObjectType {
 	protected String locatorClass = null;
 	
 	public LocatedJavaServiceObjectType(String locatorClass,String serviceName,String pkg,String className) {
@@ -19,8 +19,7 @@ public class LocatedJavaServiceObjectType extends JavaServiceObjectType implemen
 		return locatorClass;
 	}
 	
-	@Override
-	public JavaCode getInstance(String varName,CodeExecutionContext execCtx) throws JavascribeException {
+	public JavaCode locateService(String varName,CodeExecutionContext execCtx) throws JavascribeException {
 		JavaCodeImpl ret = new JavaCodeImpl();
 
 		ret.addImport(getImport());

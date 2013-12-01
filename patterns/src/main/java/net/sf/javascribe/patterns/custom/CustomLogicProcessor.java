@@ -7,16 +7,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import org.apache.log4j.Logger;
-
 import net.sf.javascribe.api.CodeExecutionContext;
-import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.JavascribeUtils;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.VariableType;
 import net.sf.javascribe.api.annotation.Processor;
 import net.sf.javascribe.api.annotation.ProcessorMethod;
 import net.sf.javascribe.api.annotation.Scannable;
+import net.sf.javascribe.langsupport.java.Injectable;
+import net.sf.javascribe.langsupport.java.JavaCode;
 import net.sf.javascribe.langsupport.java.JavaOperation;
 import net.sf.javascribe.langsupport.java.JavaServiceObjectType;
 import net.sf.javascribe.langsupport.java.JavaUtils;
@@ -29,6 +29,8 @@ import net.sf.jsom.java5.Java5ClassConstructor;
 import net.sf.jsom.java5.Java5CodeSnippet;
 import net.sf.jsom.java5.Java5DeclaredMethod;
 import net.sf.jsom.java5.Java5SourceFile;
+
+import org.apache.log4j.Logger;
 
 @Scannable
 @Processor
@@ -266,8 +268,11 @@ public class CustomLogicProcessor {
 			code.addImport(javaType.getImport());
 			if (hasService(dep,domainServices)) {
 				code.append(var+" = get"+dep+"();\n");
-			} else if (type instanceof JavaServiceObjectType){
-				code.merge(JsomUtils.declareAndInstantiateObject((JavaServiceObjectType)type, var, execCtx));
+			} else if (type instanceof Injectable) {
+				Injectable inj = (Injectable)type;
+				JavaCode c = inj.getInstance(var, execCtx);
+				JsomUtils.merge(code, c);
+//				code.merge(JsomUtils.declareAndInstantiateObject((JavaServiceObjectType)type, var, execCtx));
 			} else {
 				throw new JavascribeException("blah");
 			}

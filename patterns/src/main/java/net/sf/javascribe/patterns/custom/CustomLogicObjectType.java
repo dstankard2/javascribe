@@ -5,6 +5,7 @@ import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.langsupport.java.Injectable;
 import net.sf.javascribe.langsupport.java.JavaCode;
 import net.sf.javascribe.langsupport.java.JavaCodeImpl;
+import net.sf.javascribe.langsupport.java.JavaUtils;
 import net.sf.javascribe.langsupport.java.LocatedJavaServiceObjectType;
 
 /**
@@ -20,10 +21,13 @@ public class CustomLogicObjectType extends LocatedJavaServiceObjectType implemen
 
 	@Override
 	public JavaCode getInstance(String varName,CodeExecutionContext execCtx) throws JavascribeException {
-		JavaCodeImpl ret = new JavaCodeImpl();
+		JavaCode ret = null;
+		JavaCode inst = new JavaCodeImpl();
 
-		ret.addImport(getImport());
-		ret.appendCodeText(varName+" = new "+locatorClass+"().get"+getName()+"();\n");
+		ret = declare(varName,execCtx);
+		inst.addImport(getImport());
+		inst.appendCodeText(varName+" = new "+locatorClass+"().get"+getName()+"();\n");
+		JavaUtils.append(ret,inst);
 
 		return ret;
 	}
