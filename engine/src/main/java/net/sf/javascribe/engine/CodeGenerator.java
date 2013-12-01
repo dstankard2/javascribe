@@ -126,6 +126,9 @@ public class CodeGenerator {
 		} catch(IllegalAccessException e) {
 			throw new JavascribeException("Exception while invoking component processor",e);
 		} catch(InvocationTargetException e) {
+			if (e.getCause() instanceof JavascribeException) {
+				throw new JavascribeException("JavascribeException while invoking component processor",e.getCause());
+			}
 			throw new JavascribeException("Exception while invoking component processor",e);
 		}
 	}
