@@ -17,6 +17,15 @@ public class JavaUtils {
 	private static final String JAVA_ROOT_PKG = "net.sf.javascribe.langsupport.java.rootPkg";
 	private static final String JAVA_ROOT_DIR = "net.sf.javascribe.langsupport.java.rootDir";
 
+	public static void append(JavaCode code,JavaCode append) throws JavascribeException {
+		code.appendCodeText(append.getCodeText());
+		for(String im : append.getImports()) {
+			if (!code.getImports().contains(im)) {
+				code.addImport(im);
+			}
+		}
+	}
+	
 	public static void addJavaFile(JavaSourceFile file,ProcessorContext ctx) throws JavascribeException {
 		file.setSourceRootPath(ctx.getBuildRoot()+File.separatorChar+ctx.getRequiredProperty(JAVA_ROOT_DIR));
 		ctx.addSourceFile(file);
