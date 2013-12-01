@@ -14,10 +14,22 @@ import net.sf.javascribe.api.ProcessorContext;
 
 public class JavascribeUtils {
 
-	public boolean isEmpty(String s) {
+	public static boolean isEmpty(String s) {
 		if (s==null) return true;
 		if (s.trim().length()==0) return true;
 		return false;
+	}
+	
+	public static String getNaturalAttributeName(String typeName) {
+		String ret = null;
+		
+		if (typeName.startsWith("list/")) {
+			ret = getLowerCamelName(typeName.substring(5))+"List";
+		} else {
+			ret = getLowerCamelName(typeName);
+		}
+		
+		return ret;
 	}
 	
 	public static String getLowerCamelName(String typeName) {
