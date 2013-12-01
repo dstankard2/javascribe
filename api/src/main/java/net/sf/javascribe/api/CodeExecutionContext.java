@@ -21,7 +21,9 @@ public class CodeExecutionContext {
 	public CodeExecutionContext(CodeExecutionContext parent,TypeResolver types) {
 		this.types = types;
 		if (parent!=null) {
+			this.types = parent.types;
 			variables.putAll(parent.variables);
+			
 		}
 	}
 	
