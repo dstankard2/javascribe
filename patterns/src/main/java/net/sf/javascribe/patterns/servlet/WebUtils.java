@@ -103,6 +103,9 @@ public class WebUtils {
 	// given name with the given type and in the given executionContext.  Append the code to 
 	// the specified code snippet.
 	public static void handleQueryParam(ProcessorContext ctx,String name,String typeName,Java5CompatibleCodeSnippet code,CodeExecutionContext execCtx) throws JavascribeException,CodeGenerationException {
+		if (typeName==null) {
+			throw new JavascribeException("Unable to process query param '"+name+"' as it is not a defined attribute");
+		}
 		JavaVariableType type = (JavaVariableType)ctx.getType(typeName);
 
 		if (type==null) {

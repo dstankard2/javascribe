@@ -8,12 +8,14 @@
 	</target>
 	
 	<target name="run.xsl">
+<!--
 		<mkdir dir="${dist.root}\docs\patterns"/>
 		<xslt 
 			basedir="${dev.root}\xml" 
 			destdir="${dist.root}\docs\patterns"
 			style="component-html.xsl"
 		/>
+-->
 	</target>
 
 	<target name="copy.files">

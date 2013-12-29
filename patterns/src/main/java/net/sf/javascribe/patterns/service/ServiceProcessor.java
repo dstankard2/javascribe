@@ -144,6 +144,7 @@ public class ServiceProcessor {
 			resultName = service.getName();
 			resultName = Character.toUpperCase(service.getName().charAt(0))+service.getName().substring(1);
 			resultName = resultName + "ServiceResult";
+			log.debug("Creating service result type '"+resultName+"'");
 			obj = new JsomJavaBeanType(resultName,servicePkg,resultName);
 			ctx.getTypes().addType(obj);
 

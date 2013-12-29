@@ -144,7 +144,7 @@ public class JpaDaoFactoryProcessor {
 			// Insert method
 			method = new Java5DeclaredMethod(new JavascribeVariableTypeResolver(ctx));
 			method.addArg(entityName, lowerCamelName);
-			method.setMethodName("insert");
+			method.setMethodName("insert"+entityName);
 			code = new Java5CodeSnippet();
 			code.append("entityManager.persist("+lowerCamelName+");");
 			method.setMethodBody(code);
@@ -154,7 +154,7 @@ public class JpaDaoFactoryProcessor {
 			// Select method
 			method = new Java5DeclaredMethod(new JavascribeVariableTypeResolver(ctx));
 			method.addArg("integer", lowerCamelName+"Id");
-			method.setMethodName("select");
+			method.setMethodName("get"+entityName);
 			method.setReturnType(entityName);
 			code = new Java5CodeSnippet();
 			code.append("return entityManager.find("+entityName+".class,"+lowerCamelName+"Id);");
@@ -165,7 +165,7 @@ public class JpaDaoFactoryProcessor {
 			// Persist method
 			method = new Java5DeclaredMethod(new JavascribeVariableTypeResolver(ctx));
 			method.addArg(entityName, lowerCamelName);
-			method.setMethodName("persist");
+			method.setMethodName("save"+entityName);
 			code = new Java5CodeSnippet();
 			code.append("entityManager.persist("+lowerCamelName+");");
 			method.setMethodBody(code);
@@ -175,7 +175,7 @@ public class JpaDaoFactoryProcessor {
 			// Delete method
 			method = new Java5DeclaredMethod(new JavascribeVariableTypeResolver(ctx));
 			method.addArg(entityName, lowerCamelName);
-			method.setMethodName("delete");
+			method.setMethodName("delete"+entityName);
 			code = new Java5CodeSnippet();
 			code.append("entityManager.remove("+lowerCamelName+");");
 			method.setMethodBody(code);
@@ -185,7 +185,7 @@ public class JpaDaoFactoryProcessor {
 			// Merge method
 			method = new Java5DeclaredMethod(new JavascribeVariableTypeResolver(ctx));
 			method.addArg(entityName, lowerCamelName);
-			method.setMethodName("merge");
+			method.setMethodName("merge"+entityName);
 			code = new Java5CodeSnippet();
 			code.append("entityManager.merge("+lowerCamelName+");");
 			method.setMethodBody(code);

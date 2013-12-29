@@ -30,8 +30,6 @@ import org.apache.log4j.Logger;
 public class EjbqlQueryProcessor {
 	
 	private static final Logger log = Logger.getLogger(EjbqlQueryProcessor.class);
-	
-	public static final String EJBQL_QUERY_PKG = "net.sf.javascribe.patterns.model.EjbqlQuery.pkg";
 	EjbqlQuery query = null;
 	ProcessorContext ctx = null;
 
@@ -56,7 +54,7 @@ public class EjbqlQueryProcessor {
 		try {
 			pu = query.getPu();
 			if (pu.trim().length()==0) {
-				pu = ctx.getProperty("net.sf.javascribe.patterns.model.EjbqlQuery.pu");
+				pu = ctx.getProperty(EjbqlQuery.EJBQL_QUERY_PU);
 			}
 
 			if (query.getName().trim().length()==0) {
@@ -67,19 +65,19 @@ public class EjbqlQueryProcessor {
 				throw new JavascribeException("No query string specified for EJBQL Query '"+query.getName()+"'");
 			}
 			if (pu==null) {
-				throw new JavascribeException("Could not determine JPA PU for ejbqlQuery '"+query.getName()+"'");
+				throw new JavascribeException("Could not determine JPA PU for ejbqlQuery '"+query.getName()+"' from attribute 'pu' or property '"+EjbqlQuery.EJBQL_QUERY_PU+"'");
 			}
 			
 			querySet = query.getQuerySet();
 			if (querySet.trim().length()==0) {
-				querySet = ctx.getProperty("net.sf.javascribe.patterns.model.EjbqlQuery.querySet");
+				querySet = ctx.getProperty(EjbqlQuery.EJBQL_QUERY_QUERY_SET);
 			}
 
 			if (querySet==null) {
-				throw new JavascribeException("Could not determine Query Set for ejbqlQuery '"+query.getName()+"'");
+				throw new JavascribeException("Could not determine Query Set for ejbqlQuery '"+query.getName()+"' - it must be in attribute 'querySet' or property '"+EjbqlQuery.EJBQL_QUERY_QUERY_SET+"'");
 			}
 
-			pkg = JavaUtils.findPackageName(ctx, ctx.getRequiredProperty(EJBQL_QUERY_PKG));
+			pkg = JavaUtils.findPackageName(ctx, ctx.getRequiredProperty(EjbqlQuery.EJBQL_QUERY_PKG));
 			className = query.getQuerySet();
 			fullName = pkg+'.'+className;
 

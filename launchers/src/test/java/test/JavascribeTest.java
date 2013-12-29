@@ -17,7 +17,8 @@ public class JavascribeTest {
 	}
 
 	private static void runTest() throws Exception {
-		File zipFile = new File("myTestFile.zip");
+//		File zipFile = new File("myTestFile.zip");
+		File zipFile = new File("c:\\build\\codewiz\\codewiz.zip");
 		
 		File libs[] = new File[9];
 		libs[0] = new File("..\\engine\\bin");

@@ -55,7 +55,7 @@ public class LookupsProcessor {
 			locatorFile = new Java5SourceFile(new JavascribeVariableTypeResolver(ctx));
 			locatorFile.setPackageName(pkg);
 			locatorFile.getPublicClass().setClassName(lookups.getLocator());
-			locatorType = new LookupsLocator(pkg, locatorClassName);
+			locatorType = new LookupsLocator(pkg, lookups.getLocator());
 			ctx.getTypes().addType(locatorType);
 			JsomUtils.addJavaFile(locatorFile, ctx);
 			ctx.addAttribute(JavascribeUtils.getLowerCamelName(locatorClassName), locatorClassName);
@@ -79,7 +79,7 @@ public class LookupsProcessor {
 
 		src = JsomUtils.getJavaFile(pkg+'.'+lookupClassName, ctx);
 		if (src==null) {
-			log.info("Adding lookup class for entity "+e.getName());
+			log.debug("Adding lookup class for entity "+e.getName());
 			src = new Java5SourceFile(new JavascribeVariableTypeResolver(ctx.getTypes()));
 			src.setPackageName(pkg);
 			src.getPublicClass().setClassName(lookupClassName);
@@ -113,6 +113,7 @@ public class LookupsProcessor {
 		Java5CodeSnippet code = new Java5CodeSnippet();
 		StringBuilder methodNameBuild = new StringBuilder();
 
+		log.debug("Adding lookup for field '"+f.getName()+"'");
 		methodNameBuild.append("get").append(Character.toUpperCase(f.getName().charAt(0)))
 		.append(f.getName().substring(1)).append("String");
 		String methodName = methodNameBuild.toString();

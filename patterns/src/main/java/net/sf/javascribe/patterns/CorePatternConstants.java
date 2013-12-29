@@ -24,11 +24,14 @@ public class CorePatternConstants {
 	// No dependencies
 	public static final int PRIORITY_ENTITY_MANAGER = 10000;
 
-	// Comes just before data object
+	// No dependency
+	public static final int PRIORITY_LOOKUPS = 10000;
+	
+	// Dependency of data object.  Depends on lookup, entity manager
 	public static final int PRIORITY_CLASSIFICATION = 12500;
 
 	// Depends on entity manager
-	public static final int PRIORITY_LOOKUPS = 15000;
+	public static final int PRIORITY_THREAD_LOCAL_TX_LOCATOR = 12500;
 	
 	// depends on entity manager
 	public static final int PRIORITY_EJBQL_QUERY = 15000;
@@ -39,12 +42,9 @@ public class CorePatternConstants {
 	// depends on entity manager
 	public static final int PRIORITY_DATA_OBJECT = 15000;
 	
-	// Comes after Domain Data
+	// Comes after Data Object
 	public static final int PRIORITY_CLASSIFICATION_FINALIZER = PRIORITY_DATA_OBJECT+1;
 
-	// Depends on entity manager
-	public static final int PRIORITY_THREAD_LOCAL_TX_LOCATOR = 15000;
-	
 	// Depends on entity manager
 	public static final int PRIORITY_JPA_DAO_FACTORY = 15000;
 	

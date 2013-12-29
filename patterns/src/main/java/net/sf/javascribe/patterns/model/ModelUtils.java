@@ -19,7 +19,9 @@ public class ModelUtils {
 	public static EntityManagerLocator getDefaultEntityManagerLocator(String pu,ProcessorContext ctx) throws JavascribeException {
 		String name = ctx.getRequiredProperty("net.sf.javascribe.patterns.model.EntityManagerComponent.defaultEntityManagerLocator."+pu);
 		EntityManagerLocator loc = (EntityManagerLocator)ctx.getType(name);
-		
+		if (loc==null) {
+			throw new JavascribeException("No type found '"+name+"' while looking for Entity Manager Locator Type");
+		}
 		return loc;
 	}
 

@@ -10,9 +10,12 @@ import java.util.Map;
 
 import net.sf.javascribe.api.expressions.ExpressionUtil;
 import net.sf.javascribe.api.expressions.ValueExpression;
-import net.sf.javascribe.api.ProcessorContext;
+
+import org.apache.log4j.Logger;
 
 public class JavascribeUtils {
+
+	public static final Logger log = Logger.getLogger(JavascribeUtils.class);
 
 	public static boolean isEmpty(String s) {
 		if (s==null) return true;
@@ -64,6 +67,7 @@ public class JavascribeUtils {
 	
 	public static ValueExpression findParameterValue(String paramName,String paramTypeName,CodeExecutionContext execCtx,Map<String,String> explicitParams) throws JavascribeException {
 		if ((explicitParams!=null) && (explicitParams.containsKey(paramName))) {
+			log.debug("Found value for parameter "+paramName+" as "+explicitParams.get(paramName));
 			return ExpressionUtil.buildValueExpression(explicitParams.get(paramName), paramTypeName, execCtx);
 		}
 		
@@ -72,6 +76,7 @@ public class JavascribeUtils {
 		// Check variables
 		for(String v : vars) {
 			if (v.equals(paramName)) {
+				log.debug("Found param "+paramName+" in exec ctx");
 				return ExpressionUtil.buildValueExpression("${"+v+"}", paramTypeName, execCtx);
 			}
 			VariableType type = execCtx.getTypeForVariable(v);
@@ -84,6 +89,7 @@ public class JavascribeUtils {
 			AttributeHolder holder = toCheck.get(v);
 			if (holder.getAttributeType(paramName)!=null) {
 				if (holder.getAttributeType(paramName).equals(paramTypeName)) {
+					log.debug("Found parameter "+paramName+" in attribute holder "+v);
 					return ExpressionUtil.buildValueExpression("${"+v+"."+paramName+"}", paramTypeName, execCtx);
 				}
 			}
@@ -95,6 +101,7 @@ public class JavascribeUtils {
 	public static HashMap<String,String> readParameters(ProcessorContext ctx,String paramString) throws JavascribeException {
 		HashMap<String,String> ret = new HashMap<String,String>();
 		String params[] = paramString.split(",");
+		if (paramString.trim().length()==0) return ret;
 		
 		for(String p : params) {
 			int i = p.indexOf("=");

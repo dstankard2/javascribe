@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<component>
-	<name>Data Object</name>
-	<id>DataObject</id>
-	<language>Java</language>
-	<description>
-<p>A data object has one or more attributes and getter and setter methods for those attributes.</p>
-<p>Data Object attributes may be of any valid type.  You have the option to specify types </p>
-	</description>
+<pattern xmlns="http://docs.javascribe.com/pattern"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://docs.javascribe.com/pattern pattern.xsd">
+
 	
-</component>
+	
+</pattern>
+

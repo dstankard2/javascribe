@@ -6,17 +6,21 @@ import java.util.List;
 import java.util.Map;
 
 import net.sf.javascribe.api.CodeExecutionContext;
-import net.sf.javascribe.api.ProcessorContext;
-import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.api.JavascribeException;
+import net.sf.javascribe.api.JavascribeUtils;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.expressions.ExpressionUtil;
 import net.sf.javascribe.api.expressions.ValueExpression;
+
+import org.apache.log4j.Logger;
 
 public class JavaUtils {
 
 	private static final String JAVA_ROOT_PKG = "net.sf.javascribe.langsupport.java.rootPkg";
 	private static final String JAVA_ROOT_DIR = "net.sf.javascribe.langsupport.java.rootDir";
 
+	private static final Logger log = Logger.getLogger(JavaUtils.class);
+	
 	public static void append(JavaCode code,JavaCode append) throws JavascribeException {
 		code.appendCodeText(append.getCodeText());
 		for(String im : append.getImports()) {
@@ -67,6 +71,7 @@ public class JavaUtils {
 	public static String callJavaOperation(String resultName,String objName,JavaOperation op,CodeExecutionContext execCtx,Map<String,String> explicitParams,boolean addSemicolon) throws JavascribeException {
 		StringBuilder build = new StringBuilder();
 		
+		log.debug("Building Java operation call for "+objName+"."+op.getName());
 		build.append(objName).append('.');
 		if (explicitParams==null) {
 			explicitParams = new HashMap<String,String>();

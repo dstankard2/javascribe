@@ -17,6 +17,10 @@ import net.sf.javascribe.patterns.CorePatternConstants;
 @XmlType(name="ejbqlQuery",propOrder={ })
 public class EjbqlQuery extends ComponentBase {
 
+	public static final String EJBQL_QUERY_PU = "net.sf.javascribe.patterns.model.EjbqlQuery.pu";
+	public static final String EJBQL_QUERY_QUERY_SET = "net.sf.javascribe.patterns.model.EjbqlQuery.querySet";
+	public static final String EJBQL_QUERY_PKG = "net.sf.javascribe.patterns.model.EjbqlQuery.pkg";
+
 	public int getPriority() { return CorePatternConstants.PRIORITY_EJBQL_QUERY; }
 	
 	@XmlElement

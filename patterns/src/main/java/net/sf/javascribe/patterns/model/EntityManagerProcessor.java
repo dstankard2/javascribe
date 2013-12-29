@@ -151,9 +151,11 @@ public class EntityManagerProcessor {
 		String entity = null;
 		
 		entity = EntityManagerUtils.getEntityName(table.getName(), ctx, comp);
+		log.debug("Processing DB table "+table.getName()+" as attribute "+entity);
 		JavaBeanType type = new JsomJavaBeanType(entity,pkg,entity);
 		for(DatabaseTableColumn col : table.getColumns()) {
 			String prop = EntityManagerUtils.getAttributeName(col.getName(), ctx, comp);
+			log.debug("Processing DB column "+col.getName()+" as attribute "+prop);
 			ctx.addAttribute(prop, col.getJavaType());
 			type.addAttribute(prop, col.getJavaType());
 		}

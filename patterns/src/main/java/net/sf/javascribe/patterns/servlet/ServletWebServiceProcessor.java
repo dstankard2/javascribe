@@ -45,7 +45,7 @@ public class ServletWebServiceProcessor {
 		ctx.setLanguageSupport("Java");
 
 		try {
-			log.info("Processing servlet web service with path '"+webService.getPath()+"'");
+			log.info("Processing servlet web service with path '"+webService.getWebServiceModule()+webService.getPath()+"'");
 
 			String servicePkg = JavaUtils.findPackageName(ctx, ctx.getRequiredProperty(ServletWebService.SERVLET_WEB_SERVICE_PKG));
 			String serviceTypeName = webService.getWebServiceModule();
@@ -286,6 +286,7 @@ public class ServletWebServiceProcessor {
 		if ((filters!=null) && (filters.trim().length()>0)) {
 			String f[] = filters.split(",");
 			for(String s : f) {
+				log.debug("Applying filter '"+s+"'");
 				webXml.addFilterMapping(s, '/'+mod+webService.getPath());
 			}
 		}
