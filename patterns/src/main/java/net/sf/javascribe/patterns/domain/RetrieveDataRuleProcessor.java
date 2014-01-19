@@ -100,7 +100,7 @@ public class RetrieveDataRuleProcessor {
 				deps = new ArrayList<Attribute>();
 			}
 
-			log.info("Found dependencies as '"+depNames+"'");
+			log.debug("Found dependencies as '"+depNames+"'");
 			// Get package for domain logic
 			String pkg = JavaUtils.findPackageName(ctx, ctx.getRequiredProperty(DomainLogicCommon.DOMAIN_LOGIC_PKG));
 

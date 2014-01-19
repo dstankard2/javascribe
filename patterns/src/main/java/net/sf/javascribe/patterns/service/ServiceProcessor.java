@@ -187,7 +187,7 @@ public class ServiceProcessor {
 						if (obj.getAttributeType(resultName)==null) {
 							if ((ctx.getAttributeType(resultName)!=null) && 
 									(!ctx.getAttributeType(resultName).equals(resultType))) {
-								throw new JavascribeException("Found inconsistent types for attribute '"+resultName+"'");
+								throw new JavascribeException("Found inconsistent types '"+resultType+"' and '"+ctx.getAttributeType(resultName)+"' for attribute '"+resultName+"'");
 							}
 							ctx.addAttribute(resultName, resultType);
 							obj.addAttribute(resultName, resultType);
