@@ -50,7 +50,7 @@ public class CustomLogicProcessor {
 		ret.setPkg(pkg);
 		ctx.addAttribute(JavascribeUtils.getLowerCamelName(className), className);
 
-		log.info("Processing Custom Logic class '"+className+"'");
+		log.debug("Processing Custom Logic class '"+className+"'");
 
 		StringBuilder fileContents = readFileContents(f);
 		int index = fileContents.indexOf("public class")+1;
@@ -146,6 +146,9 @@ public class CustomLogicProcessor {
 		while(tok.hasMoreTokens()) {
 			String s = tok.nextToken().trim();
 			int index = s.indexOf(' ');
+			if (index<0) {
+				throw new JavascribeException("Couldn't process declaration in line '"+line+"'");
+			}
 			String name = s.substring(index+1);
 			if (name.equals("fac")) name = "ds";
 			String type = s.substring(0, index);
@@ -254,6 +257,9 @@ public class CustomLogicProcessor {
 
 			if (type==null) {
 				String typeName = ctx.getAttributeType(JavascribeUtils.getLowerCamelName(dep));
+				if (typeName==null) {
+					throw new JavascribeException("Could not find dependency "+dep);
+				}
 				type = ctx.getType(typeName);
 			}
 
