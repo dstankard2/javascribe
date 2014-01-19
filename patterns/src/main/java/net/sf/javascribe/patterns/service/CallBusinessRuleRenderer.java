@@ -1,6 +1,7 @@
 package net.sf.javascribe.patterns.service;
 
 import java.util.HashMap;
+import java.util.List;
 
 import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.ProcessorContext;
@@ -40,7 +41,15 @@ public class CallBusinessRuleRenderer implements ServiceOperationRenderer {
 			if (type==null) {
 				throw new JavascribeException("Could not find type '"+typeName+"'");
 			}
-			JavaOperation operation = type.getMethod(ruleName);
+			
+			List<JavaOperation> ops = type.getMethods(ruleName);
+			if (ops.size()<1) {
+				throw new JavascribeException("Could not find business rule "+typeName+"."+ruleName);
+			} else if (ops.size()>1) {
+				throw new JavascribeException("Cannot call overloaded business rule '"+typeName+"."+ruleName+"' as callBusinessRule cannot determine which rule to invoke");
+			}
+
+			JavaOperation operation = ops.get(0);
 
 			HashMap<String,String> explicitParams = new HashMap<String,String>();
 			if (op.getParams()!=null) {

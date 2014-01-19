@@ -110,10 +110,13 @@ public class WebServletProcessor {
 			if (obj==null) {
 				throw new CodeGenerationException("Couldn't find business object type '"+objName+"'");
 			}
-			JavaOperation op = obj.getMethod(ruleName);
-			if (op==null) {
+			List<JavaOperation> ops = obj.getMethods(ruleName);
+			if (ops.size()==0) {
 				throw new CodeGenerationException("Couldn't find business rule '"+objName+"."+ruleName+"'");
+			} else if (ops.size()>1) {
+				throw new JavascribeException("Web Servlet Processor does not support overloaded service methods, as it cannot implicitly determine which method to invoke.");
 			}
+			JavaOperation op = ops.get(0);
 			JsomUtils.merge(methodCode, obj.declare(objInst));
 			JsomUtils.merge(methodCode, obj.instantiate(objInst,null));
 			resultName = op.getReturnType();

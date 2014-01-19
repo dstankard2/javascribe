@@ -24,7 +24,6 @@ import net.sf.javascribe.langsupport.java.JavaUtils;
 import net.sf.javascribe.langsupport.java.JavaVariableType;
 import net.sf.javascribe.langsupport.java.jsom.JavascribeVariableTypeResolver;
 import net.sf.javascribe.langsupport.java.jsom.JsomUtils;
-import net.sf.javascribe.patterns.quartz.ScheduledJobProcessor;
 import net.sf.jsom.CodeGenerationException;
 import net.sf.jsom.java5.Java5CodeSnippet;
 import net.sf.jsom.java5.Java5CompatibleCodeSnippet;
@@ -162,10 +161,13 @@ public class ServletWebServiceProcessor {
 				if (obj==null) {
 					throw new JavascribeException("Couldn't find business object type '"+objName+"'");
 				}
-				JavaOperation op = obj.getMethod(ruleName);
-				if (op==null) {
+				List<JavaOperation> ops = obj.getMethods(ruleName);
+				if ((ops.size()==0)) {
 					throw new JavascribeException("Couldn't find business rule '"+objName+"."+ruleName+"'");
+				} else if (ops.size()>1) {
+					throw new JavascribeException("Servlet Web Service Processor does not support overloaded service methods, as it cannot implicitly determine which method to invoke.");
 				}
+				JavaOperation op = ops.get(0);
 				JsomUtils.merge(methodCode, (JavaCode)obj.declare(objInst));
 				JsomUtils.merge(methodCode, (JavaCode)obj.instantiate(objInst,null));
 				resultName = op.getReturnType();

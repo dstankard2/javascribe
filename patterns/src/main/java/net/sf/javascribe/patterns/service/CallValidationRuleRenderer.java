@@ -1,11 +1,12 @@
 package net.sf.javascribe.patterns.service;
 
 import java.util.HashMap;
+import java.util.List;
 
 import net.sf.javascribe.api.CodeExecutionContext;
-import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.JavascribeUtils;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.langsupport.java.JavaOperation;
 import net.sf.javascribe.langsupport.java.JavaServiceObjectType;
 import net.sf.javascribe.langsupport.java.JavaUtils;
@@ -40,13 +41,16 @@ public class CallValidationRuleRenderer implements NestingServiceOperationRender
 				throw new CodeGenerationException("Could not find type '"+typeName+"'");
 			}
 
-			JavaOperation operation = type.getMethod(ruleName);
+			List<JavaOperation> ops = type.getMethods(ruleName);
+			if (ops.size()==0) {
+				throw new CodeGenerationException("Could not find validation rule '"+ruleName+"'");
+			} else if (ops.size()>1) {
+				throw new CodeGenerationException("Validation rule does not support overloaded method '"+ruleName+"' as it cannot determine which method to invoke");
+			}
+			JavaOperation operation = ops.get(0);
 			HashMap<String,String> explicitParams = new HashMap<String,String>();
 			if (op.getParams()!=null) {
 				explicitParams = JavascribeUtils.readParameters(ctx, op.getParams());
-			}
-			if (operation==null) {
-				throw new CodeGenerationException("Could not find validation rule '"+ruleName+"'");
 			}
 			if ((operation.getReturnType()==null) || (!operation.getReturnType().equals("list/string"))) {
 				throw new CodeGenerationException("A validation rule must return list of String");

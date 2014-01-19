@@ -90,10 +90,8 @@ public class RuleResolver {
 		}
 
 		JavaServiceObjectType type = (JavaServiceObjectType)execCtx.getType(typeName);
-		List<String> methods = type.getOperationNames();
-		
-		for(String m : methods) {
-			JavaOperation op = type.getMethod(m);
+		List<JavaOperation> ops = type.getMethods();
+		for(JavaOperation op : ops) {
 			ret = checkMethod(instance,searchType,op);
 			if (ret!=null) return ret;
 		}

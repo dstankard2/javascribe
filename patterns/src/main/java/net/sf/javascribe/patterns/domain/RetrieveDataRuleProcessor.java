@@ -15,7 +15,6 @@ import net.sf.javascribe.api.annotation.ProcessorMethod;
 import net.sf.javascribe.api.annotation.Scannable;
 import net.sf.javascribe.api.config.ComponentBase;
 import net.sf.javascribe.langsupport.java.Injectable;
-import net.sf.javascribe.langsupport.java.JavaServiceObjectType;
 import net.sf.javascribe.langsupport.java.JavaUtils;
 import net.sf.javascribe.langsupport.java.LocatedJavaServiceObjectType;
 import net.sf.javascribe.langsupport.java.ServiceLocator;
@@ -160,8 +159,6 @@ public class RetrieveDataRuleProcessor {
 				locatorCode = locatorMethod.getMethodBody();
 			}
 
-			//Java5DeclaredMethod locatorMethod = (Java5DeclaredMethod)locatorClass.getDeclaredMethod("get"+serviceObjName);
-
 			for(Attribute d : deps) {
 				if (!serviceType.getDependancyNames().contains(d.getName())) {
 					String depBigEndian = JavascribeUtils.getUpperCamelName(d.getName());
@@ -180,7 +177,6 @@ public class RetrieveDataRuleProcessor {
 					}
 					Injectable i = (Injectable)injType;
 					JsomUtils.merge(locatorCode, i.getInstance(d.getName(), null));
-//					locatorCode.merge(JsomUtils.declareAndInstantiateObject((JavaServiceObjectType)injType, d.getName(), null));
 					locatorCode.append("_service.set"+depBigEndian+"("+d.getName()+");\n");
 				}
 			}

@@ -107,11 +107,10 @@ public class DependencyScanTranslator implements FieldTranslator {
 		
 		targetType = (AttributeHolder)execCtx.getTypeForVariable(targetVarName);
 		
-		for(String n : srv.getOperationNames()) {
-			if (!n.equals(name)) {
+		for(JavaOperation op : srv.getMethods()) {
+			if (!op.getName().equals(name)) {
 				continue;
 			}
-			JavaOperation op = srv.getMethod(n);
 			if (attemptInvoke(op,targetVarName,field,targetType,execCtx,ref,code)) {
 				return true;
 			}

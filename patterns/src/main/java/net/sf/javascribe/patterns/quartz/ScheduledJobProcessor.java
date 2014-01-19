@@ -1,13 +1,12 @@
 package net.sf.javascribe.patterns.quartz;
 
 import java.util.HashMap;
-
-import org.apache.log4j.Logger;
+import java.util.List;
 
 import net.sf.javascribe.api.CodeExecutionContext;
-import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.JavascribeUtils;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.annotation.Processor;
 import net.sf.javascribe.api.annotation.ProcessorMethod;
 import net.sf.javascribe.api.annotation.Scannable;
@@ -27,6 +26,8 @@ import net.sf.jsom.java5.Java5CodeSnippet;
 import net.sf.jsom.java5.Java5CompatibleCodeSnippet;
 import net.sf.jsom.java5.Java5DeclaredMethod;
 import net.sf.jsom.java5.Java5SourceFile;
+
+import org.apache.log4j.Logger;
 
 @Scannable
 @Processor
@@ -128,10 +129,13 @@ public class ScheduledJobProcessor {
 				if (obj==null) {
 					throw new CodeGenerationException("Couldn't find business object type '"+objName+"'");
 				}
-				JavaOperation op = obj.getMethod(ruleName);
-				if (op==null) {
+				List<JavaOperation> ops = obj.getMethods(ruleName);
+				if (ops.size()==0) {
 					throw new CodeGenerationException("Couldn't find business rule '"+objName+"."+ruleName+"'");
+				} else if (ops.size()>1) {
+					throw new CodeGenerationException("Scheduled Job does not support overloaded business rule '"+objName+"."+ruleName+"' as it cannot determine which method to invoke");
 				}
+				JavaOperation op = ops.get(0);
 				code.merge(new JavascribeJavaCodeSnippet(obj.declare(objInst)));
 				code.merge(new JavascribeJavaCodeSnippet(obj.instantiate(objInst, null)));
 				HashMap<String,String> params = new HashMap<String,String>();

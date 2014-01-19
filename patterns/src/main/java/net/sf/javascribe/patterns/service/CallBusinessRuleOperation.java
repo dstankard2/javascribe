@@ -1,14 +1,16 @@
 package net.sf.javascribe.patterns.service;
 
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.JavascribeUtils;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.annotation.Scannable;
 import net.sf.javascribe.langsupport.java.JavaOperation;
 import net.sf.javascribe.langsupport.java.JavaServiceObjectType;
@@ -41,8 +43,13 @@ public class CallBusinessRuleOperation extends ServiceOperation implements Resul
 		if (type==null) {
 			throw new JavascribeException("Couldn't find business object '"+obj+"'");
 		}
-		JavaOperation op = type.getMethod(ruleName);
-		if (op==null) throw new JavascribeException("Could not find business rule "+rule);
+		List<JavaOperation> ops = type.getMethods(ruleName);
+		if (ops.size()<1) {
+			throw new JavascribeException("Could not find business rule "+rule);
+		} else if (ops.size()>1) {
+			throw new JavascribeException("Cannot call overloaded business rule '"+rule+"' as callBusinessRule cannot determine which rule to invoke");
+		}
+		JavaOperation op = ops.get(0);
 		ret = op.getReturnType();
 		
 		return ret;

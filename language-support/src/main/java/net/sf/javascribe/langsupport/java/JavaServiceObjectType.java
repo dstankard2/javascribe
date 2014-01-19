@@ -18,7 +18,7 @@ public class JavaServiceObjectType implements JavaVariableType,Injectable {
 	private String className = null;
 	private String pkg = null;
 	private String name = null;
-	private Map<String,JavaOperation> methods = new HashMap<String,JavaOperation>();
+	private List<JavaOperation> methods = new ArrayList<JavaOperation>();
 	private List<String> dependancyNames = new ArrayList<String>();
 	
 	public JavaServiceObjectType(String name,String pkg,String className) {
@@ -32,15 +32,21 @@ public class JavaServiceObjectType implements JavaVariableType,Injectable {
 	}
 
 	public void addMethod(JavaOperation op) {
-		methods.put(op.getName(), op);
+		methods.add(op);
 	}
 	
 	public List<String> getDependancyNames() {
 		return dependancyNames;
 	}
 	
-	public JavaOperation getMethod(String name) {
-		return methods.get(name);
+	public List<JavaOperation> getMethods(String name) {
+		List<JavaOperation> ret = new ArrayList<JavaOperation>();
+		
+		for(JavaOperation op : methods) {
+			if (op.getName().equals(name)) ret.add(op);
+		}
+		
+		return ret;
 	}
 	
 	@Override
@@ -105,14 +111,8 @@ public class JavaServiceObjectType implements JavaVariableType,Injectable {
 		return instantiate(varName,value,null);
 	}
 	
-	public List<String> getOperationNames() {
-		List<String> ret = new ArrayList<String>();
-		
-		for(String s : methods.keySet()) {
-			ret.add(s);
-		}
-		
-		return ret;
+	public List<JavaOperation> getMethods() {
+		return methods;
 	}
 
 }
