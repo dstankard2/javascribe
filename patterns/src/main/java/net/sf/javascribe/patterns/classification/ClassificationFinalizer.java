@@ -34,6 +34,7 @@ public class ClassificationFinalizer {
 	@ProcessorMethod(componentClass=ClassificationFinalizerComp.class)
 	public void process(ProcessorContext ctx) throws JavascribeException {
 		this.ctx = ctx;
+		ctx.setLanguageSupport("Java");
 		dataObjectNames = (List<String>)ctx.getObject(ClassificationProcessor.DATA_OBJECTS);
 		classificationNames = (List<String>)ctx.getObject("ClassificationNames");
 		log.info("Applying classification interfaces to Data Objects.");
