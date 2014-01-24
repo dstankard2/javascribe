@@ -1,6 +1,6 @@
 
 <project name="JavaScribe" default="build" basedir=".">
-	<property name="dist.root" value="c:\dev_tools\javascribe-0.1.3"/>
+	<property name="dist.root" value="c:\dev_tools\javascribe-0.1.4"/>
 	<property name="build.root" value="c:\build\javascribe"/>
 	<property name="dev.root" value="."/>
 
