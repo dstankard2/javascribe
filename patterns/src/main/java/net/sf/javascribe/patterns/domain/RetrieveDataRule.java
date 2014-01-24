@@ -17,10 +17,22 @@ import net.sf.javascribe.patterns.CorePatternConstants;
 public class RetrieveDataRule extends ComponentBase implements DomainLogicComponent {
 
 	public static final String DOMAIN_LOGIC_DEPENDENCIES = "net.sf.javascribe.patterns.domain.RetrieveDataRule.dependencies";
+	public static final String RESOLVE_RULE_STRATEGY = "net.sf.javascribe.patterns.domain.RetrieveDataRule.strategy";
 
 	@Override
 	public int getPriority() { return CorePatternConstants.PRIORITY_RETRIEVE_DATA_RULE; }
 	
+	@XmlAttribute
+	private String strategy = "";
+	
+	public String getStrategy() {
+		return strategy;
+	}
+
+	public void setStrategy(String strategy) {
+		this.strategy = strategy;
+	}
+
 	@XmlAttribute
 	private String serviceLocator = "";
 	
@@ -31,8 +43,16 @@ public class RetrieveDataRule extends ComponentBase implements DomainLogicCompon
 	private String rule = "";
 	
 	@XmlAttribute
-	private String returnType = "";
+	private String returnAttribute = "";
 	
+	public String getReturnAttribute() {
+		return returnAttribute;
+	}
+
+	public void setReturnAttribute(String returnAttribute) {
+		this.returnAttribute = returnAttribute;
+	}
+
 	@XmlAttribute
 	private String params = "";
 
@@ -61,14 +81,6 @@ public class RetrieveDataRule extends ComponentBase implements DomainLogicCompon
 
 	public void setRule(String rule) {
 		this.rule = rule;
-	}
-
-	public String getReturnType() {
-		return returnType;
-	}
-
-	public void setReturnType(String returnType) {
-		this.returnType = returnType;
 	}
 
 	public String getParams() {
