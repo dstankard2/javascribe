@@ -109,7 +109,8 @@ public class EntityRelationshipsProcessor {
 
 					// Create "Owned OwnedDao.getOwned(ownerId)"
 					Java5DeclaredMethod method = new Java5DeclaredMethod(new JavascribeVariableTypeResolver(ctx));
-					method.setMethodName("get"+ownedName+"For"+ownerName);
+					method.setMethodName("get"+ownedName+"By"+ownerName+"Id");
+//					method.setMethodName("get"+ownedName+"For"+ownerName);
 					method.addArg("integer", ownerIdField);
 					method.setReturnType(ownedName);
 					Java5CodeSnippet code = new Java5CodeSnippet();
@@ -132,7 +133,8 @@ public class EntityRelationshipsProcessor {
 					
 					// Create "Owner OwnerDao.getOwner(ownenId)"
 					method = new Java5DeclaredMethod(new JavascribeVariableTypeResolver(ctx));
-					method.setMethodName("get"+ownerName+"For"+ownedName);
+					method.setMethodName("get"+ownerName+"By"+ownedName+"Id");
+//					method.setMethodName("get"+ownerName+"For"+ownedName);
 					method.addArg("integer", ownedIdField);
 					method.setReturnType(ownerName);
 					code = new Java5CodeSnippet();
@@ -158,15 +160,10 @@ public class EntityRelationshipsProcessor {
 						throw new JavascribeException("Error: In a 1-to-many relationship, the type "+ownedType.getName()+" should have a foreign key "+ownerIdField+" to entity "+ownerType.getName());
 					}
 
-					String ownedPluralName = "";
-					if (ownedName.endsWith("y")) {
-						ownedPluralName = ownedName.substring(0, ownedName.length()-2)+"ies";
-					}
-					else ownedPluralName = ownedName+'s';
-
 					// Create "List<Owned> ownedDao.getOwned(ownerId)"
 					Java5DeclaredMethod method = new Java5DeclaredMethod(new JavascribeVariableTypeResolver(ctx));
-					method.setMethodName("get"+ownedPluralName+"For"+ownerName);
+//					method.setMethodName("get"+ownedPluralName+"For"+ownerName);
+					method.setMethodName("get"+ownedName+"ListBy"+ownerName+"Id");
 					method.setReturnType("list/"+ownedType.getName());
 					ownerDaoSource.addImport(ownedType.getImport());
 					method.addArg("integer", ownerIdField);
@@ -178,11 +175,6 @@ public class EntityRelationshipsProcessor {
 					code.append("Query _query = entityManager.createQuery(\"select _owned from ")
 							.append(ownedName+" as _owned where _owned."+ownerIdField)
 							.append(" = :ownerIdField");
-/*
-					.append(ownerName+" as _owner, "+ownedName+" as _owned where _owner.")
-							.append(ownerIdField+" = _owned."+ownerIdField+" and _owner."+ownerIdField)
-							.append(" = :ownerIdField\");\n");
-					*/
 					if (orderByPk) {
 						code.append(" order by "+ownedIdField);
 					}
@@ -195,7 +187,8 @@ public class EntityRelationshipsProcessor {
 
 					// Create "Owner ownerDao.getOwner(ownedId)"
 					method = new Java5DeclaredMethod(new JavascribeVariableTypeResolver(ctx));
-					method.setMethodName("get"+ownerName+"For"+ownedName);
+//					method.setMethodName("get"+ownerName+"For"+ownedName);
+					method.setMethodName("get"+ownerName+"By"+ownedName+"Id");
 					method.setReturnType(ownerName);
 					method.addArg("integer", ownedIdField);
 					code = new Java5CodeSnippet();
