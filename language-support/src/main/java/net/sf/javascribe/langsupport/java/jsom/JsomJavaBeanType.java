@@ -6,6 +6,8 @@ import net.sf.javascribe.api.expressions.CodeFragmentExpressionAtom;
 import net.sf.javascribe.api.expressions.ExpressionUtil;
 import net.sf.javascribe.api.expressions.ValueExpression;
 import net.sf.javascribe.langsupport.java.JavaBeanType;
+import net.sf.javascribe.langsupport.java.JavaCode;
+import net.sf.javascribe.langsupport.java.JavaCodeImpl;
 import net.sf.jsom.CodeGenerationException;
 import net.sf.jsom.java5.Java5CodeSnippet;
 import net.sf.jsom.java5.Java5CompatibleCodeSnippet;
@@ -17,17 +19,16 @@ public class JsomJavaBeanType extends JavaBeanType implements Java5Type {
 		super(name, pkg, cl);
 	}
 
-	public JsomJavaCode declare(String varName, CodeExecutionContext execCtx) {
-		Java5CodeSnippet ret = null;
-
-		ret = new Java5CodeSnippet();
+	public JavaCode declare(String varName, CodeExecutionContext execCtx) {
+		JavaCodeImpl ret = new JavaCodeImpl();
+		
 		ret.addImport(getImport());
-		ret.append(className);
-		ret.append(' ');
-		ret.append(varName);
-		ret.append(" = null;\n");
+		ret.appendCodeText(className);
+		ret.appendCodeText(" ");
+		ret.appendCodeText(varName);
+		ret.appendCodeText(" = null;\n");
 
-		return new JsomJavaCode(ret);
+		return ret;
 	}
 
 	@Override

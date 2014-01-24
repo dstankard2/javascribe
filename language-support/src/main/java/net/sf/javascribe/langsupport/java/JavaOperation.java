@@ -26,10 +26,6 @@ public class JavaOperation {
 	public List<String> getParameterNames() {
 		return parameterNames;
 	}
-	public JavaOperation setParameterNames(List<String> parameterNames) {
-		this.parameterNames = parameterNames;
-		return this;
-	}
 	public JavaOperation addParameter(String name,String type) {
 		parameterNames.add(name);
 		parameterTypes.put(name, type);
@@ -37,10 +33,6 @@ public class JavaOperation {
 	}
 	public HashMap<String, String> getParameterTypes() {
 		return parameterTypes;
-	}
-	public JavaOperation setParameterTypes(HashMap<String, String> parameterTypes) {
-		this.parameterTypes = parameterTypes;
-		return this;
 	}
 	public String getReturnType() {
 		return returnType;
