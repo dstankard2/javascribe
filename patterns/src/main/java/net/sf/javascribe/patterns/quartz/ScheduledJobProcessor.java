@@ -118,7 +118,7 @@ public class ScheduledJobProcessor {
 				processFile.getPublicClass().addMethod(exec);
 				code = new Java5CodeSnippet();
 				exec.setMethodBody(code);
-				code.append("System.out.println(\"Running scheduled Process '"+job.getName()+"'\");\n");
+//				code.append("System.out.println(\"Running scheduled Process '"+job.getName()+"'\");\n");
 				CodeExecutionContext execCtx = new CodeExecutionContext(null,ctx.getTypes());
 
 				String objName = JavascribeUtils.getObjectName(job.getRule());
