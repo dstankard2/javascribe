@@ -7,15 +7,13 @@
 		<delete dir="${build.root}\docs"/>
 	</target>
 	
-	<target name="run.xsl">
-<!--
+	<target name="run.pattern.xsl">
 		<mkdir dir="${dist.root}\docs\patterns"/>
 		<xslt 
-			basedir="${dev.root}\xml" 
+			basedir="${dev.root}\xml\patterns" 
 			destdir="${dist.root}\docs\patterns"
-			style="component-html.xsl"
+			style="pattern-html.xsl"
 		/>
--->
 	</target>
 
 	<target name="copy.files">
@@ -27,7 +25,7 @@
 
 	<target name="build">
 		<antcall target="init"/>
-		<antcall target="run.xsl"/>
+		<antcall target="run.pattern.xsl"/>
 		<antcall target="copy.files"/>
 	</target>
 	
