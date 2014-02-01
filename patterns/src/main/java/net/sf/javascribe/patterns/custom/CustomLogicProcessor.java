@@ -273,6 +273,7 @@ public class CustomLogicProcessor {
 			JavaVariableType javaType = (JavaVariableType)type;
 			code.addImport(javaType.getImport());
 			if (hasService(dep,domainServices)) {
+				JsomUtils.merge(code,(JavaCode)javaType.declare(var, execCtx));
 				code.append(var+" = get"+dep+"();\n");
 			} else if (type instanceof Injectable) {
 				Injectable inj = (Injectable)type;
