@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<languageSupport xmlns="http://docs.javascribe.com/languageSupport"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://docs.javascribe.com/languageSupport ../../languageSupport.xsd"
+name="Java 5 Compatible" id="Java5"
+>
+
+</languageSupport>

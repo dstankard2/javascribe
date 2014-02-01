@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<pattern xmlns="http://docs.javascribe.com/pattern"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://docs.javascribe.com/pattern ../../pattern.xsd"
+name="Data Object" id="DataObject"
+>
+<description>
+<p>
+A data object 
+</p>
+</description>
+<attribute required="true" name="name">
+The name of the data object to create.  Should be an upper-camel name (see examples below).
+</attribute>
+
+<property required="true" name="net.sf.javascribe.patterns.dataobject.DataObject.pkg">
+	<description>
+<p>The package in which the Java file will be placed.</p>
+	</description>
+	<validValue></validValue>
+</property>
+
+<output language="Java">
+<p>
+A Java data object with getters and setters for the attributes defined in the 'attributes' XML 
+attribute.  
+</p>
+</output>
+	
+</pattern>
+
