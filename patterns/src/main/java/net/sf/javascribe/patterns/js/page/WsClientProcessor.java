@@ -95,6 +95,9 @@ public class WsClientProcessor {
 			else {
 				for(String name : modelAttributes.keySet()) {
 					String type = ctx.getAttributeType(name);
+					if (type==null) {
+						throw new JavascribeException("Could find a type for model attribute '"+name+"'");
+					}
 					VariableType t = ctx.getType(type);
 					if (t instanceof JavascriptVariableType) continue;
 					if (!(t instanceof AttributeHolder)) continue;
