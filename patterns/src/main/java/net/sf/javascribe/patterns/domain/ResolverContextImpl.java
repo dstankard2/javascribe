@@ -67,7 +67,6 @@ public class ResolverContextImpl implements ResolverContext {
 			return null;
 		}
 		JavaCode ret = null;
-		CodeExecutionContext execCtx = null;
 		
 		ResolverContextImpl impl = new ResolverContextImpl(this);
 		ret = impl.runResolve(attributeName);
@@ -97,6 +96,10 @@ public class ResolverContextImpl implements ResolverContext {
 
 	public Map<String, JavaServiceObjectType> getDependencyRefs() {
 		return dependencyRefs;
+	}
+	
+	public String getSystemAttributeType(String name) {
+		return ctx.getAttributeType(name);
 	}
 
 }
