@@ -7,6 +7,7 @@ import java.util.Map;
 import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.ProcessorContext;
+import net.sf.javascribe.api.types.ListType;
 import net.sf.javascribe.langsupport.java.JavaCode;
 import net.sf.javascribe.langsupport.java.JavaCodeImpl;
 import net.sf.javascribe.langsupport.java.JavaServiceObjectType;
@@ -47,8 +48,15 @@ public class ResolverContextImpl implements ResolverContext {
 		}
 
 		String typeName = ctx.getAttributeType(attributeName);
+		if (typeName==null) return null;
 		JavaVariableType type = (JavaVariableType)ctx.getType(typeName);
-		declare = (JavaCode)type.declare(attributeName, execCtx);
+		if ((type instanceof ListType) && (typeName.startsWith("list/"))) {
+			String name = typeName.substring(5);
+			ListType l = (ListType)type;
+			declare = (JavaCode)l.declare(attributeName, name, execCtx);
+		} else {
+			declare = (JavaCode)type.declare(attributeName, execCtx);
+		}
 		execCtx.addVariable(attributeName, typeName);
 		
 		for(Resolver op : strategy) {
