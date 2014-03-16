@@ -10,5 +10,7 @@ public interface ListType extends VariableType,AttributeHolder {
 
 	public Code declare(String varName,String elementType,CodeExecutionContext execCtx) throws JavascribeException;
 	public Code instantiate(String varName,String elementType,CodeExecutionContext execCtx) throws JavascribeException;
-		
+	public Code appendToList(String listVarName,String value,CodeExecutionContext execCtx) throws JavascribeException;
+
 }
+

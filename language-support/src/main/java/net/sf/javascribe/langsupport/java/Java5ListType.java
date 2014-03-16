@@ -1,5 +1,6 @@
 package net.sf.javascribe.langsupport.java;
 
+import net.sf.javascribe.api.Code;
 import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.types.ListType;
@@ -10,6 +11,14 @@ import net.sf.jsom.java5.Java5CodeSnippet;
 import net.sf.jsom.java5.Java5Type;
 
 public class Java5ListType implements ListType,Java5Type,JavaVariableType {
+
+	@Override
+	public Code appendToList(String listVarName, String value,
+			CodeExecutionContext execCtx) throws JavascribeException {
+		JavaCodeImpl ret = new JavaCodeImpl();
+		ret.appendCodeText(listVarName+".add("+value+");\n");
+		return ret;
+	}
 
 	@Override
 	public String getCodeToRetrieveAttribute(String varName, String attribName,
