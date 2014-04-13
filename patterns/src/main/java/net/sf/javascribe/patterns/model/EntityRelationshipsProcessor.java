@@ -175,7 +175,14 @@ public class EntityRelationshipsProcessor {
 					code.append("Query _query = entityManager.createQuery(\"select _owned from ")
 							.append(ownedName+" as _owned where _owned."+ownerIdField)
 							.append(" = :ownerIdField");
-					if (orderByPk) {
+					if (rel.getSortOwnedBy().trim().length()>0) {
+						String field = rel.getSortOwnedBy();
+						if (ownedType.getAttributeType(field)==null) {
+							throw new JavascribeException("Could not find field '"+field+"' in aggregated entity");
+						}
+						code.append(" order by "+field);
+					}
+					else if (orderByPk) {
 						code.append(" order by "+ownedIdField);
 					}
 					code.append("\");\n");
