@@ -67,13 +67,19 @@ public class CorePatternConstants {
 	// option list, domain data, EJBQL query, lookups, entity manager.
 	public static final int PRIORITY_CUSTOM_LOGIC = 20000;
 	
-	// Depends on Custon Logic and Data Object
+	// Depends on Custom Logic and Data Object
 	public static final int PRIORITY_RETRIEVE_DATA_STRATEGY = 21250;
 
-	// Depends on Retrieve Data Strategy
+	// Domain logic pattern.  Depends on Retrieve Data Strategy
 	public static final int PRIORITY_RETRIEVE_DATA_RULE = 22500;
 
-	// Depends on custom logic, JPA dao factory, entity manager, domain data
+	// Domain logic pattern.
+	public static final int PRIORITY_DOMAIN_LOGIC_RULE = 23750;
+
+	// Depends on Domain Logic patterns.  Last of the domain logic patterns.
+	public static final int PRIORITY_DOMAIN_LOGIC_FINALIZER = 24375;
+
+	// Depends on domain logic, JPA dao factory, entity manager, domain data
 	public static final int PRIORITY_SERVICE = 25000;
 	
 	// No dependancy
