@@ -1,0 +1,9 @@
+
+To Do for Javascribe 0.1.5: 
+
+x Create domain logic resolver for traversing relationships in the data model.
+Change page pattern to bind events in JQuery
+Modify page and page view to use JQuery for page and view objects instead of DOM.
+Modify framework to read a directory as well as a zip
+Make some progress on documentation standard
+
