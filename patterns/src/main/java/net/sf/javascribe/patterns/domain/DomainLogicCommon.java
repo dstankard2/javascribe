@@ -7,35 +7,51 @@ import net.sf.javascribe.api.Attribute;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.api.ProcessorContext;
+import net.sf.javascribe.api.config.ComponentBase;
+import net.sf.javascribe.api.config.Property;
 import net.sf.javascribe.langsupport.java.JavaUtils;
 import net.sf.javascribe.langsupport.java.LocatedJavaServiceObjectType;
 import net.sf.javascribe.langsupport.java.jsom.JavascribeVariableTypeResolver;
 import net.sf.javascribe.langsupport.java.jsom.JsomUtils;
-import net.sf.jsom.CodeGenerationException;
-import net.sf.jsom.java5.Java5ClassConstructor;
 import net.sf.jsom.java5.Java5ClassDefinition;
-import net.sf.jsom.java5.Java5CodeSnippet;
-import net.sf.jsom.java5.Java5CompatibleCodeSnippet;
-import net.sf.jsom.java5.Java5DeclaredMethod;
-import net.sf.jsom.java5.Java5MethodSignature;
-import net.sf.jsom.java5.Java5SourceFile;
 
-
+/**
+ * There are several types of domain-level patterns.  The pattern 
+ * @author DCS
+ */
 public class DomainLogicCommon {
 
-	public static final String DOMAIN_LOGIC_PKG = "net.sf.javascribe.patterns.domain.RetrieveDataRule.pkg";
-	public static final String DOMAIN_LOGIC_SERVICE_OBJ = "net.sf.javascribe.patterns.domain.RetrieveDataRule.serviceObj";
-	public static final String DOMAIN_LOGIC_LOCATOR_CLASS = "net.sf.javascribe.patterns.domain.RetrieveDataRule.locatorClass";
+	/*
+	 * Constants required by domain logic patterns.
+	 */
+	public static final String DOMAIN_LOGIC_IMPLEMENTATION_PREFIX = "net.sf.javascribe.patterns.domain.impl.";
+	public static final String DOMAIN_LOGIC_DEPENDENCIES = "net.sf.javascribe.patterns.domain.dependencies";
+	public static final String DOMAIN_LOGIC_PKG = "net.sf.javascribe.patterns.domain.pkg";
+	public static final String DOMAIN_LOGIC_SERVICE_OBJ = "net.sf.javascribe.patterns.domain.serviceObj";
+	public static final String DOMAIN_LOGIC_LOCATOR_CLASS = "net.sf.javascribe.patterns.domain.locatorClass";
 
-	public static String getServiceLocatorName(DomainLogicComponent comp,ProcessorContext ctx) throws JavascribeException {
-		// Read service locator name
-		if (comp.getServiceLocator().trim().length()>0) {
-			return comp.getServiceLocator();
-		} else if (ctx.getProperty(DOMAIN_LOGIC_LOCATOR_CLASS)!=null) {
-			return ctx.getProperty(DOMAIN_LOGIC_LOCATOR_CLASS);
-		} else {
-			throw new JavascribeException("Service Locator Name must be specified in the component or in property '"+DomainLogicCommon.DOMAIN_LOGIC_LOCATOR_CLASS+"'");
+	public static final String OBJ_DOMAIN_LOGIC_OBJECT_NAMES = "net.sf.javascribe.patterns.domain.serviceNames";
+	public static final String DOMAIN_LOGIC_FINALIZER_ENSURED = "net.sf.javascribe.patterns.domain.finalizerEnsured";
+
+	public static void ensureFinalizer(ProcessorContext ctx) throws JavascribeException {
+		String val = (String)ctx.getObject(DOMAIN_LOGIC_FINALIZER_ENSURED);
+		if (val==null) {
+			ComponentBase comp = new DomainLogicFinalComponent();
+			comp.getProperty().add(new Property(DOMAIN_LOGIC_LOCATOR_CLASS,ctx.getProperty(DOMAIN_LOGIC_LOCATOR_CLASS)));
+			ctx.addComponent(comp);
+			ctx.putObject(DOMAIN_LOGIC_FINALIZER_ENSURED, ctx.getProperty(DOMAIN_LOGIC_LOCATOR_CLASS));
+		} else if (!val.equals(ctx.getProperty(DOMAIN_LOGIC_LOCATOR_CLASS))) {
+			throw new JavascribeException("Found inconsistent values for domain logic locator class");
 		}
+	}
+
+	public static List<String> getDomainLogicObjectNames(ProcessorContext ctx) {
+		List<String> ret = (List<String>)ctx.getObject(OBJ_DOMAIN_LOGIC_OBJECT_NAMES);
+		return ret;
+	}
+	
+	public static String getServiceLocatorName(ProcessorContext ctx) throws JavascribeException {
+		return ctx.getRequiredProperty(DOMAIN_LOGIC_LOCATOR_CLASS);
 	}
 
 	public static List<Attribute> getParams(DomainLogicComponent comp,ProcessorContext ctx) throws JavascribeException {
@@ -52,16 +68,6 @@ public class DomainLogicCommon {
 		return ret;
 	}
 
-	public static String getRule(DomainLogicComponent comp,ProcessorContext ctx) throws JavascribeException {
-		String ret = null;
-		ret = comp.getRule();
-		if (ret.trim().length()==0) {
-			throw new JavascribeException("Attribute 'ruleName' is required on component Retrieve Data Rule");
-		}
-
-		return ret;
-	}
-
 	public static String getServiceObj(DomainLogicComponent comp,ProcessorContext ctx) throws JavascribeException {
 		String ret = null;
 		if (comp.getServiceObj().trim().length()>0) {
@@ -69,22 +75,69 @@ public class DomainLogicCommon {
 		} else if (ctx.getProperty(DOMAIN_LOGIC_SERVICE_OBJ)!=null) {
 			ret = ctx.getProperty(DOMAIN_LOGIC_SERVICE_OBJ);
 		} else {
-			throw new JavascribeException("Service Object Name must be specified in the component or in property '"+DomainLogicCommon.DOMAIN_LOGIC_SERVICE_OBJ+"'");
+			throw new JavascribeException("Attribute ServiceObj Name must be specified in the component");
 		}
 
 		return ret;
 	}
+	
+	public static LocatedJavaServiceObjectType getDomainObjectType(String serviceObj,ProcessorContext ctx) throws JavascribeException {
+		String pkg = JavaUtils.findPackageName(ctx, ctx.getRequiredProperty(DomainLogicCommon.DOMAIN_LOGIC_PKG));
+		LocatedJavaServiceObjectType serviceType = null;
+		
+		serviceType = (LocatedJavaServiceObjectType)ctx.getType(serviceObj);
+		if (serviceType!=null) {
+			return serviceType;
+		}
 
-	public static Java5SourceFile getServiceFile(String serviceObj,Java5SourceFile locatorFile,DomainServiceLocatorType locatorType,ProcessorContext ctx) throws JavascribeException {
-		Java5SourceFile ret = null;
+		String locatorName = getServiceLocatorName(ctx);
+		serviceType = new LocatedJavaServiceObjectType(pkg+'.'+locatorName,serviceObj,pkg,serviceObj);
+		ctx.getTypes().addType(serviceType);
+		return serviceType;
+	}
+	
+	public static String getDomainLogicPkg(ProcessorContext ctx) throws JavascribeException {
+		return JavaUtils.findPackageName(ctx, ctx.getRequiredProperty(DomainLogicCommon.DOMAIN_LOGIC_PKG));
+	}
+
+	public static DomainLogicFile getDomainObjectFile(String serviceObj,ProcessorContext ctx) throws JavascribeException {
+		String pkg = getDomainLogicPkg(ctx);
+		DomainLogicFile serviceFile = null;
+		Java5ClassDefinition serviceClass = null;
+
+		serviceFile = (DomainLogicFile)JsomUtils.getJavaFile(pkg+'.'+serviceObj, ctx);
+		if (serviceFile!=null) return serviceFile;
+		
+		// Add service file
+		serviceFile = new DomainLogicFile(new JavascribeVariableTypeResolver(ctx));
+		serviceFile.setPackageName(pkg);
+		serviceClass = serviceFile.getPublicClass();
+		serviceClass.setClassName(serviceObj);
+		JsomUtils.addJavaFile(serviceFile, ctx);
+		serviceClass = serviceFile.getPublicClass();
+		
+		List<String> services = (List<String>)ctx.getObject(OBJ_DOMAIN_LOGIC_OBJECT_NAMES);
+		if (services==null) {
+			services = new ArrayList<String>();
+			ctx.putObject(OBJ_DOMAIN_LOGIC_OBJECT_NAMES, services);
+		}
+		services.add(serviceObj);
+
+		return serviceFile;
+	}
+/*
+	public static DomainLogicFile getServiceFile(String serviceObj,Java5SourceFile locatorFile,DomainServiceLocatorType locatorType,ProcessorContext ctx) throws JavascribeException {
+		DomainLogicFile ret = null;
 		String pkg = JavaUtils.findPackageName(ctx, ctx.getRequiredProperty(DomainLogicCommon.DOMAIN_LOGIC_PKG));
 
 		ensureService(serviceObj,locatorFile,locatorType,ctx);
-		ret = JsomUtils.getJavaFile(pkg+'.'+serviceObj, ctx);
+		ret = (DomainLogicFile)JsomUtils.getJavaFile(pkg+'.'+serviceObj, ctx);
 
 		return ret;
 	}
+*/
 
+	/*
 	public static LocatedJavaServiceObjectType getServiceType(String serviceObj,Java5SourceFile locatorFile,DomainServiceLocatorType locatorType,ProcessorContext ctx) throws JavascribeException {
 		LocatedJavaServiceObjectType ret = null;
 
@@ -93,19 +146,20 @@ public class DomainLogicCommon {
 
 		return ret;
 	}
-
-	private static void ensureService(String serviceObj,Java5SourceFile locatorFile,DomainServiceLocatorType locatorType,ProcessorContext ctx) throws JavascribeException {
+	*/
+	
+	/*
+	public static DomainLogicFile getDomainFile(String serviceObj,ProcessorContext ctx) throws JavascribeException {
 		String pkg = JavaUtils.findPackageName(ctx, ctx.getRequiredProperty(DomainLogicCommon.DOMAIN_LOGIC_PKG));
-		Java5SourceFile serviceFile = null;
+		DomainLogicFile serviceFile = null;
 		LocatedJavaServiceObjectType serviceType = null;
 		Java5ClassDefinition serviceClass = null;
-		Java5ClassDefinition locatorClass = locatorFile.getPublicClass();
 
-		serviceFile = JsomUtils.getJavaFile(pkg+'.'+serviceObj, ctx);
-		if (serviceFile!=null) return;
+		serviceFile = (DomainLogicFile)JsomUtils.getJavaFile(pkg+'.'+serviceObj, ctx);
+		if (serviceFile!=null) return serviceFile;
 
 		// Add service file+type, create method on service locator
-		serviceFile = new Java5SourceFile(new JavascribeVariableTypeResolver(ctx));
+		serviceFile = new DomainLogicFile(new JavascribeVariableTypeResolver(ctx));
 		serviceFile.setPackageName(pkg);
 		serviceClass = serviceFile.getPublicClass();
 		serviceClass.setClassName(serviceObj);
@@ -113,6 +167,14 @@ public class DomainLogicCommon {
 		serviceType = new LocatedJavaServiceObjectType(pkg+'.'+locatorClass.getClassName(),serviceObj,pkg,serviceObj);
 		ctx.getTypes().addType(serviceType);
 		serviceClass = serviceFile.getPublicClass();
+		
+		List<String> services = (List<String>)ctx.getObject(OBJ_DOMAIN_LOGIC_OBJECT_NAMES);
+		if (services==null) {
+			services = new ArrayList<String>();
+			ctx.putObject(OBJ_DOMAIN_LOGIC_OBJECT_NAMES, services);
+		}
+		services.add(serviceObj);
+
 
 		// Add locator method for service
 		try {
@@ -131,9 +193,20 @@ public class DomainLogicCommon {
 		} catch(CodeGenerationException e) {
 			throw new JavascribeException("JSOM exception while building service",e);
 		}
-
 	}
+		*/
 
+	/*
+	private static DomainServiceLocatorType getLocator(ProcessorContext ctx) {
+		DomainServiceLocatorType ret = null;
+		
+		
+		
+		return ret;
+	}
+	*/
+
+	/*
 	public static Java5SourceFile getServiceLocatorFile(String serviceLocator,ProcessorContext ctx) throws JavascribeException {
 		String pkg = JavaUtils.findPackageName(ctx, ctx.getRequiredProperty(DOMAIN_LOGIC_PKG));
 
@@ -150,6 +223,7 @@ public class DomainLogicCommon {
 
 		return ret;
 	}
+	*/
 
 	public static DomainServiceLocatorType getServiceLocatorType(String serviceLocator,ProcessorContext ctx) throws JavascribeException {
 		DomainServiceLocatorType ret = null;
@@ -164,25 +238,5 @@ public class DomainLogicCommon {
 		return ret;
 	}
 	
-	public static Java5ClassConstructor getDefaultConstructor(Java5ClassDefinition cl) {
-		Java5ClassConstructor ret = null;
-		
-		List<String> methodNames = cl.getMethodNames();
-		for(String s : methodNames) {
-			Java5MethodSignature method = cl.getDeclaredMethod(s);
-			if (!(method instanceof Java5ClassConstructor)) continue;
-			if (method.getArgNames().size()==0) {
-				return (Java5ClassConstructor)method;
-			}
-		}
-		
-		if (ret==null) {
-			ret = new Java5ClassConstructor(cl.getTypes(),cl.getClassName());
-			cl.addMethod(ret);
-		}
-		
-		return ret;
-	}
-
 }
 

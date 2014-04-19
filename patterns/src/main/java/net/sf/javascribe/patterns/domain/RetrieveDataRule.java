@@ -16,7 +16,6 @@ import net.sf.javascribe.patterns.CorePatternConstants;
 @XmlType(name="retrieveDataRule",propOrder={ })
 public class RetrieveDataRule extends ComponentBase implements DomainLogicComponent {
 
-	public static final String DOMAIN_LOGIC_DEPENDENCIES = "net.sf.javascribe.patterns.domain.RetrieveDataRule.dependencies";
 	public static final String RESOLVE_RULE_STRATEGY = "net.sf.javascribe.patterns.domain.RetrieveDataRule.strategy";
 
 	@Override

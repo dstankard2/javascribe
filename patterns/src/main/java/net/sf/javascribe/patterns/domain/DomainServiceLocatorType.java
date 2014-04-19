@@ -1,5 +1,6 @@
 package net.sf.javascribe.patterns.domain;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.javascribe.api.CodeExecutionContext;
@@ -11,7 +12,7 @@ import net.sf.javascribe.langsupport.java.JavaServiceObjectType;
 import net.sf.javascribe.langsupport.java.ServiceLocator;
 
 public class DomainServiceLocatorType extends JavaServiceObjectType implements Injectable,ServiceLocator {
-	List<String> serviceNames = null;
+	List<String> serviceNames = new ArrayList<String>();
 
 	public List<String> getServiceNames() {
 		return serviceNames;
