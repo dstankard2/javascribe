@@ -11,6 +11,9 @@ import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.expressions.ExpressionUtil;
 import net.sf.javascribe.api.expressions.ValueExpression;
+import net.sf.jsom.java5.Java5ClassConstructor;
+import net.sf.jsom.java5.Java5ClassDefinition;
+import net.sf.jsom.java5.Java5MethodSignature;
 
 import org.apache.log4j.Logger;
 
@@ -103,5 +106,25 @@ public class JavaUtils {
 		return build.toString();
 	}
 	
+	public static Java5ClassConstructor getDefaultConstructor(Java5ClassDefinition cl) {
+		Java5ClassConstructor ret = null;
+		
+		List<String> methodNames = cl.getMethodNames();
+		for(String s : methodNames) {
+			Java5MethodSignature method = cl.getDeclaredMethod(s);
+			if (!(method instanceof Java5ClassConstructor)) continue;
+			if (method.getArgNames().size()==0) {
+				return (Java5ClassConstructor)method;
+			}
+		}
+		
+		if (ret==null) {
+			ret = new Java5ClassConstructor(cl.getTypes(),cl.getClassName());
+			cl.addMethod(ret);
+		}
+		
+		return ret;
+	}
+
 }
 
