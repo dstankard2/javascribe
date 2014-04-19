@@ -56,13 +56,31 @@ public class DivElementBinder {
 		Map<String,String> values = new HashMap<String,String>();
 		String target = binding.getTarget();
 		String event = binding.getEvent();
+		String template = null;
 		
-		values.put("element",binding.getElement());
-		values.put("pageName", ctx.getPageName());
-		values.put("function",BinderUtils.getTargetAccessString(target, ctx, false));
-		values.put("event", BinderUtils.getEventToTrigger(target, event, ctx, false));
+		if (target.indexOf('.')<0) {
+			values.put("element",binding.getElement());
+			values.put("pageName", ctx.getPageName());
+			values.put("function",BinderUtils.getTargetAccessString(target, ctx, false));
+			values.put("event", BinderUtils.getEventToTrigger(target, event, ctx, false));
+			template = "js-mvvm-dom-content-binding.txt";
+		} else {
+			int i = target.indexOf('.');
+			String modelAttrib = target.substring(0, i);
+			if (ctx.getModelAttributeType(modelAttrib)==null) {
+				throw new JavascribeException("Invalid model attribute specified in element binding '"+modelAttrib+"'");
+			}
+			values.put("lowerCamelModelAttrib",modelAttrib);
+			values.put("upperCamelModelAttrib",JavascribeUtils.getUpperCamelName(modelAttrib));
+			String func = BinderUtils.getTargetAccessString(target, ctx, false);
+			values.put("element",binding.getElement());
+			values.put("event", modelAttrib+"Changed");
+			values.put("pageName", ctx.getPageName());
+			values.put("function",func);
+			template = "js-mvvm-dom-content-nested-binding.txt";
+		}
 		
-		ret = JavascribeUtils.basicTemplating("js-mvvm-dom-content-binding.txt", values);
+		ret = JavascribeUtils.basicTemplating(template, values);
 
 		return ret;
 	}

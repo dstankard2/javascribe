@@ -1,0 +1,9 @@
+this.controller.addEventListener('${lowerCamelModelAttrib}Changed',
+	function() {
+		if (this.model.get${upperCamelModelAttrib}()!=null) {
+			this.view.${element}.innerHTML = ${function};
+		} else {
+			this.view.${element}.innerHTML = '';
+		}
+	}.bind(${pageName})
+);
