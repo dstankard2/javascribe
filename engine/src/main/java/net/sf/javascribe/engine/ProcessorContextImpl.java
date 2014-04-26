@@ -57,6 +57,9 @@ public class ProcessorContextImpl implements ProcessorContext {
 		}
 	}
 
+	public Map<String,String> getAllProperties() {
+		return properties;
+	}
 	public String getProperty(String name) {
 		return properties.get(name);
 	}
