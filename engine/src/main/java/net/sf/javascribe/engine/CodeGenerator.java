@@ -92,13 +92,25 @@ public class CodeGenerator {
 						applyProcessor(comp,generatorContext,entry);
 					}
 					if (generatorContext.getAddedComponents().size()>0) {
-						compList.addAll(generatorContext.getAddedComponents());
+						List<ComponentBase> additions = generatorContext.getAddedComponents();
+						applyProperties(generatorContext,additions);
+						compList.addAll(additions);
 						resort = true;
 						break;
 					}
 				}
 			}
 			compList.removeAll(toRemove);
+		}
+	}
+	
+	private void applyProperties(ProcessorContextImpl ctx,List<ComponentBase> comps) {
+		for(ComponentBase comp : comps) {
+			Map<String,String> props = ctx.getAllProperties();
+			for(String name : props.keySet()) {
+				String val = props.get(name);
+				comp.getProperty().add(new Property(name,val));
+			}
 		}
 	}
 
