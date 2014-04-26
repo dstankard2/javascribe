@@ -36,13 +36,13 @@ public class BindingsProcessor {
 		
 		JavascriptSourceFile src = JavascriptUtils.getSourceFile(ctx);
 		JavascriptVariableType type = PageUtils.getPageType(ctx, comp.getPageName());
-		if (type.getAttributeType("controller")!=null) {
-			throw new JavascribeException("Page '"+comp.getPageName()+"' already has bindings specified.");
+
+		if (type.getAttributeType("controller")==null) {
+			// TODO: When it begins to matter and make sense, add JS_Controller type.
+			type.addVariableAttribute("controller", "JS_Controller");
+			src.getSource().append(comp.getPageName()+".controller = new JSController();\n");
 		}
 		
-		// TODO: When it begins to matter and make sense, add JS_Controller type.
-		type.addVariableAttribute("controller", "JS_Controller");
-		src.getSource().append(comp.getPageName()+".controller = new JSController();\n");
 		StringBuilder init = PageUtils.getInitFunction(ctx, comp.getPageName());
 
 		Map<String,ElementBinderEntry> binders = BinderUtils.getElementBinders(ctx);
