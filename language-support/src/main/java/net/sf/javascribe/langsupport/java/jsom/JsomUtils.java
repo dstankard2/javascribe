@@ -3,8 +3,8 @@ package net.sf.javascribe.langsupport.java.jsom;
 import java.util.List;
 
 import net.sf.javascribe.api.CodeExecutionContext;
-import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.langsupport.java.JavaCode;
 import net.sf.javascribe.langsupport.java.JavaOperation;
 import net.sf.javascribe.langsupport.java.JavaServiceObjectType;
@@ -14,6 +14,7 @@ import net.sf.jsom.CodeGenerationException;
 import net.sf.jsom.java5.Java5ClassConstructor;
 import net.sf.jsom.java5.Java5CodeSnippet;
 import net.sf.jsom.java5.Java5CompatibleCodeSnippet;
+import net.sf.jsom.java5.Java5DeclaredMethod;
 import net.sf.jsom.java5.Java5MethodSignature;
 import net.sf.jsom.java5.Java5SourceFile;
 import net.sf.jsom.java5.Java5Type;
@@ -44,6 +45,10 @@ public class JsomUtils {
 		}
 		
 		return ret;
+	}
+	
+	public static Java5DeclaredMethod createMedhod(ProcessorContext ctx) {
+		return new Java5DeclaredMethod(new JavascribeVariableTypeResolver(ctx));
 	}
 	
 	public static Java5ClassConstructor createConstructor(Java5SourceFile src,ProcessorContext ctx) {
