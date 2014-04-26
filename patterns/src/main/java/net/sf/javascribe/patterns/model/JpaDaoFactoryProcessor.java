@@ -105,12 +105,12 @@ public class JpaDaoFactoryProcessor {
 		Java5DeclaredMethod method = null;
 		String daoClassName = entityName+"Dao";
 		Java5CodeSnippet code = null;
-		JavaServiceObjectType daoType = null;
+		DataAccessJavaServiceObjectType daoType = null;
 		String lowerCamelName = JavascribeUtils.getLowerCamelName(entityName);
 
 		try {
 			// Create the DAO type
-			daoType = new JavaServiceObjectType(daoClassName,modelPkg,daoClassName);
+			daoType = new DataAccessJavaServiceObjectType(daoClassName,modelPkg,daoClassName);
 			daoType.setClassName(daoClassName);
 			daoType.setPkg(modelPkg);
 			ctx.getTypes().addType(daoType);

@@ -12,6 +12,7 @@ import net.sf.javascribe.langsupport.java.JavaServiceObjectType;
 import net.sf.javascribe.langsupport.java.JavaUtils;
 import net.sf.javascribe.patterns.domain.Resolver;
 import net.sf.javascribe.patterns.domain.ResolverContext;
+import net.sf.javascribe.patterns.model.DataAccessService;
 
 import org.apache.log4j.Logger;
 
@@ -33,8 +34,12 @@ public class ResolveForTypeInDao implements Resolver {
 		
 		for(String depName : depNames) {
 			JavaServiceObjectType obj = ctx.getDependencyRefs().get(depName);
-			JavaCode code = attemptResolve(attribute,targetType,depName,obj,execCtx);
-			if (code!=null) return code;
+			if (obj instanceof DataAccessService) {
+				JavaCode code = attemptResolve(attribute,targetType,depName,obj,execCtx);
+				if (code!=null) {
+					return code;
+				}
+			}
 		}
 		
 		return null;

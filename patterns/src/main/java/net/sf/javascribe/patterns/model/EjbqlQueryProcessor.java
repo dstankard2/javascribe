@@ -14,7 +14,6 @@ import net.sf.javascribe.api.types.ListType;
 import net.sf.javascribe.langsupport.java.JavaCode;
 import net.sf.javascribe.langsupport.java.JavaServiceObjectType;
 import net.sf.javascribe.langsupport.java.JavaUtils;
-import net.sf.javascribe.langsupport.java.jsom.JavascribeVariableTypeResolver;
 import net.sf.javascribe.langsupport.java.jsom.JsomUtils;
 import net.sf.jsom.CodeGenerationException;
 import net.sf.jsom.java5.Java5ClassConstructor;
@@ -86,25 +85,22 @@ public class EjbqlQueryProcessor {
 				throw new JavascribeException("Specified PU '"+pu+"' is not an Entity Manager Type");
 			}
 			
-			JavascribeVariableTypeResolver types = new JavascribeVariableTypeResolver(ctx);
 			src = JsomUtils.getJavaFile(fullName, ctx);
 			if (src==null) {
-				src = new Java5SourceFile(types);
+				src = JsomUtils.createJavaSourceFile(ctx);
 				src.getPublicClass().addMemberVariable("tx", pu, null);
 				src.setPackageName(pkg);
 				src.getPublicClass().setClassName(className);
-				Java5ClassConstructor cons = new Java5ClassConstructor(types, className);
+				Java5ClassConstructor cons = JsomUtils.createConstructor(src, ctx);
 				EntityManagerLocator loc = ModelUtils.getDefaultEntityManagerLocator(pu, ctx);
 				if (loc==null) {
 					throw new JavascribeException("Couldn't find default entity manager locator for Persstence Unit "+pu);
 				}
 				Java5CodeSnippet code = new Java5CodeSnippet();
 				JsomUtils.merge(code, loc.getEntityManager("this.tx", null));
-//				code.append("this.tx = tx;");
 				cons.setMethodBody(code);
-//				src.getPublicClass().addMemberVariable("tx", pu, null);
 				src.getPublicClass().addMethod(cons);
-				objType = new JavaServiceObjectType(query.getQuerySet(),pkg,query.getQuerySet());
+				objType = new DataAccessJavaServiceObjectType(query.getQuerySet(),pkg,query.getQuerySet());
 				objType.setPkg(pkg);
 				objType.setClassName(className);
 				JsomUtils.addJavaFile(src, ctx);
@@ -113,7 +109,7 @@ public class EjbqlQueryProcessor {
 				objType = (JavaServiceObjectType)ctx.getTypes().getType(query.getQuerySet());
 			}
 
-			Java5DeclaredMethod method = new Java5DeclaredMethod(types);
+			Java5DeclaredMethod method = JsomUtils.createMedhod(ctx);
 			Java5CodeSnippet methodCode = new Java5CodeSnippet();
 			boolean multiple = false;
 			String returnType = null;
