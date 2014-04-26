@@ -51,6 +51,7 @@ public class DomainLogicRuleProcessor {
 		String returnType = comp.getReturnType();
 
 		// Read rule dependencies
+		/*
 		List<Attribute> deps = null;
 		String depNames = null;
 		if (ctx.getProperty(DomainLogicCommon.DOMAIN_LOGIC_DEPENDENCIES)!=null) {
@@ -59,6 +60,7 @@ public class DomainLogicRuleProcessor {
 		} else {
 			deps = new ArrayList<Attribute>();
 		}
+		*/
 
 
 
