@@ -12,7 +12,6 @@ public interface ResolverContext {
 
 	public List<String> getDependencyNames();
 	public JavaCode resolveForAttribute(String attributeName) throws JavascribeException;
-	public String getProperty(String name);
 	public CodeExecutionContext getExecCtx();
 	public Map<String, JavaServiceObjectType> getDependencyRefs();
 	public String getSystemAttributeType(String attribute);

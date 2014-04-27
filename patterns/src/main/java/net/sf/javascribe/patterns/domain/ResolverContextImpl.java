@@ -94,10 +94,6 @@ public class ResolverContextImpl implements ResolverContext {
 		return ret;
 	}
 
-	public String getProperty(String name) {
-		return ctx.getProperty(name);
-	}
-
 	public CodeExecutionContext getExecCtx() {
 		return execCtx;
 	}
