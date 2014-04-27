@@ -75,7 +75,7 @@ public class DomainLogicCommon {
 		} else if (ctx.getProperty(DOMAIN_LOGIC_SERVICE_OBJ)!=null) {
 			ret = ctx.getProperty(DOMAIN_LOGIC_SERVICE_OBJ);
 		} else {
-			throw new JavascribeException("Attribute ServiceObj Name must be specified in the component");
+			throw new JavascribeException("Attribute ServiceObj Name must be specified in the component or in property '"+DOMAIN_LOGIC_SERVICE_OBJ+"'");
 		}
 
 		return ret;

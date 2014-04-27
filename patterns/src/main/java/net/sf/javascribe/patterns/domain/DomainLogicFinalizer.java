@@ -68,7 +68,7 @@ public class DomainLogicFinalizer {
 				boolean useImpl = false;
 				if ((file.getPublicClass().isAbstract()) || (file.getPublicClass().isInterface())) {
 					if (impl==null) {
-						throw new JavascribeException("Domain Logic implementation class not found for "+obj+" which has abstract methods");
+						throw new JavascribeException("Domain Logic implementation class not found for "+obj+" which has abstract methods.  The implementation class must be specified in property '"+DomainLogicCommon.DOMAIN_LOGIC_IMPLEMENTATION_PREFIX+obj+"'");
 					} else {
 						useImpl = true;
 					}
