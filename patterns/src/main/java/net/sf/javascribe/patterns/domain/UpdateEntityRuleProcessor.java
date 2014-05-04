@@ -6,24 +6,13 @@ import net.sf.javascribe.api.Attribute;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.api.ProcessorContext;
-import net.sf.javascribe.api.VariableType;
 import net.sf.javascribe.api.annotation.Processor;
 import net.sf.javascribe.api.annotation.ProcessorMethod;
 import net.sf.javascribe.api.annotation.Scannable;
-import net.sf.javascribe.langsupport.java.LocatedJavaServiceObjectType;
-import net.sf.javascribe.langsupport.java.jsom.JsomUtils;
-import net.sf.javascribe.patterns.model.JpaDaoFactoryType;
-import net.sf.jsom.CodeGenerationException;
-import net.sf.jsom.java5.Java5ClassConstructor;
-import net.sf.jsom.java5.Java5ClassDefinition;
-import net.sf.jsom.java5.Java5CodeSnippet;
-import net.sf.jsom.java5.Java5CompatibleCodeSnippet;
-import net.sf.jsom.java5.Java5DeclaredMethod;
-import net.sf.jsom.java5.Java5SourceFile;
 
 import org.apache.log4j.Logger;
 
-@Scannable
+//@Scannable
 @Processor
 public class UpdateEntityRuleProcessor {
 
@@ -35,15 +24,14 @@ public class UpdateEntityRuleProcessor {
 		// Set language to Java
 		ctx.setLanguageSupport("Java");
 
-		/*
 		// Read service locator name
-		String serviceLocatorName = DomainLogicCommon.getServiceLocatorName(comp, ctx);
+		String serviceLocatorName = DomainLogicCommon.getServiceLocatorName(ctx);
 
 		// Read business object name
 		String serviceObjName = DomainLogicCommon.getServiceObj(comp, ctx);
 
 		// Read rule name
-		String ruleName = DomainLogicCommon.getRule(comp, ctx);
+		String ruleName = comp.getRule();
 
 		log.info("Processing update entity rule '"+serviceObjName+"."+ruleName+"'");
 
@@ -56,6 +44,7 @@ public class UpdateEntityRuleProcessor {
 		}
 		String entity = comp.getEntity();
 
+		/*
 		// Read selectBy
 		if (JavascribeUtils.isEmpty(comp.getSelectBy())) {
 			throw new JavascribeException("Attribute 'entity' is required");

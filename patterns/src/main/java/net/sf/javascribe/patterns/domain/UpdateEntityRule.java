@@ -6,11 +6,10 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import net.sf.javascribe.api.annotation.Scannable;
 import net.sf.javascribe.api.config.ComponentBase;
 import net.sf.javascribe.patterns.CorePatternConstants;
 
-@Scannable
+//@Scannable
 @XmlRootElement(name="updateEntityRule")
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name="updateEntityRule",propOrder={ })
@@ -18,9 +17,6 @@ public class UpdateEntityRule extends ComponentBase implements DomainLogicCompon
 
 	@Override
 	public int getPriority() { return CorePatternConstants.PRIORITY_UPDATE_ENTITY_RULE; }
-	
-	@XmlAttribute
-	private String serviceLocator = null;
 	
 	@XmlAttribute
 	private String entity = null;
@@ -40,12 +36,6 @@ public class UpdateEntityRule extends ComponentBase implements DomainLogicCompon
 	@XmlAttribute
 	private String daoFactoryRef = null;
 	
-	public String getServiceLocator() {
-		return serviceLocator;
-	}
-	public void setServiceLocator(String serviceLocator) {
-		this.serviceLocator = serviceLocator;
-	}
 	public String getEntity() {
 		return entity;
 	}
