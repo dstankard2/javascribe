@@ -66,7 +66,7 @@ public class WebServletProcessor {
 		servletFile.addImport("javax.servlet.http.HttpServlet");
 		servletFile.getPublicClass().setSuperClass("HttpServlet");
 
-		method.setMethodName("service");
+		method.setName("service");
 		method.addArg("HttpServletRequest", "request");
 		method.addArg("HttpServletResponse", "response");
 		method.addThrownException("ServletException");

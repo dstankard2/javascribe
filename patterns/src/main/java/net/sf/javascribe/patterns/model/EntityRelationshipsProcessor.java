@@ -109,10 +109,9 @@ public class EntityRelationshipsProcessor {
 
 					// Create "Owned OwnedDao.getOwned(ownerId)"
 					Java5DeclaredMethod method = new Java5DeclaredMethod(new JavascribeVariableTypeResolver(ctx));
-					method.setMethodName("get"+ownedName+"By"+ownerName+"Id");
-//					method.setMethodName("get"+ownedName+"For"+ownerName);
+					method.setName("get"+ownedName+"By"+ownerName+"Id");
 					method.addArg("integer", ownerIdField);
-					method.setReturnType(ownedName);
+					method.setType(ownedName);
 					Java5CodeSnippet code = new Java5CodeSnippet();
 					method.setMethodBody(code);
 					ownedDaoSource.getPublicClass().addMethod(method);
@@ -133,10 +132,9 @@ public class EntityRelationshipsProcessor {
 					
 					// Create "Owner OwnerDao.getOwner(ownenId)"
 					method = new Java5DeclaredMethod(new JavascribeVariableTypeResolver(ctx));
-					method.setMethodName("get"+ownerName+"By"+ownedName+"Id");
-//					method.setMethodName("get"+ownerName+"For"+ownedName);
+					method.setName("get"+ownerName+"By"+ownedName+"Id");
 					method.addArg("integer", ownedIdField);
-					method.setReturnType(ownerName);
+					method.setType(ownerName);
 					code = new Java5CodeSnippet();
 					method.setMethodBody(code);
 					ownerDaoSource.getPublicClass().addMethod(method);
@@ -163,8 +161,8 @@ public class EntityRelationshipsProcessor {
 					// Create "List<Owned> ownedDao.getOwned(ownerId)"
 					Java5DeclaredMethod method = new Java5DeclaredMethod(new JavascribeVariableTypeResolver(ctx));
 //					method.setMethodName("get"+ownedPluralName+"For"+ownerName);
-					method.setMethodName("get"+ownedName+"ListBy"+ownerName+"Id");
-					method.setReturnType("list/"+ownedType.getName());
+					method.setName("get"+ownedName+"ListBy"+ownerName+"Id");
+					method.setType("list/"+ownedType.getName());
 					ownerDaoSource.addImport(ownedType.getImport());
 					method.addArg("integer", ownerIdField);
 					Java5CodeSnippet code = new Java5CodeSnippet();
@@ -194,9 +192,8 @@ public class EntityRelationshipsProcessor {
 
 					// Create "Owner ownerDao.getOwner(ownedId)"
 					method = new Java5DeclaredMethod(new JavascribeVariableTypeResolver(ctx));
-//					method.setMethodName("get"+ownerName+"For"+ownedName);
-					method.setMethodName("get"+ownerName+"By"+ownedName+"Id");
-					method.setReturnType(ownerName);
+					method.setName("get"+ownerName+"By"+ownedName+"Id");
+					method.setType(ownerName);
 					method.addArg("integer", ownedIdField);
 					code = new Java5CodeSnippet();
 					method.setMethodBody(code);

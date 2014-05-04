@@ -88,13 +88,13 @@ public class ClassificationAttributeProcessor {
 		for(Attribute a : attributes) {
 			Java5MethodSignature sig = null;
 			sig = new Java5MethodSignature(types);
-			sig.setMethodName("set"+JavascribeUtils.getUpperCamelName(a.getName()));
+			sig.setName("set"+JavascribeUtils.getUpperCamelName(a.getName()));
 			sig.addArg(a.getType(), a.getName());
 			src.getPublicClass().addMethod(sig);
 			
 			sig = new Java5MethodSignature(types);
-			sig.setMethodName("get"+JavascribeUtils.getUpperCamelName(a.getName()));
-			sig.setReturnType(a.getType());
+			sig.setName("get"+JavascribeUtils.getUpperCamelName(a.getName()));
+			sig.setType(a.getType());
 			src.getPublicClass().addMethod(sig);
 			
 			type.addAttribute(a.getName(), a.getType());

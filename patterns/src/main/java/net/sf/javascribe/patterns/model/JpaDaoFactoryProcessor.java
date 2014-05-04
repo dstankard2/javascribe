@@ -12,7 +12,6 @@ import net.sf.javascribe.api.annotation.Processor;
 import net.sf.javascribe.api.annotation.ProcessorMethod;
 import net.sf.javascribe.api.annotation.Scannable;
 import net.sf.javascribe.langsupport.java.JavaCode;
-import net.sf.javascribe.langsupport.java.JavaServiceObjectType;
 import net.sf.javascribe.langsupport.java.jsom.JavascribeJavaCodeSnippet;
 import net.sf.javascribe.langsupport.java.jsom.JavascribeVariableTypeResolver;
 import net.sf.javascribe.langsupport.java.jsom.JsomUtils;
@@ -83,8 +82,8 @@ public class JpaDaoFactoryProcessor {
 
 		// Add getter method for entity manager
 		Java5DeclaredMethod method = new Java5DeclaredMethod(new JavascribeVariableTypeResolver(ctx.getTypes()));
-		method.setMethodName("getEntityManager");
-		method.setReturnType(pu);
+		method.setName("getEntityManager");
+		method.setType(pu);
 		code = new Java5CodeSnippet();
 		code.append("return entityManager;");
 		method.setMethodBody(code);
@@ -134,8 +133,8 @@ public class JpaDaoFactoryProcessor {
 
 			// Factory method
 			method = new Java5DeclaredMethod(new JavascribeVariableTypeResolver(ctx));
-			method.setMethodName("get"+daoClassName);
-			method.setReturnType(daoClassName);
+			method.setName("get"+daoClassName);
+			method.setType(daoClassName);
 			code = new Java5CodeSnippet();
 			code.append("return new "+daoClassName+"(entityManager);");
 			method.setMethodBody(code);
@@ -144,7 +143,7 @@ public class JpaDaoFactoryProcessor {
 			// Insert method
 			method = new Java5DeclaredMethod(new JavascribeVariableTypeResolver(ctx));
 			method.addArg(entityName, lowerCamelName);
-			method.setMethodName("insert"+entityName);
+			method.setName("insert"+entityName);
 			code = new Java5CodeSnippet();
 			code.append("entityManager.persist("+lowerCamelName+");");
 			method.setMethodBody(code);
@@ -154,8 +153,8 @@ public class JpaDaoFactoryProcessor {
 			// Select method
 			method = new Java5DeclaredMethod(new JavascribeVariableTypeResolver(ctx));
 			method.addArg("integer", lowerCamelName+"Id");
-			method.setMethodName("get"+entityName);
-			method.setReturnType(entityName);
+			method.setName("get"+entityName);
+			method.setType(entityName);
 			code = new Java5CodeSnippet();
 			code.append("return entityManager.find("+entityName+".class,"+lowerCamelName+"Id);");
 			method.setMethodBody(code);
@@ -165,7 +164,7 @@ public class JpaDaoFactoryProcessor {
 			// Persist method
 			method = new Java5DeclaredMethod(new JavascribeVariableTypeResolver(ctx));
 			method.addArg(entityName, lowerCamelName);
-			method.setMethodName("save"+entityName);
+			method.setName("save"+entityName);
 			code = new Java5CodeSnippet();
 			code.append("entityManager.persist("+lowerCamelName+");");
 			method.setMethodBody(code);
@@ -175,7 +174,7 @@ public class JpaDaoFactoryProcessor {
 			// Delete method
 			method = new Java5DeclaredMethod(new JavascribeVariableTypeResolver(ctx));
 			method.addArg(entityName, lowerCamelName);
-			method.setMethodName("delete"+entityName);
+			method.setName("delete"+entityName);
 			code = new Java5CodeSnippet();
 			code.append("entityManager.remove("+lowerCamelName+");");
 			method.setMethodBody(code);
@@ -185,7 +184,7 @@ public class JpaDaoFactoryProcessor {
 			// Merge method
 			method = new Java5DeclaredMethod(new JavascribeVariableTypeResolver(ctx));
 			method.addArg(entityName, lowerCamelName);
-			method.setMethodName("merge"+entityName);
+			method.setName("merge"+entityName);
 			code = new Java5CodeSnippet();
 			code.append("entityManager.merge("+lowerCamelName+");");
 			method.setMethodBody(code);

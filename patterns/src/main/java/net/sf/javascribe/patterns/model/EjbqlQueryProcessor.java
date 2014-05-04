@@ -122,8 +122,8 @@ public class EjbqlQueryProcessor {
 				multiple = true;
 			}
 
-			method.setMethodName(query.getName());
-			method.setReturnType(returnType);
+			method.setName(query.getName());
+			method.setType(returnType);
 			method.setMethodBody(methodCode);
 
 			List<Attribute> params = JavascribeUtils.readAttributes(ctx, query.getParams());

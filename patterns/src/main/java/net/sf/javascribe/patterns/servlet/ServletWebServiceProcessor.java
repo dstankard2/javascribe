@@ -298,7 +298,7 @@ public class ServletWebServiceProcessor {
 		Java5DeclaredMethod serviceMethod = null;
 		
 		serviceMethod = new Java5DeclaredMethod(new JavascribeVariableTypeResolver(ctx));
-		serviceMethod.setMethodName("service");
+		serviceMethod.setName("service");
 		src.getPublicClass().addMethod(serviceMethod);
 		Java5CodeSnippet methodCode = new Java5CodeSnippet();
 
@@ -314,8 +314,8 @@ public class ServletWebServiceProcessor {
 		Java5DeclaredMethod utilMethod = new Java5DeclaredMethod(new JavascribeVariableTypeResolver(ctx));
 		utilMethod.addArg("string", "template");
 		utilMethod.addArg("string", "path");
-		utilMethod.setMethodName("retrieveParameters");
-		utilMethod.setReturnType("map-string");
+		utilMethod.setName("retrieveParameters");
+		utilMethod.setType("map-string");
 		Java5CodeSnippet code = new Java5CodeSnippet();
 		code.append(RETRIEVE_PARAMETER_CODE);
 		code.addImport("java.util.HashMap");

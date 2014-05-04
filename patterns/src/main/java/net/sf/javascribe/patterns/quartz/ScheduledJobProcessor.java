@@ -64,7 +64,7 @@ public class ScheduledJobProcessor {
 				JsomUtils.addJavaFile(listenerFile, ctx);
 				listenerFile.getPublicClass().addImplementedInterface("javax.servlet.ServletContextListener");
 				initMethod = new Java5DeclaredMethod(new JavascribeVariableTypeResolver(ctx.getTypes()));
-				initMethod.setMethodName("contextInitialized");
+				initMethod.setName("contextInitialized");
 				initMethod.addArg("ServletContextEvent", "_event");
 				Java5CodeSnippet code = new Java5CodeSnippet();
 				initMethod.setMethodBody(code);
@@ -78,7 +78,7 @@ public class ScheduledJobProcessor {
 
 				Java5DeclaredMethod destroyMethod = new Java5DeclaredMethod(new JavascribeVariableTypeResolver(ctx.getTypes()));
 				code = new Java5CodeSnippet();
-				destroyMethod.setMethodName("contextDestroyed");
+				destroyMethod.setName("contextDestroyed");
 				destroyMethod.addArg("ServletContextEvent", "_event");
 				destroyMethod.setMethodBody(code);
 				code.append("if (_scheduler!=null) {\n");
@@ -113,7 +113,7 @@ public class ScheduledJobProcessor {
 				JsomUtils.addJavaFile(processFile, ctx);
 				processFile.getPublicClass().addImplementedInterface("org.quartz.Job");
 				Java5DeclaredMethod exec = new Java5DeclaredMethod(new JavascribeVariableTypeResolver(ctx.getTypes()));
-				exec.setMethodName("execute");
+				exec.setName("execute");
 				exec.addArg("JobExecutionContext", "_ctx");
 				processFile.getPublicClass().addMethod(exec);
 				code = new Java5CodeSnippet();

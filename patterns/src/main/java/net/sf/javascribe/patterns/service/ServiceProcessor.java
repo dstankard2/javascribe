@@ -75,8 +75,8 @@ public class ServiceProcessor {
 
 		params = JavascribeUtils.readAttributes(ctx, service.getParams());
 
-		method.setMethodName(service.getName());
-		method.setReturnType(resultName);
+		method.setName(service.getName());
+		method.setType(resultName);
 		for(Attribute att : params) {
 			method.addArg(att.getType(), att.getName());
 			execCtx.addVariable(att.getName(), att.getType());

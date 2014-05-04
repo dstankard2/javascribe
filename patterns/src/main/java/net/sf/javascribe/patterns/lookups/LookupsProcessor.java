@@ -86,8 +86,8 @@ public class LookupsProcessor {
 			JsomUtils.addJavaFile(src, ctx);
 			locatorType.getAvailableServices().add(e.getName());
 			Java5DeclaredMethod method = new Java5DeclaredMethod(new JavascribeVariableTypeResolver(ctx));
-			method.setMethodName("get"+lookupClassName);
-			method.setReturnType(lookupClassName);
+			method.setName("get"+lookupClassName);
+			method.setType(lookupClassName);
 			Java5CodeSnippet code = new Java5CodeSnippet();
 			code.append("return new "+lookupClassName+"();\n");
 			method.setMethodBody(code);
@@ -118,8 +118,8 @@ public class LookupsProcessor {
 		.append(f.getName().substring(1)).append("String");
 		String methodName = methodNameBuild.toString();
 		method.setMethodBody(code);
-		method.setMethodName(methodName);
-		method.setReturnType("string");
+		method.setName(methodName);
+		method.setType("string");
 		method.addArg("integer", f.getName());
 		code.append("if ("+f.getName()+"==null) return null;\n");
 		code.append("String ret = null;\nswitch("+f.getName()+") {\n");

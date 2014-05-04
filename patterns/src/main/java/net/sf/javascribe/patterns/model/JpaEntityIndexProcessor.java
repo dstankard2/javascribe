@@ -78,11 +78,11 @@ public class JpaEntityIndexProcessor {
 		Java5DeclaredMethod method = new Java5DeclaredMethod(new JavascribeVariableTypeResolver(ctx));
 
 		// Set method name and return type
-		method.setMethodName(selectMethodName);
+		method.setName(selectMethodName);
 		if (multiple) {
-			method.setReturnType("list/"+entityName);
+			method.setType("list/"+entityName);
 		} else if (!multiple) {
-			method.setReturnType(entityName);
+			method.setType(entityName);
 		}
 
 		// Read parameters, add them to select method (code and type operation).

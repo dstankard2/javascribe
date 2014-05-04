@@ -1,11 +1,9 @@
 package net.sf.javascribe.patterns.domain;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.javascribe.api.Attribute;
 import net.sf.javascribe.api.JavascribeException;
-import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.annotation.Processor;
 import net.sf.javascribe.api.annotation.ProcessorMethod;
@@ -68,7 +66,7 @@ public class DomainLogicRuleProcessor {
 		boolean isInterface = false;
 
 		DomainLogicFile file = DomainLogicCommon.getDomainObjectFile(domainSrv, ctx);
-		LocatedJavaServiceObjectType type = (LocatedJavaServiceObjectType)ctx.getType(domainSrv);
+		LocatedJavaServiceObjectType type = DomainLogicCommon.getDomainObjectType(domainSrv, ctx);
 
 		// If the file is already an interface it will continue to be
 		if (file.getPublicClass().isInterface()) {
@@ -90,9 +88,9 @@ public class DomainLogicRuleProcessor {
 
 			Java5MethodSignature sig = new Java5MethodSignature(new JavascribeVariableTypeResolver(ctx));
 			sig.setAccessLevel("public");
-			sig.setMethodName(ruleName);
+			sig.setName(ruleName);
 			if (returnType.trim().length()>0) {
-				sig.setReturnType(returnType);
+				sig.setType(returnType);
 			}
 			for(Attribute param : params) {
 				sig.addArg(param.getType(), param.getName());

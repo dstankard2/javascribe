@@ -20,6 +20,8 @@ public class PageFuncProcessor {
 	@ProcessorMethod(componentClass=PageFunc.class)
 	public void process(PageFunc func,ProcessorContext ctx) throws JavascribeException {
 
+		ctx.setLanguageSupport("Javascript");
+
 		if ((func.getPageName()==null) || (func.getPageName().trim().length()==0)) {
 			throw new JavascribeException("Found an invalid page func with no pageName");
 		}
@@ -41,6 +43,9 @@ public class PageFuncProcessor {
 		}
 		src.getSource().append("}.bind("+func.getPageName()+");\n");
 		JavascriptVariableType type = PageUtils.getPageType(ctx, func.getPageName());
+		if (type==null) {
+			throw new JavascribeException("Tried to add a function to a page which was not found: '"+func.getPageName()+"'");
+		}
 		type.addFunctionAttribute(func.getName());
 	}
 

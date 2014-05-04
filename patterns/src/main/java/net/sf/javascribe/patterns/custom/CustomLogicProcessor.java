@@ -231,9 +231,9 @@ public class CustomLogicProcessor {
 			// creates it.
 			for(LocatedJavaServiceObjectType service : domainServices) {
 				Java5DeclaredMethod method = new Java5DeclaredMethod(new JavascribeVariableTypeResolver(ctx.getTypes()));
-				method.setReturnType(service.getName());
+				method.setType(service.getName());
 				method.setAccessLevel("public");
-				method.setMethodName("get"+service.getName());
+				method.setName("get"+service.getName());
 				Java5CodeSnippet code = new Java5CodeSnippet();
 				method.setMethodBody(code);
 				locatorFile.getPublicClass().addMethod(method);

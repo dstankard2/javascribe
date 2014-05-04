@@ -36,8 +36,8 @@ public class JsomUtils {
 	public static JavaOperation createJavaOperation(Java5MethodSignature method) {
 		JavaOperation ret = new JavaOperation();
 		
-		ret.setName(method.getMethodName());
-		ret.setReturnType(method.getReturnType());
+		ret.setName(method.getName());
+		ret.setReturnType(method.getType());
 		List<String> args = method.getArgNames();
 		
 		for(String s : args) {

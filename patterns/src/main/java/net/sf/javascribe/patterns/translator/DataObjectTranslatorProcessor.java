@@ -93,8 +93,8 @@ public class DataObjectTranslatorProcessor {
 			CodeExecutionContext execCtx = new CodeExecutionContext(null, ctx.getTypes());
 			Java5DeclaredMethod method = new Java5DeclaredMethod(new JavascribeVariableTypeResolver(ctx.getTypes()));
 			Java5CodeSnippet body = new Java5CodeSnippet();
-			method.setMethodName(comp.getName());
-			method.setReturnType(resultType.getName());
+			method.setName(comp.getName());
+			method.setType(resultType.getName());
 			method.setMethodBody(body);
 			src.getPublicClass().addMethod(method);
 			for(Attribute i : inputs) {
