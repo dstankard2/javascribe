@@ -8,7 +8,7 @@ elementFormDefault="qualified">
 		<xs:complexType>
 			<xs:sequence>
 
-				<xs:element name="description" type="xs:string" />
+				<xs:element name="description" type="MarkupContentType" />
 				<xs:element name="attribute" type="PropertyType" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element name="property" type="PropertyType" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element name="output" type="OutputType" minOccurs="0" maxOccurs="unbounded"/>
@@ -16,28 +16,29 @@ elementFormDefault="qualified">
 			</xs:sequence>
 			<xs:attribute name="name" type="xs:string" use="required" />
 			<xs:attribute name="id" type="xs:string" use="required" />
+			<xs:attribute name="priority" type="xs:integer" use="required" />
 		</xs:complexType>
 	</xs:element>
 	
-	<xs:complexType name="OutputType">
-		<xs:simpleContent>
-			<xs:extension base="xs:string">
-				<xs:attribute name="language" type="xs:string" use="required"/>
-			</xs:extension>
-		</xs:simpleContent>
+	<xs:complexType name="MarkupContentType">
+		<xs:sequence>
+			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"></xs:any>
+		</xs:sequence>
 	</xs:complexType>
 
-	<xs:complexType name="DescriptionType">
-		<xs:simpleContent>
-			<xs:extension base="xs:string">
+	<xs:complexType name="OutputType">
+		<xs:complexContent>
+			<xs:extension base="MarkupContentType">
+				<xs:attribute name="language" type="xs:string" use="required"/>
 			</xs:extension>
-		</xs:simpleContent>
+		</xs:complexContent>
 	</xs:complexType>
 
 	<xs:complexType name="PropertyType">
 		<xs:sequence>
-			<xs:element name="description" type="xs:string" />
-			<xs:element name="validValue" type="xs:string" />
+			<xs:element name="description" type="MarkupContentType" />
+			<!-- validValuesExamples -->
+			<xs:element name="validValue" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:string" use="required" />
 		<xs:attribute name="required" type="xs:boolean" use="required" />

@@ -6,12 +6,15 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 <xsl:template match="/">
 <html>
 	<head>
-		<link href="../css/doc.css" rel="stylesheet" type="text/css"/>
-		<title><xsl:value-of select="component/name"/></title>
+		<link href="../css/pattern.css" rel="stylesheet" type="text/css"/>
+		<title><xsl:value-of select="pattern/@name"/></title>
 	</head>
 	<body>
-		<h2><xsl:value-of select="component/name"/></h2>
-		<p>Language(s) : <xsl:value-of select="component/language"/></p>
+		<h2><xsl:value-of select="pattern/@name"/></h2>
+		<div id="priority"><xsl:value-of select="pattern/@priority"/></div>
+<!-- 
+		<p>Language(s) : <xsl:value-of select="pattern/language"/></p>
+ -->
 		<div id='description'>
 			<xsl:apply-templates/>
 		</div>

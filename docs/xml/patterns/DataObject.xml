@@ -2,28 +2,54 @@
 <pattern xmlns="http://docs.javascribe.com/pattern"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:schemaLocation="http://docs.javascribe.com/pattern ../../pattern.xsd"
-name="Data Object" id="DataObject"
+name="Data Object" id="DataObject" priority="15000"
 >
 <description>
+<span>
+A data object is a POJO Java data object.  It will have getter and setter methods for 
+all attributes defined, along with private instance variables for those attributes.
+Attributes may be of any type that have been processed by the time this data object 
+has been processed.
+</span>
+</description>
+
+<attribute name="name" required="true">
+<description>
+<span>
+The name of the data object to define, usually in upper camel format such as 
+"DataObject".  This will become both the name of the data object class and the name of 
+the type as referred to by other component definitions.
+</span>
+</description>
+</attribute>
+
+<attribute name="attributes" required="true">
+<description>
 <p>
-A data object 
+A comma-separated list of attributes that this data object will have.  For each attribute,
+the data object class will have a private member, a getter method and a setter method.
+The attributes may be of any type that has already been defined.
+</p>
+<p>
+Each attribute is specified as "&lt;name>:&lt;/type>" where the type is optional if 
+"name" is already a system attribute.
 </p>
 </description>
-<attribute required="true" name="name">
-The name of the data object to create.  Should be an upper-camel name (see examples below).
 </attribute>
 
 <property required="true" name="net.sf.javascribe.patterns.dataobject.DataObject.pkg">
 	<description>
-<p>The package in which the Java file will be placed.</p>
+<p>The package in which the Java file will be placed, under the package root of the 
+application as defined for Java language support.
+</p>
 	</description>
 	<validValue></validValue>
 </property>
 
 <output language="Java">
 <p>
-A Java data object with getters and setters for the attributes defined in the 'attributes' XML 
-attribute.  
+A Java data object with getters and setters for the attributes defined in the 
+'attributes' XML attribute.  
 </p>
 </output>
 	
