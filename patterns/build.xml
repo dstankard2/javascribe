@@ -3,6 +3,8 @@
 	<property name="dev.root">.</property>
 	
 	<path id="patterns.classpath">
+		<pathelement location="${dist.root}/lib/javaparser-1.0.8.jar"/>
+		<pathelement location="${dist.root}/lib/user.jar"/>
 		<pathelement location="${dist.root}/lib/api.jar"/>
 		<pathelement location="${dist.root}/lib/jsom.jar"/>
 		<pathelement location="${dist.root}/lib/langsupport.jar"/>
@@ -13,6 +15,23 @@
 	<target name="init">
 		<delete file="${dist.root}\lib\patterns.jar"/>
 		<mkdir dir="${build.root}\patterns\classes"/>
+		<mkdir dir="${build.root}\user\classes"/>
+	</target>
+	
+	<target name="create.user.jar">
+		<javac
+			srcdir="${dev.root}/src/user/java"
+			includes="**\*.java"
+			debug="true"
+			fork="true"
+			destdir="${build.root}\user\classes"
+			target="1.7"
+		>
+		</javac>
+		<copy overwrite="true" todir="${build.root}\user\classes\META-INF">
+			<fileset dir=".\bin\META-INF"/>
+		</copy>
+		<jar destfile="${dist.root}\lib\user.jar" basedir="${build.root}\user\classes"/>
 	</target>
 	
 	<target name="create.patterns.jar">
@@ -40,6 +59,7 @@
 
 	<target name="build">
 		<antcall target="init"/>
+		<antcall target="create.user.jar"/>
 		<antcall target="create.patterns.jar"/>
 		<antcall target="copy.third.party.runtime.dependancies"/>
 	</target>
