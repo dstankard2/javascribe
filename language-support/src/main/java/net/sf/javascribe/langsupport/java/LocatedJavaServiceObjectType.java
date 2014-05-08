@@ -28,5 +28,12 @@ public class LocatedJavaServiceObjectType extends JavaServiceObjectType {
 		return ret;
 	}
 	
+	public JavaCode getInstance(String instanceName,CodeExecutionContext execCtx) throws JavascribeException {
+		JavaCodeImpl ret = new JavaCodeImpl();
+		JavaUtils.append(ret, declare(instanceName));
+		JavaUtils.append(ret, locateService(instanceName,execCtx));
+		return ret;
+	}
+	
 	
 }
