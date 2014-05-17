@@ -10,5 +10,6 @@ import java.lang.annotation.Target;
 public @interface ControllerServlet {
 
 	String uriPath() default "";
+	String filters() default "";
 
 }

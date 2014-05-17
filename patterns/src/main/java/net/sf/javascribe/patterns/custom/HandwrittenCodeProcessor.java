@@ -32,9 +32,7 @@ import net.sf.javascribe.langsupport.java.LocatedJavaServiceObjectType;
 import net.sf.javascribe.langsupport.java.ServiceLocator;
 import net.sf.javascribe.langsupport.java.ServiceLocatorImpl;
 import net.sf.javascribe.langsupport.java.jsom.JsomUtils;
-import net.sf.javascribe.patterns.servlet.ServletFilterType;
-import net.sf.javascribe.patterns.servlet.WebUtils;
-import net.sf.javascribe.patterns.servlet.WebXmlFile;
+import net.sf.javascribe.patterns.servlet.WebServletFilter;
 import net.sf.jsom.CodeGenerationException;
 import net.sf.jsom.java5.Java5CodeSnippet;
 import net.sf.jsom.java5.Java5DeclaredMethod;
@@ -130,17 +128,16 @@ public class HandwrittenCodeProcessor {
 
 		log.debug("Found handwritten servlet filter with name '"+name+"' and class '"+cl+"'");
 		
-		WebXmlFile webXml = null;
-		webXml = WebUtils.getWebXml(ctx);
-		webXml.addFilter(name, cl);
-		
-		ServletFilterType filterType = new ServletFilterType(name);
-		ctx.getTypes().addType(filterType);
+		WebServletFilter filterComp = new WebServletFilter();
+		filterComp.setClassName(cl);
+		filterComp.setName(dec.getName());
+		ctx.addComponent(filterComp);
 	}
 
 	private void handleControllerServlet(TypeDeclaration dec,String pkg,ProcessorContext ctx) throws JavascribeException {
 		List<AnnotationExpr> ans = dec.getAnnotations();
 		String uriPath = null;
+		String filters = null;
 		
 		for(AnnotationExpr an : ans) {
 			if (an.getName().getName().equals("ControllerServlet")) {
@@ -149,7 +146,9 @@ public class HandwrittenCodeProcessor {
 				for(MemberValuePair pair : pairs) {
 					if (pair.getName().equals("uriPath")) {
 						uriPath = pair.getValue().toString();
-						break;
+					}
+					if (pair.getName().equals("filters")) {
+						filters = pair.getValue().toString();
 					}
 				}
 			}
@@ -160,15 +159,22 @@ public class HandwrittenCodeProcessor {
 
 		if (uriPath.startsWith("\"")) uriPath = uriPath.substring(1);
 		if (uriPath.endsWith("\"")) uriPath = uriPath.substring(0, uriPath.length()-1);
+		
+		if (filters!=null) {
+			if (filters.startsWith("\"")) filters = filters.substring(1);
+			if (filters.endsWith("\"")) filters = filters.substring(0, filters.length()-1);
+		}
 
 		String cl = pkg+'.'+dec.getName();
 
 		log.debug("Found handwritten servlet filter with name '"+dec.getName()+"' and uriPath '"+uriPath+"' and class '"+cl+"'");
 
-		WebXmlFile webXml = null;
-		webXml = WebUtils.getWebXml(ctx);
-		webXml.addServlet(dec.getName(), dec.getName(), cl);
-		webXml.addServletMapping(dec.getName(), uriPath);
+		HandwrittenWebServlet servletComp = new HandwrittenWebServlet();
+		servletComp.setFilters(filters);
+		servletComp.setName(dec.getName());
+		servletComp.setClassName(cl);
+		servletComp.setUriPath(uriPath);
+		ctx.addComponent(servletComp);
 	}
 
 	private void handleBusinessObject(TypeDeclaration dec,String pkg,ProcessorContext ctx) throws JavascribeException {
