@@ -28,20 +28,6 @@ public class WebServlet extends ComponentBase {
 	@XmlElement
 	private List<ServletForward> forward = new ArrayList<ServletForward>();
 	
-	/*
-	@XmlAttribute
-	private String invalidForward = null;
-	
-	@XmlAttribute
-	private String validForward = null;
-	
-	@XmlAttribute
-	private String errorForward = null;
-	
-	@XmlAttribute
-	private String defaultForward = null;
-	*/
-	
 	@XmlAttribute
 	private String name = null;
 	
@@ -93,40 +79,6 @@ public class WebServlet extends ComponentBase {
 	public void setParams(String params) {
 		this.params = params;
 	}
-
-	/*
-	public String getInvalidForward() {
-		return invalidForward;
-	}
-
-	public void setInvalidForward(String invalidForward) {
-		this.invalidForward = invalidForward;
-	}
-
-	public String getValidForward() {
-		return validForward;
-	}
-
-	public void setValidForward(String validForward) {
-		this.validForward = validForward;
-	}
-
-	public String getErrorForward() {
-		return errorForward;
-	}
-
-	public void setErrorForward(String errorForward) {
-		this.errorForward = errorForward;
-	}
-
-	public String getDefaultForward() {
-		return defaultForward;
-	}
-
-	public void setDefaultForward(String defaultForward) {
-		this.defaultForward = defaultForward;
-	}
-	*/
 
 	public List<ServletForward> getForward() {
 		return forward;
