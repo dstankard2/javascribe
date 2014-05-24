@@ -2,8 +2,8 @@
 <pattern xmlns="http://docs.javascribe.com/pattern"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:schemaLocation="http://docs.javascribe.com/pattern ../../pattern.xsd"
-name="Data Object" id="DataObject" priority="15000"
->
+name="Data Object" id="DataObject" priority="15000">
+
 <description>
 <span>
 A data object is a POJO Java data object.  It will have getter and setter methods for 
@@ -13,7 +13,10 @@ has been processed.
 </span>
 </description>
 
-<attribute name="name" required="true">
+<attribute name="name" 
+required="true"
+example="UserDataObject"
+>
 <description>
 <span>
 The name of the data object to define, usually in upper camel format such as 
@@ -23,7 +26,9 @@ the type as referred to by other component definitions.
 </description>
 </attribute>
 
-<attribute name="attributes" required="true">
+<attribute name="attributes" required="true"
+example="userId,firstName,lastName,email"
+>
 <description>
 <p>
 A comma-separated list of attributes that this data object will have.  For each attribute,
@@ -37,7 +42,9 @@ Each attribute is specified as "&lt;name>:&lt;/type>" where the type is optional
 </description>
 </attribute>
 
-<property required="true" name="net.sf.javascribe.patterns.dataobject.DataObject.pkg">
+<property required="true" 
+name="net.sf.javascribe.patterns.dataobject.DataObject.pkg"
+example="dataobj">
 	<description>
 <p>The package in which the Java file will be placed, under the package root of the 
 application as defined for Java language support.
@@ -52,6 +59,6 @@ A Java data object with getters and setters for the attributes defined in the
 'attributes' XML attribute.  
 </p>
 </output>
-	
+
 </pattern>
 
