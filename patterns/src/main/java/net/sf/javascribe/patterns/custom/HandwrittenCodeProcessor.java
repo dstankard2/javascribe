@@ -167,7 +167,7 @@ public class HandwrittenCodeProcessor {
 
 		String cl = pkg+'.'+dec.getName();
 
-		log.debug("Found handwritten servlet filter with name '"+dec.getName()+"' and uriPath '"+uriPath+"' and class '"+cl+"'");
+		log.debug("Found handwritten HTTP servlet with name '"+dec.getName()+"' and uriPath '"+uriPath+"' and class '"+cl+"'");
 
 		HandwrittenWebServlet servletComp = new HandwrittenWebServlet();
 		servletComp.setFilters(filters);
@@ -324,6 +324,14 @@ public class HandwrittenCodeProcessor {
 		else if (type.equals("long")) return "longint";
 		else if (type.equals("Date")) return "date";
 		else if (type.equals("Timestamp")) return "timestamp";
+		else if (type.startsWith("ArrayList<")) {
+			String sub = type.substring(10,type.length()-1);
+			return "list/"+findType(sub,ctx);
+		}
+		else if (type.startsWith("List<")) {
+			String sub = type.substring(5,type.length()-1);
+			return "list/"+findType(sub,ctx);
+		}
 		else if (ctx.getType(type)!=null) return type;
 		
 		return null;
