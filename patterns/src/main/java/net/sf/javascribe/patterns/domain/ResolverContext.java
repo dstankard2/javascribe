@@ -15,6 +15,7 @@ public interface ResolverContext {
 	public CodeExecutionContext getExecCtx();
 	public Map<String, JavaServiceObjectType> getDependencyRefs();
 	public String getSystemAttributeType(String attribute);
+	public int getLevel();
 
 }
 

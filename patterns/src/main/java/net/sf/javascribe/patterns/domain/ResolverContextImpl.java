@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.ProcessorContext;
@@ -20,6 +22,8 @@ public class ResolverContextImpl implements ResolverContext {
 	CodeExecutionContext execCtx = null;
 	List<Resolver> strategy = null;
 	int level = 0;
+	
+	Logger log = Logger.getLogger(ResolverContextImpl.class);
 
 	private ResolverContextImpl(ResolverContextImpl impl) {
 		this.ctx = impl.ctx;
@@ -36,6 +40,10 @@ public class ResolverContextImpl implements ResolverContext {
 		this.dependencyRefs = dependencyRefs;
 		this.strategy = strategy;
 		this.level = 1;
+	}
+	
+	public int getLevel() {
+		return level;
 	}
 	
 	public JavaCode runResolve(String attributeName) throws JavascribeException {
@@ -66,6 +74,8 @@ public class ResolverContextImpl implements ResolverContext {
 				return declare;
 			}
 		}
+		
+		log.debug("Level "+level+": Couldn't resolve for attribute '"+attributeName+"'");
 		
 		return null;
 	}

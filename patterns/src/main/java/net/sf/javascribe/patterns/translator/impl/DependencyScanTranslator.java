@@ -70,8 +70,7 @@ public class DependencyScanTranslator implements FieldTranslator {
 			} else if (type instanceof LocatedJavaServiceObjectType) {
 				LocatedJavaServiceObjectType srv = (LocatedJavaServiceObjectType)type;
 				deps.put(s, srv);
-				JsomUtils.merge(ret, (JavaCode)srv.declare(s));
-				JsomUtils.merge(ret, (JavaCode)srv.instantiate(s, null));
+				JsomUtils.merge(ret, srv.getInstance(s, null));
 			} else if (type instanceof JavaServiceObjectType) {
 				deps.put(s, (JavaServiceObjectType)type);
 				JavaServiceObjectType srv = (JavaServiceObjectType)type;

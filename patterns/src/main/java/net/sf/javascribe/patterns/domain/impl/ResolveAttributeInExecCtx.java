@@ -45,7 +45,7 @@ public class ResolveAttributeInExecCtx implements Resolver {
 			for(JavaOperation op : ops) {
 				if (!op.getName().equals(ruleName)) continue;
 				
-				log.debug("Attempting to invoke "+key+"."+op.getName());
+				log.debug("Level "+ctx.getLevel()+": Attempting to invoke "+key+"."+op.getName());
 				JavaCode invoke = invokeOperation(attribute,key,op,execCtx,ctx);
 				
 				if (invoke!=null) return invoke;

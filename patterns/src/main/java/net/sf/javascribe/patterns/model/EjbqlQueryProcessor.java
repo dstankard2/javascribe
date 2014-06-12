@@ -103,8 +103,10 @@ public class EjbqlQueryProcessor {
 				objType = new DataAccessJavaServiceObjectType(query.getQuerySet(),pkg,query.getQuerySet());
 				objType.setPkg(pkg);
 				objType.setClassName(className);
+				String lowerCamel = JavascribeUtils.getLowerCamelName(objType.getName());
 				JsomUtils.addJavaFile(src, ctx);
 				ctx.getTypes().addType(objType);
+				ctx.addAttribute(lowerCamel, objType.getName());
 			} else {
 				objType = (JavaServiceObjectType)ctx.getTypes().getType(query.getQuerySet());
 			}

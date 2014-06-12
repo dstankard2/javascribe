@@ -97,7 +97,7 @@ public class LookupsProcessor {
 
 		type = (LookupType)ctx.getTypes().getType(lookupClassName);
 		if (type==null) {
-			type = new LookupType(locatorType.getClassName(),pkg,lookupClassName);
+			type = new LookupType(locatorType.getImport(),pkg,lookupClassName);
 			ctx.getTypes().addType(type);
 		}
 

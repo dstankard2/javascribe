@@ -304,13 +304,15 @@ public class HandwrittenCodeProcessor {
 				op.setReturnType(returnType);
 			}
 			op.setName(methodDec.getName());
-			for(Parameter param : methodDec.getParameters()) {
-				String type = param.getType().toString();
-				String n = null,t = null;
-				n = param.getId().getName();
-				t = findType(type,ctx);
-				if (t==null) throw new JavascribeException("Couldn't find type for parameter type '"+type+"'");
-				op.addParameter(n, t);
+			if (methodDec.getParameters()!=null) {
+				for(Parameter param : methodDec.getParameters()) {
+					String type = param.getType().toString();
+					String n = null,t = null;
+					n = param.getId().getName();
+					t = findType(type,ctx);
+					if (t==null) throw new JavascribeException("Couldn't find type for parameter type '"+type+"'");
+					op.addParameter(n, t);
+				}
 			}
 			srvType.addMethod(op);
 		}
@@ -322,6 +324,7 @@ public class HandwrittenCodeProcessor {
 		else if (type.equals("Integer")) return "integer";
 		else if (type.equals("Long")) return "longint";
 		else if (type.equals("long")) return "longint";
+		else if (type.equals("Object")) return "object";
 		else if (type.equals("Date")) return "date";
 		else if (type.equals("Timestamp")) return "timestamp";
 		else if (type.startsWith("ArrayList<")) {

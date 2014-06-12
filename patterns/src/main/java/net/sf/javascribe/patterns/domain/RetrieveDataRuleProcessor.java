@@ -144,7 +144,7 @@ public class RetrieveDataRuleProcessor {
 			ResolverContextImpl res = new ResolverContextImpl(ctx,dependencyRefs,execCtx,strategy);
 			JavaCode resolveCode = res.runResolve(returnAttribute);
 			if (resolveCode==null) {
-				throw new JavascribeException("Couldn't resolve retrieve data rule.");
+				throw new JavascribeException("Couldn't resolve retrieve data rule");
 			}
 			
 			resolveCode.appendCodeText("return "+returnAttribute+";\n");
