@@ -13,7 +13,6 @@ import java.util.zip.ZipFile;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
-import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.xml.DOMConfigurator;
 
 import net.sf.javascribe.api.JavascribeException;

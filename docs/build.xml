@@ -4,7 +4,6 @@
 
 	<target name="init">
 		<mkdir dir="${dist.root}\docs"/>
-		<delete dir="${build.root}\docs"/>
 	</target>
 	
 	<target name="run.pattern.xsl">
@@ -18,8 +17,8 @@
 
 	<target name="copy.files">
 		<mkdir dir="${dist.root}\docs\css" />
-		<copy overwrite="true" todir="${dist.root}\docs\css">
-			<fileset dir="css"/>
+		<copy overwrite="true" todir="${dist.root}\docs">
+			<fileset dir="html"/>
 		</copy>
 	</target>
 

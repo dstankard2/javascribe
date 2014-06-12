@@ -59,6 +59,15 @@ A Java data object with getters and setters for the attributes defined in the
 'attributes' XML attribute.  
 </p>
 </output>
+<!-- 
+<examples>
+	<example desc="A typical data object with attribute types specified.">
+<span class='example'>
+&lt;dataObject 
+</span>
+	</example>
+</examples>
+ -->
 
 </pattern>
 
