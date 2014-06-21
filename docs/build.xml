@@ -16,9 +16,11 @@
 	</target>
 
 	<target name="copy.files">
-		<mkdir dir="${dist.root}\docs\css" />
 		<copy overwrite="true" todir="${dist.root}\docs">
 			<fileset dir="html"/>
+		</copy>
+		<copy overwrite="true" todir="${dist.root}\examples">
+			<fileset dir="examples"/>
 		</copy>
 	</target>
 
