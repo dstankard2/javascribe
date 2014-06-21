@@ -3,13 +3,15 @@ package net.sf.javascribe.patterns.servlet;
 import java.io.File;
 
 import net.sf.javascribe.api.CodeExecutionContext;
-import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
+import net.sf.javascribe.api.ProcessorContext;
+import net.sf.javascribe.api.types.ListType;
 import net.sf.javascribe.langsupport.java.ExceptionType;
 import net.sf.javascribe.langsupport.java.JavaCode;
 import net.sf.javascribe.langsupport.java.JavaVariableType;
 import net.sf.javascribe.langsupport.java.JavaVariableTypeImpl;
 import net.sf.javascribe.langsupport.java.jsom.JavascribeJavaCodeSnippet;
+import net.sf.javascribe.langsupport.java.jsom.JsomUtils;
 import net.sf.jsom.CodeGenerationException;
 import net.sf.jsom.java5.Java5CompatibleCodeSnippet;
 
@@ -111,21 +113,42 @@ public class WebUtils {
 		if (type==null) {
 			throw new JavascribeException("Couldn't find type '"+typeName+"' for servlet input param '"+name+"'");
 		}
-		code.merge(new JavascribeJavaCodeSnippet((JavaCode)type.declare(name,execCtx)));
-		
-		if (typeName.equals("string")) {
-			code.append(name+" = request.getParameter(\""+name+"\");\n");
-			code.append("if (("+name+"!=null) && ("+name+".trim().length()==0)) "+name+" = null;\n");
-		}
-		else if (typeName.equals("integer")) {
-			code.append("if (request.getParameter(\""+name+"\")!=null) {\n");
-			code.append("try {\n");
-			code.append(name+" = Integer.parseInt(request.getParameter(\""+name+"\"));\n");
-			code.append("} catch(Exception e) { }\n}\n");
-		}
-		else {
-			// No other parameter types supported yet
-			throw new JavascribeException("Found a webServlet input parameter '"+name+"' of unsupported type '"+typeName+"'");
+		if (typeName.startsWith("list/")) {
+			String eltTypeName = typeName.substring(5);
+			ListType listType = (ListType)type;
+			code.merge(new JavascribeJavaCodeSnippet((JavaCode)listType.declare(name,eltTypeName,execCtx)));
+			code.merge(new JavascribeJavaCodeSnippet((JavaCode)listType.instantiate(name,eltTypeName,execCtx)));
+			code.append("try {\nString[] _vals = request.getParameterValues(\""+name+"\");\n");
+			code.append("if (_vals!=null) {\n");
+			code.append("for (String _val : _vals) {\n");
+			if (eltTypeName.equals("integer")) {
+				code.append("int _intVal = Integer.parseInt(_val);\n");
+				JsomUtils.merge(code, (JavaCode)listType.appendToList(name, "_intVal", execCtx));
+			} else if (eltTypeName.equals("string")) {
+				JsomUtils.merge(code, (JavaCode)listType.appendToList(name, "_val", execCtx));
+			} else {
+				throw new JavascribeException("Servlet patterns do not support parameters of type '"+typeName+"'");
+			}
+			code.append("}\n"); // for loop
+			code.append("}\n"); // if vals!=null
+			code.append("} catch(Exception e) { }\n"); // try/catch
+		} else {
+			code.merge(new JavascribeJavaCodeSnippet((JavaCode)type.declare(name,execCtx)));
+			
+			if (typeName.equals("string")) {
+				code.append(name+" = request.getParameter(\""+name+"\");\n");
+				code.append("if (("+name+"!=null) && ("+name+".trim().length()==0)) "+name+" = null;\n");
+			}
+			else if (typeName.equals("integer")) {
+				code.append("if (request.getParameter(\""+name+"\")!=null) {\n");
+				code.append("try {\n");
+				code.append(name+" = Integer.parseInt(request.getParameter(\""+name+"\"));\n");
+				code.append("} catch(Exception e) { }\n}\n");
+			}
+			else {
+				// No other parameter types supported yet
+				throw new JavascribeException("Found a webServlet input parameter '"+name+"' of unsupported type '"+typeName+"'");
+			}
 		}
 		execCtx.addVariable(name, typeName);
 		code.append("request.setAttribute(\"input_"+name+"\","+name+");\n");
