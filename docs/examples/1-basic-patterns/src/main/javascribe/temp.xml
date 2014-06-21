@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<componentSet 
+xmlns:serviceFlow="http://javascribe.dave.com/patterns/serviceFlow" 
+xmlns="http://javascribe.sf.net/config" 
+xmlns:js-page="http://javascribe.sf.net/patterns/js-page" 
+xmlns:model="http://javascribe.sf.net/patterns/model" 
+xmlns:lookups="http://javascribe.sf.net/patterns/lookups" 
+xmlns:cl="http://javascribe.sf.net/patterns/classification" 
+xmlns:domain="http://javascribe.sf.net/patterns/domain" 
+xmlns:comps="http://javascribe.sf.net/patterns/data-object"
+>
+
+</componentSet>

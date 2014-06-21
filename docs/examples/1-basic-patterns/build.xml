@@ -1,0 +1,28 @@
+<project name="JavaScribe Docs" default="build" basedir=".">
+
+	<property name="build.root">c:\build\javascribe\example1</property>
+	<property name="dev.root">.</property>
+	<property name="tomcat.home">c:\apps\tomcat-7.0.40</property>
+
+	<property name="javascribe.home" value="..\.."/>
+
+	<path id="mysql.classpath">
+		<pathelement path="${javascribe.home}/lib/mysql-connector-java-5.0.4-bin.jar" />
+	</path>
+
+	<target name="init">
+		<delete file="${build.root}"/>
+		<mkdir dir="${build.root}"/>
+	</target>
+	
+	<target name="build">
+		<antcall target="init"/>
+		<antcall target="run.sql"/>
+		<antcall target="run.javascribe"/>
+<!--
+		<antcall target="run.pattern.xsl"/>
+		<antcall target="copy.files"/>
+-->
+	</target>
+	
+</project>

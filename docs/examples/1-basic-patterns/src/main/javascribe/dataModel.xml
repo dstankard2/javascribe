@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<componentSet 
+xmlns:model="http://javascribe.sf.net/patterns/model" 
+xmlns="http://javascribe.sf.net/config">
+
+	<!-- Property elements come before components -->
+	<!-- This property is used by the entity relationships pattern -->
+	<property name="net.sf.javascribe.patterns.model.EntityRelationships.orderByPK">true</property>
+
+	<!-- 
+	This XML element defines a JPA Entity Manager component.
+	Based on the properties in generator.xml, the component processor 
+	will connect to the database, look at the tables defined there and 
+	generate JPA-annotated classes.  A persistence.xml file is also 
+	generated.  For more information see the pattern's documentation.
+	 -->
+	<model:entityManager name="TestDB" ref="tx" databaseType="MySQL 5.5" catalog=""/>
+	
+	<!--
+	This XML element defines how the Entity Manager client will get an 
+	EntityManager instance.  The txLocatorThreadLocal generates an API 
+	that will get an Entity Manager and store it in a ThreadLocal. 
+	 -->
+	<model:txLocatorThreadLocal name="DefaultTxLocator" pu="TestDB"/>
+
+	<!--
+	The DAO factory creates a factory object that grants access to DAOs.
+	One DAO is created for each table in the specified entity manager, 
+	and the DAO factory's default constructor will retrieve an entity 
+	manager using the specified locator.
+	
+	For each entity "AnEntity", the DAO will have methods getAnEntity, 
+	insertAnEntity, deleteAnEntity and updateAnEntity.
+	 -->
+	<model:jpaDaoFactory entityManager="TestDB" ref="ds" locator="DefaultTxLocator"/>
+
+	<model:entityRelationships entityManager="TestDB" jpaDaoFactory="TestDBDaoFactory">
+		<model:rel>Company has many User</model:rel>
+	</model:entityRelationships>
+
+</componentSet>
+
