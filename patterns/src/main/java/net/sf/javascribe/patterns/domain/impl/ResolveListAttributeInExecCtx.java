@@ -39,9 +39,6 @@ public class ResolveListAttributeInExecCtx implements Resolver {
 		if (!attribute.endsWith("List")) {
 			return null;
 		}
-//		if (ctx.getExecCtx().getVariableType(attribute)!=null) {
-//			return null;
-//		}
 		
 		String attributeElement = attribute.substring(0, attribute.length()-4);
 		String elementTypeName = attributeType.substring(5);

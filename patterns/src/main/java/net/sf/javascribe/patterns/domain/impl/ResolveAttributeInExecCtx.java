@@ -51,7 +51,7 @@ public class ResolveAttributeInExecCtx implements Resolver {
 				if (invoke!=null) return invoke;
 			}
 		}
-		log.debug("Unable to resolve for attribute '"+attribute+"'");
+//		log.debug("Unable to resolve for attribute '"+attribute+"'");
 		
 		return null;
 	}

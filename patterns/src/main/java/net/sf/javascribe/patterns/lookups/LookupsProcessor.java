@@ -103,20 +103,19 @@ public class LookupsProcessor {
 
 		List<Field> fields = e.getField();
 		for(Field f : fields) {
-			handleField(src,e,f,new JavascribeVariableTypeResolver(ctx.getTypes()),type);
+			handleField(src,e,f,new JavascribeVariableTypeResolver(ctx.getTypes()),type,ctx);
 		}
 	}
 
-	private static void handleField(Java5SourceFile src,Entity e, Field f,VariableTypeResolver types,LookupType type) throws JavascribeException,CodeGenerationException {
+	private static void handleField(Java5SourceFile src,Entity e, Field f,VariableTypeResolver types,LookupType type,ProcessorContext ctx) throws JavascribeException,CodeGenerationException {
 		String constName = null;
 		Java5DeclaredMethod method = new Java5DeclaredMethod(types);
 		Java5CodeSnippet code = new Java5CodeSnippet();
-		StringBuilder methodNameBuild = new StringBuilder();
 
 		log.debug("Adding lookup for field '"+f.getName()+"'");
-		methodNameBuild.append("get").append(Character.toUpperCase(f.getName().charAt(0)))
-		.append(f.getName().substring(1)).append("String");
-		String methodName = methodNameBuild.toString();
+		ctx.addAttribute(f.getName(), "integer");
+		ctx.addAttribute(f.getName()+"String", "string");
+		String methodName = "get"+JavascribeUtils.getUpperCamelName(f.getName()+"String");
 		method.setMethodBody(code);
 		method.setName(methodName);
 		method.setType("string");
