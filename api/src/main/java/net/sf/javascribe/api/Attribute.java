@@ -1,5 +1,10 @@
 package net.sf.javascribe.api;
 
+/**
+ * Represents a system attribute, and has a name and type.
+ * @author DCS
+ *
+ */
 public class Attribute {
 	private String name = null;
 	private String type = null;

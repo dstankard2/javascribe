@@ -13,6 +13,10 @@ import net.sf.javascribe.api.expressions.ValueExpression;
 
 import org.apache.log4j.Logger;
 
+/**
+ * A set of utility methods that a component processor might benefit from.
+ * @author DCS
+ */
 public class JavascribeUtils {
 
 	public static final Logger log = Logger.getLogger(JavascribeUtils.class);

@@ -4,6 +4,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * Represents the current context while generating a particular code 
+ * function.  The context contains the currently declared variables and 
+ * types that are available.
+ * @author DCS
+ *
+ */
 public class CodeExecutionContext {
 	private HashMap<String,String> variables = new HashMap<String,String>();
 	private TypeResolver types = null;
