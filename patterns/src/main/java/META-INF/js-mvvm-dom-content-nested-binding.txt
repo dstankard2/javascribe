@@ -1,9 +1,22 @@
 this.controller.addEventListener('${lowerCamelModelAttrib}Changed',
 	function() {
-		if (this.model.get${upperCamelModelAttrib}()!=null) {
-			this.view.${element}.innerHTML = ${function};
-		} else {
-			this.view.${element}.innerHTML = '';
+		var val = null;
+		var elt = this.view.${element};
+
+		if (this.model.get${upperCamelModelAttrib}()!=null) 
+			val = ${function};
+		else
+			val = '';
+		while(elt.firstChild) {
+			elt.removeChild(elt.firstChild);
 		}
+		if (typeof val=='string') elt.innerHTML = val;
+		else if (val instanceof HTMLElement) 
+			elt.appendChild(val);
+		else if (typeof val=='object') {
+			while(val.length>0) 
+				elt.appendChild(val.item(0));
+		} else if (typeof val=='number') elt.innerHTML = ''+val;
+		else elt.appendChild(val);
 	}.bind(${pageName})
 );
