@@ -11,12 +11,14 @@ import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.expressions.ExpressionUtil;
 import net.sf.javascribe.api.expressions.ValueExpression;
-import net.sf.jsom.java5.Java5ClassConstructor;
-import net.sf.jsom.java5.Java5ClassDefinition;
-import net.sf.jsom.java5.Java5MethodSignature;
 
 import org.apache.log4j.Logger;
 
+/**
+ * This utility class implements a number of methods that are useful for 
+ * generating Java code and building Java-based variable types.
+ * @author DCS
+ */
 public class JavaUtils {
 
 	private static final String JAVA_ROOT_PKG = "net.sf.javascribe.langsupport.java.rootPkg";
@@ -32,12 +34,27 @@ public class JavaUtils {
 			}
 		}
 	}
-	
+
+	/**
+	 * Adds the Java source file to the generated code distribution, taking into 
+	 * account its package, class name and the root dir of the generated Java files.
+	 * @param file
+	 * @param ctx
+	 * @throws JavascribeException
+	 */
 	public static void addJavaFile(JavaSourceFile file,ProcessorContext ctx) throws JavascribeException {
 		file.setSourceRootPath(ctx.getBuildRoot()+File.separatorChar+ctx.getRequiredProperty(JAVA_ROOT_DIR));
 		ctx.addSourceFile(file);
 	}
-	
+
+	/**
+	 * Gets the specified Java file, taking into account the package, class 
+	 * name and root directory for generated Java files.
+	 * @param className
+	 * @param ctx
+	 * @return
+	 * @throws JavascribeException
+	 */
 	public static JavaSourceFile getJavaFile(String className,ProcessorContext ctx) throws JavascribeException {
 		JavaSourceFile ret = null;
 		
@@ -53,24 +70,48 @@ public class JavaUtils {
 		return ctx.getRequiredProperty(JAVA_ROOT_PKG)+'.'+subpkg;
 	}
 	
+	/**
+	 * 
+	 * @param ctx
+	 * @param className
+	 * @return
+	 * @throws JavascribeException
+	 */
 	public static String getJavaFilePath(ProcessorContext ctx,String className) throws JavascribeException {
 		String ret = ctx.getBuildRoot()+File.separatorChar+ctx.getRequiredProperty(JAVA_ROOT_DIR)+File.separatorChar+className;
 		ret = ret.replace('.', File.separatorChar)+".java";
 		return ret;
 	}
 	
-	public static String findTypeName(String attribute) {
-		return Character.toUpperCase(attribute.charAt(0))+attribute.substring(1);
-	}
-
-	public static String findAttributeName(String type) {
-		return Character.toLowerCase(type.charAt(0))+type.substring(1);
-	}
-
+	/**
+	 * Returns the code to invoke the Java operation, using explicitly 
+	 * defined parameters first and then the execution context.
+	 * @param resultName Name of variable to put the result into, or null for operations that return void.
+	 * @param objName
+	 * @param op
+	 * @param execCtx
+	 * @param explicitParams
+	 * @return
+	 * @throws JavascribeException
+	 */
 	public static String callJavaOperation(String resultName,String objName,JavaOperation op,CodeExecutionContext execCtx,Map<String,String> explicitParams) throws JavascribeException {
 		return callJavaOperation(resultName,objName,op,execCtx,explicitParams,true);
 	}
 
+	/**
+	 * Returns the code to invoke the Java operation, using explicitly 
+	 * defined parameters first and then the execution context.  Additionally, 
+	 * you may invoke the operation without appending a semi-colon to the 
+	 * end.
+	 * @param resultName
+	 * @param objName
+	 * @param op
+	 * @param execCtx
+	 * @param explicitParams
+	 * @param addSemicolon
+	 * @return
+	 * @throws JavascribeException
+	 */
 	public static String callJavaOperation(String resultName,String objName,JavaOperation op,CodeExecutionContext execCtx,Map<String,String> explicitParams,boolean addSemicolon) throws JavascribeException {
 		StringBuilder build = new StringBuilder();
 		
@@ -104,26 +145,6 @@ public class JavaUtils {
 		build.append('\n');
 
 		return build.toString();
-	}
-	
-	public static Java5ClassConstructor getDefaultConstructor(Java5ClassDefinition cl) {
-		Java5ClassConstructor ret = null;
-		
-		List<String> methodNames = cl.getMethodNames();
-		for(String s : methodNames) {
-			Java5MethodSignature method = cl.getDeclaredMethod(s);
-			if (!(method instanceof Java5ClassConstructor)) continue;
-			if (method.getArgNames().size()==0) {
-				return (Java5ClassConstructor)method;
-			}
-		}
-		
-		if (ret==null) {
-			ret = new Java5ClassConstructor(cl.getTypes(),cl.getClassName());
-			cl.addMethod(ret);
-		}
-		
-		return ret;
 	}
 
 }

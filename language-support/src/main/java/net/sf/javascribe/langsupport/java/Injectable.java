@@ -4,7 +4,8 @@ import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JavascribeException;
 
 /**
- * Represents an object that can be injected as a dependency into another object
+ * Represents a Java object that can be instantiated and injected as a 
+ * dependency into another object.  Especially for use with business services to implement dependency injection.
  * @author DCS
  */
 public interface Injectable extends JavaVariableType {

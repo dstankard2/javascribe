@@ -12,6 +12,7 @@ import net.sf.javascribe.langsupport.java.JavaUtils;
 import net.sf.javascribe.langsupport.java.LocatedJavaServiceObjectType;
 import net.sf.jsom.CodeGenerationException;
 import net.sf.jsom.java5.Java5ClassConstructor;
+import net.sf.jsom.java5.Java5ClassDefinition;
 import net.sf.jsom.java5.Java5CodeSnippet;
 import net.sf.jsom.java5.Java5CompatibleCodeSnippet;
 import net.sf.jsom.java5.Java5DeclaredMethod;
@@ -88,6 +89,12 @@ public class JsomUtils {
 		return ret;
 	}
 	
+	/**
+	 * Converts the given Javascribe code to a JSOM-compatible code snippet.
+	 * @param code
+	 * @return
+	 * @throws JavascribeException
+	 */
 	public static Java5CodeSnippet toJsomCode(JavaCode code) throws JavascribeException {
 		Java5CodeSnippet ret = new Java5CodeSnippet();
 		
@@ -99,6 +106,16 @@ public class JsomUtils {
 		return ret;
 	}
 	
+	/**
+	 * Returns the code required to declare the specified variable of 
+	 * the specified type.  Adds that variable to the code execution 
+	 * context.
+	 * @param execCtx
+	 * @param variable
+	 * @param type
+	 * @return
+	 * @throws CodeGenerationException
+	 */
 	public static Java5CompatibleCodeSnippet declare(CodeExecutionContext execCtx,String variable,String type) throws CodeGenerationException {
 		Java5CompatibleCodeSnippet ret = null;
 		
@@ -107,6 +124,7 @@ public class JsomUtils {
 			throw new CodeGenerationException("Couldn't find Java type '"+type+"'");
 		}
 		ret = (Java5CompatibleCodeSnippet)t.declare(variable);
+		execCtx.addVariable(variable, type);
 		
 		return ret;
 	}
@@ -114,6 +132,32 @@ public class JsomUtils {
 	public static void merge(Java5CompatibleCodeSnippet code,JavaCode merge) throws CodeGenerationException,JavascribeException {
 		Java5CodeSnippet m = toJsomCode(merge);
 		code.merge(m);
+	}
+
+	/**
+	 * Gets the default constructor for the specified class.  Creates it if 
+	 * the class does not have one.
+	 * @param cl JSOM Class to create a default constructor for.
+	 * @return
+	 */
+	public static Java5ClassConstructor getDefaultConstructor(Java5ClassDefinition cl) {
+		Java5ClassConstructor ret = null;
+		
+		List<String> methodNames = cl.getMethodNames();
+		for(String s : methodNames) {
+			Java5MethodSignature method = cl.getDeclaredMethod(s);
+			if (!(method instanceof Java5ClassConstructor)) continue;
+			if (method.getArgNames().size()==0) {
+				return (Java5ClassConstructor)method;
+			}
+		}
+		
+		if (ret==null) {
+			ret = new Java5ClassConstructor(cl.getTypes(),cl.getClassName());
+			cl.addMethod(ret);
+		}
+		
+		return ret;
 	}
 
 }

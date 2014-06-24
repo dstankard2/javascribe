@@ -25,7 +25,7 @@ public class ButtonElementBinder extends InputElementBinder {
 		values.put("element",binding.getElement());
 		values.put("function",fn);
 
-		ret = JavascribeUtils.basicTemplating("js-mvvm-button-onclick-binding.txt", values);
+		ret = JavascribeUtils.basicTemplating("js-mvvm-button-onclick-binding.txt", values, ctx.getCtx());
 
 		return ret;
 	}

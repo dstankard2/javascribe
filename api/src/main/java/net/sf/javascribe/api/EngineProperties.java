@@ -1,5 +1,7 @@
 package net.sf.javascribe.api;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.util.List;
 
@@ -14,6 +16,8 @@ public interface EngineProperties {
 	public List<Class<?>> getScannedClassesOfInterface(Class<?> cl);
 
 	public List<Class<?>> getScannedClassesOfAnnotation(Class<? extends Annotation> cl);
+	
+	public InputStream getClasspathResource(String path) throws IOException,JavascribeException;
 
 }
 

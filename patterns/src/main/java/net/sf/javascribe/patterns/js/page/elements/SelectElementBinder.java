@@ -32,7 +32,7 @@ public class SelectElementBinder extends InputElementBinder {
 		values.put("upperTargetName",JavascribeUtils.getUpperCamelName(target));
 		values.put("function",BinderUtils.getTargetAccessString(target, ctx, false));
 
-		ret = JavascribeUtils.basicTemplating("js-mvvm-select-value-binding.txt", values);
+		ret = JavascribeUtils.basicTemplating("js-mvvm-select-value-binding.txt", values, ctx.getCtx());
 
 		return ret;
 	}

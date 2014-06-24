@@ -21,7 +21,13 @@ public class WebUtils {
 		return ctx.getBuildRoot()+File.separatorChar+"www"+File.separatorChar+"WEB-INF"+
 		File.separatorChar+"web.xml";
 	}
-	
+
+	/**
+	 * Gets the current web.xml file.  Creates it if necessary.
+	 * @param ctx
+	 * @return
+	 * @throws JavascribeException
+	 */
 	public static WebXmlFile getWebXml(ProcessorContext ctx) throws JavascribeException {
 		WebXmlFile ret = null;
 
@@ -36,6 +42,13 @@ public class WebUtils {
 		return ret;
 	}
 	
+	/**
+	 * Adds a context listener of the given class name to the web.xml file.
+	 * Creates web.xml if necessary.
+	 * @param ctx
+	 * @param className
+	 * @throws JavascribeException
+	 */
 	public static void addContextListener(ProcessorContext ctx,String className) throws JavascribeException {
 		WebXmlFile webXml = getWebXml(ctx);
 		webXml.addContextListener(className);
@@ -49,33 +62,31 @@ public class WebUtils {
 		return ret;
 	}
 	
+	/**
+	 * Checks if the existing web.xml has the given servlet declared.  
+	 * Creates the web.xml if necessary.
+	 * @param ctx
+	 * @param servletName
+	 * @return
+	 * @throws JavascribeException
+	 */
 	public static boolean webXmlHasServlet(ProcessorContext ctx,String servletName) throws JavascribeException {
 		WebXmlFile src = getWebXml(ctx);
 		
 		return src.getServlet(servletName) != null;
 	}
 
-/*
-	public static Element getServletElement(Document doc,String servletName) {
-		Element root = doc.getRootElement();
-		List<Element> elts = root.elements();
-		
-		for(Element elt : elts) {
-			if (elt.getName().equals("servlet")) {
-				Element name = elt.element("servlet-name");
-				if (name==null) continue;
-				if (name.getText()==null) continue;
-				if (name.getText().equals(servletName)) return elt;
-			}
-		}
-		
-		return null;
-	}
-*/
-	
+	/**
+	 * Ensures that the current language support is set to "Java" and that 
+	 * the following types exist: HttpServletRequest, HttpervletResponse, 
+	 * ServletException, IOException, ServletContextEvent.
+	 * @param ctx
+	 * @throws JavascribeException
+	 */
 	public static void addHttpTypes(ProcessorContext ctx) throws JavascribeException {
 		JavaVariableTypeImpl type = null;
 		
+		ctx.setLanguageSupport("Java");
 		if (ctx.getTypes().getType("HttpServletRequest")==null) {
 			type = new JavaVariableTypeImpl("HttpServletRequest","javax.servlet.http.HttpServletRequest","HttpServletRequest");
 			ctx.getTypes().addType(type);
@@ -101,7 +112,7 @@ public class WebUtils {
 		}
 	}
 
-	// Given a variable of type HttpServletRequest named request, read the parameter of the 
+	// Given a variable of type "HttpServletRequest" named "request", read the parameter of the 
 	// given name with the given type and in the given executionContext.  Append the code to 
 	// the specified code snippet.
 	public static void handleQueryParam(ProcessorContext ctx,String name,String typeName,Java5CompatibleCodeSnippet code,CodeExecutionContext execCtx) throws JavascribeException,CodeGenerationException {

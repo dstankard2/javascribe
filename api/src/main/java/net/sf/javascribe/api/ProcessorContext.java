@@ -2,6 +2,13 @@ package net.sf.javascribe.api;
 
 import net.sf.javascribe.api.config.ComponentBase;
 
+/**
+ * This class is the primary interface between a component processor and 
+ * the code generation engine.  It has methods for accessing configuration, 
+ * accessing and adding source files, accessing declared variable types and 
+ * setting the current language support.
+ * @author DCS
+ */
 public interface ProcessorContext {
 
 	/**

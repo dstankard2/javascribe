@@ -24,7 +24,7 @@ public class InputElementBinder extends DivElementBinder {
 		values.put("function",BinderUtils.getTargetAccessString(target, ctx, false));
 		values.put("event", BinderUtils.getEventToTrigger(target, event, ctx, false));
 
-		ret = JavascribeUtils.basicTemplating("js-mvvm-input-enable-binding.txt", values);
+		ret = JavascribeUtils.basicTemplating("js-mvvm-input-enable-binding.txt", values, ctx.getCtx());
 
 		return ret;
 	}
@@ -49,7 +49,7 @@ public class InputElementBinder extends DivElementBinder {
 		} else {
 			template = "js-mvvm-input-value-binding-nested.txt";
 		}
-		ret = JavascribeUtils.basicTemplating(template, values);
+		ret = JavascribeUtils.basicTemplating(template, values, ctx.getCtx());
 		
 		return ret;
 	}

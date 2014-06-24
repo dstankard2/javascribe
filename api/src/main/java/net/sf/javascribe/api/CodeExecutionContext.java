@@ -24,7 +24,15 @@ public class CodeExecutionContext {
 		
 		return ret;
 	}
-	
+
+	/**
+	 * Creates a new context with the same variables declared as the specified 
+	 * parent.  Adding variables to the new context will not affect the parent 
+	 * context.  This is handy for emulating new variable scopes from "{" in 
+	 * some languages.
+	 * @param parent
+	 * @param types
+	 */
 	public CodeExecutionContext(CodeExecutionContext parent,TypeResolver types) {
 		this.types = types;
 		if (parent!=null) {
@@ -34,10 +42,19 @@ public class CodeExecutionContext {
 		}
 	}
 	
+	/**
+	 * Adds a variable with the given name and the given type.
+	 * @param name
+	 * @param type
+	 */
 	public void addVariable(String name,String type) {
 		variables.put(name,type);
 	}
-	
+
+	/**
+	 * Get the currently defined variable types.
+	 * @return
+	 */
 	public TypeResolver getTypes() {
 		return types;
 	}
@@ -50,6 +67,11 @@ public class CodeExecutionContext {
 		return variables.get(var);
 	}
 	
+	/**
+	 * Returns the variable type for the given variable.
+	 * @param var
+	 * @return
+	 */
 	public VariableType getTypeForVariable(String var) {
 		String type = variables.get(var);
 		if (type!=null) {

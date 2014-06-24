@@ -59,15 +59,36 @@ A Java data object with getters and setters for the attributes defined in the
 'attributes' XML attribute.  
 </p>
 </output>
-<!-- 
 <examples>
 	<example desc="A typical data object with attribute types specified.">
+		<explanation>
+<p>This data object has three attributes: firstName, lastName and 
+accountInfo.  For this to be valid, AccountInfo must be a valid type in 
+the system (Perhaps a previously defined data object).</p>
+
+		</explanation>
+		<systemAttributes>
+			<systemAttribute type="UserInfo" name="userInfo" desc="A user info object" />
+			<systemAttribute type="list/UserInfo" name="userInfoList" desc="A java.util.List<UserInfo> with UserInfo as the element type" />
+		</systemAttributes>
+		<variableTypes>
+			<variableType name="UserInfo" stereotype="AttributeHolder"/>
+		</variableTypes>
+		<generatedFiles>
+			<file name="UserInfo.java">
+<p>
+The Java file for the UserInfo class.  It will have private member variables 
+and "public void setFirstName(String firstName)" along with "public String getFirstName()".
+</p>
+<p>The package is defined by Java Support's root package, along with the 
+property "net.sf.javascribe.patterns.dataobject.DataObject.pkg"</p>
+			</file>
+		</generatedFiles>
 <span class='example'>
-&lt;dataObject 
+&lt;dataObject xmlns="http://javascribe.sf.net/patterns/data-object" name="UserInfo" attributes="firstName:string,lastName:string,accountInfo:AccountInfo" /&gt;
 </span>
 	</example>
 </examples>
- -->
 
 </pattern>
 

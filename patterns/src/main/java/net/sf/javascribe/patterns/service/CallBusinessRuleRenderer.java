@@ -71,7 +71,6 @@ public class CallBusinessRuleRenderer implements ServiceOperationRenderer {
 			if ((res!=null) && (!res.startsWith("returnValue.")) && (operation.getReturnType()!=null)) {
 				if (res.indexOf(".")<0) {
 					if (execCtx.getTypeForVariable(res)==null) {
-						execCtx.addVariable(res, operation.getReturnType());
 						ret.merge(JsomUtils.declare(execCtx, res, operation.getReturnType()));
 					}
 				}

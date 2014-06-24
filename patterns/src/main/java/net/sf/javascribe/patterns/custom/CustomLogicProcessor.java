@@ -18,7 +18,6 @@ import net.sf.javascribe.api.annotation.Scannable;
 import net.sf.javascribe.langsupport.java.Injectable;
 import net.sf.javascribe.langsupport.java.JavaCode;
 import net.sf.javascribe.langsupport.java.JavaOperation;
-import net.sf.javascribe.langsupport.java.JavaServiceObjectType;
 import net.sf.javascribe.langsupport.java.JavaUtils;
 import net.sf.javascribe.langsupport.java.JavaVariableType;
 import net.sf.javascribe.langsupport.java.LocatedJavaServiceObjectType;
@@ -48,6 +47,7 @@ public class CustomLogicProcessor {
 		CustomLogicObjectType ret = new CustomLogicObjectType(locatorClassName,className,pkg,className);
 		ret.setClassName(className);
 		ret.setPkg(pkg);
+		// TODO: this is not right.  to fix.
 		ctx.addAttribute(JavascribeUtils.getLowerCamelName(className), className);
 
 		log.debug("Processing Custom Logic class '"+className+"'");
@@ -65,7 +65,7 @@ public class CustomLogicProcessor {
 		return ret;
 	}
 
-	private void processDeclarationAtLocation(StringBuilder s,int index,JavaServiceObjectType obj,ProcessorContext ctx,CustomLogic component) throws JavascribeException {
+	private void processDeclarationAtLocation(StringBuilder s,int index,LocatedJavaServiceObjectType obj,ProcessorContext ctx,CustomLogic component) throws JavascribeException {
 		int end = 0;
 		end = s.indexOf("{", index+1);
 
@@ -238,7 +238,8 @@ public class CustomLogicProcessor {
 				method.setMethodBody(code);
 				locatorFile.getPublicClass().addMethod(method);
 				CodeExecutionContext execCtx = new CodeExecutionContext(null,ctx.getTypes());
-				String resultName = JavaUtils.findAttributeName(service.getName());
+				// TODO: Take a look at this and determine if it is right.
+				String resultName = JavascribeUtils.getLowerCamelName(service.getName());
 				code.append(service.getName()+" "+resultName+" = new "+service.getName()+"();\n");
 				execCtx.addVariable(resultName, service.getName());
 				initDependencies(ctx,resultName,service,code,execCtx,domainServices);
@@ -252,7 +253,7 @@ public class CustomLogicProcessor {
 
 	private void initDependencies(ProcessorContext ctx,String resultName, LocatedJavaServiceObjectType service, Java5CodeSnippet code, CodeExecutionContext execCtx,List<LocatedJavaServiceObjectType> domainServices) throws JavascribeException,CodeGenerationException {
 		for(String dep : service.getDependancyNames()) {
-			String var = JavaUtils.findAttributeName(dep);
+			String var = JavascribeUtils.getLowerCamelName(dep);
 			VariableType type = execCtx.getType(dep);
 
 			if (type==null) {

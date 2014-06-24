@@ -31,7 +31,7 @@ import net.sf.javascribe.api.config.ComponentSet;
  * set.  If both are set, libFiles overrides javascribeHome.  If libFiles is not 
  * initialized (==null) then <javascribeHome>/lib will be queried for *.jar and class file 
  * folders.  Once libFiles is initialized, all classes found are scanned for the @Scannable 
- * interface and interpretted as component pattern definitions or component processors.</p>
+ * interface and interpreted as component pattern definitions or component processors.</p>
  * @author Dave
  */
 public class JavascribeEngine {

@@ -2,7 +2,6 @@ package net.sf.javascribe.api;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,12 +20,26 @@ public class JavascribeUtils {
 
 	public static final Logger log = Logger.getLogger(JavascribeUtils.class);
 
+	/**
+	 * returns true if the string is null or the trimmed length is 0.
+	 * @param s
+	 * @return
+	 */
 	public static boolean isEmpty(String s) {
 		if (s==null) return true;
 		if (s.trim().length()==0) return true;
 		return false;
 	}
 	
+	/**
+	 * Reurns the "natural" attribute name for the given type.  This is 
+	 * generally the lower camel variation of the type name. If the type 
+	 * name is "list/*" then the natural name is the lower camel name of 
+	 * the list element type with "List" appended.
+	 * @param typeName Name of an attribute type to get the attribute name 
+	 * for.
+	 * @return
+	 */
 	public static String getNaturalAttributeName(String typeName) {
 		String ret = null;
 		
@@ -38,13 +51,25 @@ public class JavascribeUtils {
 		
 		return ret;
 	}
-	
+
+	/**
+	 * Assuming that the type name if a variable type name (generally 
+	 * upper camel), returns the lower camel variation.
+	 * @param typeName
+	 * @return
+	 */
 	public static String getLowerCamelName(String typeName) {
 		return Character.toLowerCase(typeName.charAt(0))+typeName.substring(1);
 	}
 	
-	public static String getUpperCamelName(String typeName) {
-		return Character.toUpperCase(typeName.charAt(0))+typeName.substring(1);
+	/**
+	 * Assuming that the attributeName is a variable name (generally 
+	 * lower camel), returns the upper camel variation.
+	 * @param attributeName
+	 * @return
+	 */
+	public static String getUpperCamelName(String attributeName) {
+		return Character.toUpperCase(attributeName.charAt(0))+attributeName.substring(1);
 	}
 	
 	public static String getObjectName(String str) throws JavascribeException {
@@ -116,7 +141,20 @@ public class JavascribeUtils {
 		
 		return ret;
 	}
-	
+
+	/**
+	 * Takes a comma-separated list of attribute declarations and returns 
+	 * a list of name/type combinations.  For attributes that do not 
+	 * explicitly have a type, the processor context will be queried for 
+	 * the type of the attribute.  For attributes that explicitly have type, 
+	 * the processor context will be queried to ensure that the declared 
+	 * type is consistent with what has already been defined.
+	 * 
+	 * @param ctx
+	 * @param attribs
+	 * @return
+	 * @throws JavascribeException
+	 */
 	public static List<Attribute> readAttributes(ProcessorContext ctx,String attribs) throws JavascribeException {
 		List<Attribute> ret = new ArrayList<Attribute>();
 
@@ -160,17 +198,12 @@ public class JavascribeUtils {
 		return ret;
 	}
 	
-	public static String basicTemplating(String templateName,Map<String,String> replacements) throws JavascribeException {
+	public static String basicTemplating(String templateName,Map<String,String> replacements,ProcessorContext ctx) throws JavascribeException {
 		StringBuilder build = new StringBuilder();
-		URL url = Thread.currentThread().getContextClassLoader().getResource("META-INF/"+templateName);
 		InputStream in = null;
 
-		if (url==null) {
-			throw new JavascribeException("Couldn't load template '"+templateName+"'");
-		}
-
 		try {
-			in = url.openStream();
+			in = ctx.getEngineProperties().getClasspathResource("META-INF/"+templateName);
 			while(in.available()>0) {
 				build.append((char)in.read());
 			}

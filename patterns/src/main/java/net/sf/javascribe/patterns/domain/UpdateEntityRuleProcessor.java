@@ -1,5 +1,6 @@
 package net.sf.javascribe.patterns.domain;
 
+/*
 import java.util.List;
 
 import net.sf.javascribe.api.Attribute;
@@ -8,14 +9,15 @@ import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.annotation.Processor;
 import net.sf.javascribe.api.annotation.ProcessorMethod;
-import net.sf.javascribe.api.annotation.Scannable;
 
 import org.apache.log4j.Logger;
+*/
 
 //@Scannable
-@Processor
+//@Processor
 public class UpdateEntityRuleProcessor {
 
+	/*
 	private static final Logger log = Logger.getLogger(UpdateEntityRuleProcessor.class);
 
 	@ProcessorMethod(componentClass=UpdateEntityRule.class)
@@ -96,8 +98,8 @@ public class UpdateEntityRuleProcessor {
 			throw new JavascribeException("JSOM exception while building business object.",e);
 		}
 		
-		*/
 	}
+		*/
 
 }
 

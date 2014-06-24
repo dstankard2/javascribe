@@ -29,7 +29,7 @@ public class DivElementBinder {
 		values.put("function",BinderUtils.getTargetAccessString(target, ctx, false));
 		values.put("event", BinderUtils.getEventToTrigger(target, event, ctx, false));
 		
-		ret = JavascribeUtils.basicTemplating("js-mvvm-dom-class-binding.txt", values);
+		ret = JavascribeUtils.basicTemplating("js-mvvm-dom-class-binding.txt", values, ctx.getCtx());
 		
 		return ret;
 	}
@@ -45,7 +45,7 @@ public class DivElementBinder {
 		values.put("function",BinderUtils.getTargetAccessString(target, ctx, false));
 		values.put("event", BinderUtils.getEventToTrigger(target, event, ctx, false));
 		
-		ret = JavascribeUtils.basicTemplating("js-mvvm-dom-display-binding.txt", values);
+		ret = JavascribeUtils.basicTemplating("js-mvvm-dom-display-binding.txt", values, ctx.getCtx());
 		
 		return ret;
 	}
@@ -80,7 +80,7 @@ public class DivElementBinder {
 			template = "js-mvvm-dom-content-nested-binding.txt";
 		}
 		
-		ret = JavascribeUtils.basicTemplating(template, values);
+		ret = JavascribeUtils.basicTemplating(template, values, ctx.getCtx());
 
 		return ret;
 	}

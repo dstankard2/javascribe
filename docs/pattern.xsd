@@ -4,6 +4,12 @@ xmlns="http://docs.javascribe.com/pattern"
 targetNamespace="http://docs.javascribe.com/pattern"
 elementFormDefault="qualified">
 
+	<xs:complexType name="MarkupContentType">
+		<xs:sequence>
+			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"></xs:any>
+		</xs:sequence>
+	</xs:complexType>
+
 	<xs:element name="pattern">
 		<xs:complexType>
 			<xs:sequence>
@@ -13,8 +19,9 @@ elementFormDefault="qualified">
 				<xs:element name="property" type="PropertyType" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element name="output" type="OutputType" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element name="longExplanation" type="MarkupContentType" minOccurs="0" maxOccurs="1"/>
-
 				<xs:element name="examples" type="ExampleContainerType" minOccurs="0" maxOccurs="1"/>
+
+				<xs:element name="plugins" type="PluginsType" minOccurs="0" maxOccurs="1"/>
 
 			</xs:sequence>
 			<xs:attribute name="name" type="xs:string" use="required" />
@@ -22,16 +29,84 @@ elementFormDefault="qualified">
 			<xs:attribute name="priority" type="xs:integer" use="required" />
 		</xs:complexType>
 	</xs:element>
-	
-	<xs:complexType name="ExampleContainerType">
+
+	<xs:complexType name="PluginImplementationType">
+		<xs:complexContent>
+			<xs:extension base="MarkupContentType">
+				<xs:attribute name="name" type="xs:string" use="required"/>
+				<xs:attribute name="implementationClass" type="xs:string" use="required"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="PluginType">
 		<xs:sequence>
-			<xs:element name="example" type="MarkupContentType" />
+			<xs:element name="description" type="MarkupContentType" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="implementation" type="PluginImplementationType" minOccurs="1" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string" use="required"/>
+	</xs:complexType>
+
+	<xs:complexType name="PluginsType">
+		<xs:sequence>
+			<xs:element name="plugin" type="PluginType" minOccurs="1" maxOccurs="unbounded"/>
 		</xs:sequence>
 	</xs:complexType>
 
-	<xs:complexType name="MarkupContentType">
+	<xs:complexType name="GeneratedFileType">
+		<xs:complexContent>
+			<xs:extension base="MarkupContentType">
+				<xs:attribute name="name" type="xs:string" use="required"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="GeneratedFiles">
 		<xs:sequence>
-			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"></xs:any>
+			<xs:element name="file" type="GeneratedFileType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="VariableType">
+		<xs:sequence>
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string" use="required" />
+		<xs:attribute name="stereotype" type="xs:string" use="required" />
+	</xs:complexType>
+
+	<xs:complexType name="VariableTypes">
+		<xs:sequence>
+			<xs:element name="variableType" type="VariableType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="SystemAttributeType">
+		<xs:sequence>
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string" use="required" />
+		<xs:attribute name="type" type="xs:string" use="required" />
+		<xs:attribute name="desc" type="xs:string" use="required" />
+	</xs:complexType>
+	
+	<xs:complexType name="SystemAttributesType">
+		<xs:sequence>
+			<xs:element name="systemAttribute" type="SystemAttributeType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="ExampleType">
+		<xs:sequence>
+
+			<xs:element name="explanation" type="MarkupContentType" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="systemAttributes" type="SystemAttributesType" minOccurs="1" maxOccurs="1"/>
+
+		</xs:sequence>
+		<xs:attribute name="desc" type="xs:string" use="required" />
+	</xs:complexType>
+
+	<xs:complexType name="ExampleContainerType">
+		<xs:sequence>
+			<xs:element name="example" type="ExampleType" />
 		</xs:sequence>
 	</xs:complexType>
 
@@ -46,8 +121,6 @@ elementFormDefault="qualified">
 	<xs:complexType name="PropertyType">
 		<xs:sequence>
 			<xs:element name="description" type="MarkupContentType" />
-			<!-- validValuesExamples -->
-			<xs:element name="validValue" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:string" use="required" />
 		<xs:attribute name="required" type="xs:boolean" use="required" />

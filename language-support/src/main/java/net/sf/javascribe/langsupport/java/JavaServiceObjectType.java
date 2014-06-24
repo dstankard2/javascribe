@@ -7,8 +7,8 @@ import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JavascribeException;
 
 /**
- * This type represents a business object with business operations that can be 
- * called and dependencies that can be injected via set methods.
+ * This type represents a business service with business operations that can be 
+ * called.
  * This type is instantiated via the instantiate method (default constructor).
  * @author Dave
  */
@@ -17,7 +17,6 @@ public class JavaServiceObjectType implements JavaVariableType,Injectable {
 	private String pkg = null;
 	private String name = null;
 	private List<JavaOperation> methods = new ArrayList<JavaOperation>();
-	private List<String> dependancyNames = new ArrayList<String>();
 	
 	public JavaServiceObjectType(String name,String pkg,String className) {
 		this.className = className;
@@ -25,16 +24,8 @@ public class JavaServiceObjectType implements JavaVariableType,Injectable {
 		this.name = name;
 	}
 	
-	public void addDependancy(String name) {
-		dependancyNames.add(name); 
-	}
-
 	public void addMethod(JavaOperation op) {
 		methods.add(op);
-	}
-	
-	public List<String> getDependancyNames() {
-		return dependancyNames;
 	}
 	
 	public List<JavaOperation> getMethods(String name) {

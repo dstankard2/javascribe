@@ -25,7 +25,7 @@ public class AnchorElementBinder extends DivElementBinder {
 		values.put("element",binding.getElement());
 		values.put("function",func);
 
-		ret = JavascribeUtils.basicTemplating("js-mvvm-anchor-onclick-binding.txt", values);
+		ret = JavascribeUtils.basicTemplating("js-mvvm-anchor-onclick-binding.txt", values,ctx.getCtx());
 
 		return ret;
 	}
@@ -43,7 +43,7 @@ public class AnchorElementBinder extends DivElementBinder {
 		values.put("element",binding.getElement());
 		values.put("function",func);
 
-		ret = JavascribeUtils.basicTemplating("js-mvvm-anchor-href-binding.txt", values);
+		ret = JavascribeUtils.basicTemplating("js-mvvm-anchor-href-binding.txt", values, ctx.getCtx());
 
 		return ret;
 	}

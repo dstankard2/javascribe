@@ -1,6 +1,9 @@
 package net.sf.javascribe.engine;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.annotation.Annotation;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +11,7 @@ import java.util.Map;
 import javax.xml.bind.JAXBContext;
 
 import net.sf.javascribe.api.EngineProperties;
+import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.LanguageSupport;
 
 public class EnginePropertiesImpl implements EngineProperties {
@@ -63,6 +67,19 @@ public class EnginePropertiesImpl implements EngineProperties {
 		}
 		
 		return ret;
+	}
+
+	/**
+	 * Returns an input stream to the requested file.  The caller is responsible 
+	 * for closing the input stream.
+	 */
+	public InputStream getClasspathResource(String path) throws JavascribeException,IOException {
+		URL url = Thread.currentThread().getContextClassLoader().getResource(path);
+
+		if (url==null) {
+			throw new JavascribeException("Couldn't load resource '"+path+"'");
+		}
+		return url.openStream();
 	}
 
 }
