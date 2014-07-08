@@ -25,6 +25,7 @@ elementFormDefault="qualified">
 
 			</xs:sequence>
 			<xs:attribute name="name" type="xs:string" use="required" />
+			<xs:attribute name="namespace" type="xs:string" use="required" />
 			<xs:attribute name="id" type="xs:string" use="required" />
 			<xs:attribute name="priority" type="xs:integer" use="required" />
 		</xs:complexType>
@@ -97,8 +98,11 @@ elementFormDefault="qualified">
 	<xs:complexType name="ExampleType">
 		<xs:sequence>
 
+			<xs:element name="exampleComp" type="MarkupContentType" minOccurs="1" maxOccurs="1"/>
 			<xs:element name="explanation" type="MarkupContentType" minOccurs="1" maxOccurs="1"/>
 			<xs:element name="systemAttributes" type="SystemAttributesType" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="variableTypes" type="VariableTypes" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="generatedFiles" type="GeneratedFiles" minOccurs="1" maxOccurs="1"/>
 
 		</xs:sequence>
 		<xs:attribute name="desc" type="xs:string" use="required" />
@@ -123,7 +127,7 @@ elementFormDefault="qualified">
 			<xs:element name="description" type="MarkupContentType" />
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:string" use="required" />
-		<xs:attribute name="required" type="xs:boolean" use="required" />
+		<xs:attribute name="required" type="xs:string" use="required" />
 		<xs:attribute name="example" type="xs:string" use="required" />
 	</xs:complexType>
 	

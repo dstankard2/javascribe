@@ -1,12 +1,79 @@
-
+* {
+	font-family: arial, sans serif;
+	font-size: 13px;
+}
+p {
+	width:90%;
+}
+h1 {
+	font-size:20px;
+}
 h2 {
-	font-size: 15px; color: blue;
+	font-size: 18px; color: blue;
+}
+h3 {
+	font-size: 15px;
 }
 
+div.section-banner {
+	font-size: 18px;
+	padding: 5px;
+	width: 90%;
+	text-align:left;
+	color: white;
+	background-color: gray;
+}
 div#description {
 	border: 1px solid black;
 }
 
 table {
 	border-collapse: collapse;
+}
+div#attribute-display > h3 {
+	font-size: 14px;
+	color: blue;
+}
+
+table {
+	width: 90%;
+}
+/*
+div#attribute-display table {
+	width: 90%;
+}
+*/
+
+th,td {
+	padding: 5px 10px 5px 10px;
+	text-align:center;
+}
+td.text-cell {
+	text-align: left;
+}
+
+div.secondary-banner {
+	font-size: 15px;
+	padding: 5px 5px 5px 20px;
+	width: 75%;
+	text-align:left;
+	color: white;
+	background-color: aqua;
+}
+
+div.example-comp {
+/*
+	display: table-cell;
+	vertical-align:middle;
+*/
+	padding: 10px;
+	background-color: grey;
+	overflow: auto;
+	width: 80%;
+	height: 150px;
+}
+
+div.example-comp * {
+	font-size: 10px;
+	color: white;
 }

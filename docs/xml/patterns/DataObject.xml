@@ -2,15 +2,16 @@
 <pattern xmlns="http://docs.javascribe.com/pattern"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:schemaLocation="http://docs.javascribe.com/pattern ../../pattern.xsd"
-name="Data Object" id="DataObject" priority="15000">
+name="Data Object" id="DataObject" priority="15000"
+namespace="http://javascribe.sf.net/patterns/data-object">
 
 <description>
-<span>
+<p>
 A data object is a POJO Java data object.  It will have getter and setter methods for 
 all attributes defined, along with private instance variables for those attributes.
 Attributes may be of any type that have been processed by the time this data object 
 has been processed.
-</span>
+</p>
 </description>
 
 <attribute name="name" 
@@ -18,11 +19,11 @@ required="true"
 example="UserDataObject"
 >
 <description>
-<span>
+<p>
 The name of the data object to define, usually in upper camel format such as 
 "DataObject".  This will become both the name of the data object class and the name of 
 the type as referred to by other component definitions.
-</span>
+</p>
 </description>
 </attribute>
 
@@ -50,7 +51,6 @@ example="dataobj">
 application as defined for Java language support.
 </p>
 	</description>
-	<validValue></validValue>
 </property>
 
 <output language="Java">
@@ -59,8 +59,29 @@ A Java data object with getters and setters for the attributes defined in the
 'attributes' XML attribute.  
 </p>
 </output>
+<longExplanation>
+<p>
+The generated data object is located in a package as specified by the Data Object pkg 
+configuration property as well as the Java root package as defined by Java language support.
+</p>
+</longExplanation>
+
 <examples>
 	<example desc="A typical data object with attribute types specified.">
+		<exampleComp>
+		<div>
+(Where generator.xml has build root defined as "c:\build")<br/><br/>
+&lt;dataObject xmlns="http://javascribe.sf.net/patterns/data-object" name="UserInfo" attributes="firstName:string,lastName:string,accountInfo:AccountInfo"&gt;
+<br/>
+&lt;c:property xmlns:c="http://javascribe.sf.net/config" name="net.sf.javascribe.langsupport.java.rootDir"&gt;java&lt;/c:property&gt;
+<br/>
+&lt;c:property name="net.sf.javascribe.langsupport.java.rootPkg"&gt;net.sf.javascribe.example&lt;/c:property&gt;
+<br/>
+&lt;c:property name="net.sf.javascribe.patterns.dataobject.DataObject.pkg"&gt;dataobj&lt;/c:property&gt;
+<br/>
+&lt;/dataObject&gt;
+		</div>
+		</exampleComp>
 		<explanation>
 <p>This data object has three attributes: firstName, lastName and 
 accountInfo.  For this to be valid, AccountInfo must be a valid type in 
@@ -69,24 +90,26 @@ the system (Perhaps a previously defined data object).</p>
 		</explanation>
 		<systemAttributes>
 			<systemAttribute type="UserInfo" name="userInfo" desc="A user info object" />
-			<systemAttribute type="list/UserInfo" name="userInfoList" desc="A java.util.List<UserInfo> with UserInfo as the element type" />
+			<systemAttribute type="list/UserInfo" name="userInfoList" desc="A java.util.List&lt;UserInfo&gt; (with UserInfo as the element type)" />
 		</systemAttributes>
 		<variableTypes>
 			<variableType name="UserInfo" stereotype="AttributeHolder"/>
 		</variableTypes>
 		<generatedFiles>
-			<file name="UserInfo.java">
+			<file name="c:\build\java\net\sf\javascribe\example\dataobj\UserInfo.java">
 <p>
 The Java file for the UserInfo class.  It will have private member variables 
 and "public void setFirstName(String firstName)" along with "public String getFirstName()".
 </p>
 <p>The package is defined by Java Support's root package, along with the 
-property "net.sf.javascribe.patterns.dataobject.DataObject.pkg"</p>
+property "net.sf.javascribe.patterns.dataobject.DataObject.pkg".  The file 
+is placed in a directory defined by the properties specified in the example.
+</p>
+<p>
+Note: Normally you want to define properties for the root package and Java root directory in generator.xml.
+</p>
 			</file>
 		</generatedFiles>
-<span class='example'>
-&lt;dataObject xmlns="http://javascribe.sf.net/patterns/data-object" name="UserInfo" attributes="firstName:string,lastName:string,accountInfo:AccountInfo" /&gt;
-</span>
 	</example>
 </examples>
 
