@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<pattern xmlns="http://docs.javascribe.com/pattern"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://docs.javascribe.com/pattern ../../pattern.xsd"
+name="Web Controller Servlet" id="WebServlet" priority="15000"
+namespace="http://javascribe.sf.net/patterns/servlet"
+xmlElement="webServlet">
+
+	<description>
+<p>A web controller servlet represents a HTTP endpoint in a Java web application, 
+which responds to a request by forwarding the response to a new URL.
+</p>
+<div>
+The full flow of what the web controller servlet can do is:
+<ul>
+<li>Accept a request at a URL</li>
+<li>Be configured to use one or more Servlet HTTP Filters.</li>
+<li>Read HTTP parameters from the request (optional)</li>
+<li>Look for a user session data object in the session (optional)</li>
+<li>Invoke a business rule, using HTTP parameters and attributes of the user session data object as parameters (optional)</li>
+<li>Conditionally forward the response to a URL</li>
+</ul>
+</div>
+	</description>
+	
+<attribute example="UserLogin" name="webServlet@name" required="yes">
+<description>
+<p>
+The name of the web servlet.  This will be used to create the URL for 
+the servlet.  The servlet will be available from in web application's 
+root URI path.
+</p>
+</description>
+</attribute>
+
+<attribute example="UserSessionData" name="webServlet@sessionDataType" required="no">
+<description>
+<div>
+The type name of a data object that is in the request's HTTPSession.  When appropriate, 
+the 
+</div>
+<div>TODO: This should be the name of a system attribute.</div>
+</description>
+</attribute>
+
+
+</pattern>
+

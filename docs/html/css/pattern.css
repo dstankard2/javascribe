@@ -60,6 +60,11 @@ div.secondary-banner {
 	color: white;
 	background-color: aqua;
 }
+div.example-generated-file {
+	border: 1px solid blue;
+	padding: 5px;
+	width: 70%;
+}
 
 div.example-comp {
 /*

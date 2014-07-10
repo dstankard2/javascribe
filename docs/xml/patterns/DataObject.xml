@@ -3,7 +3,8 @@
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:schemaLocation="http://docs.javascribe.com/pattern ../../pattern.xsd"
 name="Data Object" id="DataObject" priority="15000"
-namespace="http://javascribe.sf.net/patterns/data-object">
+namespace="http://javascribe.sf.net/patterns/data-object"
+xmlElement="dataObject">
 
 <description>
 <p>
@@ -14,8 +15,8 @@ has been processed.
 </p>
 </description>
 
-<attribute name="name" 
-required="true"
+<attribute name="dataObject@name" 
+required="yes"
 example="UserDataObject"
 >
 <description>
@@ -27,7 +28,7 @@ the type as referred to by other component definitions.
 </description>
 </attribute>
 
-<attribute name="attributes" required="true"
+<attribute name="dataObject@attributes" required="yes"
 example="userId,firstName,lastName,email"
 >
 <description>

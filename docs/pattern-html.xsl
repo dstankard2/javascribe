@@ -33,6 +33,7 @@ xsi:schemaLocation="http://docs.javascribe.com/pattern pattern.xsd"
 
 <p><b>Priority</b>: <xsl:value-of select="./@priority" /></p>
 <p><b>XML Namespace</b>: <xsl:value-of select="./@namespace" /></p>
+<p><b>XML Element</b>: <xsl:value-of select="./@xmlElement" /></p>
 </div>
 
 <div id='propertyDisplay'>
@@ -65,7 +66,11 @@ xsi:schemaLocation="http://docs.javascribe.com/pattern pattern.xsd"
 <br/>
 <br/>
 <div class='section-banner'>XML Attributes</div>
-<br/>
+
+<p>
+The following are XPath queries from the root of the componentSet XML file 
+to the 
+</p>
 
 <table border='1'>
 <thead>
@@ -215,7 +220,7 @@ It has one or more business operations that can be invoked by other components.
 </div>
 <div class='information'>
 
-<xsl:copy-of select="." />
+<xsl:copy-of select="./*" />
 
 </div>
 
