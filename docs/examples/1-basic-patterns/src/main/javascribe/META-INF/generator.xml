@@ -1,4 +1,4 @@
-<javascribeConfig xmlns="http://javascribe.sf.net/config" appName="Example1" destRoot="c:\build\melkovia\portal">
+<javascribeConfig xmlns="http://javascribe.sf.net/config" appName="Example1" destRoot="c:\build\example1">
 	<properties>
 
 		<property name="net.sf.javascribe.langsupport.java.rootPkg">net.sf.javascribe.example1</property>
@@ -10,12 +10,12 @@
 	     -->
 		<property name="net.sf.javascribe.patterns.model.EntityManagerComponent.codegen.catalog">js_example1</property>
 		<property name="net.sf.javascribe.patterns.model.EntityManagerComponent.codegen.jpaUrl">jdbc:mysql://localhost:3306/js_example1?autoReconnect=true</property>
-		<property name="net.sf.javascribe.patterns.model.EntityManagerComponent.codegen.jpaUsername">javascribe_test</property>
-		<property name="net.sf.javascribe.patterns.model.EntityManagerComponent.codegen.jpaPassword">welcome</property>
+		<property name="net.sf.javascribe.patterns.model.EntityManagerComponent.codegen.jpaUsername">js_example</property>
+		<property name="net.sf.javascribe.patterns.model.EntityManagerComponent.codegen.jpaPassword">password</property>
 		<property name="net.sf.javascribe.patterns.model.EntityManagerComponent.databaseObjectNameResolver">default</property>
 		<property name="net.sf.javascribe.patterns.model.EntityManagerComponent.runtime.jpaDriver">com.mysql.jdbc.Driver</property>
-		<property name="net.sf.javascribe.patterns.model.EntityManagerComponent.runtime.jpaUrl">jdbc:mysql://localhost:3306/melkovia?autoReconnect=true</property>
-		<property name="net.sf.javascribe.patterns.model.EntityManagerComponent.runtime.jpaUsername">melkovia_app</property>
+		<property name="net.sf.javascribe.patterns.model.EntityManagerComponent.runtime.jpaUrl">jdbc:mysql://localhost:3306/js_example1?autoReconnect=true</property>
+		<property name="net.sf.javascribe.patterns.model.EntityManagerComponent.runtime.jpaUsername">js_example</property>
 		<property name="net.sf.javascribe.patterns.model.EntityManagerComponent.runtime.jpaPassword">welcome</property>
 
 		<!-- Java package properties -->
@@ -36,15 +36,6 @@
 		<property name="net.sf.javascribe.patterns.domain.locatorClass">SubsystemLocator</property>
 		<property name="net.sf.javascribe.patterns.model.EntityManagerComponent.defaultEntityManagerLocator.OLTPDB">DefaultTxLocator</property>
 		<property name="net.sf.javascribe.patterns.servlet.ServletWebService.defaultFilters">WebServiceUserSessionFilter,WebServiceActionAuditFilter</property>
-
-		<!-- Subsystem implementation classes -->
-		<property name="net.sf.javascribe.patterns.domain.impl.EmpireSubsystem">com.melkovia.portal.subsystem.impl.EmpireSubsystemImpl</property>
-		<property name="net.sf.javascribe.patterns.domain.impl.IndustrySubsystem">com.melkovia.portal.subsystem.impl.IndustrySubsystemImpl</property>
-		<property name="net.sf.javascribe.patterns.domain.impl.MarketSubsystem">com.melkovia.portal.subsystem.impl.MarketSubsystemImpl</property>
-		<property name="net.sf.javascribe.patterns.domain.impl.MilitarySubsystem">com.melkovia.portal.subsystem.impl.MilitarySubsystemImpl</property>
-		<property name="net.sf.javascribe.patterns.domain.impl.NpcSubsystem">com.melkovia.portal.subsystem.impl.NpcSubsystemImpl</property>
-		<property name="net.sf.javascribe.patterns.domain.impl.SystemSubsystem">com.melkovia.portal.subsystem.impl.SystemSubsystemImpl</property>
-		<property name="net.sf.javascribe.patterns.domain.impl.UserSubsystem">com.melkovia.portal.subsystem.impl.UserSubsystemImpl</property>
 
 		<property name="javascript.min">true</property>
 		<property name="net.sf.javascribe.langsupport.javascript.file">www/js/generated.js</property>

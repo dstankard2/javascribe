@@ -43,7 +43,7 @@ public class MySql55SchemaReader implements DatabaseSchemaReader {
 			}
 			
 		} catch(SQLException e) {
-			throw new JavascribeException("SQLException while reading MySQL schema");
+			throw new JavascribeException("SQLException while reading MySQL schema",e);
 		} catch(ClassNotFoundException e) {
 			throw new JavascribeException("Could not find MySQL JDBC driver in classpath");
 		} finally {
