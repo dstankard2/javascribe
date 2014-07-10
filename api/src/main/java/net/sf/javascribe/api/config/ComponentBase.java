@@ -11,16 +11,26 @@ import javax.xml.bind.annotation.XmlType;
 
 import net.sf.javascribe.api.annotation.Scannable;
 
+/**
+ * Base class for any component pattern.  The implementation class 
+ * should be JAXB-annotated.  The implementation should also override 
+ * getPriority() so that components of this pattern are processed in 
+ * their due place.
+ * @author DCS
+ */
 @Scannable
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name="component",propOrder={ "property" })
 @XmlRootElement(name="component")
 public class ComponentBase implements Comparable<ComponentBase>,ComponentConfigElement {
 
-	/* These methods should be overridden by subclasses to define component role in system */
+	/**
+	 * Get the priority for this pattern.  Components are processed in 
+	 * ascending order of priority.  This method returns INTEGER.MIN_VALUE 
+	 * unless overridden.
+	 * @return Priority level for this component.
+	 */
 	public int getPriority() { return Integer.MIN_VALUE; }
-
-	/* End of methods to override */
 
 	@XmlElement
 	private List<Property> property = new ArrayList<Property>();

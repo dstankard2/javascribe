@@ -23,11 +23,21 @@
 			<fileset dir="examples"/>
 		</copy>
 	</target>
+	
+	<target name="generate.javadoc">
+		<mkdir dir="${dist.root}\docs\api"/>
+		<javadoc 
+			sourcepath="../api/src/main/java"
+			destdir="${dist.root}/docs/api"
+			>
+		</javadoc>
+	</target>
 
 	<target name="build">
 		<antcall target="init"/>
 		<antcall target="run.pattern.xsl"/>
 		<antcall target="copy.files"/>
+		<antcall target="generate.javadoc"/>
 	</target>
 	
 </project>

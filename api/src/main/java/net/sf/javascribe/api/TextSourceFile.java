@@ -1,5 +1,10 @@
 package net.sf.javascribe.api;
 
+/**
+ * A basic implementation of the SourceFile interface.  A component processor 
+ * can call getSource() and append to the returned StringBuilder.
+ * @author DCS
+ */
 public class TextSourceFile implements SourceFile {
 	StringBuilder source = new StringBuilder();
 	String path = null;
@@ -20,3 +25,4 @@ public class TextSourceFile implements SourceFile {
 	}
 
 }
+

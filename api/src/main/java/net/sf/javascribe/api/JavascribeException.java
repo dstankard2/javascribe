@@ -1,7 +1,7 @@
 package net.sf.javascribe.api;
 
 /**
- * Represents an exception while generating code.
+ * Represents an exception while processing components.
  * @author DCS
  *
  */

@@ -17,6 +17,13 @@ public interface EngineProperties {
 
 	public List<Class<?>> getScannedClassesOfAnnotation(Class<? extends Annotation> cl);
 	
+	/**
+	 * Returns a resource from a JAR file in the Javascribe lib directory.
+	 * @param path Path to resource, such as ("META-INF/myfile.template").
+	 * @return Input stream to resource.  Client is responsible for managing it.
+	 * @throws IOException
+	 * @throws JavascribeException
+	 */
 	public InputStream getClasspathResource(String path) throws IOException,JavascribeException;
 
 }

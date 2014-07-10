@@ -12,6 +12,13 @@ import javax.xml.bind.annotation.XmlType;
 
 import net.sf.javascribe.api.annotation.Scannable;
 
+/**
+ * JAXB-annotated class that represents the root element of a component 
+ * XML file.  It contains a list of property elements and a list of 
+ * component elements (subclasses of ComponentBase).
+ * @author DCS
+ *
+ */
 @Scannable
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)

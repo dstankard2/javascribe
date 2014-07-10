@@ -9,7 +9,7 @@ package net.sf.javascribe.api;
 
 
 /**
- * An Attribute Holder is a variable type that has attributes.  These tend 
+ * A variable type that has attributes.  These tend 
  * to be data objects (like JPA entities or object representations of JSON 
  * objects, things like this).
  * @author DCS
