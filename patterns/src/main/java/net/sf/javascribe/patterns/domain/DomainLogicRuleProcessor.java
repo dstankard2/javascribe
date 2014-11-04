@@ -1,17 +1,22 @@
 package net.sf.javascribe.patterns.domain;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import net.sf.javascribe.api.Attribute;
 import net.sf.javascribe.api.JavascribeException;
+import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.annotation.Processor;
 import net.sf.javascribe.api.annotation.ProcessorMethod;
 import net.sf.javascribe.api.annotation.Scannable;
+import net.sf.javascribe.langsupport.java.JavaVariableType;
 import net.sf.javascribe.langsupport.java.LocatedJavaServiceObjectType;
 import net.sf.javascribe.langsupport.java.jsom.JavascribeVariableTypeResolver;
 import net.sf.javascribe.langsupport.java.jsom.JsomUtils;
 import net.sf.jsom.CodeGenerationException;
+import net.sf.jsom.java5.Java5DeclaredMethod;
 import net.sf.jsom.java5.Java5MethodSignature;
 
 import org.apache.log4j.Logger;
@@ -49,40 +54,21 @@ public class DomainLogicRuleProcessor {
 		String returnType = comp.getReturnType();
 
 		// Read rule dependencies
-		/*
-		List<Attribute> deps = null;
-		String depNames = null;
+		ArrayList<String> deps = new ArrayList<String>();
 		if (ctx.getProperty(DomainLogicCommon.DOMAIN_LOGIC_DEPENDENCIES)!=null) {
-			depNames = ctx.getProperty(DomainLogicCommon.DOMAIN_LOGIC_DEPENDENCIES);
-			deps = JavascribeUtils.readAttributes(ctx, depNames);
-		} else {
-			deps = new ArrayList<Attribute>();
+			String depNames = ctx.getProperty(DomainLogicCommon.DOMAIN_LOGIC_DEPENDENCIES);
+			StringTokenizer tok = new StringTokenizer(depNames,",");
+			while(tok.hasMoreTokens()) {
+				deps.add(tok.nextToken());
+			}
 		}
-		*/
 
 
-
-		// Either the domain logic class is an interface or an abstract class
-		boolean isInterface = false;
 
 		DomainLogicFile file = DomainLogicCommon.getDomainObjectFile(domainSrv, ctx);
 		LocatedJavaServiceObjectType type = DomainLogicCommon.getDomainObjectType(domainSrv, ctx);
 
-		// If the file is already an interface it will continue to be
-		if (file.getPublicClass().isInterface()) {
-			isInterface = true;
-		}
-
-		// If the file didn't exist before and has no methods, it will be an interface
-		if (file.getPublicClass().getMethodNames().size()==0) {
-			isInterface = true;
-			file.getPublicClass().setInterface(true);
-		}
-
-		// If the file is not an interface, it is abstract
-		if (isInterface==false) {
-			file.getPublicClass().setAbstract(true);
-		}
+		file.getPublicClass().setAbstract(true);
 
 		try {
 
@@ -97,6 +83,18 @@ public class DomainLogicRuleProcessor {
 			}
 			file.getPublicClass().addMethod(sig);
 			type.addMethod(JsomUtils.createJavaOperation(sig));
+			
+			// Add dependencies to the type and source file
+			for(String dep : deps) {
+				if (!type.getDependancyNames().contains(dep)) {
+					type.addDependancy(dep);
+					String upperCamel = JavascribeUtils.getUpperCamelName(dep);
+					String typeName = ctx.getAttributeType(dep);
+					JavaVariableType t = (JavaVariableType)ctx.getType(typeName);
+					Java5DeclaredMethod setter = JsomUtils.createMedhod(ctx);
+					setter.setName("set"+upperCamel);
+				}
+			}
 
 		} catch(CodeGenerationException e) {
 			throw new JavascribeException("JSOM exception while building business object.",e);

@@ -6,7 +6,11 @@ this.controller.addEventListener('${event}',
 		while(elt.firstChild) {
 			elt.removeChild(elt.firstChild);
 		}
-		if (typeof val=='string') elt.innerHTML = val;
+		if (val==null) {
+			elt.innerHTML = '';
+		} else if (typeof val=='string') {
+			elt.innerHTML = val;
+		}
 		else if (val instanceof HTMLElement) 
 			elt.appendChild(val);
 		else if (typeof val=='object') {

@@ -8,6 +8,7 @@ xmlns:lookups="http://javascribe.sf.net/patterns/lookups"
 xmlns:cl="http://javascribe.sf.net/patterns/classification" 
 xmlns:domain="http://javascribe.sf.net/patterns/domain" 
 xmlns:comps="http://javascribe.sf.net/patterns/data-object"
+xmlns:js-view="http://javascribe.sf.net/patterns/js-view"
 >
 
 </componentSet>

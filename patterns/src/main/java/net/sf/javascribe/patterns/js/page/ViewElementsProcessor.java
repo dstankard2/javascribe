@@ -5,18 +5,15 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
-
-import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.annotation.Processor;
 import net.sf.javascribe.api.annotation.ProcessorMethod;
 import net.sf.javascribe.api.annotation.Scannable;
-import net.sf.javascribe.langsupport.javascript.JavascriptConstants;
-import net.sf.javascribe.langsupport.javascript.JavascriptSourceFile;
-import net.sf.javascribe.langsupport.javascript.JavascriptUtils;
-import net.sf.javascribe.langsupport.javascript.JavascriptVariableType;
+import net.sf.javascribe.langsupport.javascript.JavascriptDataObject;
 import net.sf.javascribe.patterns.js.page.elements.BinderUtils;
+
+import org.apache.log4j.Logger;
 
 @Scannable
 @Processor
@@ -33,19 +30,15 @@ public class ViewElementsProcessor {
 		
 		log.info("Processing elements for page '"+comp.getPageName()+"'");
 
-		JavascriptVariableType pageType = PageUtils.getPageType(ctx, comp.getPageName());
-		JavascriptSourceFile src = JavascriptUtils.getSourceFile(ctx);
+		PageType pageType = PageUtils.getPageType(ctx, comp.getPageName());
 		HashMap<String,Element> elements = PageUtils.getViewElements(ctx, comp.getPageName());
 
 		if (pageType==null) {
 			throw new JavascribeException("No page named '"+comp.getPageName()+"' has been defined");
 		}
 
-		String typeName = JavascriptConstants.JS_TYPE+"View"+comp.getPageName();
-		JavascriptVariableType viewType = new JavascriptVariableType(typeName);
-		ctx.getTypes().addType(viewType);
-		pageType.addVariableAttribute("view", typeName);
-		src.getSource().append(comp.getPageName()+".view = { };\n");
+		JavascriptDataObject viewType = (JavascriptDataObject)ctx.getTypes().getType(comp.getPageName()+"View");
+
 		StringBuilder initCode = PageUtils.getInitFunction(ctx, comp.getPageName());
 		Map<String,ElementBinderEntry> binders = BinderUtils.getElementBinders(ctx);
 
@@ -59,7 +52,11 @@ public class ViewElementsProcessor {
 				throw new JavascribeException("Found an element with no id");
 			}
 			elements.put(id, elt);
-			viewType.addVariableAttribute(id, "html_domObject");
+			
+			// TODO: HTML DOM objects should probably have real types
+			// to facilitate richer patterns in the view.
+			viewType.addAttribute(id, "html_"+type);
+
 			ElementBinderEntry entry = binders.get(type);
 			if (entry==null) {
 				System.out.println("WARNING: No binder found for element type '"+type+"'");
@@ -71,7 +68,6 @@ public class ViewElementsProcessor {
 				String val = getBindToPage(entry,id,comp.getPageName());
 				initCode.append(val);
 			}
-			///			initCode.append(".view."+id+" = document.getElementById('"+id+"');\n");
 		}
 	}
 

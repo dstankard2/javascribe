@@ -4,8 +4,10 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.annotation.Scannable;
 import net.sf.javascribe.api.config.ComponentBase;
 import net.sf.javascribe.patterns.CorePatternConstants;
@@ -17,6 +19,17 @@ import net.sf.javascribe.patterns.CorePatternConstants;
 public class Classification extends ComponentBase {
 
 	public static final String CLASSIFICATION_PKG = "net.sf.javascribe.patterns.classification.Classification.pkg";
+
+	@XmlTransient
+	private ProcessorContext myProcessorContext = null;
+	
+	public ProcessorContext getMyProcessorContext() {
+		return myProcessorContext;
+	}
+
+	public void setMyProcessorContext(ProcessorContext myProcessorContext) {
+		this.myProcessorContext = myProcessorContext;
+	}
 
 	@XmlAttribute
 	private String name = "";

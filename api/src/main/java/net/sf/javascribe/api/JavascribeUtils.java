@@ -18,12 +18,12 @@ import org.apache.log4j.Logger;
  */
 public class JavascribeUtils {
 
-	public static final Logger log = Logger.getLogger(JavascribeUtils.class);
+	private static final Logger log = Logger.getLogger(JavascribeUtils.class);
 
 	/**
 	 * returns true if the string is null or the trimmed length is 0.
-	 * @param s
-	 * @return
+	 * @param s String to test.
+	 * @return true if the trimmed string is lngth 0.
 	 */
 	public static boolean isEmpty(String s) {
 		if (s==null) return true;
@@ -38,7 +38,7 @@ public class JavascribeUtils {
 	 * the list element type with "List" appended.
 	 * @param typeName Name of an attribute type to get the attribute name 
 	 * for.
-	 * @return
+	 * @return Natural attribute name.
 	 */
 	public static String getNaturalAttributeName(String typeName) {
 		String ret = null;
@@ -56,7 +56,7 @@ public class JavascribeUtils {
 	 * Assuming that the type name if a variable type name (generally 
 	 * upper camel), returns the lower camel variation.
 	 * @param typeName
-	 * @return
+	 * @return Lower camel variation of the typeName.
 	 */
 	public static String getLowerCamelName(String typeName) {
 		return Character.toLowerCase(typeName.charAt(0))+typeName.substring(1);
@@ -65,8 +65,8 @@ public class JavascribeUtils {
 	/**
 	 * Assuming that the attributeName is a variable name (generally 
 	 * lower camel), returns the upper camel variation.
-	 * @param attributeName
-	 * @return
+	 * @param attributeName 
+	 * @return Upper camel version of the name.
 	 */
 	public static String getUpperCamelName(String attributeName) {
 		return Character.toUpperCase(attributeName.charAt(0))+attributeName.substring(1);
@@ -152,7 +152,7 @@ public class JavascribeUtils {
 	 * 
 	 * @param ctx
 	 * @param attribs
-	 * @return
+	 * @return A list of attributes found in the specified string.
 	 * @throws JavascribeException
 	 */
 	public static List<Attribute> readAttributes(ProcessorContext ctx,String attribs) throws JavascribeException {

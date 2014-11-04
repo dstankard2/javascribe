@@ -1,13 +1,17 @@
 package net.sf.javascribe.engine;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import net.sf.javascribe.api.EngineProperties;
-import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.LanguageSupport;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.SourceFile;
 import net.sf.javascribe.api.TypeResolver;
 import net.sf.javascribe.api.VariableType;
@@ -24,8 +28,9 @@ public class ProcessorContextImpl implements ProcessorContext {
 	Map<String,String> properties = null;
 	List<ComponentBase> addedComponents = new ArrayList<ComponentBase>();
 	Map<String,Object> objects = null;
+	ZipFile zip = null;
 	
-	public ProcessorContextImpl(String buildRoot,EnginePropertiesImpl props,Map<String,LanguageSupport> languageSupport,Map<String,String> systemAttributes,Map<String,TypeResolverImpl> typeMap,List<SourceFile> sourceFiles,Map<String,String> properties,Map<String,Object> objects) {
+	public ProcessorContextImpl(String buildRoot,EnginePropertiesImpl props,Map<String,LanguageSupport> languageSupport,Map<String,String> systemAttributes,Map<String,TypeResolverImpl> typeMap,List<SourceFile> sourceFiles,Map<String,String> properties,Map<String,Object> objects,ZipFile zipFile) {
 		engineProps = props;
 		this.languageSupport = languageSupport;
 		this.systemAttributes = systemAttributes;
@@ -34,6 +39,7 @@ public class ProcessorContextImpl implements ProcessorContext {
 		this.buildRoot = buildRoot;
 		this.objects = objects;
 		this.properties = properties;
+		this.zip = zipFile;
 	}
 	
 	public EngineProperties getEngineProperties() {
@@ -135,4 +141,14 @@ public class ProcessorContextImpl implements ProcessorContext {
 		return objects.get(name);
 	}
 	
+	@Override
+	public InputStream getResource(String path) throws IOException {
+		ZipEntry e = zip.getEntry(path);
+		if (e!=null) {
+			return zip.getInputStream(e);
+		}
+		return null;
+	}
+
 }
+

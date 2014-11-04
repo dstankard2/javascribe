@@ -103,8 +103,16 @@ public class CorePatternConstants {
 	// Depends on service and servlet filter
 	public static final int PRIORITY_SERVLET_WEB_SERVICE = 30000;
 
+	/** Client-side (Javascript) patterns **/
+	
+	// Dependant on server-side components.  It goes with the front end.
+	public static final int PRIORITY_VIEW_TEMPLATE = 40000;
+
 	// No dependency but it goes with the front end.
 	public static final int PRIORITY_PAGE = 40000;
+	
+	// Dependency on page
+	public static final int PRIORITY_PAGE_WS_CLIENT = 42500;
 	
 	// Dependency on Page
 	public static final int PRIORITY_PAGE_VIEW_ELEMENTS = 45000;
@@ -112,13 +120,13 @@ public class CorePatternConstants {
 	// Dependency on Page
 	public static final int PRIORITY_PAGE_MODEL = 45000;
 
-	// Depends on view elements, and page model
+	// Depends on Page, page model
+	public static final int PRIORITY_VIEW_TEMPLATE_SET = 47500;
+	
+	// Depends on Page, page model
 	public static final int PRIORITY_PAGE_FUNCTION = 47500;
 	
-	// Depends on view elements, page model and vm function
-	public static final int PRIORITY_PAGE_WS_CLIENT = 48750;
-	
-	// Depends on view elements, page model, ws client and vm function
+	// Depends on view elements, page model, ws client and page function
 	public static final int PRIORITY_PAGE_BINDING = 49375;
 	
 	// Depends on view elements, page model and vm function

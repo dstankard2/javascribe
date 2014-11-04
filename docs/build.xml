@@ -1,6 +1,7 @@
 <project name="JavaScribe Docs" default="build" basedir=".">
 
 	<property name="dev.root">.</property>
+	<property name="dist.root">C:\dev_tools\javascribe-0.1.7</property>
 
 	<target name="init">
 		<mkdir dir="${dist.root}\docs"/>

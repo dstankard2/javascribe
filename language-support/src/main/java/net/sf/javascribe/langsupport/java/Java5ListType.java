@@ -1,5 +1,8 @@
 package net.sf.javascribe.langsupport.java;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.sf.javascribe.api.Code;
 import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JavascribeException;
@@ -20,6 +23,13 @@ public class Java5ListType implements ListType,Java5Type,JavaVariableType {
 		return ret;
 	}
 
+	public List<String> getAttributeNames() {
+		ArrayList<String> ret = new ArrayList<String>();
+		ret.add("size");
+		
+		return ret;
+	}
+	
 	@Override
 	public String getCodeToRetrieveAttribute(String varName, String attribName,
 			String targetType,CodeExecutionContext execCtx) throws IllegalArgumentException,

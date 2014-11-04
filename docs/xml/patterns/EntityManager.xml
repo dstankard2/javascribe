@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<pattern xmlns="http://docs.javascribe.com/pattern"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://docs.javascribe.com/pattern ../../pattern.xsd"
+name="Entity Manager" id="EntityManager" priority="15000"
+namespace=""
+xmlElement="">
+
+<description>
+<span>
+<p>An entity manager is a set of JPA-configured entities with annotations.</p>
+<p>This component processor will connect to a database, look at the tables 
+in that database, and generate JPA entities for the tables in the 
+database.</p>
+<p>A basic persistence.xml is also generated.</p>
+</span>
+</description>
+
+<attribute name="name" 
+required="true"
+example="OLTPDB">
+<description>
+<p>
+The name of the entity manager component.
+</p>
+</description>
+</attribute>
+
+<attribute name="ref" required="true"
+example="tx">
+<description>
+<p>
+The system attribute that represents the EntityManager associated with the 
+database.
+</p>
+</description>
+</attribute>
+
+<attribute example="MySQL 5.5" name="databaseType" required="true">
+<description>
+<p>
+The name of a DatabaseSchemaReader implementation to use for reading entity 
+meta-information from the database based on a JDBC connection and a catalog name.
+</p>
+<p>
+See the documentation of the DatabaseSchemaReader plugin below.
+</p>
+</description>
+</attribute>
+
+<property required="true" 
+name="net.sf.javascribe.patterns.model.EntityManagerComponent.codegen.jpaUrl"
+example="jdbc:mysql://localhost:3306/testSchema">
+	<description>
+<p>
+The JDBC URL that Javascribe should use to connect to the database where 
+tables currently exist.
+</p>
+	</description>
+</property>
+
+<output language="XML">
+<p>
+A persistence.xml which contains the JPA configuration based on the appropriate 
+properties specified in the component and the entities found in the database.
+</p>
+</output>
+<output language="Java">
+<p>
+Java files for each entity, named after the resolved entity name 
+</p>
+</output>
+
+</pattern>
+

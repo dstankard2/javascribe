@@ -5,7 +5,10 @@
 	This will recognize code in the src/main/java folder that 
 	have the annotations defined in user.jar
 	 -->
+	 <!-- 
 	<custom:handwrittenCode priority="16250" srcRoot="src/main/java" />
+	  -->
+	<custom:handwrittenCode priority="16250" srcRoot="c:/git/javascribe/docs/examples/1-basic-patterns/src/main/java" />
 
 </componentSet>
 

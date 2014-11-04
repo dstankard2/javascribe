@@ -2,18 +2,21 @@ package net.sf.javascribe.patterns.js.navigation;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
-
-import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.annotation.Processor;
 import net.sf.javascribe.api.annotation.ProcessorMethod;
 import net.sf.javascribe.api.annotation.Scannable;
-import net.sf.javascribe.langsupport.javascript.JavascriptConstants;
+import net.sf.javascribe.langsupport.javascript.JavascriptFunction;
+import net.sf.javascribe.langsupport.javascript.JavascriptServiceObject;
+import net.sf.javascribe.langsupport.javascript.JavascriptServiceObjectImpl;
 import net.sf.javascribe.langsupport.javascript.JavascriptSourceFile;
 import net.sf.javascribe.langsupport.javascript.JavascriptUtils;
-import net.sf.javascribe.langsupport.javascript.JavascriptVariableType;
+import net.sf.javascribe.patterns.js.page.PageModelType;
+import net.sf.javascribe.patterns.js.page.PageType;
 import net.sf.javascribe.patterns.js.page.PageUtils;
+
+import org.apache.log4j.Logger;
 
 @Scannable
 @Processor
@@ -34,8 +37,7 @@ public class PageNavigationProcessor {
 		
 		log.info("Processing Page Navigation '"+comp.getName()+"'");
 		
-		JavascriptVariableType type = new JavascriptVariableType(
-				JavascriptConstants.JS_TYPE + comp.getName());
+		JavascriptServiceObject type = new JavascriptServiceObjectImpl(comp.getName());
 		ctx.getTypes().addType(type);
 
 		src.getSource().append("var "+comp.getName()+" = { currentPage : null, currentDiv : null };\n");
@@ -46,10 +48,18 @@ public class PageNavigationProcessor {
 		
 		StringBuilder showPageCode = new StringBuilder();
 		StringBuilder refreshPageCode = new StringBuilder();
-		
+
+		JavascriptFunction fn = new JavascriptFunction(comp.getName(),"hideCurrentPage");
+		type.addOperation(fn);
 		src.getSource().append(comp.getName()+".hideCurrentPage = function() {\n")
 			.append("if (this.currentPage!=null) {\n")
 			.append("$('#'+this.currentDiv).hide('"+comp.getHide()+"',{},400);\n}\n};\n");
+
+		fn = new JavascriptFunction(comp.getName(),"switchPage");
+		fn.addParam("page", "var");
+		fn.addParam("data", "var");
+		type.addOperation(fn);
+
 		src.getSource().append(comp.getName()+".switchPage = function(pageName,data) {\n")
 			.append("if (this.currentPage!=null) {\n")
 			.append("var temp = this.currentPage;\n")
@@ -65,6 +75,11 @@ public class PageNavigationProcessor {
 			}
 		}
 		
+		fn = new JavascriptFunction(comp.getName(),"showPage");
+		fn.addParam("pageName", "var");
+		fn.addParam("data", "var");
+		type.addOperation(fn);
+
 		src.getSource().append("} else {\n")
 			.append("this.showPage(pageName,data);\n")
 			.append("}\n}.bind("+comp.getName()+");\n");
@@ -75,13 +90,10 @@ public class PageNavigationProcessor {
 		first = true;
 		for(Page p : comp.getPage()) {
 			// Get the page and model types
-			JavascriptVariableType pageType = PageUtils.getPageType(ctx, p.getName());
+			PageType pageType = PageUtils.getPageType(ctx, p.getName());
 			if (pageType==null) throw new JavascribeException("Could not find type for page '"+p.getName()+"'");
-			String modelTypeName = pageType.getAttributeType("model");
-			JavascriptVariableType modelType = null;
-			if (modelTypeName!=null) {
-				modelType = (JavascriptVariableType)ctx.getType(modelTypeName);
-			}
+			PageModelType modelType = PageUtils.getModelType(ctx, p.getName());
+
 			// Append to showPage
 			if (first) first = false;
 			else showPageCode.append("else ");
@@ -107,7 +119,9 @@ public class PageNavigationProcessor {
 		showPageCode.append("else { alert('Unrecognized page '+this.currentPage); return; }\n");
 		showPageCode.append("$('#'+this.currentDiv).show('"+comp.getShow()+"',{},400,null);\n");
 		showPageCode.append("}.bind("+comp.getName()+");\n");
-		
+
+		fn = new JavascriptFunction(comp.getName(),"refreshCurrentPage");
+		type.addOperation(fn);
 		refreshPageCode.append(comp.getName()+".refreshCurrentPage = function() {\n")
 			.append("if (this.currentPage!=null) {\n");
 		first = true;

@@ -19,7 +19,8 @@ public class JavascriptLanguageSupport implements LanguageSupport {
 	public List<VariableType> getBaseVariableTypes() {
 		ArrayList<VariableType> ret = new ArrayList<VariableType>();
 		
-		ret.add(new VarVariableType());
+		ret.add(new ObjectVariableType());
+		ret.add(new StringVariableType());
 		
 		return ret;
 	}

@@ -2,12 +2,18 @@ package net.sf.javascribe.langsupport.javascript;
 
 import java.io.File;
 
-import net.sf.javascribe.api.ProcessorContext;
+import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JavascribeException;
+import net.sf.javascribe.api.ProcessorContext;
+import net.sf.javascribe.langsupport.java.JavaBeanType;
+
+import org.apache.log4j.Logger;
 
 public class JavascriptUtils {
 
 	public static final String JAVASCRIPT_FILE = "net.sf.javascribe.langsupport.javascript.file";
+	
+	private static final Logger log = Logger.getLogger(JavascriptUtils.class);
 
 	public static JavascriptSourceFile getSourceFile(ProcessorContext ctx) throws JavascribeException {
 		JavascriptSourceFile ret = null;
@@ -72,11 +78,59 @@ public class JavascriptUtils {
 		return ret;
 	}
 	
-	public static void addJavaScriptTypes(ProcessorContext ctx) throws JavascribeException {
-		if (ctx.getTypes().getType("var")==null) {
-			ctx.getTypes().addType(new VarVariableType());
+	public static JavascriptCode invokeFunction(String resultVar,String objName,JavascriptFunction fn,CodeExecutionContext execCtx) throws JavascribeException {
+		JavascriptCode ret = new JavascriptCode(true);
+		
+		if (resultVar!=null) {
+			ret.append(resultVar+" = ");
 		}
-	}
+		if (objName!=null) {
+			ret.append(objName+'.');
+		}
+		ret.append(fn.getName()+'(');
+		boolean first = true;
+		for(String p : fn.getParamNames()) {
+			if (!first) ret.append(",");
+			else first = false;
+			if (execCtx.getVariableNames().contains(p)) {
+				ret.append(p);
+				continue;
+			}
+			for(String v : execCtx.getVariableNames()) {
+				JavascriptVariableType t = (JavascriptVariableType)execCtx.getTypeForVariable(v);
+				if (t instanceof JavascriptDataObject) {
+					String s = findAttributeInDataObject(p, v, (JavascriptDataObject)t);
+					if (s!=null) {
+						ret.append(s);
+						continue;
+					}
+				}
+			}
+			log.warn("Could not find parameter '"+p+"' to invoke a Javascript function.");
+			return null;
+		}
+		ret.append(");\n");
 
+		return ret;
+	}
+	
+	protected static String findAttributeInDataObject(String attrib,String objVar,JavascriptDataObject type) throws JavascribeException {
+		String ret = null;
+		if (type.getAttributeType(attrib)!=null) {
+			return type.getCodeToRetrieveAttribute(objVar, attrib, "object", null);
+		}
+		return ret;
+	}
+	
+	public static JavascriptDataObjectImpl makeDataObject(JavaBeanType javaType) {
+		JavascriptDataObjectImpl ret = null;
+		
+		ret = new JavascriptDataObjectImpl(javaType.getName());
+		for(String name : javaType.getAttributeNames()) {
+			ret.addAttribute(name, javaType.getAttributeType(name));
+		}
+		return ret;
+	}
+	
 }
 

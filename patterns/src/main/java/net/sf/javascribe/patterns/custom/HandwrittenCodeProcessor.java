@@ -31,6 +31,7 @@ import net.sf.javascribe.langsupport.java.JavaServiceObjectType;
 import net.sf.javascribe.langsupport.java.LocatedJavaServiceObjectType;
 import net.sf.javascribe.langsupport.java.ServiceLocator;
 import net.sf.javascribe.langsupport.java.ServiceLocatorImpl;
+import net.sf.javascribe.langsupport.java.jsom.JsomJavaBeanType;
 import net.sf.javascribe.langsupport.java.jsom.JsomUtils;
 import net.sf.javascribe.patterns.servlet.WebServletFilter;
 import net.sf.jsom.CodeGenerationException;
@@ -44,7 +45,7 @@ import org.apache.log4j.Logger;
 @Processor
 public class HandwrittenCodeProcessor {
 	static Logger log = Logger.getLogger(HandwrittenCodeProcessor.class);
-	
+
 	@ProcessorMethod(componentClass=HandwrittenCode.class)
 	public void process(HandwrittenCode comp,ProcessorContext ctx) throws JavascribeException {
 		String srcRoot = comp.getSrcRoot();
@@ -54,25 +55,25 @@ public class HandwrittenCodeProcessor {
 		if (srcRoot.trim().length()==0) {
 			throw new JavascribeException("Component handwrittenCode requires attribute srcRoot");
 		}
-		
+
 		log.info("Processing handwritten code from root directory '"+srcRoot+"'");
 		try {
-		File dir = new File(srcRoot);
-		if (!dir.exists()) {
-			throw new JavascribeException("srcRoot '"+dir.getAbsolutePath()+"' is not valid");
-		}
-		if (!dir.isDirectory()) {
-			throw new JavascribeException("srcRoot '"+dir.getAbsolutePath()+"' is not a directory");
-		}
-		
-		processDir(dir,ctx);
+			File dir = new File(srcRoot);
+			if (!dir.exists()) {
+				throw new JavascribeException("srcRoot '"+dir.getAbsolutePath()+"' is not valid");
+			}
+			if (!dir.isDirectory()) {
+				throw new JavascribeException("srcRoot '"+dir.getAbsolutePath()+"' is not a directory");
+			}
+
+			processDir(dir,ctx);
 		} catch(IOException e) {
 			throw new JavascribeException("Exception while parsing hand-written code",e);
 		} catch(ParseException e) {
 			throw new JavascribeException("Exception while parsing hand-written code",e);
 		}
 	}
-	
+
 	private void processDir(File dir,ProcessorContext ctx) throws IOException,ParseException,JavascribeException {
 
 		File[] contents = dir.listFiles();
@@ -84,29 +85,33 @@ public class HandwrittenCodeProcessor {
 			}
 		}
 	}
-	
+
 	private void processFile(File f,ProcessorContext ctx) throws ParseException,IOException,JavascribeException {
 		CompilationUnit unit = JavaParser.parse(f);
-		
+
 		String pkg = unit.getPackage().getName().toString();
 		List<TypeDeclaration> types = unit.getTypes();
 		if (types==null) return;
 		for(TypeDeclaration dec : types) {
 			List<AnnotationExpr> ans = dec.getAnnotations();
 			if ((ans==null) || (ans.size()==0)) continue;
-			
+
 			handleServletFilter(dec,pkg,ctx);
 			handleControllerServlet(dec,pkg,ctx);
 			handleBusinessObject(dec,pkg,ctx);
+			handleDataObject(dec,pkg,ctx);
 		}
 	}
-	
+
 	private void handleServletFilter(TypeDeclaration dec,String pkg,ProcessorContext ctx) throws JavascribeException {
 		List<AnnotationExpr> ans = dec.getAnnotations();
 		String name = null;
-		
+
 		for(AnnotationExpr an : ans) {
 			if (an.getName().getName().equals("ServletFilter")) {
+				if (!(an instanceof NormalAnnotationExpr)) {
+					continue;
+				}
 				NormalAnnotationExpr expr = (NormalAnnotationExpr)an;
 				List<MemberValuePair> pairs = expr.getPairs();
 				for(MemberValuePair pair : pairs) {
@@ -117,17 +122,17 @@ public class HandwrittenCodeProcessor {
 				}
 			}
 		}
-		
+
 		if (name==null) return;
 		if (name.trim().length()==0) return;
 
 		if (name.startsWith("\"")) name = name.substring(1);
 		if (name.endsWith("\"")) name = name.substring(0, name.length()-1);
-		
+
 		String cl = pkg+'.'+dec.getName();
 
 		log.debug("Found handwritten servlet filter with name '"+name+"' and class '"+cl+"'");
-		
+
 		WebServletFilter filterComp = new WebServletFilter();
 		filterComp.setClassName(cl);
 		filterComp.setName(dec.getName());
@@ -138,7 +143,7 @@ public class HandwrittenCodeProcessor {
 		List<AnnotationExpr> ans = dec.getAnnotations();
 		String uriPath = null;
 		String filters = null;
-		
+
 		for(AnnotationExpr an : ans) {
 			if (an.getName().getName().equals("ControllerServlet")) {
 				NormalAnnotationExpr expr = (NormalAnnotationExpr)an;
@@ -153,13 +158,13 @@ public class HandwrittenCodeProcessor {
 				}
 			}
 		}
-		
+
 		if (uriPath==null) return;
 		if (uriPath.trim().length()==0) return;
 
 		if (uriPath.startsWith("\"")) uriPath = uriPath.substring(1);
 		if (uriPath.endsWith("\"")) uriPath = uriPath.substring(0, uriPath.length()-1);
-		
+
 		if (filters!=null) {
 			if (filters.startsWith("\"")) filters = filters.substring(1);
 			if (filters.endsWith("\"")) filters = filters.substring(0, filters.length()-1);
@@ -181,7 +186,7 @@ public class HandwrittenCodeProcessor {
 		List<AnnotationExpr> ans = dec.getAnnotations();
 		String name = null;
 		String group = null;
-		
+
 		for(AnnotationExpr an : ans) {
 			if (an.getName().getName().equals("BusinessObject")) {
 				NormalAnnotationExpr expr = (NormalAnnotationExpr)an;
@@ -201,12 +206,12 @@ public class HandwrittenCodeProcessor {
 
 		if (name.startsWith("\"")) name = name.substring(1);
 		if (name.endsWith("\"")) name = name.substring(0, name.length()-1);
-		
+
 		if (group!=null) {
 			if (group.startsWith("\"")) group = group.substring(1);
 			if (group.endsWith("\"")) group = group.substring(0, group.length()-1);
 		}
-		
+
 		if (group!=null) {
 			log.debug("Found business object '"+name+"' in group '"+group+"'");
 		} else {
@@ -214,10 +219,10 @@ public class HandwrittenCodeProcessor {
 		}
 
 		List<BodyDeclaration> members = dec.getMembers();
-		
+
 		List<String> deps = new ArrayList<String>();
 		List<BodyDeclaration> rules = new ArrayList<BodyDeclaration>();
-		
+
 		for(BodyDeclaration mem : members) {
 			if (mem.getAnnotations()==null) continue;
 			for(AnnotationExpr an : mem.getAnnotations()) {
@@ -235,15 +240,15 @@ public class HandwrittenCodeProcessor {
 				}
 			}
 		}
-		
+
 		if ((deps.size()>0) && (group==null)) {
 			throw new JavascribeException("A business object with dependencies must have a group so that a service locator can be made");
 		}
-		
+
 		ServiceLocator locatorType = null;
 		JavaServiceObjectType srvType = null;
 		Java5SourceFile locatorFile = null; 
-		
+
 		if (group!=null) {
 			String locName = group+"Locator";
 			locatorType = (ServiceLocator)ctx.getType(locName);
@@ -257,7 +262,7 @@ public class HandwrittenCodeProcessor {
 			} else {
 				locatorFile = JsomUtils.getJavaFile(pkg+'.'+locName, ctx);
 			}
-			
+
 			srvType = new LocatedJavaServiceObjectType(locatorType.getImport(), name, pkg, name);
 			locatorType.getAvailableServices().add(name);
 
@@ -292,7 +297,7 @@ public class HandwrittenCodeProcessor {
 			srvType = new JavaServiceObjectType(name, pkg, name);
 		}
 		ctx.getTypes().addType(srvType);
-		
+
 		// Add all business methods to the srvType
 		for(BodyDeclaration rule : rules) {
 			if (!(rule instanceof MethodDeclaration)) continue;
@@ -317,7 +322,53 @@ public class HandwrittenCodeProcessor {
 			srvType.addMethod(op);
 		}
 	}
-	
+
+	private void handleDataObject(TypeDeclaration dec,String pkg,ProcessorContext ctx) throws JavascribeException {
+		List<AnnotationExpr> ans = dec.getAnnotations();
+		boolean dataObject = false;
+
+		for(AnnotationExpr an : ans) {
+			if (an.getName().getName().equals("DataObject")) {
+				dataObject = true;
+				break;
+			}
+		}
+
+		if (!dataObject) return;
+
+		String objectName = dec.getName();
+		JsomJavaBeanType objType = new JsomJavaBeanType(objectName,pkg,objectName);
+
+		log.info("Found data object '"+objectName+"'");
+		
+		String attrName = JavascribeUtils.getLowerCamelName(objectName);
+		ctx.addAttribute(attrName, objectName);
+		ctx.addAttribute(attrName+"List", "list/"+objectName);
+
+		List<BodyDeclaration> members = dec.getMembers();
+
+		for(BodyDeclaration mem : members) {
+			if (mem.getAnnotations()==null) continue;
+			for(AnnotationExpr an : mem.getAnnotations()) {
+				if (an.getName().getName().equals("DataObjectAttribute")) {
+					if (mem instanceof FieldDeclaration) {
+						FieldDeclaration f = (FieldDeclaration)mem;
+						if (f.getVariables().size()!=1) {
+							throw new JavascribeException("Found a data object attribute field declaration with zero or multiple variables: "+f.toString());
+						}
+						VariableDeclarator d = f.getVariables().get(0);
+						String type = f.getType().toString();
+						type = findType(type,ctx);
+						String name = d.getId().toString();
+						objType.addAttribute(name, type);
+					}
+				}
+			}
+		}
+
+		ctx.getTypes().addType(objType);
+	}
+
 	private String findType(String type,ProcessorContext ctx) {
 		if (type.equals("String")) return "string";
 		else if (type.equals("int")) return "integer";
@@ -336,9 +387,9 @@ public class HandwrittenCodeProcessor {
 			return "list/"+findType(sub,ctx);
 		}
 		else if (ctx.getType(type)!=null) return type;
-		
+
 		return null;
 	}
-	
+
 }
 

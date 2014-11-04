@@ -19,25 +19,6 @@ import net.sf.jsom.java5.Java5Type;
 public class Java5MapType implements JavaVariableType,Java5Type,MapType {
 
 	@Override
-	public String getCodeToRetrieveAttribute(String varName,String attribName,String targetType,CodeExecutionContext execCtx) throws JavascribeException {
-		return null;
-	}
-
-	/*
-	@Override
-	public String getCodeToSetAttribute(String varName, String attribName,
-			String evaluatedValue) throws CodeGenerationException {
-		return null;
-	}
-	*/
-
-	@Override
-	public String getAttributeType(String attrib)
-			throws JavascribeException {
-		throw new JavascribeException("Java map does not support getAttributeType");
-	}
-
-	@Override
 	public String getName() {
 		return "map";
 	}
@@ -85,14 +66,6 @@ public class Java5MapType implements JavaVariableType,Java5Type,MapType {
 	@Override
 	public String getImport() {
 		return "java.util.Map";
-	}
-
-	@Override
-	public String getCodeToSetAttribute(String varName, String attribName,
-			String evaluatedValue, CodeExecutionContext execCtx)
-			throws JavascribeException {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override

@@ -1,37 +1,32 @@
 package net.sf.javascribe.patterns.js.page.elements;
 
-import java.util.HashMap;
-
-import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
-import net.sf.javascribe.langsupport.javascript.JavascriptConstants;
-import net.sf.javascribe.langsupport.javascript.JavascriptVariableType;
+import net.sf.javascribe.api.ProcessorContext;
+import net.sf.javascribe.patterns.js.page.PageModelType;
+import net.sf.javascribe.patterns.js.page.PageType;
 import net.sf.javascribe.patterns.js.page.PageUtils;
 
 public class ElementBinderContext {
 	private ProcessorContext ctx = null;
-	private HashMap<String,String> modelAttributes = null;
 	private String pageName = null;
-	private JavascriptVariableType pageType = null;
-	private JavascriptVariableType modelType = null;
+	private PageType pageType = null;
+	private PageModelType modelType = null;
 	
-	public ElementBinderContext(ProcessorContext ctx,HashMap<String,String> modelAttributes,String pageName) {
+	public ElementBinderContext(ProcessorContext ctx,String pageName) throws JavascribeException {
 		this.ctx = ctx;
-		this.modelAttributes = modelAttributes;
 		this.pageName = pageName;
-		this.pageType = (JavascriptVariableType)ctx.getType(JavascriptConstants.JS_TYPE+pageName);
+		this.pageType = (PageType)ctx.getType(pageName);
 		if (pageType.getAttributeType("model")!=null)
-			this.modelType = (JavascriptVariableType)ctx.getType(pageType.getAttributeType("model"));
+			this.modelType = PageUtils.getModelType(ctx, pageName);
 	}
 	
 	public static ElementBinderContext newInstance(ProcessorContext ctx,String pageName) throws JavascribeException {
 		ElementBinderContext ret = null;
 
-		if (ctx.getType(JavascriptConstants.JS_TYPE+pageName)==null) {
+		if (ctx.getType(pageName)==null) {
 			throw new JavascribeException("Couldn't initialize bindings - no page called '"+pageName+"' found");
 		}
-		HashMap<String,String> modelAttributes = PageUtils.getModelAttributes(ctx, pageName);
-		ret = new ElementBinderContext(ctx,modelAttributes,pageName);
+		ret = new ElementBinderContext(ctx,pageName);
 		
 		return ret;
 	}
@@ -45,18 +40,18 @@ public class ElementBinderContext {
 	}
 
 	public String getModelAttributeType(String name) {
-		return modelAttributes.get(name);
+		return modelType.getAttributeType(name);
 	}
 
 	public String getTypeForAttribute(String name) {
 		return ctx.getAttributeType(name);
 	}
 
-	public JavascriptVariableType getPageType() {
+	public PageType getPageType() {
 		return pageType;
 	}
 
-	public JavascriptVariableType getModelType() {
+	public PageModelType getModelType() {
 		return modelType;
 	}
 

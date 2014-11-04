@@ -1,15 +1,15 @@
 package net.sf.javascribe.patterns.js.page;
 
-import org.apache.log4j.Logger;
-
-import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.annotation.Processor;
 import net.sf.javascribe.api.annotation.ProcessorMethod;
 import net.sf.javascribe.api.annotation.Scannable;
+import net.sf.javascribe.langsupport.javascript.JavascriptFunction;
 import net.sf.javascribe.langsupport.javascript.JavascriptSourceFile;
 import net.sf.javascribe.langsupport.javascript.JavascriptUtils;
-import net.sf.javascribe.langsupport.javascript.JavascriptVariableType;
+
+import org.apache.log4j.Logger;
 
 @Scannable
 @Processor
@@ -42,11 +42,12 @@ public class PageFuncProcessor {
 			src.getSource().append(func.getCode().getValue().trim()).append('\n');
 		}
 		src.getSource().append("}.bind("+func.getPageName()+");\n");
-		JavascriptVariableType type = PageUtils.getPageType(ctx, func.getPageName());
+		PageType type = PageUtils.getPageType(ctx, func.getPageName());
 		if (type==null) {
 			throw new JavascribeException("Tried to add a function to a page which was not found: '"+func.getPageName()+"'");
 		}
-		type.addFunctionAttribute(func.getName());
+		JavascriptFunction fn = new JavascriptFunction(func.getPageName(),func.getName());
+		type.addOperation(fn);
 	}
 
 }

@@ -1,5 +1,8 @@
 package net.sf.javascribe.api;
 
+import java.io.IOException;
+import java.io.InputStream;
+
 import net.sf.javascribe.api.config.ComponentBase;
 
 /**
@@ -44,8 +47,8 @@ public interface ProcessorContext {
 	
 	/**
 	 * Returns the specified variable type.
-	 * @param typeName
-	 * @return
+	 * @param typeName The type specified.
+	 * @return The type for the specified name, or null.
 	 */
 	public VariableType getType(String typeName);
 	
@@ -89,7 +92,7 @@ public interface ProcessorContext {
 
 	/**
 	 * Returns EngineProperties, which gives access to all Scannable classes.
-	 * @return
+	 * @return EngineProperties for the current processor context.
 	 */
 	public EngineProperties getEngineProperties();
 
@@ -114,6 +117,14 @@ public interface ProcessorContext {
 	 * @param component Component to add.
 	 */
 	public void addComponent(ComponentBase component);
-
+	
+	/**
+	 * Retrieves a resource from the application definition zip file.  
+	 * The caller is responsible for closing the input stream.
+	 * @param path Path of the file inside the zip
+	 * @return InputStream to the given resource, or null.
+	 */
+	public InputStream getResource(String path) throws IOException;
+	
 }
 

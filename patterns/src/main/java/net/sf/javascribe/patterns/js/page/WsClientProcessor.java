@@ -1,23 +1,24 @@
 package net.sf.javascribe.patterns.js.page;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.apache.log4j.Logger;
-
-import net.sf.javascribe.api.AttributeHolder;
-import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.VariableType;
 import net.sf.javascribe.api.annotation.Processor;
 import net.sf.javascribe.api.annotation.ProcessorMethod;
 import net.sf.javascribe.api.annotation.Scannable;
 import net.sf.javascribe.langsupport.java.JavaBeanType;
+import net.sf.javascribe.langsupport.javascript.JavascriptDataObject;
+import net.sf.javascribe.langsupport.javascript.JavascriptFunction;
 import net.sf.javascribe.langsupport.javascript.JavascriptSourceFile;
 import net.sf.javascribe.langsupport.javascript.JavascriptUtils;
-import net.sf.javascribe.langsupport.javascript.JavascriptVariableType;
 import net.sf.javascribe.patterns.js.page.elements.BinderUtils;
 import net.sf.javascribe.patterns.servlet.SingleUrlService;
 import net.sf.javascribe.patterns.servlet.UrlWebServiceType;
+
+import org.apache.log4j.Logger;
 
 @Scannable
 @Processor
@@ -46,9 +47,12 @@ public class WsClientProcessor {
 		JavascriptSourceFile src = JavascriptUtils.getSourceFile(ctx);
 		StringBuilder code = src.getSource();
 		
-		JavascriptVariableType pageType = PageUtils.getPageType(ctx, pageName);
-		JavascriptVariableType modelType = PageUtils.getModelType(ctx, pageName);
-		HashMap<String,String> modelAttributes = PageUtils.getModelAttributes(ctx, pageName);
+		PageType pageType = PageUtils.getPageType(ctx, pageName);
+
+		PageUtils.ensureModel(ctx, pageType);
+		PageModelType modelType = PageUtils.getModelType(ctx, pageName);
+
+//		HashMap<String,String> modelAttributes = PageUtils.getModelAttributes(ctx, pageName);
 		
 		if (modelType==null) {
 			throw new JavascribeException("Page '"+pageName+"' is required to have a model.");
@@ -59,16 +63,28 @@ public class WsClientProcessor {
 		if (srv==null) {
 			throw new JavascribeException("Couldn't find URL service "+comp.getModule()+'/'+comp.getService());
 		}
+		List<JavaBeanType> javaBeansToConvert = new ArrayList<JavaBeanType>();
 		JavaBeanType beanType = (JavaBeanType)ctx.getType(srv.getReturnType());
 		for(String att : beanType.getAttributeNames()) {
 			String type = ctx.getAttributeType(att);
 			if (type==null) type = "var";
+			else {
+				VariableType v = ctx.getType(type);
+				if (v instanceof JavaBeanType)
+					javaBeansToConvert.add((JavaBeanType)v);
+			}
 			if (modelType.getAttributeType(att)==null) {
-				PageModelProcessor.addModelAttribute(modelType,modelAttributes,att,type,code,null,pageName);
+				PageModelProcessor.addModelAttribute(modelType,att,type,code,null,pageName);
 			}
 		}
 
 		ctx.setLanguageSupport("Javascript");
+		for(JavaBeanType t : javaBeansToConvert) {
+			if (ctx.getType(t.getName())==null) {
+				JavascriptDataObject type = JavascriptUtils.makeDataObject(t);
+				ctx.getTypes().addType(type);
+			}
+		}
 		
 		StringBuilder funcBody = new StringBuilder();
 		StringBuilder funcDec = new StringBuilder();
@@ -77,7 +93,7 @@ public class WsClientProcessor {
 		StringBuilder successFunc = new StringBuilder();
 		
 		funcDec.append("function (");
-		funcBody.append("$.ajax({\ncontext:document,\ndataType:'json',\n");
+		funcBody.append("$.ajax({\ntraditional:true,\ncontext:document,\ndataType:'json',\n");
 		
 		// For query parameters and path parameters, look for them in the model object.  If they 
 		// are not there, add them as parameters to the function.
@@ -86,20 +102,23 @@ public class WsClientProcessor {
 		boolean firstData = true;
 		boolean firstParam = true;
 		// First query parameters
+		List<String> fnParams = new ArrayList<String>();
 		for(String p : srv.getQueryParams()) {
 			String modelAttrib = null;
 			if (!firstData) dataString.append(',');
 			else firstData = false;
 
-			if (modelAttributes.get(p)!=null) modelAttrib = p;
+			if (modelType.getAttributeType(p)!=null) modelAttrib = p;
 			else {
-				for(String name : modelAttributes.keySet()) {
+				// Try to find parameter in attribute holders in model?
+/*
+				for(String name : modelType.getAttributeNames()) {
 					String type = ctx.getAttributeType(name);
 					if (type==null) {
 						throw new JavascribeException("Could find a type for model attribute '"+name+"'");
 					}
 					VariableType t = ctx.getType(type);
-					if (t instanceof JavascriptVariableType) continue;
+					if (t instanceof JavascriptVariableTypeImpl) continue;
 					if (!(t instanceof AttributeHolder)) continue;
 					AttributeHolder h = (AttributeHolder)t;
 					if (h.getAttributeType(p)!=null) {
@@ -107,6 +126,7 @@ public class WsClientProcessor {
 						break;
 					}
 				}
+				*/
 			}
 			
 
@@ -115,10 +135,10 @@ public class WsClientProcessor {
 				if (firstParam) firstParam = false;
 				else funcDec.append(',');
 				funcDec.append(p);
+				fnParams.add(p);
 				dataString.append(p);
 			} else {
 				dataString.append("this.model."+BinderUtils.getGetter(modelAttrib));
-//				dataString.append("this.model.get"+(Character.toUpperCase(p.charAt(0)))+p.substring(1)+"()");
 			}
 		}
 		dataString.append('}');
@@ -141,7 +161,13 @@ public class WsClientProcessor {
 		if (comp.getFn()==null) {
 			throw new JavascribeException("WsClient component requires attribute 'fn'");
 		}
-		pageType.addFunctionAttribute(comp.getFn());
+		JavascriptFunction fn = new JavascriptFunction(pageName,comp.getFn());
+		for(String p : fnParams) {
+			String type = ctx.getAttributeType(p);
+			fn.addParam(p, type);
+		}
+		fn.setReturnValue(true);
+		pageType.addOperation(fn);
 		code.append(comp.getPageName()+"."+comp.getFn()+" = ");
 		// Append code to the javascript file
 

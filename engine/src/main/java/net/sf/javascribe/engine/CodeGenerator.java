@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.ZipFile;
 
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.LanguageSupport;
@@ -31,12 +32,14 @@ public class CodeGenerator {
 	Map<String,LanguageSupport> languageSupport = null;
 	Map<String,List<ProcessorEntry>> processors = null;
 	List<SourceFile> sourceFiles = null;
+	ZipFile zipFile = null;
 
-	public CodeGenerator(EnginePropertiesImpl engineProperties,ApplicationDefinition app) {
+	public CodeGenerator(EnginePropertiesImpl engineProperties,ApplicationDefinition app,ZipFile zipFile) {
 		this.engineProperties = engineProperties;
 		this.def = app;
 		this.languageSupport = engineProperties.getLanguageSupport();
 		this.processors = engineProperties.getProcessors();
+		this.zipFile = zipFile;
 	}
 
 	public void generate() throws JavascribeException {
@@ -87,7 +90,7 @@ public class CodeGenerator {
 					//throw new JavascribeException("Found no processors for component class '"+name+"'");
 				}
 				else {
-					ProcessorContextImpl generatorContext = new ProcessorContextImpl(def.getBuildRoot(),engineProperties,languageSupport,systemAttributes,typeMap,sourceFiles,properties,objects);
+					ProcessorContextImpl generatorContext = new ProcessorContextImpl(def.getBuildRoot(),engineProperties,languageSupport,systemAttributes,typeMap,sourceFiles,properties,objects,zipFile);
 					for(ProcessorEntry entry : currentProcessors) {
 						applyProcessor(comp,generatorContext,entry);
 					}

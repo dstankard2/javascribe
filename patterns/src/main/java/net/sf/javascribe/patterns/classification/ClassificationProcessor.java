@@ -102,6 +102,7 @@ public class ClassificationProcessor {
 		}
 
 		classifications.put(classification.getName(),classification);
+		classification.setMyProcessorContext(ctx);
 
 		type = new JsomJavaBeanType(className,pkg,className);
 		

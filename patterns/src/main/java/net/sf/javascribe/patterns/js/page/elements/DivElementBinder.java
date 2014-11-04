@@ -61,6 +61,7 @@ public class DivElementBinder {
 		if (target.indexOf('.')<0) {
 			values.put("element",binding.getElement());
 			values.put("pageName", ctx.getPageName());
+//			values.put("evalValue",BinderUtils.evalTarget(target, "val", ctx).getCodeText());
 			values.put("function",BinderUtils.getTargetAccessString(target, ctx, false));
 			values.put("event", BinderUtils.getEventToTrigger(target, event, ctx, false));
 			template = "js-mvvm-dom-content-binding.txt";

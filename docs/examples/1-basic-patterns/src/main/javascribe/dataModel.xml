@@ -35,7 +35,18 @@ xmlns="http://javascribe.sf.net/config">
 	 -->
 	<model:jpaDaoFactory entityManager="TestDB" ref="ds" locator="DefaultTxLocator"/>
 
+	<!-- Entity Relationships
+	When a relationship is defined, APIs are added in the JPA DAOs to retrieve 
+	the entities based on the ID of the other entity.
+	The relationships are not enforced in the JPA entities themselves.
+	 -->
 	<model:entityRelationships entityManager="TestDB" jpaDaoFactory="TestDBDaoFactory">
+		<!-- 
+		This relationship is valid only if the User entity has a field companyId.
+		APIs generated: 
+			Company CompanyDao.getCompany(userId);
+			List<User> UserDao.getUserList(companyId);
+		 -->
 		<model:rel>Company has many User</model:rel>
 	</model:entityRelationships>
 

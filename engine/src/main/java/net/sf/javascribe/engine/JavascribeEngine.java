@@ -194,7 +194,7 @@ public class JavascribeEngine {
 			reader = new ApplicationReader(engineProps.getComponentContext());
 			zip = new ZipFile(zipFile);
 			def = reader.readApplication(zip);
-			CodeGenerator generator = new CodeGenerator(engineProps,def);
+			CodeGenerator generator = new CodeGenerator(engineProps,def,zip);
 			generator.generate();
 		} catch(IOException e) {
 			throw new JavascribeException("Exception while running Javascribe",e);

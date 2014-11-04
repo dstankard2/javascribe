@@ -6,6 +6,8 @@
  */
 package net.sf.javascribe.api;
 
+import java.util.List;
+
 
 
 /**
@@ -35,7 +37,8 @@ public interface AttributeHolder extends VariableType {
 	 * 
 	 * @param varName Name of the attribute holder instance we are trying to modify.
 	 * @param attribName Name of the attribute to modify on the specified attribute holder.
-	 * @param value Evaluated expression to set the specified attribute to.
+	 * @param evaluatedValue Evaluated expression to set the specified attribute to.
+	 * @param execCtx Current code execution context.
 	 * @return Code to set the specified attribute to the given value.
 	 */
 	public String getCodeToSetAttribute(String varName,String attribName,String evaluatedValue,CodeExecutionContext execCtx) throws JavascribeException;
@@ -46,6 +49,8 @@ public interface AttributeHolder extends VariableType {
 	 * @return Type of the specified attribute.
 	 */
 	public String getAttributeType(String attrib) throws JavascribeException;
+
+	public List<String> getAttributeNames() throws JavascribeException;
 
 }
 

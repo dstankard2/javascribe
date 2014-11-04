@@ -53,7 +53,7 @@ public class CodeExecutionContext {
 
 	/**
 	 * Get the currently defined variable types.
-	 * @return
+	 * @return Currently available types.
 	 */
 	public TypeResolver getTypes() {
 		return types;
@@ -70,7 +70,7 @@ public class CodeExecutionContext {
 	/**
 	 * Returns the variable type for the given variable.
 	 * @param var
-	 * @return
+	 * @return Type of the specified variable, or null.
 	 */
 	public VariableType getTypeForVariable(String var) {
 		String type = variables.get(var);

@@ -1,7 +1,5 @@
 package net.sf.javascribe.patterns.js.page;
 
-import java.util.HashMap;
-
 import org.apache.log4j.Logger;
 
 import net.sf.javascribe.api.ProcessorContext;
@@ -11,7 +9,6 @@ import net.sf.javascribe.api.annotation.ProcessorMethod;
 import net.sf.javascribe.api.annotation.Scannable;
 import net.sf.javascribe.langsupport.javascript.JavascriptSourceFile;
 import net.sf.javascribe.langsupport.javascript.JavascriptUtils;
-import net.sf.javascribe.langsupport.javascript.JavascriptVariableType;
 
 @Scannable
 @Processor
@@ -33,21 +30,19 @@ public class PageModelProcessor {
 		StringBuilder code = src.getSource();
 		String pageName = model.getPageName();
 		
-		JavascriptVariableType pageType = PageUtils.getPageType(ctx, model.getPageName());
+		PageType pageType = PageUtils.getPageType(ctx, model.getPageName());
 		PageUtils.ensureModel(ctx,pageType);
-		JavascriptVariableType modelType = PageUtils.getModelType(ctx, model.getPageName());
-		HashMap<String,String> modelAttributes = PageUtils.getModelAttributes(ctx, model.getPageName());
+		PageModelType modelType = PageUtils.getModelType(ctx, model.getPageName());
 		
-		code.append(pageName+".model = { };\n");
 		for(Attribute a : model.getAttribute()) {
 			String name = a.getName();
 			String typeName = ctx.getAttributeType(name);
 			if (typeName==null) typeName = "var";
-			addModelAttribute(modelType, modelAttributes, name, typeName, code, a.getOnChange(), pageName);
+			addModelAttribute(modelType, name, typeName, code, a.getOnChange(), pageName);
 		}
 	}
 
-	public static void addModelAttribute(JavascriptVariableType modelType,HashMap<String,String> modelAttributes,String name,String typeName,StringBuilder code,String onChange,String pageName) throws JavascribeException {
+	public static void addModelAttribute(PageModelType modelType,String name,String typeName,StringBuilder code,String onChange,String pageName) throws JavascribeException {
 		if ((name==null) || (name.trim().length()==0)) {
 			throw new JavascribeException("Found a model attribute with no name");
 		}
@@ -56,8 +51,7 @@ public class PageModelProcessor {
 			return;
 		}
 		
-		modelType.addVariableAttribute(name, "var");
-		modelAttributes.put(name, "var");
+		modelType.addAttribute(name, typeName);
 		String attr = "" + Character.toUpperCase(name.charAt(0)) + name.substring(1);
 		code.append(pageName).append(".model.").append(name).append(" = null;\n")
 				.append(pageName).append(".model.get").append(attr)

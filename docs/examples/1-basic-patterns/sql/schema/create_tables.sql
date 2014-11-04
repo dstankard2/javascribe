@@ -10,6 +10,7 @@ create table User (
 	userStatus int not null
 );
 
+drop table Company;
 create table Company (
 	companyId int not null auto_increment primary key,
 	companyName varchar(128) not null,

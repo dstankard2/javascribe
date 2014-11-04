@@ -14,7 +14,6 @@ import net.sf.javascribe.api.annotation.ProcessorMethod;
 import net.sf.javascribe.api.annotation.Scannable;
 import net.sf.javascribe.langsupport.javascript.JavascriptSourceFile;
 import net.sf.javascribe.langsupport.javascript.JavascriptUtils;
-import net.sf.javascribe.langsupport.javascript.JavascriptVariableType;
 import net.sf.javascribe.patterns.js.page.elements.BinderUtils;
 import net.sf.javascribe.patterns.js.page.elements.ElementBinderContext;
 
@@ -35,11 +34,11 @@ public class BindingsProcessor {
 		log.info("Processing bindings for page '"+comp.getPageName()+"'");
 		
 		JavascriptSourceFile src = JavascriptUtils.getSourceFile(ctx);
-		JavascriptVariableType type = PageUtils.getPageType(ctx, comp.getPageName());
+		PageType type = PageUtils.getPageType(ctx, comp.getPageName());
 
 		if (type.getAttributeType("controller")==null) {
 			// TODO: When it begins to matter and make sense, add JS_Controller type.
-			type.addVariableAttribute("controller", "JS_Controller");
+			type.addAttribute("controller", "Controller");
 			src.getSource().append(comp.getPageName()+".controller = new JSController();\n");
 		}
 		
@@ -77,7 +76,6 @@ public class BindingsProcessor {
 					}
 					val = handleBinding(binder,ctx,comp.getPageName(),binding,method);
 					init.append(val);
-//					System.out.println("Implemented '"+binding.getType()+"' binding on page '"+comp.getPageName()+"' for element type '"+elt.getType()+"'");
 				} else {
 					System.out.println("WARNING: Found no binders of type "+binding.getType()+" for element type "+eltType);
 				}
@@ -119,14 +117,13 @@ public class BindingsProcessor {
 		return ret;
 	}
 	
-	private void handleGenericBinding(StringBuilder init,Binding binding,JavascriptVariableType type) throws JavascribeException {
+	private void handleGenericBinding(StringBuilder init,Binding binding,PageType type) throws JavascribeException {
 		String target = binding.getTarget();
 		
 		if (target==null) {
 			throw new JavascribeException("Generic binding requires a target");
 		}
-		String targetType = type.getAttributeType(target);
-		if ((targetType!=null) && (targetType.equals("js_function"))) {
+		if (type.hasOperation(target)) {
 			init.append("this.controller.addEventListener(\""+binding.getEvent()+"\",this."+target+");\n");
 		} else {
 			init.append("this.controller.addEventListener(\""+binding.getEvent()+"\","+target+");\n");

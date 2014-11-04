@@ -14,7 +14,7 @@ public interface LanguageSupport {
 	/**
 	 * Returns the name of this language, as it should be referred to in 
 	 * ProcessorContext.setLanguageSupport.
-	 * @return
+	 * @return The name of this language.
 	 */
 	public String languageName();
 	

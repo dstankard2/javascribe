@@ -40,7 +40,7 @@ public class ClassificationAttributeProcessor {
 		try {
 		for(String s : names) {
 			Classification classification = classifications.get(s);
-			processClassification(s,classification,ctx,processed,classifications,classificationNames);
+			processClassification(s,classification,classification.getMyProcessorContext(),processed,classifications,classificationNames);
 		}
 
 		ctx.putObject("ClassificationNames", classificationNames);

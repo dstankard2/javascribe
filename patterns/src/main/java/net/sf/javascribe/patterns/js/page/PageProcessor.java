@@ -1,18 +1,18 @@
 package net.sf.javascribe.patterns.js.page;
 
-import org.apache.log4j.Logger;
-
-import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.annotation.Processor;
 import net.sf.javascribe.api.annotation.ProcessorMethod;
 import net.sf.javascribe.api.annotation.Scannable;
 import net.sf.javascribe.api.config.ComponentBase;
-import net.sf.javascribe.langsupport.javascript.JavascriptConstants;
+import net.sf.javascribe.langsupport.javascript.JavascriptDataObjectImpl;
+import net.sf.javascribe.langsupport.javascript.JavascriptFunction;
 import net.sf.javascribe.langsupport.javascript.JavascriptSourceFile;
 import net.sf.javascribe.langsupport.javascript.JavascriptUtils;
-import net.sf.javascribe.langsupport.javascript.JavascriptVariableType;
 import net.sf.javascribe.patterns.CorePatternConstants;
+
+import org.apache.log4j.Logger;
 
 @Scannable
 @Processor
@@ -31,11 +31,17 @@ public class PageProcessor {
 
 		JavascriptSourceFile src = JavascriptUtils.getSourceFile(ctx);
 		src.getSource().append("var "+page.getPageName()+"={ };\n");
-		JavascriptVariableType type = new JavascriptVariableType(JavascriptConstants.JS_TYPE+page.getPageName());
+		PageType type = new PageType(page.getPageName());
 		ctx.getTypes().addType(type);
 		
 		StringBuilder init = PageUtils.getInitFunction(ctx, page.getPageName());
-		init.append("this.view.page = $('#"+page.getPageName()+"');\n");
+		init.append("this.view = { };\n");
+		init.append("this.view.page = document.getElementById('"+page.getPageName()+"');\n");
+		JavascriptDataObjectImpl viewType = new JavascriptDataObjectImpl(page.getPageName()+"View");
+		type.addAttribute("view", page.getPageName()+"View");
+		ctx.getTypes().addType(viewType);
+		JavascriptFunction initFn = new JavascriptFunction(page.getPageName(),"init");
+		type.addOperation(initFn);
 
 		ctx.addComponent(new PageFinalizer(page.getPageName(),src.getPath()));
 	}
