@@ -24,7 +24,7 @@ public class JavascriptServiceObjectImpl implements JavascriptServiceObject {
 	public Code instantiate(String name, String value,
 			CodeExecutionContext execCtx) throws JavascribeException {
 		JavascriptCode ret = new JavascriptCode(true);
-		ret.append(name+" = "+this.name+";\n");
+		ret.append(name+" = window."+this.name+";\n");
 		return ret;
 	}
 

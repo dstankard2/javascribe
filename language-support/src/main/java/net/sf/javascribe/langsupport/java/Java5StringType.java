@@ -1,8 +1,5 @@
 package net.sf.javascribe.langsupport.java;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.expressions.CodeFragmentExpressionAtom;
@@ -81,40 +78,6 @@ public class Java5StringType implements JavaVariableType,Java5Type,StringType {
 	    }
 
 	    return buf.toString();
-	}
-
-	public List<String> getAttributeNames() {
-		ArrayList<String> ret = new ArrayList<String>();
-		ret.add(STRING_LENGTH);
-		ret.add(TRIMMED_VALUE);
-		return ret;
-	}
-
-	@Override
-	public String getAttributeType(String attrib) {
-		if (attrib.equals(STRING_LENGTH)) return "integer";
-		else if (attrib.equals(TRIMMED_VALUE)) return "string";
-		return null;
-	}
-
-	@Override
-	public String getCodeToRetrieveAttribute(String varName, String attribName,
-			String targetType, CodeExecutionContext execCtx)
-			throws IllegalArgumentException, JavascribeException {
-		if (attribName.equals(STRING_LENGTH)) {
-			return varName+".length()";
-		}
-		else if (attribName.equals(TRIMMED_VALUE)) {
-			return varName+".trim()";
-		}
-		return null;
-	}
-
-	@Override
-	public String getCodeToSetAttribute(String varName, String attribName,
-			String evaluatedValue, CodeExecutionContext execCtx)
-			throws JavascribeException {
-		throw new JavascribeException("You cannot set the attributes of a string");
 	}
 
 	@Override

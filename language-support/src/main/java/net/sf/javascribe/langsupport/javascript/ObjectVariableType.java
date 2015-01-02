@@ -1,9 +1,8 @@
 package net.sf.javascribe.langsupport.javascript;
 
 import net.sf.javascribe.api.CodeExecutionContext;
-import net.sf.javascribe.api.VariableType;
 
-public class ObjectVariableType implements VariableType {
+public class ObjectVariableType implements JavascriptVariableType {
 
 	@Override
 	public String getName() {
