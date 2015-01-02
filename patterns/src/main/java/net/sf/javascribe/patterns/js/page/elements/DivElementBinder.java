@@ -27,7 +27,7 @@ public class DivElementBinder {
 		values.put("element",binding.getElement());
 		values.put("pageName", ctx.getPageName());
 		values.put("function",BinderUtils.getTargetAccessString(target, ctx, false));
-		values.put("event", BinderUtils.getEventToTrigger(target, event, ctx, false));
+		values.put("event", BinderUtils.getEventToTrigger(target, event, ctx));
 		
 		ret = JavascribeUtils.basicTemplating("js-mvvm-dom-class-binding.txt", values, ctx.getCtx());
 		
@@ -43,7 +43,7 @@ public class DivElementBinder {
 		values.put("element",binding.getElement());
 		values.put("pageName", ctx.getPageName());
 		values.put("function",BinderUtils.getTargetAccessString(target, ctx, false));
-		values.put("event", BinderUtils.getEventToTrigger(target, event, ctx, false));
+		values.put("event", BinderUtils.getEventToTrigger(target, event, ctx));
 		
 		ret = JavascribeUtils.basicTemplating("js-mvvm-dom-display-binding.txt", values, ctx.getCtx());
 		
@@ -58,11 +58,18 @@ public class DivElementBinder {
 		String event = binding.getEvent();
 		String template = null;
 		
+		values.put("element",binding.getElement());
+		values.put("pageName", ctx.getPageName());
+		values.put("evalValue",BinderUtils.evalTarget(target, "val", ctx).getCodeText());
+		values.put("event", BinderUtils.getEventToTrigger(target, event, ctx));
+		template = "js-mvvm-dom-content-binding.txt";
+
+		/*
 		if (target.indexOf('.')<0) {
 			values.put("element",binding.getElement());
 			values.put("pageName", ctx.getPageName());
-//			values.put("evalValue",BinderUtils.evalTarget(target, "val", ctx).getCodeText());
-			values.put("function",BinderUtils.getTargetAccessString(target, ctx, false));
+			values.put("evalValue",BinderUtils.evalTarget(target, "val", ctx).getCodeText());
+//			values.put("function",BinderUtils.getTargetAccessString(target, ctx, false));
 			values.put("event", BinderUtils.getEventToTrigger(target, event, ctx, false));
 			template = "js-mvvm-dom-content-binding.txt";
 		} else {
@@ -80,6 +87,7 @@ public class DivElementBinder {
 			values.put("function",func);
 			template = "js-mvvm-dom-content-nested-binding.txt";
 		}
+		*/
 		
 		ret = JavascribeUtils.basicTemplating(template, values, ctx.getCtx());
 

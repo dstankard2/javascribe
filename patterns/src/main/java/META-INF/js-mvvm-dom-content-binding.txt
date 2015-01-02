@@ -1,7 +1,9 @@
 this.controller.addEventListener('${event}',
 	function() {
-		var val = ${function};
+		var val;
 		var elt = this.view.${element};
+		
+		${evalValue}
 		
 		while(elt.firstChild) {
 			elt.removeChild(elt.firstChild);

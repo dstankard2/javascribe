@@ -60,7 +60,7 @@ public class BinderUtils {
 	
 	public static JavascriptCode evalTarget(String target,String resultVar,ElementBinderContext ctx) throws JavascribeException {
 		JavascriptCode ret = new JavascriptCode(true);
-		CodeExecutionContext execCtx = createExecutionContext(ctx);
+		CodeExecutionContext execCtx = createExecutionContext(ctx,ret);
 		String obj = null;
 		String attr = null;
 		int i = target.indexOf('.');
@@ -110,8 +110,9 @@ public class BinderUtils {
 					JavascriptDataObject doType = (JavascriptDataObject)attrType;
 					if (doType.getAttributeType(attr)!=null) {
 						done = true;
-						ret.append(resultVar+" = ");
 						String objRef = modelType.getCodeToRetrieveAttribute("this.model", obj, null, execCtx);
+						ret.append("if ("+objRef+"==null) "+resultVar+" = null;\n");
+						ret.append("else "+resultVar+" = ");
 						ret.append(doType.getCodeToRetrieveAttribute(objRef, attr, null, execCtx));
 						ret.append(";\n");
 					}
@@ -125,6 +126,32 @@ public class BinderUtils {
 					for(JavascriptFunction fn : srv.getOperations()) {
 						ret = JavascriptUtils.invokeFunction(resultVar, obj, fn, execCtx);
 						if (ret!=null) {
+							done = true;
+							break;
+						}
+					}
+				}
+			}
+			// Check if we should invoke a function on a type on the window.
+			if ((!done) && (ctx.getCtx().getAttributeType(obj)!=null)) {
+				String typeName = ctx.getCtx().getAttributeType(obj);
+				JavascriptVariableType type = (JavascriptVariableType)ctx.getCtx().getType(typeName);
+				if ((type instanceof JavascriptDataObject) && (resultVar!=null)) {
+					JavascriptDataObject d = (JavascriptDataObject)type;
+					if (d.getAttributeType(attr)!=null) {
+						done = true;
+						ret.append(resultVar+" = ");
+						ret.append(d.getCodeToRetrieveAttribute(obj, attr, "object", execCtx));
+						ret.append(";\n");
+					}
+				}
+				if ((!done) && (type instanceof JavascriptServiceObject)) {
+					JavascriptServiceObject srv = (JavascriptServiceObject)type;
+					for(JavascriptFunction op : srv.getOperations()) {
+						if (!op.getName().equals(attr)) continue;
+						JavascriptCode c = JavascriptUtils.invokeFunction(resultVar, obj, op, execCtx);
+						if (c!=null) {
+							ret.merge(c);
 							done = true;
 							break;
 						}
@@ -147,16 +174,21 @@ public class BinderUtils {
 	}
 	
 	// Creates a code execution context with the page, model, view and page model attributes.
-	protected static CodeExecutionContext createExecutionContext(ElementBinderContext ctx) throws JavascribeException {
+	protected static CodeExecutionContext createExecutionContext(ElementBinderContext ctx,JavascriptCode src) throws JavascribeException {
 		CodeExecutionContext ret = new CodeExecutionContext(null,ctx.getCtx().getTypes());
 		PageType page = ctx.getPageType();
 		
-		ret.addVariable("this", page.getName());
+		ret.addVariable("page", page.getName());
+		src.append("var page = this;\n");
 		if (page.getAttributeType("model")!=null) {
-			ret.addVariable("this.model",page.getAttributeType("model"));
+			ret.addVariable("model",page.getAttributeType("model"));
+			src.append("var model = this.model;\n");
 			PageModelType model = PageUtils.getModelType(ctx.getCtx(), ctx.getPageName());
 			for(String n : model.getAttributeNames()) {
-				ret.addVariable(model.getCodeToRetrieveAttribute("this.model", n, null, ret),model.getAttributeType(n));
+				if (ret.getType(n)==null) {
+					ret.addVariable(n, model.getAttributeType(n));
+					src.append("var "+n+" = "+model.getCodeToRetrieveAttribute("this.model", n, "object", ret)+";\n");
+				}
 			}
 		}
 		if (page.getAttributeType("view")!=null)
@@ -175,33 +207,32 @@ public class BinderUtils {
 		return ret;
 	}
 	
-	private static String getModelAttributeFromTarget(String target,ElementBinderContext ctx) {
+	private static String getModelAttributeFromTarget(String target,PageModelType modelType) {
 		String ret = target;
 		int index = target.indexOf('.');
 		
 		if (index>=0) {
 			ret = ret.substring(0, index);
 		}
-		if (ctx.getModelAttributeType(ret)==null) ret = null;
+		if (modelType.getAttributeType(ret)==null) 
+			ret = null;
 		
 		return ret;
 	}
 	
-	public static String getEventToTrigger(String target,String bindingEvent,ElementBinderContext ctx, boolean functionOnly) throws JavascribeException {
+	public static String getEventToTrigger(String target,String event,ElementBinderContext ctx) throws JavascribeException {
 		String ret = null;
 		String attrib = null;
+		PageModelType modelType = ctx.getModelType();
 
-		attrib = getModelAttributeFromTarget(target, ctx);
-		
-		if ((functionOnly) && (attrib!=null)) {
-			throw new JavascribeException("This type of binding may not have target as a model attribute");
-		} else if (attrib!=null) {
-			ret = target+"Changed";
-		} else {
-			if ((functionOnly) && (bindingEvent.trim().length()==0)) {
-				throw new JavascribeException("This type of binding must have an event specified");
+		if ((event!=null) && (event.trim().length()>0)) { // easy!
+			ret = event;
+		}
+		else {
+			attrib = getModelAttributeFromTarget(target, modelType);
+			if (attrib!=null) {
+				ret = attrib+"Changed";
 			}
-			ret = bindingEvent;
 		}
 		
 		return ret;

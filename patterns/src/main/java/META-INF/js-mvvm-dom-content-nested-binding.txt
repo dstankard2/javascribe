@@ -3,6 +3,8 @@ this.controller.addEventListener('${lowerCamelModelAttrib}Changed',
 		var val = null;
 		var elt = this.view.${element};
 
+		${evalValue}
+		
 		if (this.model.get${upperCamelModelAttrib}()!=null) 
 			val = ${function};
 		else

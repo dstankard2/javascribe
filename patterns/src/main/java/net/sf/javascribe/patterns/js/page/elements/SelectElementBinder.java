@@ -21,7 +21,7 @@ public class SelectElementBinder extends InputElementBinder {
 
 		values.put("element",binding.getElement());
 		values.put("pageName", ctx.getPageName());
-		values.put("event", BinderUtils.getEventToTrigger(target, event, ctx, false));
+		values.put("event", BinderUtils.getEventToTrigger(target, event, ctx));
 		
 		if (target.indexOf('.')>0) {
 			throw new JavascribeException("Value binding to select does not support nested model attributes.");

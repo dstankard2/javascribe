@@ -22,7 +22,7 @@ public class TextAreaElementBinder extends DivElementBinder {
 		values.put("element",binding.getElement());
 		values.put("pageName", ctx.getPageName());
 		values.put("function",BinderUtils.getTargetAccessString(target, ctx, false));
-		values.put("event", BinderUtils.getEventToTrigger(target, event, ctx, false));
+		values.put("event", BinderUtils.getEventToTrigger(target, event, ctx));
 
 		ret = JavascribeUtils.basicTemplating("js-mvvm-input-enable-binding.txt", values, ctx.getCtx());
 
@@ -40,7 +40,7 @@ public class TextAreaElementBinder extends DivElementBinder {
 		values.put("pageName", ctx.getPageName());
 		values.put("element", binding.getElement());
 		
-		event = BinderUtils.getEventToTrigger(target, event, ctx, false);
+		event = BinderUtils.getEventToTrigger(target, event, ctx);
 		values.put("event", event);
 		values.put("getter", BinderUtils.getGetter(target));
 		values.put("setter", BinderUtils.getSetExpression(target, "this.view."+binding.getElement()+".value"));
