@@ -17,12 +17,24 @@ import net.sf.javascribe.api.VariableType;
 public class VarReferenceExpressionAtom implements ExpressionAtom {
     private String name = null;
     private VarReferenceExpressionAtom nestedProperty = null;
-//    private String typeName = null;
+    private String typeName = null;
+
     private VariableType type = null;
 
-    public VarReferenceExpressionAtom(String name,VariableType type) {
+    public VarReferenceExpressionAtom(String name,String typeName,VariableType type) {
     	this.name = name;
+    	this.typeName = typeName;
     	this.type = type;
+    }
+    
+    public String getFinalTypeName() {
+    	String ret = null;
+    	if (nestedProperty!=null) {
+    		ret = nestedProperty.getFinalTypeName();
+    	} else {
+    		ret = typeName;
+    	}
+    	return ret;
     }
     
     public VariableType getFinalType() {
@@ -38,7 +50,7 @@ public class VarReferenceExpressionAtom implements ExpressionAtom {
     }
 
 	public String getAtomType() {
-		return getFinalType().getName();
+		return getFinalTypeName();
 	}
 
 	public String getName() {
@@ -58,6 +70,14 @@ public class VarReferenceExpressionAtom implements ExpressionAtom {
 	}
 	public void setType(VariableType type) {
 		this.type = type;
+	}
+
+    public String getTypeName() {
+		return typeName;
+	}
+
+	public void setTypeName(String typeName) {
+		this.typeName = typeName;
 	}
 
 }

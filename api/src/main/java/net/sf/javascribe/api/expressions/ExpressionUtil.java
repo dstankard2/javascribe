@@ -42,10 +42,6 @@ public class ExpressionUtil {
                 String actualAtom = currentAtom.substring(2,currentAtom.length()-1);
                 var = evaluateVarRefAtom(actualAtom,null,execCtx);
                 ret.addAtom(var);
-                if ((targetType==null) || (targetType.equals("object"))) {
-                	if (var.getType()==null)
-                		var.setType(var.getFinalType());
-                }
             } else {
                 ConstantReferenceExpressionAtom con = null;
                 con = new ConstantReferenceExpressionAtom(currentAtom,targetType);
@@ -64,6 +60,10 @@ public class ExpressionUtil {
                 	}
                 }
             }
+        }
+        
+        if ((targetType==null) && (ret.getSize()==1)) {
+        	ret.setType(ret.getAtom(0).getAtomType());
         }
         
         return ret;
@@ -350,7 +350,7 @@ public class ExpressionUtil {
             	} catch(IllegalArgumentException e) {
                 	throw new IllegalArgumentException("Invalid expression found: '"+ref+"'");
             	}
-            	ret = new VarReferenceExpressionAtom(name,holder);
+            	ret = new VarReferenceExpressionAtom(name,typeName,type);
             	ret.setNestedProperty(nested);
         	} else {
             	typeName = execCtx.getVariableType(name);
@@ -368,7 +368,7 @@ public class ExpressionUtil {
             	} catch(IllegalArgumentException e) {
             		throw new IllegalArgumentException("Invalid expression found: '"+ref+"'");
             	}
-            	ret = new VarReferenceExpressionAtom(name,holder);
+            	ret = new VarReferenceExpressionAtom(name,typeName,type);
             	ret.setNestedProperty(nested);
         	}
         } else { // No attribute
@@ -381,14 +381,14 @@ public class ExpressionUtil {
         		type = execCtx.getTypes().getType(typeName);
         		if (type==null)
         			throw new JavascribeException("Found an invalid attribute type '"+typeName+"'");
-        		ret = new VarReferenceExpressionAtom(name,type);
+        		ret = new VarReferenceExpressionAtom(name,typeName,type);
         	} else {
         		typeName = execCtx.getVariableType(name);
         		if (typeName==null) {
         			throw new JavascribeException("Found an unrecognizable expression  '"+name+"'");
         		}
         		type = execCtx.getTypes().getType(typeName);
-        		ret = new VarReferenceExpressionAtom(name,type);
+        		ret = new VarReferenceExpressionAtom(name,typeName,type);
         	}
         }
         

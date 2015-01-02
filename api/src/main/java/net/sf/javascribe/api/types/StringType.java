@@ -1,15 +1,11 @@
 package net.sf.javascribe.api.types;
 
-import net.sf.javascribe.api.AttributeHolder;
 import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.VariableType;
 import net.sf.javascribe.api.expressions.ValueExpression;
 
-public interface StringType extends VariableType,AttributeHolder {
-
-	public static final String STRING_LENGTH = "length";
-	public static final String TRIMMED_VALUE = "trimmedValue";
+public interface StringType extends VariableType {
 
 	/**
 	 * Given the specified value expression, find the code that represents it.

@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import net.sf.javascribe.api.expressions.ExpressionUtil;
+import net.sf.javascribe.api.expressions.ValueExpression;
+
 /**
  * Represents the current context while generating a particular code 
  * function.  The context contains the currently declared variables and 
@@ -40,6 +43,10 @@ public class CodeExecutionContext {
 			variables.putAll(parent.variables);
 			
 		}
+	}
+	
+	public CodeExecutionContext(CodeExecutionContext parent) {
+		this(parent,parent.getTypes());
 	}
 	
 	/**
@@ -79,6 +86,11 @@ public class CodeExecutionContext {
 		}
 
 		return null;
+	}
+	
+	public String evaluateTypeForExpression(String expr) throws JavascribeException {
+		ValueExpression ex = ExpressionUtil.buildValueExpression("${"+expr+"}", null, this);
+		return ex.getType();
 	}
 	
 }
