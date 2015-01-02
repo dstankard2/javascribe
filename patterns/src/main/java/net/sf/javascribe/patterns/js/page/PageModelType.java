@@ -31,7 +31,7 @@ public class PageModelType implements JavascriptDataObject {
 		String upperCamel = JavascribeUtils.getUpperCamelName(attribName);
 		
 		if (varName!=null) {
-			b.append(b+".get"+upperCamel+"()");
+			b.append(varName+".get"+upperCamel+"()");
 		} else {
 			b.append(pageName+",.model.get"+upperCamel+"()");
 		}

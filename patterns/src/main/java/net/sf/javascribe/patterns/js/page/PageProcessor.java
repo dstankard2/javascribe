@@ -42,6 +42,7 @@ public class PageProcessor {
 		ctx.getTypes().addType(viewType);
 		JavascriptFunction initFn = new JavascriptFunction(page.getPageName(),"init");
 		type.addOperation(initFn);
+		ctx.addAttribute(page.getPageName(), page.getPageName());
 
 		ctx.addComponent(new PageFinalizer(page.getPageName(),src.getPath()));
 	}

@@ -111,20 +111,20 @@ public class CorePatternConstants {
 	// No dependency but it goes with the front end.
 	public static final int PRIORITY_PAGE = 40000;
 	
-	// Dependency on page
-	public static final int PRIORITY_PAGE_WS_CLIENT = 42500;
-	
 	// Dependency on Page
 	public static final int PRIORITY_PAGE_VIEW_ELEMENTS = 45000;
 	
 	// Dependency on Page
 	public static final int PRIORITY_PAGE_MODEL = 45000;
 
-	// Depends on Page, page model
-	public static final int PRIORITY_VIEW_TEMPLATE_SET = 47500;
+	// Dependency on page and page model
+	public static final int PRIORITY_PAGE_WS_CLIENT = 46750;
 	
 	// Depends on Page, page model
 	public static final int PRIORITY_PAGE_FUNCTION = 47500;
+	
+	// Depends on Page, page model
+	public static final int PRIORITY_VIEW_TEMPLATE_SET = 48424;
 	
 	// Depends on view elements, page model, ws client and page function
 	public static final int PRIORITY_PAGE_BINDING = 49375;

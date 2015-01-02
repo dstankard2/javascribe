@@ -47,6 +47,15 @@ public class PageFuncProcessor {
 			throw new JavascribeException("Tried to add a function to a page which was not found: '"+func.getPageName()+"'");
 		}
 		JavascriptFunction fn = new JavascriptFunction(func.getPageName(),func.getName());
+
+		// TODO: Fix the function pattern to specify a return yes/no
+		String name = func.getName();
+		if ((name.endsWith("Content")) || (name.endsWith("Display"))) {
+			fn.setReturnValue(true);
+		} else {
+			fn.setReturnValue(false);
+		}
+
 		type.addOperation(fn);
 	}
 

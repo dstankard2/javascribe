@@ -26,6 +26,24 @@ public class WsClientProcessor {
 
 	private static final Logger log = Logger.getLogger(WsClientProcessor.class);
 
+	protected List<JavaBeanType> addJavaBeanTypes(String typeName,ProcessorContext ctx) {
+		List<JavaBeanType> ret = new ArrayList<JavaBeanType>();
+		
+		if (typeName.startsWith("list/"))
+			typeName = typeName.substring(5);
+		VariableType type = ctx.getType(typeName);
+		if (type instanceof JavaBeanType) {
+			JavaBeanType beanType = (JavaBeanType)type;
+			ret.add(beanType);
+			for(String name : beanType.getAttributeNames()) {
+				String attrType = beanType.getAttributeType(name);
+				ret.addAll(addJavaBeanTypes(attrType,ctx));
+			}
+		}
+		
+		return ret;
+	}
+	
 	@ProcessorMethod(componentClass=WsClient.class)
 	public void process(WsClient comp,ProcessorContext ctx) throws JavascribeException {
 
@@ -48,6 +66,10 @@ public class WsClientProcessor {
 		StringBuilder code = src.getSource();
 		
 		PageType pageType = PageUtils.getPageType(ctx, pageName);
+		
+		if (pageType==null) {
+			throw new JavascribeException("There is no Page called '"+pageName+"'");
+		}
 
 		PageUtils.ensureModel(ctx, pageType);
 		PageModelType modelType = PageUtils.getModelType(ctx, pageName);
@@ -64,18 +86,27 @@ public class WsClientProcessor {
 			throw new JavascribeException("Couldn't find URL service "+comp.getModule()+'/'+comp.getService());
 		}
 		List<JavaBeanType> javaBeansToConvert = new ArrayList<JavaBeanType>();
-		JavaBeanType beanType = (JavaBeanType)ctx.getType(srv.getReturnType());
-		for(String att : beanType.getAttributeNames()) {
+		// The service result type doesn't need to be added
+		// but all attribute holders it contains must be.
+		JavaBeanType serviceResultType = (JavaBeanType)ctx.getType(srv.getReturnType());
+		for(String att : serviceResultType.getAttributeNames()) {
 			String type = ctx.getAttributeType(att);
-			if (type==null) type = "var";
-			else {
-				VariableType v = ctx.getType(type);
-				if (v instanceof JavaBeanType)
+			javaBeansToConvert.addAll(addJavaBeanTypes(type,ctx));
+			if (modelType.getAttributeType(att)==null)
+				PageModelProcessor.addModelAttribute(modelType, att, type, code, null, pageName);
+			/*
+			if (type!=null) {
+				String addType = null;
+				if (type.startsWith("list/")) addType = type.substring(5);
+				else addType = type;
+				VariableType v = ctx.getType(addType);
+				if ((v instanceof JavaBeanType) && (!javaBeansToConvert.contains(v)))
 					javaBeansToConvert.add((JavaBeanType)v);
+				if (modelType.getAttributeType(att)==null) {
+					PageModelProcessor.addModelAttribute(modelType,att,type,code,null,pageName);
+				}
 			}
-			if (modelType.getAttributeType(att)==null) {
-				PageModelProcessor.addModelAttribute(modelType,att,type,code,null,pageName);
-			}
+			*/
 		}
 
 		ctx.setLanguageSupport("Javascript");
@@ -150,7 +181,7 @@ public class WsClientProcessor {
 		// Build success function
 		successFunc.append("function success(data) {\n");
 
-		for(String n : beanType.getAttributeNames()) {
+		for(String n : serviceResultType.getAttributeNames()) {
 			successFunc.append("this.model.set"+Character.toUpperCase(n.charAt(0))+n.substring(1)+"(data."+n+");\n");
 		}
 		if ((comp.getCompleteEvent()!=null) && (comp.getCompleteEvent().trim().length()>0)) {

@@ -53,7 +53,7 @@ public class PageModelProcessor {
 		
 		modelType.addAttribute(name, typeName);
 		String attr = "" + Character.toUpperCase(name.charAt(0)) + name.substring(1);
-		code.append(pageName).append(".model.").append(name).append(" = null;\n")
+		code.append(pageName).append(".model.").append(name).append(";\n")
 				.append(pageName).append(".model.get").append(attr)
 				.append(" = function() {return this.").append(name).append(";}.bind("+pageName+".model);\n");
 

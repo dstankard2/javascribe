@@ -280,6 +280,9 @@ public class HandwrittenCodeProcessor {
 				for(String dep : deps) {
 					String upperCamel = JavascribeUtils.getUpperCamelName(dep);
 					String typeName = ctx.getAttributeType(dep);
+					if (typeName==null) {
+						throw new JavascribeException("Found an unrecognized dependency '"+dep+"'");
+					}
 					VariableType type = ctx.getType(typeName);
 					if (!(type instanceof Injectable)) {
 						throw new JavascribeException("Found a dependency '"+typeName+"' that is not an injectable type");

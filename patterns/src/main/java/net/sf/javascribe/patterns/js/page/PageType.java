@@ -29,7 +29,7 @@ public class PageType extends JavascriptServiceObjectImpl implements JavascriptD
 			throws IllegalArgumentException, JavascribeException {
 		StringBuilder b = new StringBuilder();
 		
-		b.append(getName()+'.'+attribName);
+		b.append(varName+'.'+attribName);
 		
 		return b.toString();
 	}
@@ -38,7 +38,7 @@ public class PageType extends JavascriptServiceObjectImpl implements JavascriptD
 	public String getCodeToSetAttribute(String varName, String attribName,
 			String evaluatedValue, CodeExecutionContext execCtx)
 			throws JavascribeException {
-		return getName()+'.'+attribName+" = "+evaluatedValue;
+		return varName+'.'+attribName+" = "+evaluatedValue;
 	}
 
 	@Override
@@ -69,3 +69,4 @@ public class PageType extends JavascriptServiceObjectImpl implements JavascriptD
 	}
 
 }
+

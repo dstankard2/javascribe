@@ -132,6 +132,7 @@ public class ServletWebServiceProcessor {
 				methodCode.addImport("org.codehaus.jackson.map.ObjectMapper");
 				methodCode.append("ObjectMapper _objectMapper = new ObjectMapper();\n");
 				methodCode.append(attr+" = _objectMapper.readValue(request.getReader(),"+ty.getClassName()+".class);\n");
+				execCtx.addVariable(attr, ty.getName());
 			}
 
 			// Read user session data if it is there.
