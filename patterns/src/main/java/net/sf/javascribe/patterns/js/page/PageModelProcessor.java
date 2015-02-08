@@ -7,8 +7,6 @@ import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.annotation.Processor;
 import net.sf.javascribe.api.annotation.ProcessorMethod;
 import net.sf.javascribe.api.annotation.Scannable;
-import net.sf.javascribe.langsupport.javascript.JavascriptSourceFile;
-import net.sf.javascribe.langsupport.javascript.JavascriptUtils;
 
 @Scannable
 @Processor
@@ -25,9 +23,10 @@ public class PageModelProcessor {
 		
 		log.info("Processing model for page '"+model.getPageName()+"'");
 		
-		JavascriptSourceFile src = JavascriptUtils.getSourceFile(ctx);
+//		JavascriptSourceFile src = JavascriptUtils.getSourceFile(ctx);
 
-		StringBuilder code = src.getSource();
+//		StringBuilder code = src.getSource();
+		StringBuilder initCode = PageUtils.getInitFunction(ctx, model.getPageName());
 		String pageName = model.getPageName();
 		
 		PageType pageType = PageUtils.getPageType(ctx, model.getPageName());
@@ -38,7 +37,7 @@ public class PageModelProcessor {
 			String name = a.getName();
 			String typeName = ctx.getAttributeType(name);
 			if (typeName==null) typeName = "var";
-			addModelAttribute(modelType, name, typeName, code, a.getOnChange(), pageName);
+			addModelAttribute(modelType, name, typeName, initCode, a.getOnChange(), pageName);
 		}
 	}
 
@@ -53,7 +52,7 @@ public class PageModelProcessor {
 		
 		modelType.addAttribute(name, typeName);
 		String attr = "" + Character.toUpperCase(name.charAt(0)) + name.substring(1);
-		code.append(pageName).append(".model.").append(name).append(";\n")
+		code.append(pageName).append(".model.").append(name).append(" = undefined;\n")
 				.append(pageName).append(".model.get").append(attr)
 				.append(" = function() {return this.").append(name).append(";}.bind("+pageName+".model);\n");
 

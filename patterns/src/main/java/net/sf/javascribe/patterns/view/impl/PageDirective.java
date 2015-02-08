@@ -14,7 +14,7 @@ import net.sf.javascribe.patterns.view.DirectiveUtils;
 import net.sf.javascribe.patterns.view.Restrictions;
 
 @Scannable
-public class PageRenderer implements Directive {
+public class PageDirective implements Directive {
 
 	@Override
 	public Restrictions[] getRestrictions() {
@@ -59,7 +59,7 @@ public class PageRenderer implements Directive {
 		execCtx.addVariable("_page", "div");
 		init.append("var "+ctx.getTemplateObj()+" = window."+ctx.getTemplateObj()+";\n");
 		init.append(JavascriptUtils.invokeFunction("_page", ctx.getTemplateObj(), ctx.getFunction(), execCtx).getCodeText());
-		init.append("this.view.page.parentNode.replaceChild(_page.item(0),this.view.page);\n");
+		init.append("this.view.page.parentNode.replaceChild(_page,this.view.page);\n");
 		init.append("this.view.page = _page;\n");
 	}
 	

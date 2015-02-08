@@ -24,6 +24,8 @@ public class JavascriptLanguageSupport implements LanguageSupport {
 		ret.add(new ListVariableType());
 		ret.add(new IntegerVariableType());
 		ret.add(new BooleanVariableType());
+		ret.add(new NodeListVariableType());
+		ret.add(new NodeVariableType());
 		
 		return ret;
 	}

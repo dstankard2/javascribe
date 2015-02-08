@@ -1,0 +1,20 @@
+${eltVar}.onchange = function() {
+var val = ${eltVar}.value;
+try {
+${setter};
+} catch(_err) { }
+}.bind(_page);
+var ${fn} = function() {
+	var val = null;
+	try {
+		val = ${getter};
+	} catch(_err) { }
+	for(var _i=0;_i<${eltVar}.options.length;_i++) {
+		if (${eltVar}.options[_i].value == val) {
+			${eltVar}.selectedIndex = _i;
+			break;
+		}
+	}
+}.bind(_page);
+_page.controller.addEventListener('${controllerEvent}',${fn},${eltVar});
+${fn}();

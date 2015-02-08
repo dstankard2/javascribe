@@ -61,6 +61,9 @@ public class TemplateSetProcessor {
 			StringBuilder tmpl = new StringBuilder();
 			try {
 				in = ctx.getResource(path);
+				if (in==null) {
+					throw new JavascribeException("Couldn't find a template at path '"+path+"'");
+				}
 				int v = in.read();
 				while(v>=0) {
 					tmpl.append((char)v);
@@ -73,6 +76,7 @@ public class TemplateSetProcessor {
 					in.close();
 				} catch(Exception e) { }
 			}
+			log.info(" - Parsing template "+obj+"."+tmp.getName()+"()");
 			b.append(obj+'.'+tmp.getName()+" = function(");
 			CodeExecutionContext execCtx = new CodeExecutionContext(null,ctx.getTypes());
 			execCtx.addVariable("this", obj);
@@ -88,7 +92,7 @@ public class TemplateSetProcessor {
 			b.append(") {\n");
 			// Generate the function.
 
-			b.append(TemplateParser.parseJavascriptCode(tmpl.toString(), tmp.getParams(), ctx, obj, fn));
+			b.append(TemplateParser.generateJavascriptCode(tmpl.toString(), ctx, obj, fn, execCtx));
 			b.append("}\n");
 			
 			src.getSource().append(b.toString());

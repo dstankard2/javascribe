@@ -1,0 +1,16 @@
+${eltVar}.${changeEvent}=function() {
+var val = ${eltVar}.value;
+try {
+${setter};
+} catch(err) { }
+}.bind(_page);
+var ${eltVar}_model = function() {
+	var val = null;
+	try {
+		val = ${getter};
+	} catch(err) { }
+	${eltVar}.value = val;
+};
+${eltVar}_model.bind(_page);
+_page.controller.addEventListener('${controllerEvent}',${eltVar}_model,${eltVar});
+${eltVar}_model();

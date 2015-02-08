@@ -29,9 +29,11 @@ public class SelectDirective implements Directive {
 		CodeExecutionContext execCtx = ctx.getExecCtx();
 
 		String n = ctx.getElementVarName();
+		b.append("if ("+n+"){\n");
 		b.append("while("+n+".firstChild) {\n");
 		b.append(n+".removeChild("+n+".firstChild);\n");
-		b.append("}\n");
+		b.append("}\n}\n");
+		b.append(ctx.getElementVarName()+" = "+DirectiveUtils.DOCUMENT_REF+".createElement('select');\n");
 		
 		ctx.continueRenderElement(execCtx);
 

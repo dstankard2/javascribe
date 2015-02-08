@@ -2,7 +2,6 @@ package net.sf.javascribe.patterns.view;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringTokenizer;
 
 import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JavascribeException;
@@ -17,21 +16,41 @@ import org.jsoup.nodes.TextNode;
 
 public class TemplateParser {
 
-	public static String parseJavascriptCode(String template,String params,
+	private static final String INS_FUNC = 
+			"if (!window._ins) {\n" +
+			"window._ins = function(parent,elt,prev) {\n" +
+			"for(var i=0;i<parent.childNodes.length;i++) {\n" +
+			"var done = true;\n" +
+			"var n = parent.childNodes[i];\n" +
+			"for(var i2=0;i2<prev.length;i2++) {\n" +
+			"if (n.classList.contains(prev[i2])) {" +
+			"done = false;\nbreak;\n" +
+			"}\n" +
+			"}\n" +
+			"if (done) {\n" +
+			"parent.insertBefore(elt,n);\n" +
+			"return;\n"+
+			"}\n" +
+			"}\n" +
+			"parent.appendChild(elt);\n"+
+			"};\n" +
+			"}\n";
+	
+	public static String parseJavascriptCode(String template,
 			ProcessorContext ctx,String obj,JavascriptFunction fn) throws JavascribeException {
 		CodeExecutionContext execCtx = null;
 		StringBuilder b = new StringBuilder();
 		
 		execCtx = new CodeExecutionContext(null,ctx.getTypes());
-		addParams(execCtx,params,ctx);
-		b.append(parseJavascriptCode(template,params,ctx,obj,fn,execCtx));
+		addParams(execCtx,fn);
+		b.append(generateJavascriptCode(template,ctx,obj,fn,execCtx));
 		
 		return b.toString();
 	}
 	
-	protected static String parseJavascriptCode(String template,String params,ProcessorContext ctx,String obj,JavascriptFunction fn,CodeExecutionContext execCtx) throws JavascribeException {
+	protected static String generateJavascriptCode(String template,ProcessorContext ctx,String obj,JavascriptFunction fn,CodeExecutionContext execCtx) throws JavascribeException {
 		StringBuilder b = new StringBuilder();
-		Document doc = Jsoup.parse(template);
+		Document doc = Jsoup.parse(template.trim());
 		
 		Node htmlNode = doc.childNode(0);
 		if (!htmlNode.nodeName().equals("html")) {
@@ -41,7 +60,12 @@ public class TemplateParser {
 			throw new JavascribeException("hi");
 		}
 		Node bodyNode = htmlNode.childNode(1);
+		
 		List<Node> nodeList = bodyNode.childNodes();
+		if (nodeList.size()>1) {
+			throw new JavascribeException("TemplateParser doesn't support a template with multiple HTML elements at the root.  Perhaps use a container 'div' element");
+		}
+		b.append(INS_FUNC);
 		b.append("var "+DirectiveUtils.DOCUMENT_REF+" = document;\n");
 		String retVar = "_r";
 		b.append("var "+retVar+" = document.createElement('div');\n");
@@ -51,40 +75,39 @@ public class TemplateParser {
 			}
 		}
 
-		b.append("return "+retVar+".childNodes;\n");
+		b.append("return "+retVar+".childNodes[0];\n");
 		
 		return b.toString();
 	}
 	
-	protected static void addParams(CodeExecutionContext execCtx,String params,ProcessorContext ctx) throws JavascribeException {
-		StringTokenizer tok = new StringTokenizer(params,",");
-		while(tok.hasMoreTokens()) {
-			String token = tok.nextToken();
-			String type = ctx.getAttributeType(token);
-			if (type==null) {
-				throw new JavascribeException("Found unrecognized attribute for template parameter: '"+token+"'");
-			}
-			execCtx.addVariable(token, type);
+	protected static void addParams(CodeExecutionContext execCtx,JavascriptFunction fn) throws JavascribeException {
+		for(String s : fn.getParamNames()) {
+			execCtx.addVariable(s, fn.getParamType(s));
 		}
 	}
 	
-	public static void parseNode(String containerVar,Node node,CodeExecutionContext execCtx,StringBuilder code,ProcessorContext ctx,String templateObj,JavascriptFunction fn,List<String> events) throws JavascribeException {
+	public static String parseNode(String containerVar,Node node,CodeExecutionContext execCtx,StringBuilder code,ProcessorContext ctx,String templateObj,JavascriptFunction fn,List<String> previousEltVars) throws JavascribeException {
+		String ret = null;
+		
 		if (node instanceof Element) {
-			ElementParser parser = new ElementParser((Element)node,ctx,containerVar,code,templateObj,fn,events);
-			parser.parseElement(execCtx);
+			ElementParser parser = new ElementParser((Element)node,ctx,containerVar,code,templateObj,fn,previousEltVars);
+			ret = parser.parseElement(execCtx);
 		} else if (node instanceof TextNode) {
 			processTextNode((TextNode)node,containerVar,code,execCtx);
 		}
+		
+		return ret;
 	}
 
-	protected static void processTextNode(TextNode n,String containerVar,StringBuilder code,CodeExecutionContext execCtx) {
+	protected static String processTextNode(TextNode n,String containerVar,StringBuilder code,CodeExecutionContext execCtx) {
 		String text = n.text();
 		int previousEnd = 0;
 		int i = text.indexOf("{{");
 
-		if (text.trim().length()==0) return ;
+		if (text.trim().length()==0) return null;
 		
 		String var = var(execCtx);
+		code.append("try {\n");
 		code.append("var "+var+" = document.createTextNode('");
 		while(i>=0) {
 			String append = text.substring(previousEnd, i);
@@ -101,6 +124,8 @@ public class TemplateParser {
 		}
 		code.append("');\n");
 		code.append(containerVar+".appendChild("+var+");\n");
+		code.append("}catch(_err){}\n");
+		return var;
 	}
 
 	protected static String var(CodeExecutionContext execCtx) {

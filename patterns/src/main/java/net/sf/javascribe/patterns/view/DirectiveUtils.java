@@ -57,9 +57,9 @@ public class DirectiveUtils {
 		if (i>0) {
 			String attr = modelRef.substring(0, i);
 			String v = modelRef.substring(i+1);
-			String ref = ExpressionUtil.evaluateValueExpression(PAGE_VAR+".model."+attr, "object", ctx.getExecCtx());
+			String ref = ExpressionUtil.evaluateValueExpression("${"+PAGE_VAR+".model."+attr+"}", "object", ctx.getExecCtx());
 			b.append(ref+"."+v+" = "+value+";\n");
-			b.append(PAGE_VAR+".controller.dispatch('"+attr+"');\n");
+			b.append(PAGE_VAR+".controller.dispatch('"+attr+"Changed');\n");
 		} else {
 			b.append(modelType.getCodeToSetAttribute(PAGE_VAR+".model", modelRef, value, ctx.getExecCtx()));
 		}

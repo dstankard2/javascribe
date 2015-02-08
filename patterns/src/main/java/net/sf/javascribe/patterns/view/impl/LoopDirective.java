@@ -38,6 +38,7 @@ public class LoopDirective implements Directive {
 		String parentNodes = ctx.newVarName("_n", "object", execCtx);
 		execCtx = new CodeExecutionContext(execCtx);
 		String in = ctx.newVarName("_i","object",execCtx);
+		b.append("try {\n");
 		b.append("var "+parentNodes+" = "+ctx.getContainerVarName()+".childNodes;\n");
 		b.append("for (var "+in+"=0;"+in+"<"+parentNodes+".length;"+in+"++) {\n");
 		b.append("if ("+parentNodes+"["+in+"].classList.contains('"+in+"')){");
@@ -53,6 +54,7 @@ public class LoopDirective implements Directive {
 		execCtx.addVariable(in,"integer");
 		ctx.continueRenderElement(execCtx);
 		b.append("}\n");
+		b.append("}catch(_err){}\n");
 	}
 
 }

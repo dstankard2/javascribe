@@ -17,7 +17,8 @@ import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 
 public class ElementParser {
-	List<Directive> currentRenderers = null;
+	HashMap<String,Directive> elementDirectives = null;
+	List<Directive> attributeDirectives = null;
 	HashMap<String,String> attributes = new HashMap<String,String>();
 	ProcessorContext ctx = null;
 	Element elt = null;
@@ -25,68 +26,86 @@ public class ElementParser {
 	StringBuilder code = null;
 	String templateObj = null;
 	JavascriptFunction function = null;
-	List<String> activeEvents = new ArrayList<String>();
 	String eltVar = null;
-	
-	public ElementParser(Element elt,ProcessorContext ctx,String containerVar,StringBuilder code,String templateObj,JavascriptFunction fn,List<String> events) {
+	boolean elementDirectiveCalled = false;
+	List<String> previousEltVars = null;
+
+	public ElementParser(Element elt,ProcessorContext ctx,String containerVar,StringBuilder code,String templateObj,JavascriptFunction fn,List<String> previousElementVars) {
 		this.elt = elt;
 		this.ctx = ctx;
-		this.containerVar =containerVar;  
+		this.containerVar =containerVar;
 		this.code = code;
 		this.templateObj = templateObj;
 		this.function = fn;
-		for(String s : events) {
-			activeEvents.add(s);
-		}
+		this.previousEltVars = previousElementVars;
 	}
 
-	public void parseElement(CodeExecutionContext execCtx) throws JavascribeException {
-		currentRenderers = getRenderers(ctx);
+	public String parseElement(CodeExecutionContext execCtx) throws JavascribeException {
+		List<Directive> directives = getRenderers(ctx);
+		
+		attributeDirectives = new ArrayList<Directive>();
+		elementDirectives = new HashMap<String,Directive>();
+		
+		for(Directive d : directives) {
+			if ((d.getRestrictions()==null) || (d.getRestrictions().length==0)) {
+				throw new JavascribeException("Found a directive '"+d.getName()+"' with no defined restrictions");
+			}
+			if (isRestriction(Restrictions.ELEMENT, d.getRestrictions())) {
+				elementDirectives.put(d.getName(), d);
+			}
+			if (isRestriction(Restrictions.ATTRIBUTE, d.getRestrictions())) {
+				attributeDirectives.add(d);
+			}
+		}
 
 		for(Attribute att : elt.attributes().asList()) {
 			attributes.put(att.getKey(), att.getValue());
 		}
 		
 		eltVar = newVarName("_e", "div", execCtx);
-		DirectiveContextImpl rctx = createRendererContext(execCtx);
-		createNode(eltVar,execCtx,rctx);
-		rctx.getCode().append("try {\n");
+		DirectiveContextImpl rctx = createDirectiveContext(execCtx);
+		
+		code.append("var "+eltVar+";\n");
+		rctx.setElementVarName(eltVar);
+
 		// When the element render is triggered by an event, the element is 
 		// processed first and renderer code is processed in a callback function 
 		// that is registered with the controller.
+		// The callback function is then called.
 		if (attributes.get("js-event")!=null) {
 			// This is going to be evaluated as a function and bound as a 
 			// callback to a page controller.
 			// This is only valid on a page template, as the js-event is an event
 			// to be bound on the page's controller.
-			if (execCtx.getVariableType(DirectiveUtils.PAGE_VAR)==null) {
+			if (DirectiveUtils.getPageName(rctx)==null) {
 				throw new JavascribeException("The js-event directive is only valid on a template that has used the page directive.");
 			}
+
 			String fnVar = newVarName("_f","object",execCtx);
 			String event = attributes.get("js-event");
 
 			code.append("var "+fnVar+" = function() {\n");
-			code.append("while("+eltVar+".childNodes.length>0){\n");
-			code.append(eltVar+".removeChild("+eltVar+".childNodes[0]);\n");
-			code.append("}\n");
+			CodeExecutionContext newCtx = new CodeExecutionContext(execCtx);
+			String iter = newVarName("_i", "integer", newCtx);
+			code.append("for(var "+iter+"=0;"+iter+"<"+containerVar+".childNodes.length;"+iter+"++)\n");
+			code.append("if ("+containerVar+".childNodes["+iter+"].classList.contains('"+eltVar+"')) {");
+			code.append(containerVar+".removeChild("+containerVar+".childNodes["+iter+"]);"+iter+"--;}\n");
+			code.append(eltVar+" = null;\n");
 
-			continueParsing(execCtx,rctx);
+			continueParsing(newCtx,rctx);
 			code.append("}.bind("+DirectiveUtils.PAGE_VAR+");\n");
 			code.append(DirectiveUtils.PAGE_VAR+".controller.addEventListener('"+event+"',"+fnVar+","+eltVar+");\n");
 			
-			if (activeEvents.contains(event)) {
-				code.append(fnVar+"();\n");
-			} else {
-				activeEvents.add(event);
-			}
+			code.append(fnVar+"();\n");
 		} else {
 			continueParsing(execCtx,rctx);
 		}
-		code.append("}catch(_err) { }\n");
+
+		return eltVar;
 	}
 
 	public void continueParsing(CodeExecutionContext execCtx,DirectiveContextImpl rctx) throws JavascribeException {
-		callNextRenderer(execCtx,rctx);
+		callNextDirective(execCtx,rctx);
 	}
 	
 	private void addDomAttributes(String eltVar,CodeExecutionContext execCtx,DirectiveContextImpl rctx) {
@@ -112,45 +131,51 @@ public class ElementParser {
 		}
 	}
 
-	// Creates the element node, sets the elementVarName in the rctx.  Adds non-directive
-	// attributes to the element node.
-	private void createNode(String eltVar,CodeExecutionContext execCtx,DirectiveContextImpl rctx) {
-		rctx.setElementVarName(eltVar);
-		code.append("var "+eltVar+" = _d.createElement('"+elt.nodeName()+"');\n");
-		code.append(eltVar+".classList.add('"+eltVar+"');\n");
-	}
+	protected void callNextDirective(CodeExecutionContext execCtx,DirectiveContextImpl dctx) throws JavascribeException {
 
-	protected void callNextRenderer(CodeExecutionContext execCtx,DirectiveContextImpl rctx) throws JavascribeException {
-		boolean invoked = false;
-		if (currentRenderers.size()>0) {
-			while(currentRenderers.size()>0) {
-				Directive r = currentRenderers.get(0);
-				currentRenderers.remove(0);
-				
-				Restrictions[] re = r.getRestrictions();
-				if (re.length==0) callNextRenderer(execCtx,rctx);
-				if ((isRestriction(Restrictions.ELEMENT,re)) 
-						&& (elt.nodeName().equals(r.getName()))) {
-					invokeDirective(r,execCtx,rctx);
-					invoked = true;
-					break;
-				}
-				if ((isRestriction(Restrictions.ATTRIBUTE,re)) 
-						&& (elt.hasAttr(r.getName()))) {
-					invokeDirective(r,execCtx,rctx);
-					invoked = true;
-					break;
+		if (attributeDirectives.size()>0) {
+			while(attributeDirectives.size()>0) {
+				Directive d = attributeDirectives.get(0);
+				attributeDirectives.remove(0);
+				if (dctx.getAttributes().containsKey(d.getName())) {
+					d.generateCode(dctx);
+					return;
 				}
 			}
 		}
-		if (!invoked) {
-			addDomAttributes(rctx.getElementVarName(),execCtx,rctx);
-			code.append(containerVar+".appendChild("+rctx.getElementVarName()+");\n");
-			
-			// Also process the children nodes
-			for(Node node : elt.childNodes()) {
-				TemplateParser.parseNode(rctx.getElementVarName(), node, execCtx, code, ctx,templateObj,function,activeEvents);
+		
+		if (elementDirectives.get(dctx.getElementName())!=null) {
+			Directive d = elementDirectives.get(dctx.getElementName());
+			elementDirectiveCalled = true;
+			elementDirectives.remove(dctx.getElementName());
+			d.generateCode(dctx);
+			return;
+		}
+
+		if (!elementDirectiveCalled) {
+			code.append(eltVar+" = "+DirectiveUtils.DOCUMENT_REF+".createElement('"+dctx.getElementName()+"');\n");
+			addDomAttributes(dctx.getElementVarName(),execCtx,dctx);
+		}
+		code.append(eltVar+".classList.add('"+eltVar+"');\n");
+
+		if (attributes.get("js-event")!=null) {
+			String elList = newVarName("_x","list/object",execCtx);
+
+			code.append("var "+elList+" = [");
+			for(String s : previousEltVars) {
+				code.append('\''+s+"',");
 			}
+			code.append('\''+eltVar+'\'');
+			code.append("];\n");
+			code.append("window._ins("+containerVar+","+eltVar+","+elList+");\n");
+		} else {
+			code.append(containerVar+".appendChild("+eltVar+");\n");
+		}
+		
+		List<String> childEltVars = new ArrayList<String>();
+		for(Node node : elt.childNodes()) {
+			String name = TemplateParser.parseNode(dctx.getElementVarName(), node, execCtx, code, ctx,templateObj,function,childEltVars);
+			if (name!=null) childEltVars.add(name);
 		}
 	}
 
@@ -195,7 +220,7 @@ public class ElementParser {
 		return null;
 	}
 
-	private DirectiveContextImpl createRendererContext(CodeExecutionContext execCtx) {
+	private DirectiveContextImpl createDirectiveContext(CodeExecutionContext execCtx) {
 		DirectiveContextImpl rctx = new DirectiveContextImpl(ctx,elt.nodeName(),attributes,containerVar,code,this,templateObj,function,elt.html());
 		rctx.setExecCtx(execCtx);
 		return rctx;
