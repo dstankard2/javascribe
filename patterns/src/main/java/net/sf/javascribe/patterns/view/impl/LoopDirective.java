@@ -2,21 +2,15 @@ package net.sf.javascribe.patterns.view.impl;
 
 import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JavascribeException;
-import net.sf.javascribe.patterns.view.Directive;
+import net.sf.javascribe.patterns.view.AttributeDirective;
 import net.sf.javascribe.patterns.view.DirectiveContext;
 import net.sf.javascribe.patterns.view.DirectiveUtils;
-import net.sf.javascribe.patterns.view.Restrictions;
 
 // This is not scannable because it will be added to the renderer list manually.
-public class LoopDirective implements Directive {
+public class LoopDirective implements AttributeDirective {
 
 	@Override
-	public Restrictions[] getRestrictions() {
-		return new Restrictions[] { Restrictions.ATTRIBUTE };
-	}
-
-	@Override
-	public String getName() {
+	public String getAttributeName() {
 		return "js-loop";
 	}
 
@@ -25,7 +19,7 @@ public class LoopDirective implements Directive {
 		StringBuilder b = ctx.getCode();
 		CodeExecutionContext execCtx = ctx.getExecCtx();
 		
-		String a = ctx.getAttributes().get("js-loop");
+		String a = ctx.getTemplateAttributes().get("js-loop");
 		int i = a.indexOf(" in ");
 		String eltVar = a.substring(0, i).trim();
 		String list = a.substring(i+4).trim();

@@ -30,6 +30,9 @@ public class ProcessorContextImpl implements ProcessorContext {
 	Map<String,Object> objects = null;
 	ZipFile zip = null;
 	
+	ComponentBase component = null;
+	CodeGenerator caller = null;
+	
 	public ProcessorContextImpl(String buildRoot,EnginePropertiesImpl props,Map<String,LanguageSupport> languageSupport,Map<String,String> systemAttributes,Map<String,TypeResolverImpl> typeMap,List<SourceFile> sourceFiles,Map<String,String> properties,Map<String,Object> objects,ZipFile zipFile) {
 		engineProps = props;
 		this.languageSupport = languageSupport;
@@ -132,7 +135,7 @@ public class ProcessorContextImpl implements ProcessorContext {
 	public List<ComponentBase> getAddedComponents() {
 		return addedComponents;
 	}
-
+	
 	public void putObject(String name, Object object) {
 		objects.put(name, object);
 	}
@@ -148,6 +151,10 @@ public class ProcessorContextImpl implements ProcessorContext {
 			return zip.getInputStream(e);
 		}
 		return null;
+	}
+
+	public void processComponent(ComponentBase component) {
+		
 	}
 
 }

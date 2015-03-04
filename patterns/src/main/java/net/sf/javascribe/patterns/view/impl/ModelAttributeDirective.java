@@ -4,30 +4,24 @@ import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.annotation.Scannable;
 import net.sf.javascribe.patterns.js.page.PageModelProcessor;
 import net.sf.javascribe.patterns.js.page.PageModelType;
+import net.sf.javascribe.patterns.js.page.PageType;
 import net.sf.javascribe.patterns.js.page.PageUtils;
-import net.sf.javascribe.patterns.view.Directive;
 import net.sf.javascribe.patterns.view.DirectiveContext;
 import net.sf.javascribe.patterns.view.DirectiveUtils;
-import net.sf.javascribe.patterns.view.Restrictions;
+import net.sf.javascribe.patterns.view.ElementDirective;
 
 @Scannable
-public class ModelAttributeDirective implements Directive {
+public class ModelAttributeDirective implements ElementDirective {
 
 	@Override
-	public Restrictions[] getRestrictions() {
-		return new Restrictions[] { Restrictions.ELEMENT };
-	}
-
-	@Override
-	public String getName() {
+	public String getElementName() {
 		return "js-model-attribute";
 	}
 
 	@Override
 	public void generateCode(DirectiveContext ctx) throws JavascribeException {
-		StringBuilder code = ctx.getCode();
-		String name = ctx.getAttributes().get("name");
-		String onChange = ctx.getAttributes().get("onChange");
+		String name = ctx.getDomAttributes().get("name");
+		String onChange = ctx.getDomAttributes().get("onChange");
 		
 		if ((name==null) || (name.trim().length()==0)) {
 			throw new JavascribeException("Directive js-model-attribute requires a name attribute");
@@ -35,6 +29,13 @@ public class ModelAttributeDirective implements Directive {
 		if (DirectiveUtils.getPageName(ctx)==null) {
 			throw new JavascribeException("Directive js-model-attribute can only be used on a page template");
 		}
+		String pageName = DirectiveUtils.getPageName(ctx);
+		
+		if (pageName==null) {
+			throw new JavascribeException("Directive js-model-attribute is only valid when used on a page template");
+		}
+		PageType pageType = (PageType)ctx.getProcessorContext().getType(pageName);
+		PageUtils.ensureModel(ctx.getProcessorContext(), pageType);
 		PageModelType modelType = DirectiveUtils.getPageModelType(ctx);
 		
 		if (modelType.getAttributeType(name)!=null) {
@@ -45,7 +46,6 @@ public class ModelAttributeDirective implements Directive {
 			throw new JavascribeException("Directive js-model-attribute couldn't find a type for attribute '"+name+"'");
 		}
 
-		String pageName = DirectiveUtils.getPageName(ctx);
 		StringBuilder initCode = PageUtils.getInitFunction(ctx.getProcessorContext(), pageName);
 		PageModelProcessor.addModelAttribute(modelType, name, typeName, initCode, onChange, pageName);
 	}

@@ -12,7 +12,10 @@ public interface DirectiveContext {
 	public ProcessorContext getProcessorContext();
 	public CodeExecutionContext getExecCtx();
 	public String getElementName();
-	public Map<String,String> getAttributes();
+
+	public Map<String,String> getDomAttributes();
+	public Map<String,String> getTemplateAttributes();
+	
 	public StringBuilder getCode();
 	public String getElementVarName();
 	public String getContainerVarName();

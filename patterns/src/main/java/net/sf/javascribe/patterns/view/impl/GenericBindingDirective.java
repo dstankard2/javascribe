@@ -6,28 +6,22 @@ import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.annotation.Scannable;
 import net.sf.javascribe.patterns.js.page.Binding;
 import net.sf.javascribe.patterns.js.page.Bindings;
-import net.sf.javascribe.patterns.view.Directive;
 import net.sf.javascribe.patterns.view.DirectiveContext;
 import net.sf.javascribe.patterns.view.DirectiveUtils;
-import net.sf.javascribe.patterns.view.Restrictions;
+import net.sf.javascribe.patterns.view.ElementDirective;
 
 @Scannable
-public class GenericBindingDirective implements Directive {
+public class GenericBindingDirective implements ElementDirective {
 
 	@Override
-	public Restrictions[] getRestrictions() {
-		return new Restrictions[] { Restrictions.ELEMENT };
-	}
-
-	@Override
-	public String getName() {
+	public String getElementName() {
 		return "js-generic-binding";
 	}
 
 	@Override
 	public void generateCode(DirectiveContext ctx) throws JavascribeException {
-		String target = ctx.getAttributes().get("target");
-		String event = ctx.getAttributes().get("event");
+		String target = ctx.getDomAttributes().get("target");
+		String event = ctx.getDomAttributes().get("event");
 		String pageName = DirectiveUtils.getPageName(ctx);
 		
 		if ((target==null) || (target.trim().length()==0)) {

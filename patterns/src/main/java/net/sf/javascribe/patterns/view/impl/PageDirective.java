@@ -8,31 +8,24 @@ import net.sf.javascribe.langsupport.javascript.JavascriptUtils;
 import net.sf.javascribe.patterns.js.page.PageModelType;
 import net.sf.javascribe.patterns.js.page.PageType;
 import net.sf.javascribe.patterns.js.page.PageUtils;
-import net.sf.javascribe.patterns.view.Directive;
+import net.sf.javascribe.patterns.view.AttributeDirective;
 import net.sf.javascribe.patterns.view.DirectiveContext;
 import net.sf.javascribe.patterns.view.DirectiveUtils;
-import net.sf.javascribe.patterns.view.Restrictions;
 
 @Scannable
-public class PageDirective implements Directive {
+public class PageDirective implements AttributeDirective {
 
 	@Override
-	public Restrictions[] getRestrictions() {
-		return new Restrictions[] { Restrictions.ATTRIBUTE };
-	}
-
-	@Override
-	public String getName() {
+	public String getAttributeName() {
 		return "js-page";
 	}
 
 	@Override
 	public void generateCode(DirectiveContext ctx) throws JavascribeException {
-		String pageName = ctx.getAttributes().get("js-page");
+		String pageName = ctx.getTemplateAttributes().get("js-page");
 		StringBuilder b = ctx.getCode();
 		CodeExecutionContext execCtx = ctx.getExecCtx();
 
-		ctx.getAttributes().remove("js-page");
 		String typeName = ctx.getProcessorContext().getAttributeType(pageName);
 		if (typeName==null) {
 			throw new JavascribeException("Could not find a page called '"+pageName+"'");

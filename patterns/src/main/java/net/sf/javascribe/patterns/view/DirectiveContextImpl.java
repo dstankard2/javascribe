@@ -11,7 +11,8 @@ import net.sf.javascribe.langsupport.javascript.JavascriptFunction;
 public class DirectiveContextImpl implements DirectiveContext {
 	ProcessorContext ctx = null;
 	String elementName = null;
-	HashMap<String,String> attributes = new HashMap<String,String>();
+	HashMap<String,String> domAttributes = new HashMap<String,String>();
+	HashMap<String,String> templateAttributes = new HashMap<String,String>();
 	String containerVar = null;
 	String elementVarName = null;
 	CodeExecutionContext execCtx = null;
@@ -24,7 +25,12 @@ public class DirectiveContextImpl implements DirectiveContext {
 	public DirectiveContextImpl(ProcessorContext ctx,String elementName,HashMap<String,String> attributes,String containerVar,StringBuilder code,ElementParser invoker,String templateObj,JavascriptFunction fn,String innerHtml) {
 		this.ctx = ctx;
 		this.elementName = elementName;
-		this.attributes = attributes;
+		
+		for(String name : attributes.keySet()) {
+			String val = attributes.get(name);
+			if (name.startsWith("js-")) templateAttributes.put(name, val);
+			else domAttributes.put(name, val);
+		}
 		this.containerVar = containerVar;
 		this.code = code;
 		this.invoker = invoker;
@@ -33,6 +39,16 @@ public class DirectiveContextImpl implements DirectiveContext {
 		this.innerHtml = innerHtml;
 	}
 	
+	@Override
+	public Map<String, String> getDomAttributes() {
+		return domAttributes;
+	}
+
+	@Override
+	public Map<String, String> getTemplateAttributes() {
+		return templateAttributes;
+	}
+
 	@Override
 	public ProcessorContext getProcessorContext() {
 		return ctx;
@@ -49,11 +65,6 @@ public class DirectiveContextImpl implements DirectiveContext {
 	@Override
 	public String getElementName() {
 		return elementName;
-	}
-
-	@Override
-	public Map<String, String> getAttributes() {
-		return attributes;
 	}
 
 	@Override

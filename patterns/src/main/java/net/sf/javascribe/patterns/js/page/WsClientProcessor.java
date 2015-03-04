@@ -1,6 +1,7 @@
 package net.sf.javascribe.patterns.js.page;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import net.sf.javascribe.api.JavascribeException;
@@ -85,6 +86,8 @@ public class WsClientProcessor {
 		if (srv==null) {
 			throw new JavascribeException("Couldn't find URL service "+comp.getModule()+'/'+comp.getService());
 		}
+
+		
 		List<JavaBeanType> javaBeansToConvert = new ArrayList<JavaBeanType>();
 		// The service result type doesn't need to be added
 		// but all attribute holders it contains must be.
@@ -94,19 +97,6 @@ public class WsClientProcessor {
 			javaBeansToConvert.addAll(addJavaBeanTypes(type,ctx));
 			if (modelType.getAttributeType(att)==null)
 				PageModelProcessor.addModelAttribute(modelType, att, type, code, null, pageName);
-			/*
-			if (type!=null) {
-				String addType = null;
-				if (type.startsWith("list/")) addType = type.substring(5);
-				else addType = type;
-				VariableType v = ctx.getType(addType);
-				if ((v instanceof JavaBeanType) && (!javaBeansToConvert.contains(v)))
-					javaBeansToConvert.add((JavaBeanType)v);
-				if (modelType.getAttributeType(att)==null) {
-					PageModelProcessor.addModelAttribute(modelType,att,type,code,null,pageName);
-				}
-			}
-			*/
 		}
 
 		ctx.setLanguageSupport("Javascript");
@@ -116,15 +106,107 @@ public class WsClientProcessor {
 				ctx.getTypes().addType(type);
 			}
 		}
-		
-		StringBuilder funcBody = new StringBuilder();
+
+		// Now build the web service client code
+		StringBuilder totalBuild = new StringBuilder();
+		String ajaxFunc = null;
+//		StringBuilder funcBody = new StringBuilder();
+		StringBuilder ajaxParam = new StringBuilder();
 		StringBuilder funcDec = new StringBuilder();
-		StringBuilder url = new StringBuilder();
 		StringBuilder dataString = new StringBuilder();
 		StringBuilder successFunc = new StringBuilder();
 		
-		funcDec.append("function (");
-		funcBody.append("$.ajax({\ntraditional:true,\ncontext:document,\ndataType:'json',\n");
+		String requestBody = srv.getRequestBody();
+		List<String> params = new ArrayList<String>();
+		
+		funcDec.append("function(");
+		
+		params.addAll(srv.getQueryParams());
+		if (requestBody.trim().length()>0) {
+			params.add(requestBody);
+		}
+		
+		boolean firstParam = true;
+		HashMap<String,String> paramRefs = new HashMap<String,String>();
+		for(String p : params) {
+			if (modelType.getAttributeType(p)!=null) {
+				paramRefs.put(p,"this.model."+BinderUtils.getGetter(p));
+			} else {
+				if (!firstParam) funcDec.append(',');
+				else firstParam = false;
+				funcDec.append(p);
+				paramRefs.put(p, p);
+			}
+		}
+		
+		funcDec.append(')');
+
+		// Build JQuery Ajax function object parameter
+		
+		ajaxParam.append("{\ndataType: 'json',\n");
+		
+		boolean urlParam = false;
+		if (srv.getRequestMethod().equals("GET")){
+			ajaxFunc = "ajax";
+			ajaxParam.append("context: document,\n");
+			ajaxParam.append("traditional: true,\n");
+			ajaxParam.append("type: 'GET',\n");
+			urlParam = true;
+//			ajaxParam.append("url: '"+srv.getPath().substring(1)+"',\n");
+			dataString.append("data: {\n");
+			boolean firstData = true;
+			for(String s : srv.getQueryParams()) {
+				if (!firstData) dataString.append(",\n");
+				else firstData = false;
+				dataString.append(s+": "+paramRefs.get(s));
+			}
+			dataString.append("},\n");
+		} else if (srv.getRequestMethod().equals("POST")) {
+			ajaxFunc = "ajax";
+			urlParam = true;
+			if (requestBody!=null) {
+				dataString.append("data: JSON.stringify("+paramRefs.get(requestBody)+"),\n");
+				dataString.append("processData: false,\n");
+				dataString.append("contentType: 'application/json',\n");
+			}
+			ajaxParam.append("type: 'POST',\n");
+		} else if (srv.getRequestMethod().equals("PUT")) {
+			throw new JavascribeException("Ws Client doesn't support PUT method");
+		} else if (srv.getRequestMethod().equals("DELETE")){
+			throw new JavascribeException("Ws Client doesn't support DELETE method");
+		}
+
+		ajaxParam.append(dataString.toString());
+		
+		// Build success func
+		successFunc.append("success: function(data) {\n");
+		for(String n : serviceResultType.getAttributeNames()) {
+			successFunc.append("this.model.set"+Character.toUpperCase(n.charAt(0))+n.substring(1)+"(data."+n+");\n");
+		}
+		if ((comp.getCompleteEvent()!=null) && (comp.getCompleteEvent().trim().length()>0)) {
+			successFunc.append(pageName+".controller.dispatch(\""+comp.getCompleteEvent()+"\");\n");
+		}
+		successFunc.append("}.bind("+comp.getPageName()+")\n");
+		
+		ajaxParam.append(successFunc);
+		ajaxParam.append("}");
+		
+		// Success function
+
+		// Put everything together
+		totalBuild.append(pageName+"."+comp.getFn()+" = "+funcDec+" {\n");
+		
+		totalBuild.append("$."+ajaxFunc+"(");
+		if (urlParam) {
+			totalBuild.append("'"+srv.getPath().substring(1)+"',");
+		}
+		totalBuild.append(ajaxParam.toString());
+		totalBuild.append(")");
+		totalBuild.append("};\n");
+		code.append(totalBuild);
+		
+		/*
+		funcBody.append("$.ajax({\ncontext:document,\ndataType:'json',\n");
 		
 		// For query parameters and path parameters, look for them in the model object.  If they 
 		// are not there, add them as parameters to the function.
@@ -132,8 +214,30 @@ public class WsClientProcessor {
 		dataString.append("{");
 		boolean firstData = true;
 		boolean firstParam = true;
-		// First query parameters
+
+		String method = srv.getRequestMethod();
+		
 		List<String> fnParams = new ArrayList<String>();
+		for(String p : params) {
+			String paramRef = null;
+			if (modelType.getAttributeType(p)!=null) {
+				paramRef = "this.model."+BinderUtils.getGetter(p);
+			} else {
+				if (!firstParam) funcDec.append(',');
+				else firstParam = false;
+				funcDec.append(p);
+				paramRef = p;
+			}
+
+			if ((method.equals("POST")) || (method.equals("PUT"))) {
+				if (p.equals(requestBody)) {
+					
+				}
+			} else {
+				
+			}
+		}
+		
 		for(String p : srv.getQueryParams()) {
 			String modelAttrib = null;
 			if (!firstData) dataString.append(',');
@@ -141,23 +245,6 @@ public class WsClientProcessor {
 
 			if (modelType.getAttributeType(p)!=null) modelAttrib = p;
 			else {
-				// Try to find parameter in attribute holders in model?
-/*
-				for(String name : modelType.getAttributeNames()) {
-					String type = ctx.getAttributeType(name);
-					if (type==null) {
-						throw new JavascribeException("Could find a type for model attribute '"+name+"'");
-					}
-					VariableType t = ctx.getType(type);
-					if (t instanceof JavascriptVariableTypeImpl) continue;
-					if (!(t instanceof AttributeHolder)) continue;
-					AttributeHolder h = (AttributeHolder)t;
-					if (h.getAttributeType(p)!=null) {
-						modelAttrib = name+'.'+p;
-						break;
-					}
-				}
-				*/
 			}
 			
 
@@ -176,8 +263,22 @@ public class WsClientProcessor {
 		url.append(srv.getPath().substring(1));
 		// Add URL parameters
 
-		funcDec.append(") {\n");
+		// Set request method
+		if ((srv.getRequestMethod()!=null) && (srv.getRequestMethod().trim().length()>0)) {
+			funcBody.append("type: '"+srv.getRequestMethod()+"',\n");
+		}
+		boolean dataSet = false;
+		if ((srv.getRequestBody()!=null) && (srv.getRequestBody().trim().length()>0)) {
+			funcBody.append("processData: false,\n");
+			funcBody.append("data: "+srv.getRequestBody()+",\n");
+			dataSet = true;
+			if (firstParam) firstParam = false;
+			else funcDec.append(',');
+			funcDec.append(srv.getRequestBody());
+		}
 
+		funcDec.append(") {\n");
+		
 		// Build success function
 		successFunc.append("function success(data) {\n");
 
@@ -205,10 +306,12 @@ public class WsClientProcessor {
 		code.append(funcDec.toString());
 		code.append(funcBody.toString());
 		code.append("success:"+successFunc.toString()+",\n");
-		code.append("data:"+dataString.toString()+",\n");
+		if (!dataSet)
+			code.append("data:"+dataString.toString()+",\n");
 		code.append("url:'"+url.toString()+"'\n");
 		code.append("});\n");
 		code.append("}.bind("+comp.getPageName()+");\n");
+		*/
 	}
 
 	private SingleUrlService findUrlService(ProcessorContext ctx,String module,String service) throws JavascribeException {

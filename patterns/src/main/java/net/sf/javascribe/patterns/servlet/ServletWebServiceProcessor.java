@@ -332,6 +332,8 @@ public class ServletWebServiceProcessor {
 		srv.setPath(webService.getWebServiceModule());
 		String str = webService.getQueryParams();
 		srv.setReturnType(serviceResultType);
+		srv.setRequestMethod(webService.getHttpMethod());
+		srv.setRequestBody(webService.getRequestBody());
 
 		if ((str!=null) && (str.trim().length()>0)) {
 			String[] params = str.split(",");

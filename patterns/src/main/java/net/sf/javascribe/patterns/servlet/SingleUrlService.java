@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SingleUrlService {
-	String path = null;
+	String path = "";
 	List<String> queryParams = new ArrayList<String>();
-	String returnFormat = null;
-	String returnType = null;
-	String requestMethod = null;
-	String requestBody = null;
+	String returnFormat = "";
+	String returnType = "";
+	String requestMethod = "";
+	String requestBody = "";
 	
 	public String getPath() {
 		return path;

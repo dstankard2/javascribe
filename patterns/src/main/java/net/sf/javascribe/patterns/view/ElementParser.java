@@ -17,8 +17,8 @@ import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 
 public class ElementParser {
-	HashMap<String,Directive> elementDirectives = null;
-	List<Directive> attributeDirectives = null;
+	HashMap<String,ElementDirective> elementDirectives = null;
+	List<AttributeDirective> attributeDirectives = null;
 	HashMap<String,String> attributes = new HashMap<String,String>();
 	ProcessorContext ctx = null;
 	Element elt = null;
@@ -41,20 +41,17 @@ public class ElementParser {
 	}
 
 	public String parseElement(CodeExecutionContext execCtx) throws JavascribeException {
-		List<Directive> directives = getRenderers(ctx);
+		List<Directive> directives = getDirectives(ctx);
 		
-		attributeDirectives = new ArrayList<Directive>();
-		elementDirectives = new HashMap<String,Directive>();
+		attributeDirectives = new ArrayList<AttributeDirective>();
+		elementDirectives = new HashMap<String,ElementDirective>();
 		
 		for(Directive d : directives) {
-			if ((d.getRestrictions()==null) || (d.getRestrictions().length==0)) {
-				throw new JavascribeException("Found a directive '"+d.getName()+"' with no defined restrictions");
-			}
-			if (isRestriction(Restrictions.ELEMENT, d.getRestrictions())) {
-				elementDirectives.put(d.getName(), d);
-			}
-			if (isRestriction(Restrictions.ATTRIBUTE, d.getRestrictions())) {
-				attributeDirectives.add(d);
+			if (d instanceof ElementDirective) {
+				ElementDirective el = (ElementDirective)d;
+				elementDirectives.put(el.getElementName(), el);
+			} else if (d instanceof AttributeDirective) {
+				attributeDirectives.add((AttributeDirective)d);
 			}
 		}
 
@@ -87,6 +84,7 @@ public class ElementParser {
 			code.append("var "+fnVar+" = function() {\n");
 			CodeExecutionContext newCtx = new CodeExecutionContext(execCtx);
 			String iter = newVarName("_i", "integer", newCtx);
+			code.append("if (!"+containerVar+") return;\n");
 			code.append("for(var "+iter+"=0;"+iter+"<"+containerVar+".childNodes.length;"+iter+"++)\n");
 			code.append("if ("+containerVar+".childNodes["+iter+"].classList.contains('"+eltVar+"')) {");
 			code.append(containerVar+".removeChild("+containerVar+".childNodes["+iter+"]);"+iter+"--;}\n");
@@ -94,7 +92,11 @@ public class ElementParser {
 
 			continueParsing(newCtx,rctx);
 			code.append("}.bind("+DirectiveUtils.PAGE_VAR+");\n");
-			code.append(DirectiveUtils.PAGE_VAR+".controller.addEventListener('"+event+"',"+fnVar+","+eltVar+");\n");
+			StringTokenizer tok = new StringTokenizer(event,",");
+			while(tok.hasMoreTokens()) {
+				String s = tok.nextToken();
+				code.append(DirectiveUtils.PAGE_VAR+".controller.addEventListener('"+s+"',"+fnVar+","+eltVar+");\n");
+			}
 			
 			code.append(fnVar+"();\n");
 		} else {
@@ -109,15 +111,19 @@ public class ElementParser {
 	}
 	
 	private void addDomAttributes(String eltVar,CodeExecutionContext execCtx,DirectiveContextImpl rctx) {
-		for(String s : rctx.getAttributes().keySet()) {
+		for(String s : rctx.getDomAttributes().keySet()) {
 			if (s.startsWith("js-")) continue;
-			String val = rctx.getAttributes().get(s).trim();
+			String val = rctx.getDomAttributes().get(s).trim();
 			if (s.equals("style")) code.append(addStyle(eltVar,val));
 			else {
 				if ((val.startsWith("{{")) && (val.endsWith("}}"))) {
 					String ref = val.substring(2, val.length()-2).trim();
 					ref = DirectiveUtils.getValidReference(ref, execCtx);
-					code.append(eltVar+".setAttribute('"+s+"',"+ref+");\n");
+					String refType = DirectiveUtils.getReferenceType(ref, execCtx);
+					if ((refType.equals("string")) || (refType.equals("integer")))
+						code.append(eltVar+".setAttribute('"+s+"',"+ref+");\n");
+					else
+						code.append(eltVar+"."+s+" = "+ref+";\n");
 				} else {
 					code.append(eltVar+".setAttribute('"+s+"','"+val+"');\n");
 				}
@@ -127,7 +133,11 @@ public class ElementParser {
 			code.append(eltVar+".id = '"+elt.id()+"';\n");
 		}
 		if ((elt.className()!=null) && (elt.className().trim().length()>0)) {
-			code.append(eltVar+".className = '"+elt.className()+"';\n");
+			StringTokenizer tok = new StringTokenizer(elt.className()," ");
+			while(tok.hasMoreTokens()) {
+				String t = tok.nextToken().trim();
+				code.append(eltVar+".classList.add('"+t+"');\n");
+			}
 		}
 	}
 
@@ -135,9 +145,9 @@ public class ElementParser {
 
 		if (attributeDirectives.size()>0) {
 			while(attributeDirectives.size()>0) {
-				Directive d = attributeDirectives.get(0);
+				AttributeDirective d = attributeDirectives.get(0);
 				attributeDirectives.remove(0);
-				if (dctx.getAttributes().containsKey(d.getName())) {
+				if (dctx.getTemplateAttributes().containsKey(d.getAttributeName())) {
 					d.generateCode(dctx);
 					return;
 				}
@@ -154,8 +164,8 @@ public class ElementParser {
 
 		if (!elementDirectiveCalled) {
 			code.append(eltVar+" = "+DirectiveUtils.DOCUMENT_REF+".createElement('"+dctx.getElementName()+"');\n");
-			addDomAttributes(dctx.getElementVarName(),execCtx,dctx);
 		}
+		addDomAttributes(dctx.getElementVarName(),execCtx,dctx);
 		code.append(eltVar+".classList.add('"+eltVar+"');\n");
 
 		if (attributes.get("js-event")!=null) {
@@ -239,7 +249,7 @@ public class ElementParser {
 	
 	protected static List<Directive> renderers = null;
 	
-	protected static List<Directive> getRenderers(ProcessorContext ctx) throws JavascribeException {
+	protected static List<Directive> getDirectives(ProcessorContext ctx) throws JavascribeException {
 		if (renderers==null) {
 			renderers = new ArrayList<Directive>();
 			List<Class<?>> cls = ctx.getEngineProperties().getScannedClassesOfInterface(Directive.class);

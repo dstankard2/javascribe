@@ -16,7 +16,6 @@ import net.sf.jsom.CodeGenerationException;
 import net.sf.jsom.java5.Java5ClassDefinition;
 import net.sf.jsom.java5.Java5CodeSnippet;
 import net.sf.jsom.java5.Java5DeclaredMethod;
-import net.sf.jsom.java5.Java5MemberDeclaration;
 import net.sf.jsom.java5.Java5SourceFile;
 
 import org.apache.log4j.Logger;
@@ -92,19 +91,6 @@ public class DomainLogicFinalizer {
 				for(String dep : deps) {
 					String typeName = ctx.getAttributeType(dep);
 					Injectable inj = (Injectable)ctx.getType(typeName);
-					Java5DeclaredMethod method = new Java5DeclaredMethod(new JavascribeVariableTypeResolver(ctx));
-					method.setName("set"+JavascribeUtils.getUpperCamelName(dep));
-					Java5CodeSnippet code = new Java5CodeSnippet();
-					method.setMethodBody(code);
-					Java5MemberDeclaration dec = new Java5MemberDeclaration(method.getTypes());
-					dec.setAccessLevel("protected");
-					dec.setName(dep);
-					dec.setType(typeName);
-					file.getPublicClass().addMemberVariable(dec);
-					file.addImport(inj.getImport());
-					code.append("this."+dep+" = "+dep+";\n");
-					file.getPublicClass().addMethod(method);
-					method.addArg(typeName, dep);
 					locatorFile.addImport(inj.getImport());
 					JsomUtils.merge(locatorCode,inj.getInstance(dep, null));
 					locatorCode.append("_ret.set"+(JavascribeUtils.getUpperCamelName(dep))+"("+dep+");\n");

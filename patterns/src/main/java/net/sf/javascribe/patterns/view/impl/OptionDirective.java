@@ -2,20 +2,14 @@ package net.sf.javascribe.patterns.view.impl;
 
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.annotation.Scannable;
-import net.sf.javascribe.patterns.view.Directive;
 import net.sf.javascribe.patterns.view.DirectiveContext;
-import net.sf.javascribe.patterns.view.Restrictions;
+import net.sf.javascribe.patterns.view.ElementDirective;
 
 @Scannable
-public class OptionDirective implements Directive {
+public class OptionDirective implements ElementDirective {
 
 	@Override
-	public Restrictions[] getRestrictions() {
-		return new Restrictions[] { Restrictions.ELEMENT };
-	}
-
-	@Override
-	public String getName() {
+	public String getElementName() {
 		return "option";
 	}
 
@@ -24,7 +18,8 @@ public class OptionDirective implements Directive {
 		String eltVar = ctx.newVarName("_o","option", ctx.getExecCtx());
 		StringBuilder code = ctx.getCode();
 		
-		String val = ctx.getAttributes().get("value");
+		String val = ctx.getDomAttributes().get("value");
+		ctx.getDomAttributes().remove("value");
 		code.append("var "+eltVar+" = _d.createElement('option');\n");
 		code.append(eltVar+".value = '"+val+"';\n");
 		code.append(eltVar+".innerHTML = '"+ctx.getInnerHtml()+"';\n");

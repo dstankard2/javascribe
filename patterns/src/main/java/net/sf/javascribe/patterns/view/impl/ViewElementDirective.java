@@ -15,11 +15,11 @@ import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.map.ObjectMapper;
 
 @Scannable
-public class ClassDirective implements AttributeDirective {
+public class ViewElementDirective implements AttributeDirective {
 
 	@Override
 	public String getAttributeName() {
-		return "js-class";
+		return "js-view-element";
 	}
 
 	@Override

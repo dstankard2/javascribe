@@ -268,7 +268,7 @@ public class HandwrittenCodeProcessor {
 
 			// Create a locator method
 			ctx.addAttribute(JavascribeUtils.getLowerCamelName(name), name);
-			Java5DeclaredMethod locator = JsomUtils.createMedhod(ctx);
+			Java5DeclaredMethod locator = JsomUtils.createMethod(ctx);
 			locator.setName("get"+name);
 			locator.setType(name);
 			Java5CodeSnippet code = new Java5CodeSnippet();

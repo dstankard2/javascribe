@@ -111,7 +111,7 @@ public class EjbqlQueryProcessor {
 				objType = (JavaServiceObjectType)ctx.getTypes().getType(query.getQuerySet());
 			}
 
-			Java5DeclaredMethod method = JsomUtils.createMedhod(ctx);
+			Java5DeclaredMethod method = JsomUtils.createMethod(ctx);
 			Java5CodeSnippet methodCode = new Java5CodeSnippet();
 			boolean multiple = false;
 			String returnType = null;

@@ -37,6 +37,10 @@ public class PageProcessor {
 		StringBuilder init = PageUtils.getInitFunction(ctx, page.getPageName());
 		init.append("this.view = { };\n");
 		init.append("this.view.page = document.getElementById('"+page.getPageName()+"');\n");
+		
+		type.addAttribute("controller", "Controller");
+		src.getSource().append(page.getPageName()+".controller = new JSController();\n");
+		
 		JavascriptDataObjectImpl viewType = new JavascriptDataObjectImpl(page.getPageName()+"View");
 		type.addAttribute("view", page.getPageName()+"View");
 		ctx.getTypes().addType(viewType);

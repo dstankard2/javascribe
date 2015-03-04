@@ -5,6 +5,7 @@ import java.util.List;
 import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.ProcessorContext;
+import net.sf.javascribe.api.types.ListType;
 import net.sf.javascribe.langsupport.java.JavaCode;
 import net.sf.javascribe.langsupport.java.JavaOperation;
 import net.sf.javascribe.langsupport.java.JavaServiceObjectType;
@@ -48,7 +49,7 @@ public class JsomUtils {
 		return ret;
 	}
 	
-	public static Java5DeclaredMethod createMedhod(ProcessorContext ctx) {
+	public static Java5DeclaredMethod createMethod(ProcessorContext ctx) {
 		return new Java5DeclaredMethod(new JavascribeVariableTypeResolver(ctx));
 	}
 	
@@ -123,7 +124,17 @@ public class JsomUtils {
 		if (t==null) {
 			throw new CodeGenerationException("Couldn't find Java type '"+type+"'");
 		}
-		ret = (Java5CompatibleCodeSnippet)t.declare(variable);
+		if (t instanceof ListType){
+			String eltType = type.substring(5);
+			ListType listType = (ListType)t;
+			try {
+				ret = (Java5CompatibleCodeSnippet)listType.declare(variable, eltType, execCtx);
+			} catch(JavascribeException e){
+				throw new CodeGenerationException("Couldn't instanceiate list: "+e.getMessage());
+			}
+		} else {
+			ret = (Java5CompatibleCodeSnippet)t.declare(variable);
+		}
 		execCtx.addVariable(variable, type);
 		
 		return ret;

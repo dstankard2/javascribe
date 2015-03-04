@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 import net.sf.javascribe.api.Attribute;
 import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JavascribeException;
-import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.VariableType;
 import net.sf.javascribe.api.annotation.Processor;
@@ -59,18 +59,26 @@ public class RetrieveDataRuleProcessor {
 		}
 
 		// Read rule dependencies
-		List<Attribute> deps = null;
-		String depNames = null;
-		if (comp.getDependencies().trim().length()>0) {
-			depNames = comp.getDependencies();
-			deps = JavascribeUtils.readAttributes(ctx, depNames);
-		} else if (ctx.getProperty(DomainLogicCommon.DOMAIN_LOGIC_DEPENDENCIES)!=null) {
-			depNames = ctx.getProperty(DomainLogicCommon.DOMAIN_LOGIC_DEPENDENCIES);
-			deps = JavascribeUtils.readAttributes(ctx, depNames);
-		} else {
-			deps = new ArrayList<Attribute>();
-		}
+		List<String> deps = new ArrayList<String>();
 
+		// Dependancies are read from the comp and then from configuration properties.
+
+		if (comp.getDependencies().trim().length()>0) {
+			StringTokenizer tok = new StringTokenizer(comp.getDependencies().trim(),",");
+			while(tok.hasMoreTokens()){
+				String s = tok.nextToken();
+				if (!deps.contains(s)) deps.add(s);
+			}
+		}
+		if (ctx.getProperty(DomainLogicCommon.DOMAIN_LOGIC_DEPENDENCIES)!=null) {
+			String s = ctx.getProperty(DomainLogicCommon.DOMAIN_LOGIC_DEPENDENCIES);
+			StringTokenizer tok = new StringTokenizer(s,",");
+			while(tok.hasMoreTokens()){
+				String a = tok.nextToken();
+				if (!deps.contains(a)) deps.add(a);
+			}
+		}
+		
 		// Get source file for domain service
 		DomainLogicFile serviceFile = DomainLogicCommon.getDomainObjectFile(serviceObjName, ctx);
 		LocatedJavaServiceObjectType serviceType = DomainLogicCommon.getDomainObjectType(serviceObjName, ctx);
@@ -99,6 +107,33 @@ public class RetrieveDataRuleProcessor {
 
 			serviceFile.getPublicClass().addMethod(method);
 			serviceType.addMethod(JsomUtils.createJavaOperation(method));
+			
+			// Add dependencies
+			for(String name : deps) {
+				String typeName = ctx.getAttributeType(name);
+				VariableType type = ctx.getType(typeName);
+				DomainLogicCommon.addDependency(name, serviceType, serviceFile, ctx);
+				if (type instanceof JavaServiceObjectType) {
+					JavaServiceObjectType obj = (JavaServiceObjectType)type;
+					if (!objDeps.contains(name)) {
+						objDeps.add(name);
+					}
+					dependencyRefs.put(name, obj);
+				} else if (type instanceof ServiceLocator) {
+					ServiceLocator loc = (ServiceLocator)type;
+					if (!objDeps.contains(name)) {
+						objDeps.add(name);
+					}
+					for(String srv : loc.getAvailableServices()) {
+						String ref = loc.getService(name, srv, execCtx);
+						JavaServiceObjectType t = (JavaServiceObjectType)ctx.getType(srv);
+						dependencyRefs.put(ref, t);
+					}
+				}
+				execCtx.addVariable(name, typeName);
+			}
+
+			/*
 			for(Attribute s : deps) {
 				VariableType type = ctx.getType(s.getType());
 				if (type instanceof LocatedJavaServiceObjectType) {
@@ -130,6 +165,7 @@ public class RetrieveDataRuleProcessor {
 					throw new JavascribeException("Found a dependency that is not a service object or service locator");
 				}
 			}
+			*/
 			
 			String strategyName = comp.getStrategy();
 			if (strategyName.trim().length()==0) {

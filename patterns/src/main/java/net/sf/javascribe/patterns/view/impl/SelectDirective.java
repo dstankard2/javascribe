@@ -3,37 +3,28 @@ package net.sf.javascribe.patterns.view.impl;
 import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.annotation.Scannable;
-import net.sf.javascribe.api.expressions.ExpressionUtil;
-import net.sf.javascribe.patterns.view.Directive;
 import net.sf.javascribe.patterns.view.DirectiveContext;
 import net.sf.javascribe.patterns.view.DirectiveUtils;
-import net.sf.javascribe.patterns.view.Restrictions;
+import net.sf.javascribe.patterns.view.ElementDirective;
 
 @Scannable
-public class SelectDirective implements Directive {
+public class SelectDirective implements ElementDirective {
 
 	@Override
-	public Restrictions[] getRestrictions() {
-		return new Restrictions[] { Restrictions.ELEMENT };
-	}
-
-	@Override
-	public String getName() {
+	public String getElementName() {
 		return "select";
 	}
 
 	@Override
 	public void generateCode(DirectiveContext ctx) throws JavascribeException {
 		StringBuilder b = ctx.getCode();
-		String list = ctx.getAttributes().get("js-options");
+		String list = ctx.getTemplateAttributes().get("js-options");
 		CodeExecutionContext execCtx = ctx.getExecCtx();
+		String eltVar = ctx.getElementVarName();
+		String model = ctx.getTemplateAttributes().get("js-model");
+		String modelRef = DirectiveUtils.getValidReference(model, execCtx);
 
-		String n = ctx.getElementVarName();
-		b.append("if ("+n+"){\n");
-		b.append("while("+n+".firstChild) {\n");
-		b.append(n+".removeChild("+n+".firstChild);\n");
-		b.append("}\n}\n");
-		b.append(ctx.getElementVarName()+" = "+DirectiveUtils.DOCUMENT_REF+".createElement('select');\n");
+		b.append(eltVar+" = "+DirectiveUtils.DOCUMENT_REF+".createElement('select');\n");
 		
 		ctx.continueRenderElement(execCtx);
 
@@ -58,50 +49,54 @@ public class SelectDirective implements Directive {
 			}
 			
 			// Get a reference to the list
-			String listRef = null;
-			String eltType = null;
-			String listType = null;
-			if (DirectiveUtils.getPageName(ctx)!=null) {
-				try {
-					listRef = ExpressionUtil.evaluateValueExpression("${"+DirectiveUtils.PAGE_VAR+".model."+listName+'}', "object", execCtx);
-					listType = DirectiveUtils.getPageModelType(ctx).getAttributeType(listName);
-					eltType = listType.substring(5);
-				} catch(Exception e) {
-					e.printStackTrace();
-				}
-			}
+			String listRef = DirectiveUtils.getValidReference(listName, execCtx);
 			if (listRef==null) {
-				try {
-					listRef = ExpressionUtil.evaluateValueExpression("${"+listName+'}', "list/object", execCtx);
-					listType = execCtx.getVariableType(listName);
-					eltType = listType.substring(5);
-				} catch(Exception e) {
-					e.printStackTrace();
-				}
+				throw new JavascribeException("Option directive Couldn't find a list called '"+listRef+"'");
 			}
-			if (listRef==null) {
-				throw new JavascribeException("Could not find a list called '"+listName+"'");
+			
+			String listTypeName = ctx.getProcessorContext().getAttributeType(listName);
+			if (listTypeName==null) listTypeName = ctx.getExecCtx().getVariableType(listName);
+			if (listTypeName==null) {
+				throw new JavascribeException("Found unrecognized list reference '"+listName+"'");
 			}
-			String listVar = ctx.newVarName("_l", listType, execCtx);
-			if (execCtx.getVariableType(elt)!=null) {
-				throw new JavascribeException("Name '"+elt+"' is invalid for the list iterator as there is already a variable with this name defined on this template");
+			if (listTypeName.indexOf("list/")>0) {
+				throw new JavascribeException("Variable '"+listName+"' specified for a list of select options is not a list");
 			}
-			b.append("var "+listVar+" = "+listRef+";\n");
-			b.append("if (("+listVar+") && ("+listVar+".length>0)) {\n");
+			String eltTypeName = listTypeName.substring(5);
+			
+			CodeExecutionContext newCtx = new CodeExecutionContext(ctx.getExecCtx());
+			String indexVar = ctx.newVarName("_i", "integer", newCtx);
+			String nodeVar = ctx.newVarName("_n", "Node", newCtx);
+			newCtx.addVariable(elt, eltTypeName);
+			String descRef = DirectiveUtils.getValidReference(desc, newCtx);
+			if (descRef==null) {
+				throw new JavascribeException("In select, couldn't understand option text param '"+desc+"'");
+			}
+			String idRef = DirectiveUtils.getValidReference(id, newCtx);
+			if (idRef==null) {
+				throw new JavascribeException("In select, couldn't understand option value param '"+id+"'");
+			}
+			b.append("if ("+listRef+") {\n");
+			b.append("for(var "+indexVar+"=0;"+indexVar+"<"+listRef+".length;"+indexVar+"++) {\n");
+			b.append("var "+elt+" = "+listRef+"["+indexVar+"];\n");
+			b.append("var "+nodeVar+" = "+DirectiveUtils.DOCUMENT_REF+".createElement('option');\n");
+			b.append(nodeVar+".innerHTML = "+descRef+";\n");
+			b.append(nodeVar+".value = "+idRef+";\n");
+			b.append(eltVar+".appendChild("+nodeVar+");\n");
+			b.append("}\n");
+			b.append("}\n");
+		}
+
+		if (modelRef!=null) {
+			String modelVar = ctx.newVarName("_m", "object", execCtx);
+			b.append("var "+modelVar+";\n");
+			b.append("try {"+modelVar+" = "+modelRef+";\n}catch(_err) {}\n");
 			CodeExecutionContext newCtx = new CodeExecutionContext(execCtx);
-			String idx = ctx.newVarName("_i", "integer", newCtx);
-			b.append("for(var "+idx+"=0;"+idx+"<"+listVar+".length;"+idx+"++) {\n");
-			b.append("var "+elt+" = "+listVar+"["+idx+"];\n");
-			String optVar = ctx.newVarName("_o", "object", newCtx);
-			b.append("var "+optVar+" = "+DirectiveUtils.DOCUMENT_REF+".createElement('option');\n");
-			newCtx.addVariable(elt, eltType);
-			String descEval = ExpressionUtil.evaluateValueExpression("${"+desc+"}", "object", newCtx);
-			String valueEval = ExpressionUtil.evaluateValueExpression("${"+id+"}", "object", newCtx);
-			b.append(optVar+".innerHTML = "+descEval+";\n");
-			b.append(optVar+".value = "+valueEval+";\n");
-			b.append(ctx.getElementVarName()+".appendChild("+optVar+");\n");
-			b.append("}\n");
-			b.append("}\n");
+			String indexVar = ctx.newVarName("_i", "integer", newCtx);
+			b.append("for(var "+indexVar+"=0;"+indexVar+"<"+eltVar+".options.length;"+indexVar+"++) {\n");
+			b.append("if ("+eltVar+".options["+indexVar+"].value=="+modelVar+") {\n");
+			b.append(eltVar+".options.selectedIndex = "+indexVar+"; break;\n");
+			b.append("}\n}\n");
 		}
 	}
 

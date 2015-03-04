@@ -2,29 +2,23 @@ package net.sf.javascribe.patterns.view.impl;
 
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.annotation.Scannable;
-import net.sf.javascribe.patterns.view.Directive;
 import net.sf.javascribe.patterns.view.DirectiveContext;
 import net.sf.javascribe.patterns.view.DirectiveUtils;
-import net.sf.javascribe.patterns.view.Restrictions;
+import net.sf.javascribe.patterns.view.ElementDirective;
 
 @Scannable
-public class VarDirective implements Directive {
+public class VarDirective implements ElementDirective {
 
 	@Override
-	public Restrictions[] getRestrictions() {
-		return new Restrictions[] { Restrictions.ELEMENT };
-	}
-
-	@Override
-	public String getName() {
+	public String getElementName() {
 		return "js-var";
 	}
 
 	@Override
 	public void generateCode(DirectiveContext ctx) throws JavascribeException {
 		StringBuilder b = ctx.getCode();
-		String name = ctx.getAttributes().get("name");
-		String value = ctx.getAttributes().get("value");
+		String name = ctx.getDomAttributes().get("name");
+		String value = ctx.getDomAttributes().get("value");
 		boolean done = false;
 
 		if (ctx.getExecCtx().getVariableType(name)!=null) {
@@ -39,6 +33,13 @@ public class VarDirective implements Directive {
 				String type = DirectiveUtils.getReferenceType(valueExpr, ctx.getExecCtx());
 				ctx.getExecCtx().addVariable(name, type);
 				done = true;
+			} else {
+				String type = ctx.getDomAttributes().get("type");
+				if (type!=null) {
+					b.append("var "+name+" = "+value+";\n");
+					ctx.getExecCtx().addVariable(name, type);
+					done = true;
+				}
 			}
 		}
 		

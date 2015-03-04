@@ -6,30 +6,23 @@ import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.api.annotation.Scannable;
 import net.sf.javascribe.api.expressions.ExpressionUtil;
-import net.sf.javascribe.patterns.view.Directive;
+import net.sf.javascribe.patterns.view.AttributeDirective;
 import net.sf.javascribe.patterns.view.DirectiveContext;
 import net.sf.javascribe.patterns.view.DirectiveUtils;
-import net.sf.javascribe.patterns.view.Restrictions;
 
 @Scannable
-public class ModelDirective implements Directive {
+public class ModelDirective implements AttributeDirective {
 
 	@Override
-	public Restrictions[] getRestrictions() {
-		return new Restrictions[] { Restrictions.ATTRIBUTE };
-	}
-
-	@Override
-	public String getName() {
+	public String getAttributeName() {
 		return "js-model";
 	}
 
 	@Override
 	public void generateCode(DirectiveContext ctx) throws JavascribeException {
-		String model = ctx.getAttributes().get("js-model");
+		String model = ctx.getTemplateAttributes().get("js-model");
 		StringBuilder b = ctx.getCode();
 
-		ctx.getAttributes().remove("js-model");
 		ctx.continueRenderElement(ctx.getExecCtx());
 		String var = ctx.getElementVarName();
 
@@ -47,7 +40,7 @@ public class ModelDirective implements Directive {
 			params.put("fn", fnName);
 		} else if (ctx.getElementName().equals("input")) {
 			template = "renderer/js-model-input.txt";
-			if (ctx.getAttributes().get("type").equals("text")) {
+			if (ctx.getDomAttributes().get("type").equals("text")) {
 				params.put("changeEvent", "onkeyup");
 			} else {
 				params.put("changeEvent", "onchange");

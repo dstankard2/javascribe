@@ -119,6 +119,14 @@ public interface ProcessorContext {
 	public void addComponent(ComponentBase component);
 	
 	/**
+	 * Adds a component to the list of components to be processed.  The 
+	 * newly-created list is re-sorted so the added component will be 
+	 * processed in order.
+	 * @param component Component to add.
+	 */
+	public void processComponent(ComponentBase component);
+	
+	/**
 	 * Retrieves a resource from the application definition zip file.  
 	 * The caller is responsible for closing the input stream.
 	 * @param path Path of the file inside the zip

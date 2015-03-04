@@ -6,17 +6,14 @@ import java.util.StringTokenizer;
 
 import net.sf.javascribe.api.Attribute;
 import net.sf.javascribe.api.JavascribeException;
-import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.annotation.Processor;
 import net.sf.javascribe.api.annotation.ProcessorMethod;
 import net.sf.javascribe.api.annotation.Scannable;
-import net.sf.javascribe.langsupport.java.JavaVariableType;
 import net.sf.javascribe.langsupport.java.LocatedJavaServiceObjectType;
 import net.sf.javascribe.langsupport.java.jsom.JavascribeVariableTypeResolver;
 import net.sf.javascribe.langsupport.java.jsom.JsomUtils;
 import net.sf.jsom.CodeGenerationException;
-import net.sf.jsom.java5.Java5DeclaredMethod;
 import net.sf.jsom.java5.Java5MethodSignature;
 
 import org.apache.log4j.Logger;
@@ -86,14 +83,23 @@ public class DomainLogicRuleProcessor {
 			
 			// Add dependencies to the type and source file
 			for(String dep : deps) {
+				DomainLogicCommon.addDependency(dep, type, file, ctx);
+/*
 				if (!type.getDependancyNames().contains(dep)) {
 					type.addDependancy(dep);
 					String upperCamel = JavascribeUtils.getUpperCamelName(dep);
 					String typeName = ctx.getAttributeType(dep);
 					JavaVariableType t = (JavaVariableType)ctx.getType(typeName);
-					Java5DeclaredMethod setter = JsomUtils.createMedhod(ctx);
+					Java5DeclaredMethod setter = JsomUtils.createMethod(ctx);
 					setter.setName("set"+upperCamel);
+					setter.addArg(typeName, "_d");
+					file.getPublicClass().addMemberVariable(dep, typeName, null);
+					Java5CodeSnippet code = new Java5CodeSnippet();
+					setter.setMethodBody(code);
+					code.append("this."+dep+" = _d;");
+					file.getPublicClass().addMethod(setter);
 				}
+				*/
 			}
 
 		} catch(CodeGenerationException e) {

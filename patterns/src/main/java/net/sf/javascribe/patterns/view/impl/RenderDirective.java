@@ -7,28 +7,22 @@ import net.sf.javascribe.langsupport.javascript.JavascriptFunction;
 import net.sf.javascribe.langsupport.javascript.JavascriptServiceObject;
 import net.sf.javascribe.langsupport.javascript.JavascriptVariableType;
 import net.sf.javascribe.patterns.js.page.PageModelType;
-import net.sf.javascribe.patterns.view.Directive;
 import net.sf.javascribe.patterns.view.DirectiveContext;
 import net.sf.javascribe.patterns.view.DirectiveUtils;
-import net.sf.javascribe.patterns.view.Restrictions;
+import net.sf.javascribe.patterns.view.ElementDirective;
 
 @Scannable
-public class RenderDirective implements Directive {
+public class RenderDirective implements ElementDirective {
 
 	@Override
-	public Restrictions[] getRestrictions() {
-		return new Restrictions[] { Restrictions.ELEMENT };
-	}
-
-	@Override
-	public String getName() {
-		return "render";
+	public String getElementName() {
+		return "js-render";
 	}
 
 	@Override
 	public void generateCode(DirectiveContext ctx) throws JavascribeException {
 		StringBuilder b = ctx.getCode();
-		String template = ctx.getAttributes().get("js-template");
+		String template = ctx.getTemplateAttributes().get("js-template");
 		CodeExecutionContext execCtx = ctx.getExecCtx();
 		int i = template.indexOf('.');
 		if (i<=0) {
