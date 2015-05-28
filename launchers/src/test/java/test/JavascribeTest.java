@@ -17,10 +17,11 @@ public class JavascribeTest {
 	}
 
 	private static void runTest() throws Exception {
-//		File zipFile = new File("myTestFile.zip");
+//		File zipFile = new File("c:\\build\\example1\\example1.zip");
+//		File zipFile = new File("c:\\build\\melkovia\\portal\\melkovia-portal.zip");
 		File zipFile = new File("c:\\build\\codewiz\\codewiz.zip");
 		
-		File libs[] = new File[9];
+		File libs[] = new File[12];
 		libs[0] = new File("..\\engine\\bin");
 		libs[1] = new File("..\\api\\bin");
 		libs[2] = new File("..\\language-support\\bin");
@@ -29,7 +30,10 @@ public class JavascribeTest {
 		libs[5] = new File("..\\dist\\lib\\jsom.jar");
 		libs[6] = new File("..\\dist\\lib\\other-xsd.jar");
 		libs[7] = new File("..\\dist\\lib\\log4j-1.2.17.jar");
-		libs[8] = new File("c:\\dev_tools\\javascribe-0.1.3\\lib\\dave-comps.jar");
+		libs[8] = new File("..\\dist\\lib\\javaparser-1.0.8.jar");
+		libs[9] = new File("c:\\dev_tools\\javascribe-0.1.8\\lib\\dave-comps.jar");
+		libs[10] = new File("..\\dist\\lib\\jsoup-1.8.1.jar");
+		libs[11] = new File("..\\dist\\lib\\jackson-all-1.9.6.jar");
 
 		URL libUrls[] = new URL[libs.length];
 		for(int i=0;i<libs.length;i++) {
@@ -43,7 +47,7 @@ public class JavascribeTest {
 			Thread.currentThread().setContextClassLoader(loader);
 			Class<?> cl = loader.loadClass("net.sf.javascribe.engine.JavascribeEngine");
 			Constructor<?> cons = cl.getConstructor(File[].class,String.class);
-			Object obj = cons.newInstance((Object)libs,"c:\\dev_tools\\javascribe-0.1.3");
+			Object obj = cons.newInstance((Object)libs,"c:\\dev_tools\\javascribe-0.1.8");
 			Method invoke = cl.getMethod("invoke", File.class);
 			invoke.invoke(obj, (Object)zipFile);
 		} finally {

@@ -1,24 +1,17 @@
 package net.sf.javascribe.patterns.js.page;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import net.sf.javascribe.api.Code;
 import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.JavascribeUtils;
-import net.sf.javascribe.langsupport.javascript.JavascriptCode;
-import net.sf.javascribe.langsupport.javascript.JavascriptDataObject;
+import net.sf.javascribe.langsupport.javascript.JavascriptBaseObjectType;
 
-public class PageModelType implements JavascriptDataObject {
-	HashMap<String,String> attributes = new HashMap<String,String>();
+public class PageModelType extends JavascriptBaseObjectType {
 	String pageName = null;
-	
-	public void addAttribute(String name,String type) {
-		this.attributes.put(name, type);
-	}
-	
+
 	public PageModelType(String pageName) {
 		this.pageName = pageName;
 	}
@@ -77,17 +70,13 @@ public class PageModelType implements JavascriptDataObject {
 	@Override
 	public Code instantiate(String name, String value,
 			CodeExecutionContext execCtx) throws JavascribeException {
-		JavascriptCode ret = new JavascriptCode(true);
-		ret.append(name+" = "+pageName+".model;\n");
-		return ret;
+		throw new JavascribeException("You cannot instantiate a page model.  It is initialized by generated code");
 	}
 
 	@Override
 	public Code declare(String name, CodeExecutionContext execCtx)
 			throws JavascribeException {
-		JavascriptCode ret = new JavascriptCode(true);
-		ret.append("var "+name+";\n");
-		return ret;
+		throw new JavascribeException("You cannot declare a page model.  It is initialized by generated code");
 	}
 
 }

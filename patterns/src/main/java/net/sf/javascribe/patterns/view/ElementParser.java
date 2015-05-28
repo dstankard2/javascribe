@@ -8,7 +8,7 @@ import java.util.StringTokenizer;
 import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.ProcessorContext;
-import net.sf.javascribe.langsupport.javascript.JavascriptFunction;
+import net.sf.javascribe.langsupport.javascript.JavascriptFunctionType;
 import net.sf.javascribe.patterns.view.impl.IfDirective;
 import net.sf.javascribe.patterns.view.impl.LoopDirective;
 
@@ -25,12 +25,12 @@ public class ElementParser {
 	String containerVar = null;
 	StringBuilder code = null;
 	String templateObj = null;
-	JavascriptFunction function = null;
+	JavascriptFunctionType function = null;
 	String eltVar = null;
 	boolean elementDirectiveCalled = false;
 	List<String> previousEltVars = null;
 
-	public ElementParser(Element elt,ProcessorContext ctx,String containerVar,StringBuilder code,String templateObj,JavascriptFunction fn,List<String> previousElementVars) {
+	public ElementParser(Element elt,ProcessorContext ctx,String containerVar,StringBuilder code,String templateObj,JavascriptFunctionType fn,List<String> previousElementVars) {
 		this.elt = elt;
 		this.ctx = ctx;
 		this.containerVar =containerVar;
@@ -86,7 +86,7 @@ public class ElementParser {
 			String iter = newVarName("_i", "integer", newCtx);
 			code.append("if (!"+containerVar+") return;\n");
 			code.append("for(var "+iter+"=0;"+iter+"<"+containerVar+".childNodes.length;"+iter+"++)\n");
-			code.append("if ("+containerVar+".childNodes["+iter+"].classList.contains('"+eltVar+"')) {");
+			code.append("if ("+containerVar+".childNodes["+iter+"]._elt == '"+eltVar+"') {\n");
 			code.append(containerVar+".removeChild("+containerVar+".childNodes["+iter+"]);"+iter+"--;}\n");
 			code.append(eltVar+" = null;\n");
 
@@ -113,6 +113,7 @@ public class ElementParser {
 	private void addDomAttributes(String eltVar,CodeExecutionContext execCtx,DirectiveContextImpl rctx) {
 		for(String s : rctx.getDomAttributes().keySet()) {
 			if (s.startsWith("js-")) continue;
+			if (s.equals("class")) continue;
 			String val = rctx.getDomAttributes().get(s).trim();
 			if (s.equals("style")) code.append(addStyle(eltVar,val));
 			else {
@@ -148,7 +149,10 @@ public class ElementParser {
 				AttributeDirective d = attributeDirectives.get(0);
 				attributeDirectives.remove(0);
 				if (dctx.getTemplateAttributes().containsKey(d.getAttributeName())) {
+					CodeExecutionContext orig = dctx.getExecCtx();
+					dctx.setExecCtx(execCtx);;
 					d.generateCode(dctx);
+					dctx.setExecCtx(orig);
 					return;
 				}
 			}
@@ -166,7 +170,7 @@ public class ElementParser {
 			code.append(eltVar+" = "+DirectiveUtils.DOCUMENT_REF+".createElement('"+dctx.getElementName()+"');\n");
 		}
 		addDomAttributes(dctx.getElementVarName(),execCtx,dctx);
-		code.append(eltVar+".classList.add('"+eltVar+"');\n");
+		code.append(eltVar+"._elt = '"+eltVar+"';\n");
 
 		if (attributes.get("js-event")!=null) {
 			String elList = newVarName("_x","list/object",execCtx);

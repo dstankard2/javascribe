@@ -5,7 +5,7 @@ import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.annotation.Processor;
 import net.sf.javascribe.api.annotation.ProcessorMethod;
 import net.sf.javascribe.api.annotation.Scannable;
-import net.sf.javascribe.langsupport.javascript.JavascriptFunction;
+import net.sf.javascribe.langsupport.javascript.JavascriptFunctionType;
 import net.sf.javascribe.langsupport.javascript.JavascriptSourceFile;
 import net.sf.javascribe.langsupport.javascript.JavascriptUtils;
 
@@ -46,15 +46,7 @@ public class PageFuncProcessor {
 		if (type==null) {
 			throw new JavascribeException("Tried to add a function to a page which was not found: '"+func.getPageName()+"'");
 		}
-		JavascriptFunction fn = new JavascriptFunction(func.getPageName(),func.getName());
-
-		// TODO: Fix the function pattern to specify a return yes/no
-		String name = func.getName();
-		if ((name.endsWith("Content")) || (name.endsWith("Display"))) {
-			fn.setReturnValue(true);
-		} else {
-			fn.setReturnValue(false);
-		}
+		JavascriptFunctionType fn = new JavascriptFunctionType(func.getName());
 
 		type.addOperation(fn);
 	}

@@ -6,8 +6,8 @@ import net.sf.javascribe.api.annotation.Processor;
 import net.sf.javascribe.api.annotation.ProcessorMethod;
 import net.sf.javascribe.api.annotation.Scannable;
 import net.sf.javascribe.api.config.ComponentBase;
-import net.sf.javascribe.langsupport.javascript.JavascriptDataObjectImpl;
-import net.sf.javascribe.langsupport.javascript.JavascriptFunction;
+import net.sf.javascribe.langsupport.javascript.JavascriptFunctionType;
+import net.sf.javascribe.langsupport.javascript.JavascriptObjectType;
 import net.sf.javascribe.langsupport.javascript.JavascriptSourceFile;
 import net.sf.javascribe.langsupport.javascript.JavascriptUtils;
 import net.sf.javascribe.patterns.CorePatternConstants;
@@ -41,10 +41,10 @@ public class PageProcessor {
 		type.addAttribute("controller", "Controller");
 		src.getSource().append(page.getPageName()+".controller = new JSController();\n");
 		
-		JavascriptDataObjectImpl viewType = new JavascriptDataObjectImpl(page.getPageName()+"View");
+		JavascriptObjectType viewType = new JavascriptObjectType(page.getPageName()+"View");
 		type.addAttribute("view", page.getPageName()+"View");
 		ctx.getTypes().addType(viewType);
-		JavascriptFunction initFn = new JavascriptFunction(page.getPageName(),"init");
+		JavascriptFunctionType initFn = new JavascriptFunctionType("init");
 		type.addOperation(initFn);
 		ctx.addAttribute(page.getPageName(), page.getPageName());
 

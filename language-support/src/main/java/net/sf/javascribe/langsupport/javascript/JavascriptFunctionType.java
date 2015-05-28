@@ -3,6 +3,7 @@ package net.sf.javascribe.langsupport.javascript;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Represents a callable function on a Javascript-based object.
@@ -16,16 +17,26 @@ import java.util.List;
  * @author DCS
  *
  */
-public class JavascriptFunction {
+public class JavascriptFunctionType extends JavascriptBaseObjectType {
 	List<String> paramNames = new ArrayList<String>();
 	HashMap<String,String> paramTypes = new HashMap<String,String>();
-	String name = null;
-	boolean returnValue = false;
 	String obj = null;
+	String bindRef = null;
+	String name = null;
 
-	public JavascriptFunction(String obj,String name) {
-		this.obj = obj;
+	public String getName() {
+		return name;
+	}
+	public JavascriptFunctionType(String name) {
+		super();
 		this.name = name;
+	}
+	
+	public void setObj(String obj) {
+		this.obj = obj;
+	}
+	public String getObj() {
+		return obj;
 	}
 
 	public void addParam(String name,String type) {
@@ -39,17 +50,8 @@ public class JavascriptFunction {
 		return paramTypes.get(paramName);
 	}
 	
-	public boolean isReturnValue() {
-		return returnValue;
-	}
-	public void setReturnValue(boolean returnValue) {
-		this.returnValue = returnValue;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
-	public String getName() {
-		return name;
+	public String invoke(String resultVar,String ref,Map<String,String> paramRefs) {
+		return null;
 	}
 	
 }

@@ -21,7 +21,8 @@ public class ClickDirective implements AttributeDirective {
 		ctx.continueRenderElement(ctx.getExecCtx());
 		String var = ctx.getElementVarName();
 
-		b.append(var+".onclick = function() {\n");
+		b.append(var+".onclick = function(event) {\n");
+		b.append("event.stopPropagation();\n");
 		b.append(click+"(this);\n");
 		b.append("}\n");
 	}

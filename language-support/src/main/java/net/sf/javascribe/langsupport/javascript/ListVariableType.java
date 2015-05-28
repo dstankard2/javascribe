@@ -8,7 +8,7 @@ import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.types.ListType;
 
-public class ListVariableType implements JavascriptVariableType,ListType {
+public class ListVariableType extends JavascriptBaseObjectType implements ListType {
 
 	@Override
 	public String getCodeToRetrieveAttribute(String varName, String attribName,

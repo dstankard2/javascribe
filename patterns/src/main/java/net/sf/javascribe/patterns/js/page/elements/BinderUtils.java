@@ -8,12 +8,10 @@ import java.util.Map;
 import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.ProcessorContext;
+import net.sf.javascribe.langsupport.javascript.JavascriptBaseObjectType;
 import net.sf.javascribe.langsupport.javascript.JavascriptCode;
-import net.sf.javascribe.langsupport.javascript.JavascriptDataObject;
-import net.sf.javascribe.langsupport.javascript.JavascriptFunction;
-import net.sf.javascribe.langsupport.javascript.JavascriptServiceObject;
+import net.sf.javascribe.langsupport.javascript.JavascriptFunctionType;
 import net.sf.javascribe.langsupport.javascript.JavascriptUtils;
-import net.sf.javascribe.langsupport.javascript.JavascriptVariableType;
 import net.sf.javascribe.patterns.js.page.ElementBinderEntry;
 import net.sf.javascribe.patterns.js.page.PageModelType;
 import net.sf.javascribe.patterns.js.page.PageType;
@@ -85,18 +83,18 @@ public class BinderUtils {
 			}
 			// Look for a function on the page that has the right name
 			if ((!done) && (pageType.hasOperation(target))) {
-				JavascriptFunction fn = null;
-				for(JavascriptFunction o : pageType.getOperations()) {
+				JavascriptFunctionType fn = null;
+				for(JavascriptFunctionType o : pageType.getOperations()) {
 					if (o.getName().equals(target)) {
 						fn = o;
 						break;
 					}
 				}
-				if ((resultVar!=null) && (fn.isReturnValue())) {
+				if (resultVar!=null) {
 					ret = JavascriptUtils.invokeFunction(resultVar, "this", fn, execCtx);
 					if (ret!=null) done = true;
 					else ret = new JavascriptCode(true);
-				} else if ((resultVar==null) && (!fn.isReturnValue())) {
+				} else if (resultVar==null) {
 					done = true;
 					ret = JavascriptUtils.invokeFunction(null, "this", fn, execCtx);
 				}
@@ -105,49 +103,39 @@ public class BinderUtils {
 			// Check if this is an attribute of the model
 			if ((resultVar!=null) && (modelType!=null) 
 					&& modelType.getAttributeType(obj)!=null) {
-				JavascriptVariableType attrType = (JavascriptVariableType)ctx.getCtx().getType(modelType.getAttributeType(obj));
-				if ((attrType!=null) && (attrType instanceof JavascriptDataObject)) {
-					JavascriptDataObject doType = (JavascriptDataObject)attrType;
-					if (doType.getAttributeType(attr)!=null) {
-						done = true;
-						String objRef = modelType.getCodeToRetrieveAttribute("this.model", obj, null, execCtx);
-						ret.append("if ("+objRef+"==null) "+resultVar+" = null;\n");
-						ret.append("else "+resultVar+" = ");
-						ret.append(doType.getCodeToRetrieveAttribute(objRef, attr, null, execCtx));
-						ret.append(";\n");
-					}
+				JavascriptBaseObjectType attrType = (JavascriptBaseObjectType)ctx.getCtx().getType(modelType.getAttributeType(obj));
+				if ((attrType!=null) && (attrType.getAttributeType(attr)!=null)) {
+					done = true;
+					String objRef = modelType.getCodeToRetrieveAttribute("this.model", obj, null, execCtx);
+					ret.append("if ("+objRef+"==null) "+resultVar+" = null;\n");
+					ret.append("else "+resultVar+" = ");
+					ret.append(attrType.getCodeToRetrieveAttribute(objRef, attr, null, execCtx));
+					ret.append(";\n");
 				}
 			}
 			// Check if we're supposed to invoke a function on a known type
 			if ((!done) && (execCtx.getVariableType(obj)!=null)) {
-				JavascriptVariableType t = (JavascriptVariableType)execCtx.getTypeForVariable(obj);
-				if (t instanceof JavascriptServiceObject) {
-					JavascriptServiceObject srv = (JavascriptServiceObject)t;
-					for(JavascriptFunction fn : srv.getOperations()) {
-						ret = JavascriptUtils.invokeFunction(resultVar, obj, fn, execCtx);
-						if (ret!=null) {
-							done = true;
-							break;
-						}
+				JavascriptBaseObjectType srv = (JavascriptBaseObjectType)execCtx.getTypeForVariable(obj);
+				for(JavascriptFunctionType fn : srv.getOperations()) {
+					ret = JavascriptUtils.invokeFunction(resultVar, obj, fn, execCtx);
+					if (ret!=null) {
+						done = true;
+						break;
 					}
 				}
 			}
 			// Check if we should invoke a function on a type on the window.
 			if ((!done) && (ctx.getCtx().getAttributeType(obj)!=null)) {
 				String typeName = ctx.getCtx().getAttributeType(obj);
-				JavascriptVariableType type = (JavascriptVariableType)ctx.getCtx().getType(typeName);
-				if ((type instanceof JavascriptDataObject) && (resultVar!=null)) {
-					JavascriptDataObject d = (JavascriptDataObject)type;
-					if (d.getAttributeType(attr)!=null) {
-						done = true;
-						ret.append(resultVar+" = ");
-						ret.append(d.getCodeToRetrieveAttribute(obj, attr, "object", execCtx));
-						ret.append(";\n");
-					}
+				JavascriptBaseObjectType type = (JavascriptBaseObjectType)ctx.getCtx().getType(typeName);
+				if (type.getAttributeType(attr)!=null) {
+					done = true;
+					ret.append(resultVar+" = ");
+					ret.append(type.getCodeToRetrieveAttribute(obj, attr, "object", execCtx));
+					ret.append(";\n");
 				}
-				if ((!done) && (type instanceof JavascriptServiceObject)) {
-					JavascriptServiceObject srv = (JavascriptServiceObject)type;
-					for(JavascriptFunction op : srv.getOperations()) {
+				if (!done) {
+					for(JavascriptFunctionType op : type.getOperations()) {
 						if (!op.getName().equals(attr)) continue;
 						JavascriptCode c = JavascriptUtils.invokeFunction(resultVar, obj, op, execCtx);
 						if (c!=null) {

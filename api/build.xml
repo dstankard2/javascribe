@@ -20,6 +20,7 @@
 			fork="true"
 			destdir="${build.root}\api\classes"
 			target="1.7"
+			source="1.7"
 		>
 		</javac>
 		<copy file=".\bin\net\sf\javascribe\api\config\jaxb.index" overwrite="true" 

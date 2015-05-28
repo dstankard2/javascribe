@@ -3,7 +3,7 @@ package net.sf.javascribe.langsupport.javascript;
 import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JavascribeException;
 
-public class NodeVariableType implements JavascriptVariableType {
+public class NodeVariableType extends JavascriptBaseObjectType {
 
 	@Override
 	public String getName() {

@@ -11,7 +11,7 @@ import net.sf.javascribe.api.expressions.ValueExpression;
 import net.sf.javascribe.api.expressions.VarReferenceExpressionAtom;
 import net.sf.javascribe.api.types.IntegerType;
 
-public class IntegerVariableType implements JavascriptVariableType,IntegerType {
+public class IntegerVariableType extends JavascriptBaseObjectType implements IntegerType {
 
 	public String evaluateExpression(ValueExpression expr,CodeExecutionContext execCtx) throws JavascribeException {
 	    StringBuilder build = new StringBuilder();

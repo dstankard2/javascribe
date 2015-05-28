@@ -19,12 +19,14 @@ public class JavascriptLanguageSupport implements LanguageSupport {
 	public List<VariableType> getBaseVariableTypes() {
 		ArrayList<VariableType> ret = new ArrayList<VariableType>();
 		
-		ret.add(new ObjectVariableType());
+		ret.add(new DOMEventType());
+		ret.add(new DOMElementType());
+		ret.add(new JavascriptObjectType("object"));
 		ret.add(new StringVariableType());
-		ret.add(new ListVariableType());
 		ret.add(new IntegerVariableType());
 		ret.add(new BooleanVariableType());
 		ret.add(new NodeListVariableType());
+		ret.add(new ListVariableType());
 		ret.add(new NodeVariableType());
 		
 		return ret;

@@ -22,6 +22,7 @@ public class ModelDirective implements AttributeDirective {
 	public void generateCode(DirectiveContext ctx) throws JavascribeException {
 		String model = ctx.getTemplateAttributes().get("js-model");
 		StringBuilder b = ctx.getCode();
+		String changeEvent = null;
 
 		ctx.continueRenderElement(ctx.getExecCtx());
 		String var = ctx.getElementVarName();
@@ -34,8 +35,9 @@ public class ModelDirective implements AttributeDirective {
 			String val = "${_page.model."+model+"}";
 			val = ExpressionUtil.evaluateValueExpression(val, "object", ctx.getExecCtx());
 			params.put("getter", val);
+			changeEvent = ctx.getTemplateAttributes().get("js-onchange");
 			params.put("controllerEvent",DirectiveUtils.getEventForModelRef(model));
-			params.put("setter",DirectiveUtils.getModelSetterCode(model, "val", ctx));
+			params.put("setter",DirectiveUtils.getModelSetterCode(model, "val", ctx, changeEvent));
 			String fnName = ctx.newVarName("_f", "function", ctx.getExecCtx());
 			params.put("fn", fnName);
 		} else if (ctx.getElementName().equals("input")) {
@@ -48,9 +50,18 @@ public class ModelDirective implements AttributeDirective {
 			String val = "${_page.model."+model+"}";
 			val = ExpressionUtil.evaluateValueExpression(val, "object", ctx.getExecCtx());
 			params.put("getter", val);
+			changeEvent = ctx.getTemplateAttributes().get("js-onchange");
 			params.put("controllerEvent",DirectiveUtils.getEventForModelRef(model));
-			params.put("setter",DirectiveUtils.getModelSetterCode(model, "val", ctx));
+			params.put("setter",DirectiveUtils.getModelSetterCode(model, "val", ctx,changeEvent));
 		} else if (ctx.getElementName().equals("textarea")) {
+			template = "renderer/js-model-input.txt";
+			params.put("changeEvent", "onkeyup");
+			String val = "${_page.model."+model+"}";
+			val = ExpressionUtil.evaluateValueExpression(val, "object", ctx.getExecCtx());
+			params.put("getter", val);
+			changeEvent = ctx.getTemplateAttributes().get("js-onchange");
+			params.put("controllerEvent",DirectiveUtils.getEventForModelRef(model));
+			params.put("setter",DirectiveUtils.getModelSetterCode(model, "val", ctx, changeEvent));
 		}
 		if (template!=null) {
 			b.append(JavascribeUtils.basicTemplating(template, params, ctx.getProcessorContext()));

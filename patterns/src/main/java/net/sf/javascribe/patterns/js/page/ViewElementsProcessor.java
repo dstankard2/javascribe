@@ -10,7 +10,7 @@ import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.annotation.Processor;
 import net.sf.javascribe.api.annotation.ProcessorMethod;
 import net.sf.javascribe.api.annotation.Scannable;
-import net.sf.javascribe.langsupport.javascript.JavascriptDataObject;
+import net.sf.javascribe.langsupport.javascript.JavascriptBaseObjectType;
 import net.sf.javascribe.patterns.js.page.elements.BinderUtils;
 
 import org.apache.log4j.Logger;
@@ -37,7 +37,7 @@ public class ViewElementsProcessor {
 			throw new JavascribeException("No page named '"+comp.getPageName()+"' has been defined");
 		}
 
-		JavascriptDataObject viewType = (JavascriptDataObject)ctx.getTypes().getType(comp.getPageName()+"View");
+		JavascriptBaseObjectType viewType = (JavascriptBaseObjectType)ctx.getTypes().getType(comp.getPageName()+"View");
 
 		StringBuilder initCode = PageUtils.getInitFunction(ctx, comp.getPageName());
 		Map<String,ElementBinderEntry> binders = BinderUtils.getElementBinders(ctx);

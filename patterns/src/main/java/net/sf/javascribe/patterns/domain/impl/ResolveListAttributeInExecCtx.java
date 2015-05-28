@@ -2,6 +2,7 @@ package net.sf.javascribe.patterns.domain.impl;
 
 import java.util.List;
 
+import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.annotation.Scannable;
 import net.sf.javascribe.api.types.ListType;
@@ -103,12 +104,13 @@ public class ResolveListAttributeInExecCtx implements Resolver {
 		ret.appendCodeText("for ("+loopItemType.getClassName()+" "+loopItem);
 		ret.appendCodeText(" : "+listToLoop);
 		ret.appendCodeText(") {\n");
-		ctx.getExecCtx().addVariable(loopItem, loopItemType.getName());
-		JavaUtils.append(ret, (JavaCode)elementType.declare(elementAttribute, ctx.getExecCtx()));
-		ctx.getExecCtx().addVariable(elementAttribute, elementTypeName);
-		String invoke = JavaUtils.callJavaOperation(elementAttribute, dep, op, ctx.getExecCtx(), null);
+		CodeExecutionContext child = new CodeExecutionContext(ctx.getExecCtx());
+		child.addVariable(loopItem, loopItemType.getName());
+		JavaUtils.append(ret, (JavaCode)elementType.declare(elementAttribute, child));
+		child.addVariable(elementAttribute, elementTypeName);
+		String invoke = JavaUtils.callJavaOperation(elementAttribute, dep, op, child, null);
 		ret.appendCodeText(invoke);
-		JavaUtils.append(ret, (JavaCode)listType.appendToList(returnValue, elementAttribute, ctx.getExecCtx()));
+		JavaUtils.append(ret, (JavaCode)listType.appendToList(returnValue, elementAttribute, child));
 		ret.appendCodeText("\n}\n");
 
 		return ret;

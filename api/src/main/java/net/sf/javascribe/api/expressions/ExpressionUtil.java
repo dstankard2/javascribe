@@ -120,8 +120,9 @@ public class ExpressionUtil {
      * @throws CodeGenerationException If there is an issue.
      */
     public static String evaluateSetExpression(String var,ValueExpression value,CodeExecutionContext execCtx) throws JavascribeException {
-    	StringBuffer build = new StringBuffer();
-    	String evaluatedValue = null;
+    	String evaluatedValue = getEvaluatedExpression(value, execCtx);
+    	
+    	/*
     	VarReferenceExpressionAtom atom = null;
     	
     	if (var.indexOf('.')>0) {
@@ -139,10 +140,40 @@ public class ExpressionUtil {
     	}
     	
     	return build.toString();
+    	*/
+    	return evaluateSetExpression(var,evaluatedValue,execCtx);
     }
 
-    public static String evaluateSet(VarReferenceExpressionAtom varToSet,ValueExpression value,CodeExecutionContext execCtx) throws JavascribeException {
-    	return evaluateSet(varToSet,null,null,value,execCtx);
+    /**
+     * Sets the given variable (in the given context) to the value expressed by the JADL value expression.
+     * @param var A JADL variable reference, without "${}"
+     * @param value A JADL value expression to set the var to.
+     * @param execCtx Current code execution context
+     * @return String that expresses the result of setting the variable.
+     * @throws CodeGenerationException If there is an issue.
+     */
+    public static String evaluateSetExpression(String var,String evaluatedValue,CodeExecutionContext execCtx) throws JavascribeException {
+    	StringBuffer build = new StringBuffer();
+    	VarReferenceExpressionAtom atom = null;
+    	
+    	if (var.indexOf('.')>0) {
+    		atom = evaluateVarRefAtom(var, null, execCtx);
+    		build.append(evaluateSet(atom,evaluatedValue,execCtx));
+    	} else {
+    		String typeName = findType(var, execCtx);
+    		if (typeName==null) {
+    			throw new JavascribeException("Found null type name for var expression '"+var+"'");
+    		}
+
+    		// May have to replace this later with code that can determine how to set a var value.
+    		build.append(var+" = "+evaluatedValue+";\n");
+    	}
+    	
+    	return build.toString();
+    }
+
+    public static String evaluateSet(VarReferenceExpressionAtom varToSet,String evaluatedValue,CodeExecutionContext execCtx) throws JavascribeException {
+    	return evaluateSet(varToSet,null,null,evaluatedValue,execCtx);
     }
     
 	public static String getEvaluatedExpression(ValueExpression expr,CodeExecutionContext execCtx) throws JavascribeException {
@@ -195,12 +226,14 @@ public class ExpressionUtil {
         return buf.toString();
 	}
 
+	/* TODO: Required?
 	public ValueExpression getExpression(String value,String targetType,CodeExecutionContext execCtx) {
 		ValueExpression ret = null;
 		
 		
 		return ret;
 	}
+	*/
 
 	public static String findType(String varRef, CodeExecutionContext execCtx)
 	throws JavascribeException {
@@ -396,25 +429,22 @@ public class ExpressionUtil {
         return ret;
     }
     
-    private static String evaluateSet(VarReferenceExpressionAtom varToSet,String holderName,AttributeHolder holder,ValueExpression value,CodeExecutionContext execCtx) throws JavascribeException {
+    private static String evaluateSet(VarReferenceExpressionAtom varToSet,String holderName,AttributeHolder holder,String evaluatedValue,CodeExecutionContext execCtx) throws JavascribeException {
     	StringBuffer buf = new StringBuffer();
     	AttributeHolder thisHolder = null;
     	
     	if (varToSet.getNestedProperty().getNestedProperty()==null) {
 			thisHolder = (AttributeHolder)varToSet.getType();
-			String val = getEvaluatedExpression(value, execCtx);
     		if (holderName==null) {
-    			buf.append(thisHolder.getCodeToSetAttribute(varToSet.getName(), varToSet.getNestedProperty().getName(), val, execCtx));
-//    			buf.append(thisHolder.getCodeToSetAttribute(varToSet.getName(), varToSet.getNestedProperty().getName(), value, execCtx));
+    			buf.append(thisHolder.getCodeToSetAttribute(varToSet.getName(), varToSet.getNestedProperty().getName(), evaluatedValue, execCtx));
     		} else {
-    			buf.append(thisHolder.getCodeToSetAttribute(holderName, varToSet.getNestedProperty().getName(), val, execCtx));
-//    			buf.append(thisHolder.getCodeToSetAttribute(holderName, varToSet.getNestedProperty().getName(), value, execCtx));
+    			buf.append(thisHolder.getCodeToSetAttribute(holderName, varToSet.getNestedProperty().getName(), evaluatedValue, execCtx));
     		}
     	} else {
     		if (holderName==null) {
     			thisHolder = (AttributeHolder)varToSet.getType();
     			String str = thisHolder.getCodeToRetrieveAttribute(varToSet.getName(), varToSet.getNestedProperty().getName(), varToSet.getNestedProperty().getType().getName(),execCtx);
-    			buf.append(evaluateSet(varToSet.getNestedProperty(),str,thisHolder,value,execCtx));
+    			buf.append(evaluateSet(varToSet.getNestedProperty(),str,thisHolder,evaluatedValue,execCtx));
     		} else {
     			
     		}

@@ -4,15 +4,10 @@ import net.sf.javascribe.api.Code;
 
 import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JavascribeException;
-import net.sf.javascribe.api.expressions.CodeFragmentExpressionAtom;
-import net.sf.javascribe.api.expressions.ConstantReferenceExpressionAtom;
-import net.sf.javascribe.api.expressions.ExpressionAtom;
-import net.sf.javascribe.api.expressions.ExpressionUtil;
 import net.sf.javascribe.api.expressions.ValueExpression;
-import net.sf.javascribe.api.expressions.VarReferenceExpressionAtom;
 import net.sf.javascribe.api.types.BooleanType;
 
-public class BooleanVariableType implements JavascriptVariableType,BooleanType {
+public class BooleanVariableType extends JavascriptBaseObjectType implements BooleanType {
 
 	@Override
 	public String evaluateExpression(ValueExpression expr,

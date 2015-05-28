@@ -320,6 +320,7 @@ public class HandwrittenCodeProcessor {
 					t = findType(type,ctx);
 					if (t==null) throw new JavascribeException("Couldn't find type for parameter type '"+type+"'");
 					op.addParameter(n, t);
+					ctx.addAttribute(n, t);
 				}
 			}
 			srvType.addMethod(op);

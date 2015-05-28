@@ -78,7 +78,7 @@ public class JavascriptUtils {
 		return ret;
 	}
 	
-	public static JavascriptCode invokeFunction(String resultVar,String objName,JavascriptFunction fn,CodeExecutionContext execCtx) throws JavascribeException {
+	public static JavascriptCode invokeFunction(String resultVar,String objName,JavascriptFunctionType fn,CodeExecutionContext execCtx) throws JavascribeException {
 		JavascriptCode ret = new JavascriptCode(true);
 		
 		if (resultVar!=null) {
@@ -97,13 +97,11 @@ public class JavascriptUtils {
 				continue;
 			}
 			for(String v : execCtx.getVariableNames()) {
-				JavascriptVariableType t = (JavascriptVariableType)execCtx.getTypeForVariable(v);
-				if (t instanceof JavascriptDataObject) {
-					String s = findAttributeInDataObject(p, v, (JavascriptDataObject)t);
-					if (s!=null) {
-						ret.append(s);
-						continue;
-					}
+				JavascriptBaseObjectType t = (JavascriptBaseObjectType)execCtx.getTypeForVariable(v);
+				String s = findAttributeInDataObject(p, v, t);
+				if (s!=null) {
+					ret.append(s);
+					continue;
 				}
 			}
 			log.warn("Could not find parameter '"+p+"' to invoke a Javascript function.");
@@ -114,7 +112,7 @@ public class JavascriptUtils {
 		return ret;
 	}
 	
-	protected static String findAttributeInDataObject(String attrib,String objVar,JavascriptDataObject type) throws JavascribeException {
+	protected static String findAttributeInDataObject(String attrib,String objVar,JavascriptBaseObjectType type) throws JavascribeException {
 		String ret = null;
 		if (type.getAttributeType(attrib)!=null) {
 			return type.getCodeToRetrieveAttribute(objVar, attrib, "object", null);
@@ -122,10 +120,10 @@ public class JavascriptUtils {
 		return ret;
 	}
 	
-	public static JavascriptDataObjectImpl makeDataObject(JavaBeanType javaType) {
-		JavascriptDataObjectImpl ret = null;
+	public static JavascriptObjectType makeDataObject(JavaBeanType javaType) {
+		JavascriptObjectType ret = null;
 		
-		ret = new JavascriptDataObjectImpl(javaType.getName());
+		ret = new JavascriptObjectType(javaType.getName());
 		for(String name : javaType.getAttributeNames()) {
 			ret.addAttribute(name, javaType.getAttributeType(name));
 		}

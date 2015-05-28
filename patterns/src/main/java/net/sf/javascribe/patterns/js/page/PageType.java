@@ -4,11 +4,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import net.sf.javascribe.api.Code;
 import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JavascribeException;
-import net.sf.javascribe.langsupport.javascript.JavascriptDataObject;
-import net.sf.javascribe.langsupport.javascript.JavascriptFunction;
-import net.sf.javascribe.langsupport.javascript.JavascriptServiceObjectImpl;
+import net.sf.javascribe.langsupport.javascript.JavascriptBaseObjectType;
+import net.sf.javascribe.langsupport.javascript.JavascriptCode;
+import net.sf.javascribe.langsupport.javascript.JavascriptFunctionType;
 
 /**
  * A page is a hybrid of a data object and a service object, as it has 
@@ -16,13 +17,20 @@ import net.sf.javascribe.langsupport.javascript.JavascriptServiceObjectImpl;
  * @author DCS
  *
  */
-public class PageType extends JavascriptServiceObjectImpl implements JavascriptDataObject {
-	HashMap<String,String> attributes = new HashMap<String,String>();
+public class PageType extends JavascriptBaseObjectType {
+	//HashMap<String,String> attributes = new HashMap<String,String>();
+	String name = null;
 	
 	public PageType(String name) {
-		super(name);
+		super();
+		this.name = name;
 	}
 	
+	public String getName() {
+		return name;
+	}
+	
+	/*
 	@Override
 	public String getCodeToRetrieveAttribute(String varName, String attribName,
 			String targetType, CodeExecutionContext execCtx)
@@ -40,7 +48,9 @@ public class PageType extends JavascriptServiceObjectImpl implements JavascriptD
 			throws JavascribeException {
 		return varName+'.'+attribName+" = "+evaluatedValue;
 	}
+	*/
 
+	/*
 	@Override
 	public String getAttributeType(String attrib) throws JavascribeException {
 		return attributes.get(attrib);
@@ -59,13 +69,21 @@ public class PageType extends JavascriptServiceObjectImpl implements JavascriptD
 	public void addAttribute(String name,String type) {
 		attributes.put(name, type);
 	}
-	
+	*/
+
 	public boolean hasOperation(String name) {
-		for(JavascriptFunction op : getOperations()) {
+		for(JavascriptFunctionType op : getOperations()) {
 			if (op.getName().equals(name))
 				return true;
 		}
 		return false;
+	}
+
+	@Override
+	public Code instantiate(String name, String value,CodeExecutionContext execCtx) throws JavascribeException {
+		JavascriptCode ret = new JavascriptCode(false);
+		ret.appendCodeText(name+" = window."+this.name+";\n");
+		return ret;
 	}
 
 }

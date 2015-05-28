@@ -11,8 +11,7 @@ import net.sf.javascribe.api.annotation.Processor;
 import net.sf.javascribe.api.annotation.ProcessorMethod;
 import net.sf.javascribe.api.annotation.Scannable;
 import net.sf.javascribe.langsupport.java.JavaBeanType;
-import net.sf.javascribe.langsupport.javascript.JavascriptDataObject;
-import net.sf.javascribe.langsupport.javascript.JavascriptFunction;
+import net.sf.javascribe.langsupport.javascript.JavascriptBaseObjectType;
 import net.sf.javascribe.langsupport.javascript.JavascriptSourceFile;
 import net.sf.javascribe.langsupport.javascript.JavascriptUtils;
 import net.sf.javascribe.patterns.js.page.elements.BinderUtils;
@@ -102,7 +101,7 @@ public class WsClientProcessor {
 		ctx.setLanguageSupport("Javascript");
 		for(JavaBeanType t : javaBeansToConvert) {
 			if (ctx.getType(t.getName())==null) {
-				JavascriptDataObject type = JavascriptUtils.makeDataObject(t);
+				JavascriptBaseObjectType type = JavascriptUtils.makeDataObject(t);
 				ctx.getTypes().addType(type);
 			}
 		}

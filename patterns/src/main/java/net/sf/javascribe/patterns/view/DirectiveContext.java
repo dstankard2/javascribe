@@ -5,7 +5,7 @@ import java.util.Map;
 import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.ProcessorContext;
-import net.sf.javascribe.langsupport.javascript.JavascriptFunction;
+import net.sf.javascribe.langsupport.javascript.JavascriptFunctionType;
 
 public interface DirectiveContext {
 	
@@ -24,7 +24,7 @@ public interface DirectiveContext {
 	public void continueRenderElement() throws JavascribeException;
 	public String getInnerHtml();
 	public String getTemplateObj();
-	public JavascriptFunction getFunction();
+	public JavascriptFunctionType getFunction();
 
 }
 

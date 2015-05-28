@@ -6,7 +6,8 @@ import java.util.List;
 import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.ProcessorContext;
-import net.sf.javascribe.langsupport.javascript.JavascriptFunction;
+import net.sf.javascribe.langsupport.javascript.JavascriptFunctionType;
+import net.sf.javascribe.patterns.view.impl.JavascriptEvaluator;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -23,7 +24,7 @@ public class TemplateParser {
 			"var done = true;\n" +
 			"var n = parent.childNodes[i];\n" +
 			"for(var i2=0;i2<prev.length;i2++) {\n" +
-			"if (n.classList.contains(prev[i2])) {" +
+			"if (n._elt==prev[i2]) {\n"+
 			"done = false;\nbreak;\n" +
 			"}\n" +
 			"}\n" +
@@ -37,7 +38,7 @@ public class TemplateParser {
 			"}\n";
 	
 	public static String parseJavascriptCode(String template,
-			ProcessorContext ctx,String obj,JavascriptFunction fn) throws JavascribeException {
+			ProcessorContext ctx,String obj,JavascriptFunctionType fn) throws JavascribeException {
 		CodeExecutionContext execCtx = null;
 		StringBuilder b = new StringBuilder();
 		
@@ -48,7 +49,7 @@ public class TemplateParser {
 		return b.toString();
 	}
 	
-	protected static String generateJavascriptCode(String template,ProcessorContext ctx,String obj,JavascriptFunction fn,CodeExecutionContext execCtx) throws JavascribeException {
+	protected static String generateJavascriptCode(String template,ProcessorContext ctx,String obj,JavascriptFunctionType fn,CodeExecutionContext execCtx) throws JavascribeException {
 		StringBuilder b = new StringBuilder();
 		Document doc = Jsoup.parse(template.trim());
 		
@@ -80,13 +81,13 @@ public class TemplateParser {
 		return b.toString();
 	}
 	
-	protected static void addParams(CodeExecutionContext execCtx,JavascriptFunction fn) throws JavascribeException {
+	protected static void addParams(CodeExecutionContext execCtx,JavascriptFunctionType fn) throws JavascribeException {
 		for(String s : fn.getParamNames()) {
 			execCtx.addVariable(s, fn.getParamType(s));
 		}
 	}
 	
-	public static String parseNode(String containerVar,Node node,CodeExecutionContext execCtx,StringBuilder code,ProcessorContext ctx,String templateObj,JavascriptFunction fn,List<String> previousEltVars) throws JavascribeException {
+	public static String parseNode(String containerVar,Node node,CodeExecutionContext execCtx,StringBuilder code,ProcessorContext ctx,String templateObj,JavascriptFunctionType fn,List<String> previousEltVars) throws JavascribeException {
 		String ret = null;
 		
 		if (node instanceof Element) {
@@ -99,7 +100,7 @@ public class TemplateParser {
 		return ret;
 	}
 
-	protected static String processTextNode(TextNode n,String containerVar,StringBuilder code,CodeExecutionContext execCtx) {
+	protected static String processTextNode(TextNode n,String containerVar,StringBuilder code,CodeExecutionContext execCtx) throws JavascribeException {
 		String text = n.text();
 		int previousEnd = 0;
 		int i = text.indexOf("{{");
@@ -114,8 +115,14 @@ public class TemplateParser {
 			int end = text.indexOf("}}", i+2);
 			code.append(append.replace("'", "\\'"));
 			String add = text.substring(i+2, end).trim();
-			String ref = DirectiveUtils.getValidReference(add, execCtx);
-			code.append("'+"+ref+"+'");
+			JavascriptEvaluator eval = new JavascriptEvaluator(add,execCtx);
+			eval.parseExpression();
+			if (eval.getError()!=null) {
+				throw new JavascribeException(eval.getError());
+			}
+			String ref = eval.getResult();
+			//String ref = DirectiveUtils.getValidReference(add, execCtx);
+			code.append("'+((function(){try{return "+ref+"?"+ref+":'';}catch(_e){return '';}}.bind("+containerVar+"))())+'");
 			previousEnd = end + 2;
 			i = text.indexOf("{{", previousEnd);
 		}

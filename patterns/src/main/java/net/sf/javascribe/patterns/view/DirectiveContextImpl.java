@@ -6,7 +6,7 @@ import java.util.Map;
 import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.ProcessorContext;
-import net.sf.javascribe.langsupport.javascript.JavascriptFunction;
+import net.sf.javascribe.langsupport.javascript.JavascriptFunctionType;
 
 public class DirectiveContextImpl implements DirectiveContext {
 	ProcessorContext ctx = null;
@@ -19,10 +19,10 @@ public class DirectiveContextImpl implements DirectiveContext {
 	StringBuilder code = new StringBuilder();
 	ElementParser invoker = null;
 	String templateObj = null;
-	JavascriptFunction function = null;
+	JavascriptFunctionType function = null;
 	String innerHtml = null;
 	
-	public DirectiveContextImpl(ProcessorContext ctx,String elementName,HashMap<String,String> attributes,String containerVar,StringBuilder code,ElementParser invoker,String templateObj,JavascriptFunction fn,String innerHtml) {
+	public DirectiveContextImpl(ProcessorContext ctx,String elementName,HashMap<String,String> attributes,String containerVar,StringBuilder code,ElementParser invoker,String templateObj,JavascriptFunctionType fn,String innerHtml) {
 		this.ctx = ctx;
 		this.elementName = elementName;
 		
@@ -112,7 +112,7 @@ public class DirectiveContextImpl implements DirectiveContext {
 	}
 
 	@Override
-	public JavascriptFunction getFunction() {
+	public JavascriptFunctionType getFunction() {
 		return function;
 	}
 

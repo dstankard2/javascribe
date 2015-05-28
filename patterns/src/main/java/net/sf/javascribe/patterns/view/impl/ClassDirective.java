@@ -38,12 +38,22 @@ public class ClassDirective implements AttributeDirective {
 			done = true;
 			Iterator<String> names = node.getFieldNames();
 			while(names.hasNext()) {
+				String bool = ctx.newVarName("_b", "boolean", ctx.getExecCtx());
 				String name = names.next();
 				String value = node.findValue(name).asText();
-				String cond = DirectiveUtils.evaluateIf(value, ctx.getExecCtx());
-				code.append("if ("+cond+") "+ctx.getElementVarName()+".classList.add('"+name+"');\n");
+				JavascriptEvaluator eval = new JavascriptEvaluator(value,ctx.getExecCtx());
+				eval.parseExpression();
+				if (eval.getError()!=null) {
+					throw new JavascribeException(eval.getError());
+				}
+				String cond = eval.getResult();
+				//String cond = DirectiveUtils.evaluateIf(value, ctx.getExecCtx());
+				code.append("var "+bool+";\ntry {\n");
+				code.append("if ("+cond+") "+bool+" = true;\n} catch(err) {}\n");
+				code.append("if ("+bool+") "+ctx.getElementVarName()+".classList.add('"+name+"');\n");
 			}
 		} catch(Exception e) { 
+			e.printStackTrace();
 		}
 		if (!done) {
 			StringTokenizer tok = new StringTokenizer(classValue," ");

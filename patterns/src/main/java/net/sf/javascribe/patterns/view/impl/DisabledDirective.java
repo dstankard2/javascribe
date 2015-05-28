@@ -4,7 +4,6 @@ import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.annotation.Scannable;
 import net.sf.javascribe.patterns.view.AttributeDirective;
 import net.sf.javascribe.patterns.view.DirectiveContext;
-import net.sf.javascribe.patterns.view.DirectiveUtils;
 
 @Scannable
 public class DisabledDirective implements AttributeDirective {
@@ -22,7 +21,12 @@ public class DisabledDirective implements AttributeDirective {
 		ctx.getTemplateAttributes().remove("js-disabled");
 		ctx.continueRenderElement();
 		
-		String cond = DirectiveUtils.evaluateIf(value, ctx.getExecCtx());
+		JavascriptEvaluator eval = new JavascriptEvaluator(value,ctx.getExecCtx());
+		eval.parseExpression();
+		if (eval.getError()!=null) {
+			throw new JavascribeException(eval.getError());
+		}
+		String cond = eval.getResult();
 		code.append("try {\n");
 		code.append("if ("+cond+") "+ctx.getElementVarName()+".disabled = true;\n");
 		code.append("else "+ctx.getElementVarName()+".disabled = false;\n");

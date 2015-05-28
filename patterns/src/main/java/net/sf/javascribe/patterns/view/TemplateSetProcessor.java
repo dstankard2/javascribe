@@ -11,8 +11,8 @@ import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.annotation.Processor;
 import net.sf.javascribe.api.annotation.ProcessorMethod;
 import net.sf.javascribe.api.annotation.Scannable;
-import net.sf.javascribe.langsupport.javascript.JavascriptFunction;
-import net.sf.javascribe.langsupport.javascript.JavascriptServiceObjectImpl;
+import net.sf.javascribe.langsupport.javascript.JavascriptFunctionType;
+import net.sf.javascribe.langsupport.javascript.JavascriptObjectType;
 import net.sf.javascribe.langsupport.javascript.JavascriptSourceFile;
 import net.sf.javascribe.langsupport.javascript.JavascriptUtils;
 
@@ -46,7 +46,7 @@ public class TemplateSetProcessor {
 			throw new JavascribeException("There is already a Javascript type called '"+obj+"'");
 		}
 		
-		JavascriptServiceObjectImpl type = new JavascriptServiceObjectImpl(obj);
+		JavascriptObjectType type = new JavascriptObjectType(obj);
 		ctx.addAttribute(obj, type.getName());
 		ctx.getTypes().addType(type);
 		JavascriptSourceFile src = JavascriptUtils.getSourceFile(ctx);
@@ -54,7 +54,7 @@ public class TemplateSetProcessor {
 		src.getSource().append("var "+obj+" = { };\n");
 		for(SingleTemplate tmp : comp.getTemplate()) {
 			StringBuilder b = new StringBuilder();
-			JavascriptFunction fn = new JavascriptFunction(obj,tmp.getName());
+			JavascriptFunctionType fn = new JavascriptFunctionType(tmp.getName());
 			type.addOperation(fn);
 			String path = tmp.getPath();
 			InputStream in = null;

@@ -4,7 +4,6 @@ import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.patterns.view.AttributeDirective;
 import net.sf.javascribe.patterns.view.DirectiveContext;
-import net.sf.javascribe.patterns.view.DirectiveUtils;
 
 //This is not scannable because it will be added to the renderer list manually.
 public class IfDirective implements AttributeDirective {
@@ -20,7 +19,26 @@ public class IfDirective implements AttributeDirective {
 		String cond = ctx.getTemplateAttributes().get("js-if");
 		CodeExecutionContext existingCtx = ctx.getExecCtx();
 
-		ctx.getTemplateAttributes().remove("js-if");
+		JavascriptEvaluator eval = new JavascriptEvaluator(cond,existingCtx);
+		eval.parseExpression();
+		if (eval.getError()!=null) {
+			throw new JavascribeException(eval.getError());
+		}
+		String finalCond = eval.getResult();
+
+		String boolVar = ctx.newVarName("_b", "boolean", existingCtx);
+		b.append("var "+boolVar+" = false;\n");
+		b.append("try {\n"+boolVar+" = ("+finalCond+");\n} catch(_err) { }\n");
+		b.append("if ("+boolVar+") {\n");
+
+		CodeExecutionContext newCtx = new CodeExecutionContext(existingCtx);
+		ctx.continueRenderElement(newCtx);
+
+		b.append("}\n");
+		
+		//if (ctx.get)
+
+		/*
 		// If there is a page in the execution context, 
 		if (existingCtx.getVariableType(DirectiveUtils.PAGE_VAR)==null) {
 			b.append("if ("+cond+") {\n");
@@ -48,6 +66,7 @@ public class IfDirective implements AttributeDirective {
 			ctx.continueRenderElement(newCtx);
 			b.append("}\n");
 		}
+		*/
 	}
 	
 }

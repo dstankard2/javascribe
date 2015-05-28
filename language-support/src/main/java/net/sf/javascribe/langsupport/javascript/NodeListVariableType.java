@@ -3,7 +3,7 @@ package net.sf.javascribe.langsupport.javascript;
 import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JavascribeException;
 
-public class NodeListVariableType implements JavascriptVariableType {
+public class NodeListVariableType extends JavascriptBaseObjectType {
 
 	@Override
 	public String getName() {
@@ -12,9 +12,6 @@ public class NodeListVariableType implements JavascriptVariableType {
 
 	@Override
 	public JavascriptCode instantiate(String varName, String value,CodeExecutionContext execCtx) throws JavascribeException {
-//		JavascriptCode ret = new JavascriptCode(false);
-//		ret.append(varName+" = '';\n");
-//		return ret;
 		throw new JavascribeException("NodeList does not support instantiate");
 	}
 

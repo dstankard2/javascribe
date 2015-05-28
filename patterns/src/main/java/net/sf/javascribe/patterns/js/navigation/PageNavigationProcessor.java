@@ -7,9 +7,8 @@ import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.annotation.Processor;
 import net.sf.javascribe.api.annotation.ProcessorMethod;
 import net.sf.javascribe.api.annotation.Scannable;
-import net.sf.javascribe.langsupport.javascript.JavascriptFunction;
-import net.sf.javascribe.langsupport.javascript.JavascriptServiceObject;
-import net.sf.javascribe.langsupport.javascript.JavascriptServiceObjectImpl;
+import net.sf.javascribe.langsupport.javascript.JavascriptFunctionType;
+import net.sf.javascribe.langsupport.javascript.JavascriptObjectType;
 import net.sf.javascribe.langsupport.javascript.JavascriptSourceFile;
 import net.sf.javascribe.langsupport.javascript.JavascriptUtils;
 import net.sf.javascribe.patterns.js.page.PageModelType;
@@ -37,7 +36,7 @@ public class PageNavigationProcessor {
 		
 		log.info("Processing Page Navigation '"+comp.getName()+"'");
 		
-		JavascriptServiceObject type = new JavascriptServiceObjectImpl(comp.getName());
+		JavascriptObjectType type = new JavascriptObjectType(comp.getName());
 		ctx.getTypes().addType(type);
 
 		src.getSource().append("var "+comp.getName()+" = { currentPage : null, currentDiv : null };\n");
@@ -49,15 +48,15 @@ public class PageNavigationProcessor {
 		StringBuilder showPageCode = new StringBuilder();
 		StringBuilder refreshPageCode = new StringBuilder();
 
-		JavascriptFunction fn = new JavascriptFunction(comp.getName(),"hideCurrentPage");
+		JavascriptFunctionType fn = new JavascriptFunctionType("hideCurrentPage");
 		type.addOperation(fn);
 		src.getSource().append(comp.getName()+".hideCurrentPage = function() {\n")
 			.append("if (this.currentPage!=null) {\n")
 			.append("$('#'+this.currentDiv).hide('"+comp.getHide()+"',{},400);\n}\n};\n");
 
-		fn = new JavascriptFunction(comp.getName(),"switchPage");
-		fn.addParam("page", "var");
-		fn.addParam("data", "var");
+		fn = new JavascriptFunctionType("switchPage");
+		fn.addParam("page", "string");
+		fn.addParam("data", "object");
 		type.addOperation(fn);
 
 		src.getSource().append(comp.getName()+".switchPage = function(pageName,data) {\n")
@@ -75,9 +74,9 @@ public class PageNavigationProcessor {
 			}
 		}
 		
-		fn = new JavascriptFunction(comp.getName(),"showPage");
-		fn.addParam("pageName", "var");
-		fn.addParam("data", "var");
+		fn = new JavascriptFunctionType("showPage");
+		fn.addParam("pageName", "string");
+		fn.addParam("data", "object");
 		type.addOperation(fn);
 
 		src.getSource().append("} else {\n")
@@ -120,7 +119,7 @@ public class PageNavigationProcessor {
 		showPageCode.append("$('#'+this.currentDiv).show('"+comp.getShow()+"',{},400,null);\n");
 		showPageCode.append("}.bind("+comp.getName()+");\n");
 
-		fn = new JavascriptFunction(comp.getName(),"refreshCurrentPage");
+		fn = new JavascriptFunctionType("refreshCurrentPage");
 		type.addOperation(fn);
 		refreshPageCode.append(comp.getName()+".refreshCurrentPage = function() {\n")
 			.append("if (this.currentPage!=null) {\n");

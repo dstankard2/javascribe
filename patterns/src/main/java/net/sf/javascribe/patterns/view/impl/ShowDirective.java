@@ -4,7 +4,6 @@ import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.patterns.view.AttributeDirective;
 import net.sf.javascribe.patterns.view.DirectiveContext;
-import net.sf.javascribe.patterns.view.DirectiveUtils;
 
 //This is not scannable because it will be added to the renderer list manually.
 public class ShowDirective implements AttributeDirective {
@@ -26,10 +25,16 @@ public class ShowDirective implements AttributeDirective {
 		String boolVar = ctx.newVarName("_b", "boolean", execCtx);
 		b.append("var "+boolVar+";\n");
 		b.append("try {\n");
-		String eval = DirectiveUtils.evaluateIf(cond, execCtx);
-		b.append("if ("+eval+") "+boolVar+" = true;\n");
+		JavascriptEvaluator eval = new JavascriptEvaluator(cond,execCtx);
+		eval.parseExpression();
+		if (eval.getError()!=null) {
+			throw new JavascribeException(eval.getError());
+		}
+		String s = eval.getResult();
+		b.append("if ("+s+") "+boolVar+" = true;\n");
 		b.append("}catch(_err){};\n");
 		b.append("if (!"+boolVar+") "+eltVar+".style.display = 'none';\n");
+		b.append("else "+eltVar+".style.display = '';\n");
 	}
 
 }

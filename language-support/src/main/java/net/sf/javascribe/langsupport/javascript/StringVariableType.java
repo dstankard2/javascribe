@@ -9,7 +9,7 @@ import net.sf.javascribe.api.expressions.ValueExpression;
 import net.sf.javascribe.api.expressions.VarReferenceExpressionAtom;
 import net.sf.javascribe.api.types.StringType;
 
-public class StringVariableType extends ObjectVariableType implements StringType {
+public class StringVariableType extends JavascriptBaseObjectType implements StringType {
 
 	@Override
 	public String evaluateExpression(ValueExpression expr,CodeExecutionContext execCtx) throws JavascribeException {

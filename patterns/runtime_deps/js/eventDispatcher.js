@@ -14,6 +14,7 @@ function JSController() {
 			if (m.type!='childList') return;
 			if (!m.removedNodes) return;
 			for(var i=0;i<m.removedNodes.length;i++) {
+				//console.log('detected that a node is removed from DOM');
 				if (domWatch[m.removedNodes[i]]) {
 					var arr = domWatch[m.removedNodes[i]];
 					for(var i2=0;i2<arr.length;i2++) {
