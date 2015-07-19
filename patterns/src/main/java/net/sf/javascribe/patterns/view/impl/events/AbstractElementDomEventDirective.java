@@ -38,6 +38,8 @@ public abstract class AbstractElementDomEventDirective extends AbstractDomEventD
 		StringBuilder code = ctx.getCode();
 		String domEvent = getDomEvent();
 
+		ctx.continueRenderElement();
+		
 		StringBuilder eventCode = new StringBuilder();
 		eventCode.append("function($event) {\n");
 		eventCode.append(getEventCode(ctx));

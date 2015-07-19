@@ -156,11 +156,7 @@ public class JavascriptEvaluator {
 					return null;
 				}
 				s = DirectiveUtils.PAGE_VAR+'.'+s;
-			} else {
-				s = "window."+s;
 			}
-		} else {
-			s = "window."+s;
 		}
 
 		b.append(s);
@@ -242,7 +238,7 @@ public class JavascriptEvaluator {
 				}
 				if (c==start) {
 					// This is the end of the string
-					s = s + start;
+					//s = s + start;
 					if (i==expr.length()-1) return s;
 					else return buildResult(s,internalParseLine(expr.substring(i+1),isCodeBlock,inFunctionCall));
 					//else return s + internalParseLine(expr.substring(i+1), isCodeBlock, inFunctionCall);

@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.javascribe.api.CodeExecutionContext;
+
 /**
  * Represents a callable function on a Javascript-based object.
  * 
@@ -50,8 +52,27 @@ public class JavascriptFunctionType extends JavascriptBaseObjectType {
 		return paramTypes.get(paramName);
 	}
 	
-	public String invoke(String resultVar,String ref,Map<String,String> paramRefs) {
-		return null;
+	public String invoke(String resultVar,String ref,Map<String,String> paramRefs,CodeExecutionContext execCtx) {
+		if (paramRefs==null) {
+			paramRefs = new HashMap<String,String>();
+		}
+		StringBuilder b = new StringBuilder();
+		if (resultVar!=null) b.append(resultVar+" = ");
+		if (ref!=null) b.append(ref+'.');
+		b.append(this.getName()+'(');
+		boolean first = true;
+		for(String p : this.getParamNames()) {
+			String paramValue = paramRefs.get(p);
+			if (paramValue==null) {
+				if (execCtx.getVariableType(p)!=null) paramValue = p;
+				else paramValue = "undefined";
+			}
+			if (first) first = false;
+			else b.append(',');
+			b.append(paramValue);
+		}
+		b.append(");\b");
+		return b.toString();
 	}
 	
 }

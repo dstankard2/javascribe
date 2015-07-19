@@ -29,9 +29,11 @@ public class LoopDirective implements AttributeDirective {
 		}
 		String listStr = DirectiveUtils.getValidReference(list, execCtx);
 		if (type.startsWith("list/")) type = type.substring(5);
-		String parentNodes = ctx.newVarName("_n", "object", execCtx);
-		execCtx = new CodeExecutionContext(execCtx);
+		//String parentNodes = ctx.newVarName("_n", "object", execCtx);
+		//execCtx = new CodeExecutionContext(execCtx);
 		String in = ctx.newVarName("_i","object",execCtx);
+		
+		/*
 		b.append("try {\n");
 		b.append("var "+parentNodes+" = "+ctx.getContainerVarName()+".childNodes;\n");
 		b.append("for (var "+in+"=0;"+in+"<"+parentNodes+".length;"+in+"++) {\n");
@@ -48,6 +50,19 @@ public class LoopDirective implements AttributeDirective {
 		execCtx.addVariable(in,"integer");
 		ctx.continueRenderElement(execCtx);
 		b.append("}\n");
+		b.append("}catch(_err){}\n");
+		*/
+		
+		CodeExecutionContext newCtx = new CodeExecutionContext(execCtx);
+		String func = ctx.newVarName("_lf", "function", execCtx);
+		b.append("var "+func+" = function("+eltVar+"){\n");
+		newCtx.addVariable(eltVar, type);
+		ctx.continueRenderElement(newCtx);
+		b.append("}\n");
+		b.append("try {\n");
+		b.append("for(var "+in+"=0;"+in+"<"+listStr+".length;"+in+"++) {\n");
+		b.append("var "+eltVar+" = "+listStr+"["+in+"];\n");
+		b.append(func+"("+eltVar+");\n}\n");
 		b.append("}catch(_err){}\n");
 	}
 

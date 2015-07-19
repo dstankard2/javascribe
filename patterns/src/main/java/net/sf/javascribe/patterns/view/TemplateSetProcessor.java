@@ -97,6 +97,14 @@ public class TemplateSetProcessor {
 			
 			src.getSource().append(b.toString());
 		}
+		if (comp.getRef().trim().length()>0) {
+			String ref = comp.getRef();
+			if (ctx.getAttributeType(ref)!=null) {
+				throw new JavascribeException("Couldn't create ref '"+ref+"' to template set, because that ref is already a system attribute");
+			}
+			src.getSource().append("window."+ref+" = "+obj+";\n");
+			ctx.addAttribute(ref, obj);
+		}
 	}
 
 }

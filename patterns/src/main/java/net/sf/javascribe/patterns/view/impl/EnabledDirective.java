@@ -6,19 +6,18 @@ import net.sf.javascribe.patterns.view.AttributeDirective;
 import net.sf.javascribe.patterns.view.DirectiveContext;
 
 @Scannable
-public class DisabledDirective implements AttributeDirective {
+public class EnabledDirective implements AttributeDirective {
 
 	@Override
 	public String getAttributeName() {
-		return "js-disabled";
+		return "js-enabled";
 	}
 
 	@Override
 	public void generateCode(DirectiveContext ctx) throws JavascribeException {
 		StringBuilder code = ctx.getCode();
-		String value = ctx.getTemplateAttributes().get("js-disabled");
+		String value = ctx.getTemplateAttributes().get("js-enabled");
 		
-		ctx.getTemplateAttributes().remove("js-disabled");
 		ctx.continueRenderElement();
 		
 		JavascriptEvaluator eval = new JavascriptEvaluator(value,ctx.getExecCtx());
@@ -28,10 +27,10 @@ public class DisabledDirective implements AttributeDirective {
 		}
 		String cond = eval.getResult();
 		code.append("try {\n");
-		code.append("if ("+cond+") "+ctx.getElementVarName()+".disabled = true;\n");
-		code.append("else "+ctx.getElementVarName()+".disabled = false;\n");
+		code.append("if ("+cond+") "+ctx.getElementVarName()+".disabled = false;\n");
+		code.append("else "+ctx.getElementVarName()+".disabled = true;\n");
 		code.append("}catch(_err){");
-		code.append(ctx.getElementVarName()+".disabled = false;\n");
+		code.append(ctx.getElementVarName()+".disabled = true;");
 		code.append("}\n");
 	}
 

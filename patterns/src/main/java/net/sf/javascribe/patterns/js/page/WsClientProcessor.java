@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import net.sf.javascribe.api.JavascribeException;
+import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.VariableType;
 import net.sf.javascribe.api.annotation.Processor;
@@ -97,6 +98,16 @@ public class WsClientProcessor {
 			if (modelType.getAttributeType(att)==null)
 				PageModelProcessor.addModelAttribute(modelType, att, type, code, null, pageName);
 		}
+		if (!JavascribeUtils.isEmpty(srv.getRequestBody())) {
+		//if (srv.getRequestBody()!=null) {
+			String typeName = ctx.getAttributeType(srv.getRequestBody());
+			if (typeName.startsWith("list/")) typeName = typeName.substring(5);
+			VariableType t = ctx.getType(typeName);
+			if (t instanceof JavaBeanType) {
+				JavaBeanType b = (JavaBeanType)t;
+				javaBeansToConvert.add(b);
+			}
+		}
 
 		ctx.setLanguageSupport("Javascript");
 		for(JavaBeanType t : javaBeansToConvert) {
@@ -145,6 +156,7 @@ public class WsClientProcessor {
 		ajaxParam.append("{\ndataType: 'json',\n");
 		
 		boolean urlParam = false;
+		boolean queryParamsInUrl = false;
 		if (srv.getRequestMethod().equals("GET")){
 			ajaxFunc = "ajax";
 			ajaxParam.append("context: document,\n");
@@ -163,6 +175,7 @@ public class WsClientProcessor {
 		} else if (srv.getRequestMethod().equals("POST")) {
 			ajaxFunc = "ajax";
 			urlParam = true;
+			queryParamsInUrl = true;
 			if (requestBody!=null) {
 				dataString.append("data: JSON.stringify("+paramRefs.get(requestBody)+"),\n");
 				dataString.append("processData: false,\n");
@@ -197,120 +210,27 @@ public class WsClientProcessor {
 		
 		totalBuild.append("$."+ajaxFunc+"(");
 		if (urlParam) {
-			totalBuild.append("'"+srv.getPath().substring(1)+"',");
+			totalBuild.append("'"+srv.getPath().substring(1));
+			if (queryParamsInUrl) {
+				if (srv.getQueryParams().size()>0) {
+					totalBuild.append('?');
+					boolean first = true;
+					for(String s : srv.getQueryParams()) {
+						if (first) first = false;
+						else totalBuild.append('&');
+						totalBuild.append(s+"='+");
+						totalBuild.append(paramRefs.get(s));
+						totalBuild.append("+'");
+					}
+				}
+			}
+			totalBuild.append("',");
 		}
 		totalBuild.append(ajaxParam.toString());
 		totalBuild.append(")");
 		totalBuild.append("};\n");
 		code.append(totalBuild);
 		
-		/*
-		funcBody.append("$.ajax({\ncontext:document,\ndataType:'json',\n");
-		
-		// For query parameters and path parameters, look for them in the model object.  If they 
-		// are not there, add them as parameters to the function.
-		
-		dataString.append("{");
-		boolean firstData = true;
-		boolean firstParam = true;
-
-		String method = srv.getRequestMethod();
-		
-		List<String> fnParams = new ArrayList<String>();
-		for(String p : params) {
-			String paramRef = null;
-			if (modelType.getAttributeType(p)!=null) {
-				paramRef = "this.model."+BinderUtils.getGetter(p);
-			} else {
-				if (!firstParam) funcDec.append(',');
-				else firstParam = false;
-				funcDec.append(p);
-				paramRef = p;
-			}
-
-			if ((method.equals("POST")) || (method.equals("PUT"))) {
-				if (p.equals(requestBody)) {
-					
-				}
-			} else {
-				
-			}
-		}
-		
-		for(String p : srv.getQueryParams()) {
-			String modelAttrib = null;
-			if (!firstData) dataString.append(',');
-			else firstData = false;
-
-			if (modelType.getAttributeType(p)!=null) modelAttrib = p;
-			else {
-			}
-			
-
-			dataString.append(p+":");
-			if (modelAttrib==null) {
-				if (firstParam) firstParam = false;
-				else funcDec.append(',');
-				funcDec.append(p);
-				fnParams.add(p);
-				dataString.append(p);
-			} else {
-				dataString.append("this.model."+BinderUtils.getGetter(modelAttrib));
-			}
-		}
-		dataString.append('}');
-		url.append(srv.getPath().substring(1));
-		// Add URL parameters
-
-		// Set request method
-		if ((srv.getRequestMethod()!=null) && (srv.getRequestMethod().trim().length()>0)) {
-			funcBody.append("type: '"+srv.getRequestMethod()+"',\n");
-		}
-		boolean dataSet = false;
-		if ((srv.getRequestBody()!=null) && (srv.getRequestBody().trim().length()>0)) {
-			funcBody.append("processData: false,\n");
-			funcBody.append("data: "+srv.getRequestBody()+",\n");
-			dataSet = true;
-			if (firstParam) firstParam = false;
-			else funcDec.append(',');
-			funcDec.append(srv.getRequestBody());
-		}
-
-		funcDec.append(") {\n");
-		
-		// Build success function
-		successFunc.append("function success(data) {\n");
-
-		for(String n : serviceResultType.getAttributeNames()) {
-			successFunc.append("this.model.set"+Character.toUpperCase(n.charAt(0))+n.substring(1)+"(data."+n+");\n");
-		}
-		if ((comp.getCompleteEvent()!=null) && (comp.getCompleteEvent().trim().length()>0)) {
-			successFunc.append(pageName+".controller.dispatch(\""+comp.getCompleteEvent()+"\");\n");
-		}
-		successFunc.append("}.bind("+comp.getPageName()+")\n");
-
-		if (comp.getFn()==null) {
-			throw new JavascribeException("WsClient component requires attribute 'fn'");
-		}
-		JavascriptFunction fn = new JavascriptFunction(pageName,comp.getFn());
-		for(String p : fnParams) {
-			String type = ctx.getAttributeType(p);
-			fn.addParam(p, type);
-		}
-		fn.setReturnValue(true);
-		pageType.addOperation(fn);
-		code.append(comp.getPageName()+"."+comp.getFn()+" = ");
-		// Append code to the javascript file
-
-		code.append(funcDec.toString());
-		code.append(funcBody.toString());
-		code.append("success:"+successFunc.toString()+",\n");
-		if (!dataSet)
-			code.append("data:"+dataString.toString()+",\n");
-		code.append("url:'"+url.toString()+"'\n");
-		code.append("});\n");
-		code.append("}.bind("+comp.getPageName()+");\n");
-		*/
 	}
 
 	private SingleUrlService findUrlService(ProcessorContext ctx,String module,String service) throws JavascribeException {

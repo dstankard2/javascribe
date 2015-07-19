@@ -165,8 +165,14 @@ public class ElementParser {
 			d.generateCode(dctx);
 			return;
 		}
+		
+		boolean isTemplateCall = false;
+		String elementName = dctx.getElementName();
+		if (elementName.indexOf('.')>0) {
+			System.out.println("hi");
+		}
 
-		if (!elementDirectiveCalled) {
+		if ((!elementDirectiveCalled) && (!isTemplateCall)) {
 			code.append(eltVar+" = "+DirectiveUtils.DOCUMENT_REF+".createElement('"+dctx.getElementName()+"');\n");
 		}
 		addDomAttributes(dctx.getElementVarName(),execCtx,dctx);

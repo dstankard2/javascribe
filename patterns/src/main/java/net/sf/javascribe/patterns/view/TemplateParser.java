@@ -14,6 +14,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.nodes.TextNode;
+import org.jsoup.parser.Parser;
 
 public class TemplateParser {
 
@@ -51,8 +52,14 @@ public class TemplateParser {
 	
 	protected static String generateJavascriptCode(String template,ProcessorContext ctx,String obj,JavascriptFunctionType fn,CodeExecutionContext execCtx) throws JavascribeException {
 		StringBuilder b = new StringBuilder();
-		Document doc = Jsoup.parse(template.trim());
+		Document doc = Jsoup.parse(template.trim(), "//", Parser.htmlParser());
+		//Document doc = Jsoup.parse(template.trim());
 		
+		if (doc.childNodes().size()!=1) {
+			throw new JavascribeException("A HTML template should have one and only one element.  Perhaps use a container 'div' element");
+		}
+		Node node = doc.childNode(0);
+/*
 		Node htmlNode = doc.childNode(0);
 		if (!htmlNode.nodeName().equals("html")) {
 			throw new JavascribeException("huh?");
@@ -66,15 +73,16 @@ public class TemplateParser {
 		if (nodeList.size()>1) {
 			throw new JavascribeException("TemplateParser doesn't support a template with multiple HTML elements at the root.  Perhaps use a container 'div' element");
 		}
+		*/
 		b.append(INS_FUNC);
 		b.append("var "+DirectiveUtils.DOCUMENT_REF+" = document;\n");
 		String retVar = "_r";
 		b.append("var "+retVar+" = document.createElement('div');\n");
-		for(Node node : nodeList) {
+//		for(Node node : nodeList) {
 			if (node.toString().trim().length()>0) {
 				parseNode(retVar,node,execCtx,b,ctx,obj,fn,new ArrayList<String>());
 			}
-		}
+//		}
 
 		b.append("return "+retVar+".childNodes[0];\n");
 		

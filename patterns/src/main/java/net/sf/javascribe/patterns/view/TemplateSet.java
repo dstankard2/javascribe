@@ -26,6 +26,9 @@ public class TemplateSet extends ComponentBase {
 	@XmlAttribute
 	private String objName = "";
 	
+	@XmlAttribute
+	private String ref = "";
+	
 	@XmlElement
 	private List<SingleTemplate> template = new ArrayList<SingleTemplate>();
 	
@@ -43,6 +46,14 @@ public class TemplateSet extends ComponentBase {
 
 	public void setTemplate(List<SingleTemplate> template) {
 		this.template = template;
+	}
+
+	public String getRef() {
+		return ref;
+	}
+
+	public void setRef(String ref) {
+		this.ref = ref;
 	}
 
 }

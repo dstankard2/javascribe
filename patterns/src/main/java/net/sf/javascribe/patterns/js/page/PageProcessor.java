@@ -40,6 +40,9 @@ public class PageProcessor {
 		
 		type.addAttribute("controller", "Controller");
 		src.getSource().append(page.getPageName()+".controller = new JSController();\n");
+		src.getSource().append(page.getPageName()+".event = function(event,callback) {\n"
+				+ "if (callback) this.controller.addEventListener(event,callback);\n"
+				+ "else this.controller.dispatch(event);\n}.bind("+page.getPageName()+");\n");
 		
 		JavascriptObjectType viewType = new JavascriptObjectType(page.getPageName()+"View");
 		type.addAttribute("view", page.getPageName()+"View");

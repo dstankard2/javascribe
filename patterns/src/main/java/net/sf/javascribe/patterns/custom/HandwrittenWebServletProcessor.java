@@ -23,10 +23,12 @@ public class HandwrittenWebServletProcessor {
 		webXmlFile.addServletMapping(comp.getName(), comp.getUriPath());
 		
 		String filters = comp.getFilters();
-		if (filters.trim().length()>0) {
-			StringTokenizer tok = new StringTokenizer(filters,",");
-			while (tok.hasMoreTokens()) {
-				webXmlFile.addFilterMapping(tok.nextToken(), comp.getUriPath());
+		if (filters!=null) {
+			if (filters.trim().length()>0) {
+				StringTokenizer tok = new StringTokenizer(filters,",");
+				while (tok.hasMoreTokens()) {
+					webXmlFile.addFilterMapping(tok.nextToken(), comp.getUriPath());
+				}
 			}
 		}
 	}
