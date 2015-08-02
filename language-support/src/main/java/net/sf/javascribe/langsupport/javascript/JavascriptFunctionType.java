@@ -25,7 +25,14 @@ public class JavascriptFunctionType extends JavascriptBaseObjectType {
 	String obj = null;
 	String bindRef = null;
 	String name = null;
+	String returnType = null;
 
+	public String getReturnType() {
+		return returnType;
+	}
+	public void setReturnType(String returnType) {
+		this.returnType = returnType;
+	}
 	public String getName() {
 		return name;
 	}
@@ -71,7 +78,7 @@ public class JavascriptFunctionType extends JavascriptBaseObjectType {
 			else b.append(',');
 			b.append(paramValue);
 		}
-		b.append(");\b");
+		b.append(");\n");
 		return b.toString();
 	}
 	

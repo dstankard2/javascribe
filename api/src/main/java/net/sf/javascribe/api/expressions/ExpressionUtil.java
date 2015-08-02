@@ -172,10 +172,6 @@ public class ExpressionUtil {
     	return build.toString();
     }
 
-    public static String evaluateSet(VarReferenceExpressionAtom varToSet,String evaluatedValue,CodeExecutionContext execCtx) throws JavascribeException {
-    	return evaluateSet(varToSet,null,null,evaluatedValue,execCtx);
-    }
-    
 	public static String getEvaluatedExpression(ValueExpression expr,CodeExecutionContext execCtx) throws JavascribeException {
         StringBuffer buf = new StringBuffer();
         VariableType type = null;
@@ -408,6 +404,7 @@ public class ExpressionUtil {
         	name = ref;
         	if (container!=null) {
         		typeName = container.getAttributeType(name);
+        		
         		if (typeName==null) {
         			throw new JavascribeException("Couldn't find type for '"+container.getName()+"."+name+"'");
         		}
@@ -429,28 +426,21 @@ public class ExpressionUtil {
         return ret;
     }
     
-    private static String evaluateSet(VarReferenceExpressionAtom varToSet,String holderName,AttributeHolder holder,String evaluatedValue,CodeExecutionContext execCtx) throws JavascribeException {
-    	StringBuffer buf = new StringBuffer();
-    	AttributeHolder thisHolder = null;
+    public static String evaluateSet(VarReferenceExpressionAtom varToSet,String evaluatedValue,CodeExecutionContext execCtx) throws JavascribeException {
+    	//StringBuffer buf = new StringBuffer();
+    	//AttributeHolder thisHolder = null;
+    	VarReferenceExpressionAtom last = varToSet;
+    	VarReferenceExpressionAtom nextToLast = null;
     	
-    	if (varToSet.getNestedProperty().getNestedProperty()==null) {
-			thisHolder = (AttributeHolder)varToSet.getType();
-    		if (holderName==null) {
-    			buf.append(thisHolder.getCodeToSetAttribute(varToSet.getName(), varToSet.getNestedProperty().getName(), evaluatedValue, execCtx));
-    		} else {
-    			buf.append(thisHolder.getCodeToSetAttribute(holderName, varToSet.getNestedProperty().getName(), evaluatedValue, execCtx));
-    		}
-    	} else {
-    		if (holderName==null) {
-    			thisHolder = (AttributeHolder)varToSet.getType();
-    			String str = thisHolder.getCodeToRetrieveAttribute(varToSet.getName(), varToSet.getNestedProperty().getName(), varToSet.getNestedProperty().getType().getName(),execCtx);
-    			buf.append(evaluateSet(varToSet.getNestedProperty(),str,thisHolder,evaluatedValue,execCtx));
-    		} else {
-    			
-    		}
+    	while(last.getNestedProperty()!=null) {
+    		nextToLast = last;
+    		last = last.getNestedProperty();
     	}
-    	
-    	return buf.toString();
+    	nextToLast.setNestedProperty(null);
+    	String holderRef = ExpressionUtil.evaluateVarRefExpressionAtom(varToSet, varToSet.getFinalTypeName(), execCtx);
+    	AttributeHolder holder = (AttributeHolder)varToSet.getFinalType();
+    	String attr = last.getName();
+    	return holder.getCodeToSetAttribute(holderRef, attr, evaluatedValue, execCtx);
     }
     
 }

@@ -2,14 +2,20 @@ package net.sf.javascribe.patterns.view;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.ProcessorContext;
+import net.sf.javascribe.api.VariableType;
+import net.sf.javascribe.api.expressions.ExpressionUtil;
+import net.sf.javascribe.langsupport.javascript.JavascriptBaseObjectType;
 import net.sf.javascribe.langsupport.javascript.JavascriptFunctionType;
 import net.sf.javascribe.patterns.view.impl.IfDirective;
+import net.sf.javascribe.patterns.view.impl.JavascriptEvaluator;
 import net.sf.javascribe.patterns.view.impl.LoopDirective;
 
 import org.jsoup.nodes.Attribute;
@@ -74,12 +80,23 @@ public class ElementParser {
 			// callback to a page controller.
 			// This is only valid on a page template, as the js-event is an event
 			// to be bound on the page's controller.
-			if (DirectiveUtils.getPageName(rctx)==null) {
+			if (rctx.getExecCtx().getVariableType(DirectiveUtils.PAGE_VAR)==null) {
 				throw new JavascribeException("The js-event directive is only valid on a template that has used the page directive.");
 			}
 
 			String fnVar = newVarName("_f","object",execCtx);
 			String event = attributes.get("js-event");
+			String eventRef = null;
+			
+			if (event.startsWith("@")) {
+				eventRef = event.substring(1);
+				String t = execCtx.evaluateTypeForExpression(eventRef);
+				if ((t==null) || (!t.equals("string"))) {
+					throw new JavascribeException("Found illegal value for js-event: '"+event+"'");
+				}
+				eventRef = ExpressionUtil.evaluateValueExpression("${"+eventRef+"}", "string", execCtx);
+				event = null;
+			}
 
 			code.append("var "+fnVar+" = function() {\n");
 			CodeExecutionContext newCtx = new CodeExecutionContext(execCtx);
@@ -92,10 +109,14 @@ public class ElementParser {
 
 			continueParsing(newCtx,rctx);
 			code.append("}.bind("+DirectiveUtils.PAGE_VAR+");\n");
-			StringTokenizer tok = new StringTokenizer(event,",");
-			while(tok.hasMoreTokens()) {
-				String s = tok.nextToken();
-				code.append(DirectiveUtils.PAGE_VAR+".controller.addEventListener('"+s+"',"+fnVar+","+eltVar+");\n");
+			if (event!=null) {
+				StringTokenizer tok = new StringTokenizer(event,",");
+				while(tok.hasMoreTokens()) {
+					String s = tok.nextToken();
+					code.append(DirectiveUtils.PAGE_VAR+".controller.addEventListener('"+s+"',"+fnVar+","+eltVar+");\n");
+				}
+			} else {
+				code.append(DirectiveUtils.PAGE_VAR+".controller.addEventListener("+eventRef+","+fnVar+","+eltVar+");\n");
 			}
 			
 			code.append(fnVar+"();\n");
@@ -142,6 +163,82 @@ public class ElementParser {
 		}
 	}
 
+	protected String processTemplateCall(String elementName,CodeExecutionContext execCtx,DirectiveContext dctx) throws JavascribeException {
+		// Take the element name and remove '-', insert capital letter
+		int i = elementName.indexOf('-');
+		String temp = elementName;
+		while(i>0) {
+			if (i==elementName.length()-1) {
+				throw new JavascribeException("A HTML element node name cannot end with '.' ("+temp+")");
+			} else if (i==0) {
+				throw new JavascribeException("A HTML element node name cannot start with '.' ("+temp+")");
+			}
+			if (!Character.isLetter(elementName.charAt(i+1))) {
+				throw new JavascribeException("HTML template parser found an invalid node name '"+temp+"'");
+			}
+			elementName = elementName.substring(0,i)+Character.toUpperCase(elementName.charAt(i+1))+elementName.substring(i+2);
+			i = elementName.indexOf('-');
+		}
+		i = elementName.lastIndexOf('.');
+		if ((i==elementName.length()-1) || (i==0)) {
+			throw new JavascribeException("Found an invalid template reference '"+elementName+"'");
+		}
+		String objRef = elementName.substring(0,i);
+		String ruleName = elementName.substring(i+1);
+		VariableType type = execCtx.evaluateVariableTypeForExpression(objRef);
+		if ((type==null) || (!(type instanceof JavascriptBaseObjectType))) {
+			throw new JavascribeException("Couldn't find template '"+elementName+"'");
+		}
+		JavascriptBaseObjectType srv = (JavascriptBaseObjectType)type;
+		List<JavascriptFunctionType> fns = srv.getOperations(ruleName);
+		if ((fns==null) || (fns.size()==0)) {
+			throw new JavascribeException("Couldn't find template '"+elementName+"'");
+		} else if (fns.size()>1) {
+			throw new JavascribeException("Found multiple templates called '"+elementName+"' - couldn't determine which to invoke");
+		}
+		JavascriptFunctionType fn = fns.get(0);
+		Map<String,String> atts = dctx.getDomAttributes();
+		HashMap<String,String> params = new HashMap<String,String>();
+		Iterator<String> names = atts.keySet().iterator();
+		while(names.hasNext()) {
+			String htmlAttr = names.next();
+			String n = findLowerCamelFromHtml(htmlAttr);
+			String val = atts.get(htmlAttr);
+			if (val.startsWith("#")) {
+				String str = val.substring(1);
+				String finalValue = str;
+				try {
+					Integer.parseInt(str);
+				} catch(Exception e) {
+					finalValue = null;
+				}
+				if (finalValue==null) finalValue = '\''+str+'\'';
+				params.put(n, finalValue);
+			} else {
+				JavascriptEvaluator eval = new JavascriptEvaluator(val,execCtx);
+				eval.parseExpression();
+				params.put(n, eval.getResult());
+			}
+		}
+		return fn.invoke(dctx.getElementVarName(), objRef, params, execCtx);
+	}
+	protected static String findLowerCamelFromHtml(String n) {
+		int i = n.indexOf('-');
+		while(i>=0) {
+			if (i==n.length()-1) n = n.substring(0, i-1);
+			else if (i==n.length()-2) {
+				n = n.substring(0, i) + Character.toUpperCase(n.charAt(i+1));
+			}
+			else if (i==0) {
+				n = "" + Character.toUpperCase(n.charAt(1)) + n.substring(2);
+			} else {
+				n = n.substring(0, i) + Character.toUpperCase(n.charAt(i+1)) + n.substring(i+2);
+			}
+			i = n.indexOf('-');
+		}
+		return n;
+	}
+	
 	protected void callNextDirective(CodeExecutionContext execCtx,DirectiveContextImpl dctx) throws JavascribeException {
 
 		if (attributeDirectives.size()>0) {
@@ -163,19 +260,26 @@ public class ElementParser {
 			elementDirectiveCalled = true;
 			elementDirectives.remove(dctx.getElementName());
 			d.generateCode(dctx);
+			//code.append(dctx.getCode());
 			return;
 		}
 		
 		boolean isTemplateCall = false;
 		String elementName = dctx.getElementName();
 		if (elementName.indexOf('.')>0) {
-			System.out.println("hi");
+			String append = processTemplateCall(elementName,execCtx,dctx);
+			code.append(append);
+			isTemplateCall = true;
 		}
 
 		if ((!elementDirectiveCalled) && (!isTemplateCall)) {
 			code.append(eltVar+" = "+DirectiveUtils.DOCUMENT_REF+".createElement('"+dctx.getElementName()+"');\n");
 		}
-		addDomAttributes(dctx.getElementVarName(),execCtx,dctx);
+		// Add DOM atttibutes, if it was not a template invocation
+		if (!isTemplateCall) {
+			addDomAttributes(dctx.getElementVarName(),execCtx,dctx);
+		}
+		// Add a marker property on the element so it can be removed from the DOM later.
 		code.append(eltVar+"._elt = '"+eltVar+"';\n");
 
 		if (attributes.get("js-event")!=null) {

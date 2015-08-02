@@ -56,6 +56,7 @@ public class TemplateSetProcessor {
 			StringBuilder b = new StringBuilder();
 			JavascriptFunctionType fn = new JavascriptFunctionType(tmp.getName());
 			type.addOperation(fn);
+			fn.setReturnType("DOMElement");
 			String path = tmp.getPath();
 			InputStream in = null;
 			StringBuilder tmpl = new StringBuilder();
@@ -77,11 +78,25 @@ public class TemplateSetProcessor {
 				} catch(Exception e) { }
 			}
 			log.info(" - Parsing template "+obj+"."+tmp.getName()+"()");
-			b.append(obj+'.'+tmp.getName()+" = function(");
+
 			CodeExecutionContext execCtx = new CodeExecutionContext(null,ctx.getTypes());
 			execCtx.addVariable("this", obj);
 			List<net.sf.javascribe.api.Attribute> attributes = JavascribeUtils.readAttributes(ctx, tmp.getParams());
+			for(net.sf.javascribe.api.Attribute a : attributes) {
+				execCtx.addVariable(a.getName(), a.getType());
+				fn.addParam(a.getName(), a.getType());
+			}
+
+			String code = TemplateParser.generateJavascriptCode(tmpl.toString(), ctx, obj, fn, execCtx);
+			
+			b.append(obj+'.'+tmp.getName()+" = function(");
 			boolean first = true;
+			for(String param : fn.getParamNames()) {
+				if (first) first = false;
+				else b.append(',');
+				b.append(param);
+			}
+			/*
 			for(net.sf.javascribe.api.Attribute a : attributes) {
 				execCtx.addVariable(a.getName(), a.getType());
 				if (first) first = false;
@@ -89,10 +104,12 @@ public class TemplateSetProcessor {
 				b.append(a.getName());
 				fn.addParam(a.getName(), a.getType());
 			}
+			*/
 			b.append(") {\n");
 			// Generate the function.
-
-			b.append(TemplateParser.generateJavascriptCode(tmpl.toString(), ctx, obj, fn, execCtx));
+			
+			b.append(code);
+			//b.append(TemplateParser.generateJavascriptCode(tmpl.toString(), ctx, obj, fn, execCtx));
 			b.append("}\n");
 			
 			src.getSource().append(b.toString());

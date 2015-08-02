@@ -172,7 +172,7 @@ public class JavascriptEvaluator {
 		if (left==null) return null;
 		line = line.substring(left.length()).trim();
 		if (line.charAt(0)!='=') return null;
-		String right = internalParseLine(line, true, false);
+		String right = internalParseLine(line.substring(1), true, false);
 		if (right==null) return null;
 		String ret = null;
 		try {

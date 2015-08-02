@@ -23,6 +23,7 @@ public class PageDirective implements AttributeDirective {
 	@Override
 	public void generateCode(DirectiveContext ctx) throws JavascribeException {
 		String pageName = ctx.getTemplateAttributes().get("js-page");
+		String pageRef = ctx.getTemplateAttributes().get("js-page-ref");
 		StringBuilder b = ctx.getCode();
 		CodeExecutionContext execCtx = ctx.getExecCtx();
 
@@ -42,6 +43,14 @@ public class PageDirective implements AttributeDirective {
 		b.append(pageType.declare(pageVar, execCtx).getCodeText());
 		b.append(pageType.instantiate(pageVar, null, execCtx).getCodeText());
 		execCtx.addVariable(pageVar, pageType.getName());
+		
+		if (pageRef!=null) {
+			if (execCtx.getVariableType(pageRef)!=null) {
+				throw new JavascribeException("Couldn't make a page ref called '"+pageRef+"' - that variable already exists");
+			}
+			b.append("var "+pageRef+" = "+DirectiveUtils.PAGE_VAR+";\n");
+			execCtx.addVariable(pageRef, pageType.getName());
+		}
 
 		ctx.continueRenderElement(execCtx);
 

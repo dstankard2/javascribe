@@ -35,19 +35,28 @@ public class ModelAttributeDirective implements ElementDirective {
 			throw new JavascribeException("Directive js-model-attribute is only valid when used on a page template");
 		}
 		PageType pageType = (PageType)ctx.getProcessorContext().getType(pageName);
-		PageUtils.ensureModel(ctx.getProcessorContext(), pageType);
-		PageModelType modelType = DirectiveUtils.getPageModelType(ctx);
-		
-		if (modelType.getAttributeType(name)!=null) {
-			throw new JavascribeException("Directive js-model-attribute tried to add attribute '"+name+"' to the model but it was already there.");
-		}
+
 		String typeName = ctx.getProcessorContext().getAttributeType(name);
 		if (typeName==null) {
 			throw new JavascribeException("Directive js-model-attribute couldn't find a type for attribute '"+name+"'");
 		}
+		
+		if (pageType.getAttributeType("_isTemplate")==null) {
+			PageUtils.ensureModel(ctx.getProcessorContext(), pageType);
+			PageModelType modelType = DirectiveUtils.getPageModelType(ctx);
+			
+			if (modelType.getAttributeType(name)!=null) {
+				throw new JavascribeException("Directive js-model-attribute tried to add attribute '"+name+"' to the model but it was already there.");
+			}
 
-		StringBuilder initCode = PageUtils.getInitFunction(ctx.getProcessorContext(), pageName);
-		PageModelProcessor.addModelAttribute(modelType, name, typeName, initCode, onChange, pageName);
+			StringBuilder initCode = PageUtils.getInitFunction(ctx.getProcessorContext(), pageName);
+			PageModelProcessor.addModelAttribute(modelType, name, typeName, initCode, onChange, pageName);
+		} else {
+			String modelTypeName = pageType.getAttributeType("model");
+			PageModelType modelType = (PageModelType)ctx.getProcessorContext().getType(modelTypeName);
+			modelType.addAttribute(name, typeName);
+		}
+		
 	}
 
 }

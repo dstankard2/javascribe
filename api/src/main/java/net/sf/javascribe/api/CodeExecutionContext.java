@@ -92,6 +92,11 @@ public class CodeExecutionContext {
 		ValueExpression ex = ExpressionUtil.buildValueExpression("${"+expr+"}", null, this);
 		return ex.getType();
 	}
+	public VariableType evaluateVariableTypeForExpression(String expr) throws JavascribeException {
+		ValueExpression ex = ExpressionUtil.buildValueExpression("${"+expr+"}", null, this);
+		String typeName = ex.getType();
+		return getType(typeName);
+	}
 	
 }
 
