@@ -37,8 +37,8 @@ public class JavascriptEvaluator {
 	
 	private static final List<String> expressionAtoms = Arrays.asList(new String[] {
 			">==", "<==", "===", "!==",
-			">=", "<=", "==", "!=","||","&&",
-			">", "<", "!", "(", ")", "?", ":"
+			">=", "<=", "==", "!=","||","&&", "++", "--",
+			">", "<", "!", "(", ")", "?", ":", "-", "+", "{", "}"
 	});
 	private static final List<String> reservedWords = Arrays.asList(new String[] {
 			"true", "false", "while", "for",
@@ -47,14 +47,20 @@ public class JavascriptEvaluator {
 
 	// Parses a block of arbitrary code.  May include set statements like "x = y".
 	public void parseCodeBlock() {
-		StringTokenizer tok = new StringTokenizer(code,";");
-		while(tok.hasMoreTokens()) {
-			String t = tok.nextToken();
-			t = t.trim();
-			if (t.length()>0) {
-				result.append(parseLine(t.trim(),true));
-				result.append(';');
+		try {
+			StringTokenizer tok = new StringTokenizer(code,";");
+			while(tok.hasMoreTokens()) {
+				String t = tok.nextToken();
+				t = t.trim();
+				if (t.length()>0) {
+					result.append(parseLine(t.trim(),true));
+					result.append(';');
+				}
 			}
+		} catch(Exception e) {
+			System.err.println("Couldn't parse code block "+code);
+			e.printStackTrace();
+			this.error = "Exception while parsing code block";
 		}
 	}
 	
@@ -90,7 +96,8 @@ public class JavascriptEvaluator {
 			}
 		}
 		if ((result==null) && (isCodeBlock) && (!inFunctionCall)) {
-			result = findSetExpression(line);
+			result = findVariableDeclaration(line);
+			if (result==null) result = findSetExpression(line);
 			if (result!=null) return result;
 		}
 		if (result==null) result = findFunctionCall(line,isCodeBlock,inFunctionCall);
@@ -107,6 +114,21 @@ public class JavascriptEvaluator {
 		*/
 
 		return result;
+	}
+	
+	protected String findVariableDeclaration(String line) {
+		StringBuilder b = new StringBuilder();
+		if ((line.startsWith("var")) && (Character.isWhitespace(line.charAt(3)))) {
+			b.append("var ");
+			line = line.substring(3).trim();
+			String id = findIdentifier(line);
+			if ((id==null) || (id.indexOf('.')>=0)) return null;
+			b.append(id);
+			execCtx.addVariable(id, "object");
+		} else {
+			return null;
+		}
+		return b.toString();
 	}
 	
 	private String findVariableExpression(String line,boolean isCodeBlock,boolean inFunctionCall) {
@@ -171,6 +193,7 @@ public class JavascriptEvaluator {
 		String left = findIdentifier(line);
 		if (left==null) return null;
 		line = line.substring(left.length()).trim();
+		if (line.length()==0) return null;
 		if (line.charAt(0)!='=') return null;
 		String right = internalParseLine(line.substring(1), true, false);
 		if (right==null) return null;

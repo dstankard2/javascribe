@@ -133,40 +133,6 @@ public class RetrieveDataRuleProcessor {
 				execCtx.addVariable(name, typeName);
 			}
 
-			/*
-			for(Attribute s : deps) {
-				VariableType type = ctx.getType(s.getType());
-				if (type instanceof LocatedJavaServiceObjectType) {
-					LocatedJavaServiceObjectType obj = (LocatedJavaServiceObjectType)type;
-					if (!objDeps.contains(s.getName())) {
-						objDeps.add(s.getName());
-					}
-					execCtx.addVariable(s.getName(), s.getType());
-					dependencyRefs.put(s.getName(), obj);
-				} else if (type instanceof JavaServiceObjectType) {
-					JavaServiceObjectType obj = (JavaServiceObjectType)type;
-					if (!objDeps.contains(s.getName())) {
-						objDeps.add(s.getName());
-					}
-					execCtx.addVariable(s.getName(), s.getType());
-					dependencyRefs.put(s.getName(), obj);
-				} else if (type instanceof ServiceLocator) {
-					ServiceLocator loc = (ServiceLocator)type;
-					if (!objDeps.contains(s.getName())) {
-						objDeps.add(s.getName());
-					}
-					execCtx.addVariable(s.getName(), s.getType());
-					for(String srv : loc.getAvailableServices()) {
-						String ref = loc.getService(s.getName(), srv, execCtx);
-						JavaServiceObjectType t = (JavaServiceObjectType)ctx.getType(srv);
-						dependencyRefs.put(ref, t);
-					}
-				} else {
-					throw new JavascribeException("Found a dependency that is not a service object or service locator");
-				}
-			}
-			*/
-			
 			String strategyName = comp.getStrategy();
 			if (strategyName.trim().length()==0) {
 				strategyName = ctx.getProperty(RetrieveDataRule.RESOLVE_RULE_STRATEGY);

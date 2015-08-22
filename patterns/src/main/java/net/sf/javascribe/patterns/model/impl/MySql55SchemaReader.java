@@ -88,6 +88,8 @@ public class MySql55SchemaReader implements DatabaseSchemaReader {
 					col.setSize(s.substring(8,end));
 				} else if (s.indexOf("datetime")==0) {
 					col.setJavaType("timestamp");
+				} else if (s.indexOf("timestamp")==0) {
+					col.setJavaType("timestamp");
 				} else if (s.indexOf("date")==0) {
 					col.setJavaType("date");
 				} else if (s.indexOf("text")==0) {

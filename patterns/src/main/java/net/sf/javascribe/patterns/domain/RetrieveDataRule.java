@@ -33,9 +33,6 @@ public class RetrieveDataRule extends ComponentBase implements DomainLogicCompon
 	}
 
 	@XmlAttribute
-	private String serviceLocator = "";
-	
-	@XmlAttribute
 	private String serviceObj = "";
 
 	@XmlAttribute
@@ -57,14 +54,6 @@ public class RetrieveDataRule extends ComponentBase implements DomainLogicCompon
 
 	@XmlAttribute
 	private String dependencies = "";
-
-	public String getServiceLocator() {
-		return serviceLocator;
-	}
-
-	public void setServiceLocator(String serviceLocator) {
-		this.serviceLocator = serviceLocator;
-	}
 
 	public String getServiceObj() {
 		return serviceObj;

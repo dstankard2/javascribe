@@ -94,7 +94,7 @@ public class EjbqlQueryProcessor {
 				Java5ClassConstructor cons = JsomUtils.createConstructor(src, ctx);
 				EntityManagerLocator loc = ModelUtils.getDefaultEntityManagerLocator(pu, ctx);
 				if (loc==null) {
-					throw new JavascribeException("Couldn't find default entity manager locator for Persstence Unit "+pu);
+					throw new JavascribeException("Couldn't find default entity manager locator for Persistence Unit "+pu);
 				}
 				Java5CodeSnippet code = new Java5CodeSnippet();
 				JsomUtils.merge(code, loc.getEntityManager("this.tx", null));

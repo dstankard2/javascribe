@@ -78,7 +78,7 @@ public class WebServletProcessor {
 		method.setMethodBody(methodCode);
 
 		// Handle servlet parameters if they are there
-		if (servlet.getParams()!=null) {
+		if (servlet.getParams().trim().length()>0) {
 			List<Attribute> attribs = JavascribeUtils.readAttributes(ctx, servlet.getParams());
 			for(Attribute attrib : attribs) {
 				WebUtils.handleQueryParam(ctx,attrib.getName(),attrib.getType(),methodCode,execCtx);
@@ -86,7 +86,7 @@ public class WebServletProcessor {
 		}
 
 		// Handle session data object
-		if (servlet.getSessionDataType()!=null) {
+		if (servlet.getSessionDataType().trim().length()>0) {
 			if (!(ctx.getType(servlet.getSessionDataType()) instanceof JavaBeanType)) {
 				throw new JavascribeException("Type '"+servlet.getSessionDataType()+"' is not a data object type");
 			}
@@ -100,7 +100,7 @@ public class WebServletProcessor {
 
 		// Handle service call if it is there.
 		String resultName = null;
-		if ((servlet.getService()!=null) && (servlet.getService().trim().length()>0)) {
+		if (servlet.getService().trim().length()>0) {
 			String objName = JavascribeUtils.getObjectName(servlet.getService());
 			String ruleName = JavascribeUtils.getRuleName(servlet.getService());
 			String objInst = JavascribeUtils.getLowerCamelName(objName);

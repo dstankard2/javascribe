@@ -23,22 +23,22 @@ public class WebServlet extends ComponentBase {
 	public int getPriority() { return CorePatternConstants.PRIORITY_SERVLET_EVENT; }
 
 	@XmlAttribute
-	private String params = null;
+	private String params = "";
 
 	@XmlElement
 	private List<ServletForward> forward = new ArrayList<ServletForward>();
 	
 	@XmlAttribute
-	private String name = null;
+	private String name = "";
 	
 	@XmlAttribute
-	private String filters = null;
+	private String filters = "";
 	
 	@XmlAttribute
-	private String sessionDataType = null;
+	private String sessionDataType = "";
 	
 	@XmlAttribute
-	private String service = null;
+	private String service = "";
 
 	public String getName() {
 		return name;

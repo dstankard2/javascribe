@@ -79,6 +79,9 @@ public class EntityManagerProcessor {
 		src.getPublicClass().addMethod(con);
 
 		for(DatabaseTableColumn col : table.getColumns()) {
+			if (col.getJavaType()==null) {
+				throw new JavascribeException("The database column "+col.getName()+" has an unsupported type "+col.getType());
+			}
 			String prop = EntityManagerUtils.getAttributeName(col.getName(), ctx, comp);
 			src.addJavaBeanProperty(prop, col.getJavaType());
 			con.addArg(col.getJavaType(), prop);
