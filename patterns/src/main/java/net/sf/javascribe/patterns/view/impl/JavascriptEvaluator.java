@@ -41,7 +41,7 @@ public class JavascriptEvaluator {
 			">", "<", "!", "(", ")", "?", ":", "-", "+", "{", "}"
 	});
 	private static final List<String> reservedWords = Arrays.asList(new String[] {
-			"true", "false", "while", "for",
+			"return", "true", "false", "while", "for",
 			"if"
 	});
 

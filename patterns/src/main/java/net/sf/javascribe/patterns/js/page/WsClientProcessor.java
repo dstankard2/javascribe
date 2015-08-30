@@ -99,7 +99,6 @@ public class WsClientProcessor {
 				PageModelProcessor.addModelAttribute(modelType, att, type, code, null, pageName);
 		}
 		if (!JavascribeUtils.isEmpty(srv.getRequestBody())) {
-		//if (srv.getRequestBody()!=null) {
 			String typeName = ctx.getAttributeType(srv.getRequestBody());
 			if (typeName.startsWith("list/")) typeName = typeName.substring(5);
 			VariableType t = ctx.getType(typeName);

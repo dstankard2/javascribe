@@ -111,6 +111,7 @@ public class RetrieveDataRuleProcessor {
 			// Add dependencies
 			for(String name : deps) {
 				String typeName = ctx.getAttributeType(name);
+				if (typeName==null) throw new JavascribeException("Could not find type for attribute '"+name+"'");
 				VariableType type = ctx.getType(typeName);
 				DomainLogicCommon.addDependency(name, serviceType, serviceFile, ctx);
 				if (type instanceof JavaServiceObjectType) {

@@ -5,7 +5,7 @@ import net.sf.javascribe.api.annotation.Scannable;
 import net.sf.javascribe.patterns.view.DirectiveContext;
 import net.sf.javascribe.patterns.view.ElementDirective;
 
-@Scannable
+//@Scannable
 public class OptionDirective implements ElementDirective {
 
 	@Override

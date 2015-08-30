@@ -90,6 +90,9 @@ public class DomainLogicFinalizer {
 				List<String> deps = file.getDependencies();
 				for(String dep : deps) {
 					String typeName = ctx.getAttributeType(dep);
+					if (typeName==null) {
+						throw new JavascribeException("Couldn't find type '"+typeName+"' for dependency '"+dep+"'");
+					}
 					Injectable inj = (Injectable)ctx.getType(typeName);
 					locatorFile.addImport(inj.getImport());
 					JsomUtils.merge(locatorCode,inj.getInstance(dep, null));
