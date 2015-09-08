@@ -124,6 +124,9 @@ public class CorePatternConstants {
 	public static final int PRIORITY_PAGE_FUNCTION = 47500;
 	
 	// Depends on Page, page model
+	public static final int PRIORITY_HTML_TEMPLATE = 48424;
+	
+	// Depends on Page, page model
 	public static final int PRIORITY_VIEW_TEMPLATE_SET = 48424;
 	
 	// Depends on view elements, page model, ws client and page function

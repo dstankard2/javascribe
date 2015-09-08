@@ -7,6 +7,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import net.sf.javascribe.api.annotation.Scannable;
@@ -43,12 +44,23 @@ public class ComponentBase implements Comparable<ComponentBase>,ComponentConfigE
 		this.property = property;
 	}
 
+	@XmlTransient
+	int componentSetPriority = 0;
+	public int getComponentSetPriority() {
+		return componentSetPriority;
+	}
+	public void setComponentSetPriority(int c) {
+		this.componentSetPriority = c;
+	}
+
 	@Override
 	public int compareTo(ComponentBase other) {
-		if (other==null) throw new NullPointerException();
+		if (other==null) return 0;
 		
 		if (other.getPriority()>getPriority()) return -1;
 		else if (other.getPriority()<getPriority()) return 1;
+		else if (other.getComponentSetPriority() > getComponentSetPriority()) return -1;
+		else if (other.getComponentSetPriority() < getComponentSetPriority()) return 1;
 		
 		return 0;
 	}

@@ -7,7 +7,7 @@ import net.sf.javascribe.patterns.view.DirectiveUtils;
 import net.sf.javascribe.patterns.view.ElementDirective;
 
 @Scannable
-public class VarDirective implements ElementDirective {
+public class VarElementDirective implements ElementDirective {
 
 	@Override
 	public String getElementName() {

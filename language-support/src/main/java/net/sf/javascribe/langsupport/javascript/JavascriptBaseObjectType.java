@@ -30,14 +30,6 @@ public abstract class JavascriptBaseObjectType implements AttributeHolder {
 	});
 
 	public abstract String getName();
-	/*
-	public void setName(String name) {
-		this.name = name;
-	}
-	public String getName() {
-		return name;
-	}
-	*/
 
 	public void addOperation(JavascriptFunctionType fn) {
 		operations.add(fn);

@@ -58,6 +58,7 @@ public class ApplicationReader {
 				try {
 					if (!entry.getName().equals("META-INF/generator.xml")) {
 						ComponentSet comp = (ComponentSet)um.unmarshal(zip.getInputStream(entry));
+						applyComponentSetPriority(comp);
 						applyFileBasedProperties(comp.getProperty(),comp.getComponent());
 						ret.add(comp);
 					}
@@ -68,6 +69,12 @@ public class ApplicationReader {
 		}
 		
 		return ret;
+	}
+	
+	private void applyComponentSetPriority(ComponentSet comps) {
+		for(ComponentBase comp : comps.getComponent()) {
+			comp.setComponentSetPriority(comps.getPriority());
+		}
 	}
 	
 	private void applyFileBasedProperties(List<Property> properties,List<ComponentBase> comps) {
