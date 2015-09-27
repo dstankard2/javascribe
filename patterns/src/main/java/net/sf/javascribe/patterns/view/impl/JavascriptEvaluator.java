@@ -259,13 +259,13 @@ public class JavascriptEvaluator {
 					s = s + expr.charAt(i);
 					continue;
 				}
-				if (c==start) {
-					// This is the end of the string
-					//s = s + start;
-					if (i==expr.length()-1) return s;
-					else return buildResult(s,internalParseLine(expr.substring(i+1),isCodeBlock,inFunctionCall));
-					//else return s + internalParseLine(expr.substring(i+1), isCodeBlock, inFunctionCall);
-				}
+			}
+			if (c==start) {
+				// This is the end of the string
+				//s = s + start;
+				if (i==expr.length()-1) return s;
+				else return buildResult(s,internalParseLine(expr.substring(i+1),isCodeBlock,inFunctionCall));
+				//else return s + internalParseLine(expr.substring(i+1), isCodeBlock, inFunctionCall);
 			}
 		}
 		return null;

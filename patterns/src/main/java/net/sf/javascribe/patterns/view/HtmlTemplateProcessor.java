@@ -27,6 +27,9 @@ public class HtmlTemplateProcessor {
 		String ref = comp.getObjRef().trim();
 		String name = comp.getTemplateName().trim();
 		TemplateText textObj = comp.getTemplateText();
+		
+		if (textObj==null) throw new JavascribeException("Found an HTML template with no templateText ('"+obj+"."+name+"')");
+		
 		String text = textObj.getHtmlText().trim();
 		
 		if ((obj.trim().length()==0)) {

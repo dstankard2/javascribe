@@ -18,9 +18,8 @@ public class JavascribeTest {
 
 	private static void runTest() throws Exception {
 //		File zipFile = new File("c:\\build\\example1\\example1.zip");
-//		File zipFile = new File("c:\\build\\melkovia\\portal\\melkovia-portal.zip");
-		File zipFile = new File("c:\\build\\codewiz\\codewiz.zip");
-		
+//		File zipFile = new File("c:\\build\\codewiz\\codewiz.zip");
+
 		File libs[] = new File[12];
 		libs[0] = new File("..\\engine\\bin");
 		libs[1] = new File("..\\api\\bin");
@@ -31,7 +30,6 @@ public class JavascribeTest {
 		libs[6] = new File("..\\dist\\lib\\other-xsd.jar");
 		libs[7] = new File("..\\dist\\lib\\log4j-1.2.17.jar");
 		libs[8] = new File("..\\dist\\lib\\javaparser-1.0.8.jar");
-		libs[9] = new File("c:\\dev_tools\\javascribe-0.1.8\\lib\\dave-comps.jar");
 		libs[10] = new File("..\\dist\\lib\\jsoup-1.8.1.jar");
 		libs[11] = new File("..\\dist\\lib\\jackson-all-1.9.6.jar");
 

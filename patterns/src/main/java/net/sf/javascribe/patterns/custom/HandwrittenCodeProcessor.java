@@ -34,6 +34,8 @@ import net.sf.javascribe.langsupport.java.ServiceLocatorImpl;
 import net.sf.javascribe.langsupport.java.jsom.JsomJavaBeanType;
 import net.sf.javascribe.langsupport.java.jsom.JsomUtils;
 import net.sf.javascribe.patterns.servlet.WebServletFilter;
+import net.sf.javascribe.patterns.servlet.WebUtils;
+import net.sf.javascribe.patterns.servlet.WebXmlFile;
 import net.sf.jsom.CodeGenerationException;
 import net.sf.jsom.java5.Java5CodeSnippet;
 import net.sf.jsom.java5.Java5DeclaredMethod;
@@ -100,9 +102,26 @@ public class HandwrittenCodeProcessor {
 			handleControllerServlet(dec,pkg,ctx);
 			handleBusinessObject(dec,pkg,ctx);
 			handleDataObject(dec,pkg,ctx);
+			handleWebContextListener(dec,pkg,ctx);
 		}
 	}
 
+	private void handleWebContextListener(TypeDeclaration dec,String pkg,ProcessorContext ctx) throws JavascribeException {
+		List<AnnotationExpr> ans = dec.getAnnotations();
+		boolean isListener = false;
+		
+		for(AnnotationExpr an : ans) {
+			if (an.getName().getName().equals("WebContextListener")) {
+				isListener = true;
+			}
+		}
+		
+		if (!isListener) return;
+		WebXmlFile webXml = WebUtils.getWebXml(ctx);
+		String cl = pkg+'.'+dec.getName();
+		webXml.addContextListener(cl);
+	}
+	
 	private void handleServletFilter(TypeDeclaration dec,String pkg,ProcessorContext ctx) throws JavascribeException {
 		List<AnnotationExpr> ans = dec.getAnnotations();
 		String name = null;

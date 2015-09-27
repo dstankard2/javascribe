@@ -8,6 +8,7 @@ import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.types.ListType;
 
+// A Javascript list type is a Javascript array
 public class ListVariableType extends JavascriptBaseObjectType implements ListType {
 
 	@Override

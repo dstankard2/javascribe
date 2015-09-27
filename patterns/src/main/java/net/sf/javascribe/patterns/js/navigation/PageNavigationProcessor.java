@@ -7,6 +7,7 @@ import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.annotation.Processor;
 import net.sf.javascribe.api.annotation.ProcessorMethod;
 import net.sf.javascribe.api.annotation.Scannable;
+import net.sf.javascribe.langsupport.javascript.JavascriptCode;
 import net.sf.javascribe.langsupport.javascript.JavascriptFunctionType;
 import net.sf.javascribe.langsupport.javascript.JavascriptObjectType;
 import net.sf.javascribe.langsupport.javascript.JavascriptSourceFile;
@@ -25,7 +26,6 @@ public class PageNavigationProcessor {
 	
 	@ProcessorMethod(componentClass=PageNavigation.class)
 	public void process(PageNavigation comp,ProcessorContext ctx) throws JavascribeException {
-		
 		ctx.setLanguageSupport("Javascript");
 		
 		JavascriptSourceFile src = JavascriptUtils.getSourceFile(ctx);
@@ -35,6 +35,11 @@ public class PageNavigationProcessor {
 		}
 		
 		log.info("Processing Page Navigation '"+comp.getName()+"'");
+		
+		AnimationProvider provider = getAnimationProvider(ctx);
+		if (provider==null) {
+			throw new JavascribeException("Couldn't find animation provider for Page Navigation component");
+		}
 		
 		JavascriptObjectType type = new JavascriptObjectType(comp.getName());
 		ctx.getTypes().addType(type);
@@ -47,12 +52,15 @@ public class PageNavigationProcessor {
 		
 		StringBuilder showPageCode = new StringBuilder();
 		StringBuilder refreshPageCode = new StringBuilder();
+		JavascriptCode append = null;
 
 		JavascriptFunctionType fn = new JavascriptFunctionType("hideCurrentPage");
 		type.addOperation(fn);
 		src.getSource().append(comp.getName()+".hideCurrentPage = function() {\n")
-			.append("if (this.currentPage!=null) {\n")
-			.append("$('#'+this.currentDiv).hide('"+comp.getHide()+"',{},400);\n}\n};\n");
+			.append("if (this.currentPage!=null) {\n");
+		append = provider.hide("this.currentDiv",comp.getHide(),"400",null);
+		src.getSource().append(append.getCodeText());
+		src.getSource().append("}\n};\n");
 
 		fn = new JavascriptFunctionType("switchPage");
 		fn.addParam("page", "string");
@@ -61,8 +69,10 @@ public class PageNavigationProcessor {
 
 		src.getSource().append(comp.getName()+".switchPage = function(pageName,data) {\n")
 			.append("if (this.currentPage!=null) {\n")
-			.append("var temp = this.currentPage;\n")
-			.append("$('#'+this.currentDiv).hide('"+comp.getHide()+"',{},400,function() { "+comp.getName()+".showPage(pageName,data); });\n");
+			.append("var temp = this.currentPage;\n");
+		append = provider.hide("this.currentDiv", comp.getHide(),"400", "function() { "+comp.getName()+".showPage(pageName,data); }");
+		src.getSource().append(append.getCodeText());
+			//.append("$('#'+this.currentDiv).hide('"+comp.getHide()+"',{},400,function() { "+comp.getName()+".showPage(pageName,data); });\n");
 
 		boolean first = true;
 		for(Page p : comp.getPage()) {
@@ -116,7 +126,9 @@ public class PageNavigationProcessor {
 			showPageCode.append("}\n");
 		}
 		showPageCode.append("else { alert('Unrecognized page '+this.currentPage); return; }\n");
-		showPageCode.append("$('#'+this.currentDiv).show('"+comp.getShow()+"',{},400,null);\n");
+		append = provider.show("this.currentDiv", comp.getShow(), "400", null);
+		showPageCode.append(append.getCodeText());
+		//showPageCode.append("$('#'+this.currentDiv).show('"+comp.getShow()+"',{},400,null);\n");
 		showPageCode.append("}.bind("+comp.getName()+");\n");
 
 		fn = new JavascriptFunctionType("refreshCurrentPage");
@@ -138,6 +150,21 @@ public class PageNavigationProcessor {
 		
 		src.getSource().append(showPageCode);
 		src.getSource().append(refreshPageCode);
+	}
+	
+	protected static AnimationProvider getAnimationProvider(ProcessorContext ctx) {
+		String prop = ctx.getProperty(PageNavigation.PROPERTY_ANIMATION_PROVIDER);
+		if (prop==null) prop = "jquery";
+		List<Class<?>> classes = ctx.getEngineProperties().getScannedClassesOfInterface(AnimationProvider.class);
+		for(Class<?> cl : classes) {
+			try {
+				AnimationProvider a = (AnimationProvider)cl.newInstance();
+				if (a.getName().equals(prop)) return a;
+			} catch(Exception e) {
+				// TODO
+			}
+		}
+		return null;
 	}
 
 }

@@ -78,6 +78,15 @@ public abstract class JavascriptBaseObjectType implements AttributeHolder {
 	}
 	@Override
 	public String getAttributeType(String attrib) throws JavascribeException {
+		String type = attributes.get(attrib);
+		if (type==null) {
+			for(JavascriptFunctionType fn : operations) {
+				if (fn.getName().equals(attrib)) {
+					type = "function";
+					break;
+				}
+			}
+		}
 		return attributes.get(attrib);
 	}
 	@Override

@@ -20,6 +20,8 @@ import net.sf.javascribe.patterns.CorePatternConstants;
 @XmlType(name="pageNavigation",propOrder={ "page" })
 public class PageNavigation extends ComponentBase {
 
+	public static final String PROPERTY_ANIMATION_PROVIDER = "net.sf.javascribe.patterns.js.navigation.animationProvider";
+	
 	@Override
 	public int getPriority() { return CorePatternConstants.PRIORITY_PAGE_NAVIGATION; }
 	

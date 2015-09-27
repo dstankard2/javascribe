@@ -217,6 +217,9 @@ public class ElementParser {
 			} else {
 				JavascriptEvaluator eval = new JavascriptEvaluator(val,execCtx);
 				eval.parseExpression();
+				if (eval.getError()!=null) {
+					throw new JavascribeException("Couldn't build template call - "+eval.getError());
+				}
 				params.put(n, eval.getResult());
 			}
 		}
