@@ -31,11 +31,17 @@ public class JaEvalConst {
 		"$expr$%$expr$",
 		"$string$", 
 		"$number$", 
-		"$varRef$",
+		"$varRef$"
+		/*
 		"true",
 		"false",
 		"undefined",
-		"null"
+		"null",
+		*/
+	};
+	
+	public static final String[] expressionKeywords = new String[] {
+		"true","false","undefined","null"
 	};
 	
 	public static final String[] codeLine = new String[] {

@@ -87,7 +87,7 @@ public abstract class JavascriptBaseObjectType implements AttributeHolder {
 				}
 			}
 		}
-		return attributes.get(attrib);
+		return type;
 	}
 	@Override
 	public List<String> getAttributeNames() throws JavascribeException {

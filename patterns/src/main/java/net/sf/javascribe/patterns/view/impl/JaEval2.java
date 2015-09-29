@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.javascribe.api.CodeExecutionContext;
+import net.sf.javascribe.api.expressions.ExpressionUtil;
 
 public class JaEval2 {
 	
@@ -102,8 +103,35 @@ public class JaEval2 {
 	
 	protected JaEvalResult readFunctionCall(JaEvalResult currentResult) {
 		JaEvalResult ret = currentResult.createNew(true);
+		String ref = readVariableReference(ret);
+		if (ref==null) {
+			return null;
+		}
 
-		return null;
+		ref = getFinalRef(ref,ret,false);
+		if (ret.getErrorMessage()!=null) return ret;
+		ret.getResult().append(ref);
+		char c = ret.getRemaining().nextNonWs();
+		boolean firstParam = true;
+		if (c!='(') return null;
+		ret.getResult().append(c);
+		c = ret.getRemaining().nextNonWs();
+		while(c!=')') {
+			ret.getRemaining().backtrack();
+			if (!firstParam) {
+				char x = ret.getRemaining().nextNonWs();
+				if (x!=',') return null;
+				ret.getResult().append(',');
+			} else firstParam = false;
+			
+			JaEvalResult sub = readPattern("$expr$",ret,false,null);
+			if (sub==null) return null;
+			if (sub.getErrorMessage()!=null) return sub;
+			ret.merge(sub);
+			c = ret.getRemaining().nextNonWs();
+		}
+		ret.getResult().append(c);
+		return ret;
 	}
 	
 	protected JaEvalResult readVarRef(JaEvalResult currentResult) {
@@ -112,8 +140,60 @@ public class JaEval2 {
 		if (ref==null) {
 			return null;
 		}
-		ret.getResult().append(ref);
+		ref = getFinalRef(ref,ret,false);
+		
+		for(String s : JaEvalConst.expressionKeywords) {
+			if (ref.equals(s)) {
+				ret.getResult().append(ref);
+				return ret;
+			}
+		}
+		
+		if (ret.getErrorMessage()!=null) return ret;
+		try {
+			String finalRef = ref;
+			if (!ref.startsWith("window."))
+				finalRef = ExpressionUtil.evaluateValueExpression("${"+ref+"}", "object", execCtx);
+			ret.getResult().append(finalRef);
+		} catch(Exception e) {
+			System.err.println("Unexpected error");
+			e.printStackTrace();
+		}
 		return ret;
+	}
+	
+	protected String getFinalRef(String ref,JaEvalResult currentResult,boolean isFunction) {
+		String type = null;
+
+		for(String s : JaEvalConst.expressionKeywords) {
+			if (ref.equals(s)) return ref;
+		}
+		
+		try {
+			type = execCtx.evaluateTypeForExpression(ref);
+			if (type!=null) {
+				if ((isFunction) && (!type.equals("function"))) {
+					currentResult.setErrorMessage("Found a function reference '"+ref+"' but it was not a function");
+				}
+				return ref;
+			}
+			
+		} catch(Exception e) { }
+		for(String s : this.impliedVars) {
+			try {
+				type = execCtx.evaluateTypeForExpression(s+'.'+ref);
+				if (type!=null) {
+					if ((isFunction) && (!type.equals("function"))) {
+						currentResult.setErrorMessage("Found a function reference '"+ref+"' but it was not a function");
+					}
+					return s+'.'+ref;
+				}
+			} catch(Exception e) {
+				
+			}
+		}
+		
+		return "window."+ref;
 	}
 	
 	// Reads a reference to variable in the current execCtx
