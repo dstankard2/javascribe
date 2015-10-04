@@ -220,7 +220,8 @@ public class ElementParser {
 			if (result.getErrorMessage()!=null) {
 				throw new JavascribeException("Couldn't build template call - "+result.getErrorMessage());
 			}
-			params.put(n, result.getResult().toString());
+			String p = "(function() {try {return "+result.getResult().toString()+";}catch(err) { return undefined; } })()";
+			params.put(n, p);
 		}
 		return fn.invoke(dctx.getElementVarName(), objRef, params, execCtx);
 	}

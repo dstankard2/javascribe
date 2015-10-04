@@ -29,9 +29,6 @@ public class FnDirective implements ElementDirective {
 		CodeExecutionContext execCtx = ctx.getExecCtx();
 		CodeExecutionContext newCtx = new CodeExecutionContext(execCtx);
 
-		//if ((name==null) && (event==null)) {
-		//	throw new JavascribeException("js-fn requires that function have either a name or an event specified");
-		//}
 		if (params==null) params = "";
 		if (newCtx.getTypeForVariable(name)!=null) {
 			throw new JavascribeException("Cannot define a function named '"+name+"' as a variable of that name already exists in the execution context");
@@ -64,14 +61,6 @@ public class FnDirective implements ElementDirective {
 			throw new JavascribeException("Couldn't build js-fn - Error parsing code: '"+result.getErrorMessage()+"'");
 		}
 		code.append(result.getResult().toString());
-		/*
-		JavascriptEvaluator eval = new JavascriptEvaluator(html, newCtx);
-		eval.parseCodeBlock();
-		if (eval.getError()!=null) {
-			throw new JavascribeException("Couldn't build js-fn - Error parsing code: '"+eval.getError()+"'");
-		}
-		code.append(eval.getResult());
-		*/
 		code.append("}\n");
 		if (execute) {
 			code.append(name+"();\n");

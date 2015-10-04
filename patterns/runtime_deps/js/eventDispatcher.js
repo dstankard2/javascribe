@@ -71,9 +71,9 @@ function EventDispatcher() {
 		},
 		event: function(name,fn) {
 			if (fn) {
-				addEventListener(name,fn);
+				this.addEventListener(name,fn);
 			} else {
-				dispatch(name,{});
+				this.dispatch(name,{});
 			}
 		}
 	}

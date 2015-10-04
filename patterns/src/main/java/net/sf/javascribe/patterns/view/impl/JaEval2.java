@@ -162,6 +162,7 @@ public class JaEval2 {
 		}
 
 		ref = getFinalRef(ref,ret,false);
+		if (ref.startsWith("_$$$")) ref = ref.substring(4);
 		if (ret.getErrorMessage()!=null) return ret;
 		ret.getResult().append(ref);
 		char c = ret.getRemaining().nextNonWs();
