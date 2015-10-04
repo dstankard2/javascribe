@@ -89,6 +89,7 @@ public class HandwrittenCodeProcessor {
 	}
 
 	private void processFile(File f,ProcessorContext ctx) throws ParseException,IOException,JavascribeException {
+		log.debug("Parsing file "+f.getAbsolutePath());
 		CompilationUnit unit = JavaParser.parse(f);
 
 		String pkg = unit.getPackage().getName().toString();

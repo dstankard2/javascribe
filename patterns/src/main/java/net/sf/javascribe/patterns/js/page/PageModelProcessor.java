@@ -36,7 +36,7 @@ public class PageModelProcessor {
 		for(Attribute a : model.getAttribute()) {
 			String name = a.getName();
 			String typeName = ctx.getAttributeType(name);
-			if (typeName==null) typeName = "var";
+			if (typeName==null) typeName = "object";
 			addModelAttribute(modelType, name, typeName, initCode, a.getOnChange(), pageName);
 		}
 	}

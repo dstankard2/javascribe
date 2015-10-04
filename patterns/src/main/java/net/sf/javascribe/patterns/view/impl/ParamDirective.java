@@ -25,8 +25,8 @@ public class ParamDirective implements ElementDirective {
 		
 		if ((type==null) || (type.trim().length()==0)) {
 			type = ctx.getProcessorContext().getAttributeType(name);
-			if (type==null) throw new JavascribeException("Couldn't find a type for template parameter '"+name+"'");
 		}
+		if (type==null) throw new JavascribeException("Couldn't find a type for template parameter '"+name+"'");
 		
 		JavascriptFunctionType fn = ctx.getFunction();
 		fn.addParam(name, type);

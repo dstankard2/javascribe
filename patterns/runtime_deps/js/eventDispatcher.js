@@ -4,7 +4,7 @@ function JSEvent(name,data) {
 	this.data = data;
 }
 
-function JSController() {
+function EventDispatcher() {
 	var listeners = { };
 
 	var domWatch = { };
@@ -14,7 +14,7 @@ function JSController() {
 			if (m.type!='childList') return;
 			if (!m.removedNodes) return;
 			for(var i=0;i<m.removedNodes.length;i++) {
-				//console.log('detected that a node is removed from DOM');
+				console.log('detected that a node is removed from DOM');
 				if (domWatch[m.removedNodes[i]]) {
 					var arr = domWatch[m.removedNodes[i]];
 					for(var i2=0;i2<arr.length;i2++) {
@@ -67,6 +67,13 @@ function JSController() {
 			var event = new JSEvent(name,data);
 			for(i=0;i<list.length;i++) {
 				list[i](event);
+			}
+		},
+		event: function(name,fn) {
+			if (fn) {
+				addEventListener(name,fn);
+			} else {
+				dispatch(name,{});
 			}
 		}
 	}

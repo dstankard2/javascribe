@@ -52,23 +52,33 @@ public class FnDirective implements ElementDirective {
 				if (first) first = false;
 				else code.append(',');
 				code.append(att.getName());
+				if (att.getType()==null) throw new JavascribeException("Couldn't find type for js-fn param named '"+att.getName()+"'");
 				newCtx.addVariable(att.getName(), att.getType());
 			}
 		}
 		code.append(") {\n");
+		JaEval2 eval = new JaEval2(html,newCtx);
+		DirectiveUtils.populateImpliedVariables(eval);
+		JaEvalResult result = eval.parseCodeBlock();
+		if (result.getErrorMessage()!=null) {
+			throw new JavascribeException("Couldn't build js-fn - Error parsing code: '"+result.getErrorMessage()+"'");
+		}
+		code.append(result.getResult().toString());
+		/*
 		JavascriptEvaluator eval = new JavascriptEvaluator(html, newCtx);
 		eval.parseCodeBlock();
 		if (eval.getError()!=null) {
 			throw new JavascribeException("Couldn't build js-fn - Error parsing code: '"+eval.getError()+"'");
 		}
 		code.append(eval.getResult());
+		*/
 		code.append("}\n");
 		if (execute) {
 			code.append(name+"();\n");
 		}
 		if (event!=null) {
 			if (DirectiveUtils.getPageName(ctx)!=null) {
-				code.append(DirectiveUtils.PAGE_VAR+".event('"+event+"',"+name+");\n");
+				code.append(DirectiveUtils.PAGE_VAR+".event('"+event+"',"+name+","+ctx.getContainerVarName()+");\n");
 			}
 		}
 	}

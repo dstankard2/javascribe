@@ -15,6 +15,8 @@ import net.sf.javascribe.api.expressions.ExpressionUtil;
 import net.sf.javascribe.langsupport.javascript.JavascriptBaseObjectType;
 import net.sf.javascribe.langsupport.javascript.JavascriptFunctionType;
 import net.sf.javascribe.patterns.view.impl.IfDirective;
+import net.sf.javascribe.patterns.view.impl.JaEval2;
+import net.sf.javascribe.patterns.view.impl.JaEvalResult;
 import net.sf.javascribe.patterns.view.impl.JavascriptEvaluator;
 import net.sf.javascribe.patterns.view.impl.LoopDirective;
 
@@ -65,7 +67,7 @@ public class ElementParser {
 			attributes.put(att.getKey(), att.getValue());
 		}
 		
-		eltVar = newVarName("_e", "div", execCtx);
+		eltVar = newVarName("_e", "DOMElement", execCtx);
 		DirectiveContextImpl rctx = createDirectiveContext(execCtx);
 		
 		code.append("var "+eltVar+";\n");
@@ -131,13 +133,20 @@ public class ElementParser {
 		callNextDirective(execCtx,rctx);
 	}
 	
-	private void addDomAttributes(String eltVar,CodeExecutionContext execCtx,DirectiveContextImpl rctx) {
+	private void addDomAttributes(String eltVar,CodeExecutionContext execCtx,DirectiveContextImpl rctx) throws JavascribeException {
 		for(String s : rctx.getDomAttributes().keySet()) {
 			if (s.startsWith("js-")) continue;
 			if (s.equals("class")) continue;
 			String val = rctx.getDomAttributes().get(s).trim();
+			s = DirectiveUtils.getLowerCamelFromHtml(s);
 			if (s.equals("style")) code.append(addStyle(eltVar,val));
 			else {
+				String ref = DirectiveUtils.parsePartialExpression(val, execCtx);
+				if (ref==null) {
+					throw new JavascribeException("Couldn't evaluate attribute '"+s+"' with value '"+val+"'");
+				}
+				code.append(eltVar+"."+s+" = "+ref+";\n");
+				/*
 				if ((val.startsWith("{{")) && (val.endsWith("}}"))) {
 					String ref = val.substring(2, val.length()-2).trim();
 					ref = DirectiveUtils.getValidReference(ref, execCtx);
@@ -149,6 +158,7 @@ public class ElementParser {
 				} else {
 					code.append(eltVar+".setAttribute('"+s+"','"+val+"');\n");
 				}
+				*/
 			}
 		}
 		if ((elt.id()!=null) && (elt.id().trim().length()>0)) {
@@ -204,24 +214,13 @@ public class ElementParser {
 			String htmlAttr = names.next();
 			String n = findLowerCamelFromHtml(htmlAttr);
 			String val = atts.get(htmlAttr);
-			if (val.startsWith("#")) {
-				String str = val.substring(1);
-				String finalValue = str;
-				try {
-					Integer.parseInt(str);
-				} catch(Exception e) {
-					finalValue = null;
-				}
-				if (finalValue==null) finalValue = '\''+str+'\'';
-				params.put(n, finalValue);
-			} else {
-				JavascriptEvaluator eval = new JavascriptEvaluator(val,execCtx);
-				eval.parseExpression();
-				if (eval.getError()!=null) {
-					throw new JavascribeException("Couldn't build template call - "+eval.getError());
-				}
-				params.put(n, eval.getResult());
+			JaEval2 eval = new JaEval2(val,execCtx);
+			eval.addImpliedVariable(DirectiveUtils.PAGE_VAR).addImpliedVariable(DirectiveUtils.PAGE_VAR+".model");
+			JaEvalResult result = eval.parseExpression();
+			if (result.getErrorMessage()!=null) {
+				throw new JavascribeException("Couldn't build template call - "+result.getErrorMessage());
 			}
+			params.put(n, result.getResult().toString());
 		}
 		return fn.invoke(dctx.getElementVarName(), objRef, params, execCtx);
 	}

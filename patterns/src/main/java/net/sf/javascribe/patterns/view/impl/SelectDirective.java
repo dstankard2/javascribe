@@ -7,12 +7,12 @@ import net.sf.javascribe.patterns.view.DirectiveContext;
 import net.sf.javascribe.patterns.view.DirectiveUtils;
 import net.sf.javascribe.patterns.view.ElementDirective;
 
-@Scannable
+//@Scannable
 public class SelectDirective implements ElementDirective {
 
 	@Override
 	public String getElementName() {
-		return "select";
+		return "_select";
 	}
 
 	@Override

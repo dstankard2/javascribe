@@ -10,7 +10,7 @@ public class OptionDirective implements ElementDirective {
 
 	@Override
 	public String getElementName() {
-		return "option";
+		return "_option";
 	}
 
 	@Override

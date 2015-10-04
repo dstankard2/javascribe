@@ -4,14 +4,12 @@ import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.annotation.Scannable;
 import net.sf.javascribe.patterns.view.AttributeDirective;
 import net.sf.javascribe.patterns.view.DirectiveContext;
-import net.sf.javascribe.patterns.view.DirectiveUtils;
 
 @Scannable
 public class VarAttributeDirective implements AttributeDirective {
 
 	@Override
 	public String getAttributeName() {
-		// TODO Auto-generated method stub
 		return "js-var";
 	}
 

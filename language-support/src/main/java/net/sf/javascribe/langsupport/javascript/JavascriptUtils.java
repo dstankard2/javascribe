@@ -72,7 +72,7 @@ public class JavascriptUtils {
 		else if (typeName.equals("date")) ret = true;
 		else if (typeName.equals("timestamp")) ret = true;
 		else if (typeName.equals("boolean")) ret = true;
-		else if (typeName.equals("var")) ret = true;
+		//else if (typeName.equals("var")) ret = true;
 		else if (typeName.equals("object")) ret = true;
 
 		return ret;

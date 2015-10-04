@@ -69,6 +69,8 @@ public class JaEvalString {
 		return null;
 	}
 	public boolean startsWith(String s) {
+		if (code==null) return false;
+		if (s==null) return false;
 		return (code.indexOf(s)==0);
 	}
 	public void skip(int chars) {

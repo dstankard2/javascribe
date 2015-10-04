@@ -4,6 +4,7 @@ import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.patterns.view.AttributeDirective;
 import net.sf.javascribe.patterns.view.DirectiveContext;
+import net.sf.javascribe.patterns.view.DirectiveUtils;
 
 //This is not scannable because it will be added to the renderer list manually.
 public class IfDirective implements AttributeDirective {
@@ -19,12 +20,19 @@ public class IfDirective implements AttributeDirective {
 		String cond = ctx.getTemplateAttributes().get("js-if");
 		CodeExecutionContext existingCtx = ctx.getExecCtx();
 
-		JavascriptEvaluator eval = new JavascriptEvaluator(cond,existingCtx);
-		eval.parseExpression();
-		if (eval.getError()!=null) {
-			throw new JavascribeException(eval.getError());
+		JaEval2 eval = new JaEval2(cond,existingCtx);
+		if (existingCtx.getTypeForVariable(DirectiveUtils.PAGE_VAR)!=null) {
+			eval.addImpliedVariable(DirectiveUtils.PAGE_VAR).addImpliedVariable(DirectiveUtils.PAGE_VAR+".model");
 		}
-		String finalCond = eval.getResult();
+		if (existingCtx.getTypeForVariable(DirectiveUtils.LOCAL_MODEL_VAR)!=null) {
+			eval.addImpliedVariable(DirectiveUtils.LOCAL_MODEL_VAR);
+		}
+		//JavascriptEvaluator eval = new JavascriptEvaluator(cond,existingCtx);
+		JaEvalResult result = eval.parseExpression();
+		if (result.getErrorMessage()!=null) {
+			throw new JavascribeException(result.getErrorMessage());
+		}
+		String finalCond = result.getResult().toString();
 
 		String boolVar = ctx.newVarName("_b", "boolean", existingCtx);
 		b.append("var "+boolVar+" = false;\n");

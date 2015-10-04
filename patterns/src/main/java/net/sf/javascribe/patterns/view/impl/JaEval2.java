@@ -18,22 +18,36 @@ public class JaEval2 {
 		this.execCtx = execCtx;
 	}
 	
-	public void addImpliedVariable(String name) {
+	public JaEval2 addImpliedVariable(String name) {
 		impliedVars.add(name);
+		return this;
 	}
 
 	public JaEvalResult parseExpression() {
 		exprOnly = true;
 		JaEvalResult res = JaEvalResult.newInstance(code,true);
-		return readExpression(res,true,null);
+		JaEvalResult ret = readExpression(res,true,null);
+		if (ret==null) {
+			res.setErrorMessage("Couldn't parse expression '"+code+"'");
+			ret = res;
+		}
+		return ret;
 	}
 	
 	public JaEvalResult parseCodeBlock() {
 		exprOnly = false;
 		JaEvalResult res = JaEvalResult.newInstance(code, false);
-		res.getRemaining().nextNonWs();
-		res.getRemaining().backtrack();
-		return readCodeBlock(res,null);
+		JaEvalResult ret = null;
+		char c = res.getRemaining().nextNonWs();
+		if (c!=0) {
+			res.getRemaining().backtrack();
+			ret = readCodeBlock(res,null);
+		}
+		if (ret==null) {
+			ret = res;
+			res.setErrorMessage("Couldn't find a match when parsing code block '"+res.getRemaining().getCode()+"'");
+		}
+		return ret;
 	}
 	
 	protected JaEvalResult readCodeBlock(JaEvalResult currentResult,String ending) {
@@ -44,8 +58,9 @@ public class JaEval2 {
 
 		while(ret.getRemaining().getRemaining()>0) {
 			current = readCodeLine(ret);
+			if (current==null) return null;
 			if (current.getErrorMessage()!=null) return current;
-			ret.merge(current);
+			ret.merge(current,true);
 			char c = ret.getRemaining().nextNonWs();
 			if (c>0) ret.getRemaining().backtrack();
 			if (ret.getRemaining().startsWith(ending)) {
@@ -71,6 +86,44 @@ public class JaEval2 {
 				break;
 			}
 		}
+		if (ret==null) ret = readAssignment(currentResult);
+		
+		return ret;
+	}
+	
+	protected JaEvalResult readAssignment(JaEvalResult currentResult) {
+		JaEvalResult ret = currentResult.createNew(false);
+		JaEvalResult sub = null;
+		String varRef = null;
+		String value = null;
+		
+		varRef = readVariableReference(ret);
+		if (varRef==null) return null;
+		char c = ret.getRemaining().nextNonWs();
+		if (c!='=') return null;
+		sub = readPattern("$expr$",ret,false,null);
+		if (sub==null) return null;
+		if (sub.getErrorMessage()!=null) return sub;
+		ret.merge(sub, false);
+		value = sub.getResult().toString();
+		c = ret.getRemaining().nextNonWs();
+		if ((c!=';') && (c!=0)) return null;
+		
+		String line = null;
+		try {
+			line = ExpressionUtil.evaluateSetExpression(varRef, value, execCtx);
+		} catch(Exception e) {}
+		for(String v : impliedVars) {
+			if (line!=null) break;
+			try {
+				line = ExpressionUtil.evaluateSetExpression(v+'.'+varRef, value, execCtx);
+			} catch(Exception e) { }
+		}
+		if (line==null) {
+			ret.setErrorMessage("Couldn't evaluate assignment '"+varRef+"' = '"+value+"'");
+		} else {
+			ret.getResult().append(line+";\n");
+		}
 		
 		return ret;
 	}
@@ -94,7 +147,7 @@ public class JaEval2 {
 				JaEvalResult res = readPattern(s,currentResult,false,startIgnore);
 				if (res==null) continue;
 				ret = currentResult;
-				ret.merge(res);
+				ret.merge(res,true);
 			}
 		}
 		
@@ -127,7 +180,7 @@ public class JaEval2 {
 			JaEvalResult sub = readPattern("$expr$",ret,false,null);
 			if (sub==null) return null;
 			if (sub.getErrorMessage()!=null) return sub;
-			ret.merge(sub);
+			ret.merge(sub,true);
 			c = ret.getRemaining().nextNonWs();
 		}
 		ret.getResult().append(c);
@@ -141,8 +194,10 @@ public class JaEval2 {
 			return null;
 		}
 		ref = getFinalRef(ref,ret,false);
+		String temp = ref;
+		if (temp.startsWith("_$$$")) temp = temp.substring(4);
 		
-		for(String s : JaEvalConst.expressionKeywords) {
+		for(String s : JaEvalConst.keywords) {
 			if (ref.equals(s)) {
 				ret.getResult().append(ref);
 				return ret;
@@ -151,9 +206,12 @@ public class JaEval2 {
 		
 		if (ret.getErrorMessage()!=null) return ret;
 		try {
-			String finalRef = ref;
-			if (!ref.startsWith("window."))
+			String finalRef;
+			if (!ref.startsWith("_$$$"))
 				finalRef = ExpressionUtil.evaluateValueExpression("${"+ref+"}", "object", execCtx);
+			else {
+				finalRef = ref.substring(4);
+			}
 			ret.getResult().append(finalRef);
 		} catch(Exception e) {
 			System.err.println("Unexpected error");
@@ -165,7 +223,7 @@ public class JaEval2 {
 	protected String getFinalRef(String ref,JaEvalResult currentResult,boolean isFunction) {
 		String type = null;
 
-		for(String s : JaEvalConst.expressionKeywords) {
+		for(String s : JaEvalConst.keywords) {
 			if (ref.equals(s)) return ref;
 		}
 		
@@ -193,7 +251,7 @@ public class JaEval2 {
 			}
 		}
 		
-		return "window."+ref;
+		return "_$$$"+ref;
 	}
 	
 	// Reads a reference to variable in the current execCtx
@@ -243,24 +301,6 @@ public class JaEval2 {
 					return build.toString();
 				}
 			}
-			/*
-			if ((first) && (!Character.isJavaIdentifierStart(c))) return null;
-			else if (!first) {
-				if (c=='.') {
-					first = true;
-				} else {
-					if (!Character.isJavaIdentifierPart(c)) {
-						currentResult.getRemaining().backtrack();
-						return build.toString();
-					} else {
-						build.append(c);
-					}
-				}
-			} else {
-				first = false;
-				build.append(c);
-			}
-			*/
 		} while(currentResult.getRemaining().getRemaining()>0);
 		
 		return build.toString();
@@ -268,9 +308,39 @@ public class JaEval2 {
 	
 	protected JaEvalResult readIdentifier(JaEvalResult currentResult) {
 		JaEvalResult ret = null;
-		//ret = currentResult.createNew(true);
+		ret = currentResult.createNew(true);
+		boolean first = true;
+		StringBuilder ref = new StringBuilder();
 		
+		char c = ret.getRemaining().nextNonWs();
+		while(c!=0) {
+			if (first) {
+				if (Character.isJavaIdentifierStart(c)) {
+					first = false;
+					ref.append(c);
+				} else {
+					break;
+				}
+			} else {
+				if (Character.isJavaIdentifierPart(c)) {
+					ref.append(c);
+				} else {
+					break;
+				}
+			}
+			c = ret.getRemaining().next();
+		}
+		if (first) ret = null;
+		if (c!=0) ret.getRemaining().backtrack();
+		ret.getResult().append(ref.toString());
 		return ret;
+	}
+	
+	protected boolean isKeyword(String identifier) {
+		for(String s : JaEvalConst.keywords) {
+			if (identifier.trim().equals(s)) return true;
+		}
+		return false;
 	}
 
 	protected JaEvalResult readNumberLiteral(JaEvalResult currentResult) {
@@ -345,21 +415,24 @@ public class JaEval2 {
 		} else {
 			if (pattern.startsWith("$")) sendStartIgnore = true;
 		}
-/*
-		System.out.print("a");
-		System.out.print("b");
-		System.out.print("c");
-*/
 		int i = pattern.indexOf('$');
 		while(i>=0) {
 			if (i>prevEnd) {
 				String skip = pattern.substring(prevEnd+1, i);
 				for(int j=0;j<skip.length();j++) {
-					char test = ret.getRemaining().nextNonWs();
-					if (test!=skip.charAt(j)) {
-						return null;
+					char nextSkip = skip.charAt(j);
+					if (Character.isWhitespace(nextSkip)) {
+						if (!Character.isWhitespace(ret.getRemaining().next())) return null;
+						char t = ret.getRemaining().nextNonWs();
+						if (t!=0) ret.getRemaining().backtrack();
+						ret.getResult().append(' ');
+					} else {
+						char test = ret.getRemaining().nextNonWs();
+						if (test!=skip.charAt(j)) {
+							return null;
+						}
+						ret.getResult().append(test);
 					}
-					ret.getResult().append(test);
 				}
 			}
 			end = pattern.indexOf('$', i+1);
@@ -387,7 +460,7 @@ public class JaEval2 {
 			if (sub==null) {
 				return null;
 			}
-			else ret.merge(sub);
+			else ret.merge(sub,true);
 			if (ret.getErrorMessage()!=null) {
 				return ret;
 			}

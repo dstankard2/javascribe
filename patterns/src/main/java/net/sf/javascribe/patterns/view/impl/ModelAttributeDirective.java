@@ -21,6 +21,7 @@ public class ModelAttributeDirective implements ElementDirective {
 	@Override
 	public void generateCode(DirectiveContext ctx) throws JavascribeException {
 		String name = ctx.getDomAttributes().get("name");
+		String type = ctx.getDomAttributes().get("type");
 		String onChange = ctx.getDomAttributes().get("onChange");
 		
 		if ((name==null) || (name.trim().length()==0)) {
@@ -35,12 +36,18 @@ public class ModelAttributeDirective implements ElementDirective {
 			throw new JavascribeException("Directive js-model-attribute is only valid when used on a page template");
 		}
 		PageType pageType = (PageType)ctx.getProcessorContext().getType(pageName);
-
-		String typeName = ctx.getProcessorContext().getAttributeType(name);
-		if (typeName==null) {
-			throw new JavascribeException("Directive js-model-attribute couldn't find a type for attribute '"+name+"'");
-		}
 		
+		String attrType = ctx.getProcessorContext().getAttributeType(name);
+		if (attrType==null) {
+			if (type==null) throw new JavascribeException("Couldn't find a type for model attribute '"+name+"'");
+			ctx.getProcessorContext().addAttribute(name, type);
+		} else {
+			if ((type!=null) && (!type.equals(attrType))) {
+				throw new JavascribeException("Found conflicting types for attribute '"+attrType+"'");
+			}
+			type = attrType;
+		}
+
 		if (pageType.getAttributeType("_isTemplate")==null) {
 			PageUtils.ensureModel(ctx.getProcessorContext(), pageType);
 			PageModelType modelType = DirectiveUtils.getPageModelType(ctx);
@@ -50,11 +57,11 @@ public class ModelAttributeDirective implements ElementDirective {
 			}
 
 			StringBuilder initCode = PageUtils.getInitFunction(ctx.getProcessorContext(), pageName);
-			PageModelProcessor.addModelAttribute(modelType, name, typeName, initCode, onChange, pageName);
+			PageModelProcessor.addModelAttribute(modelType, name, type, initCode, onChange, pageName);
 		} else {
 			String modelTypeName = pageType.getAttributeType("model");
 			PageModelType modelType = (PageModelType)ctx.getProcessorContext().getType(modelTypeName);
-			modelType.addAttribute(name, typeName);
+			modelType.addAttribute(name, type);
 		}
 		
 	}

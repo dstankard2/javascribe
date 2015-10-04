@@ -58,11 +58,16 @@
 			<fileset dir="${dev.root}\runtime_deps"/>
 		</copy>
 	</target>
+	
+	<target name="build.html.widgets">
+		<echo message="This is a placeholder." />
+	</target>
 
 	<target name="build">
 		<antcall target="init"/>
 		<antcall target="create.user.jar"/>
 		<antcall target="create.patterns.jar"/>
+		<antcall target="build.html.widgets"/>
 		<antcall target="copy.third.party.runtime.dependancies"/>
 	</target>
 

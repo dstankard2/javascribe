@@ -6,11 +6,17 @@ import net.sf.javascribe.api.expressions.ExpressionUtil;
 import net.sf.javascribe.langsupport.javascript.JavascriptFunctionType;
 import net.sf.javascribe.patterns.js.page.PageModelType;
 import net.sf.javascribe.patterns.js.page.PageType;
+import net.sf.javascribe.patterns.view.impl.JaEval2;
+import net.sf.javascribe.patterns.view.impl.JaEvalResult;
 
 public class DirectiveUtils {
 
 	public static final String PAGE_VAR = "_page";
 
+	public static final String EVENT_DISPATCHER_VAR = "_dis";
+
+	public static final String LOCAL_MODEL_VAR = "_model";
+	
 	public static final String DOCUMENT_REF = "_d";
 
 	public static String getEventForModelRef(String modelRef) {
@@ -139,172 +145,59 @@ public class DirectiveUtils {
 		return null;
 	}
 	
-	/** For evaluating boolean statements **/
-	/*
-	private static final List<String> atomsForBoolean = Arrays.asList(new String[] {
-			"!==", "!=", "!",
-			"===", "==",
-			"&&", "||", ">=", "<=", ">", "<", "(", ")", "null"
-	});
-	*/
-	
-	/* Try to remove this.
-	public static String evaluateIf(String cond,CodeExecutionContext execCtx) throws JavascribeException {
-		try {
-			return internalEvaluateIf(cond.trim(),cond.trim(),execCtx);
-		} catch(Exception e) {
-			throw new JavascribeException("Couldn't evaluate conditional expression '"+cond+"'");
-		}
-	}
-	
-	protected static String internalEvaluateIf(String originalCondition,String cond,CodeExecutionContext execCtx) throws JavascribeException {
-		cond = cond.trim();
-		if (cond.length()==0) return "";
-		String a = findRecognizedAtom(cond);
-		if (a!=null) {
-			String rem = cond.substring(a.length());
-			return a+internalEvaluateIf(originalCondition,rem,execCtx);
-		}
-		a = findFullReference(cond);
-		if (a!=null) {
-			String ref = DirectiveUtils.getValidReference(a, execCtx);
-			return ref+internalEvaluateIf(originalCondition,cond.substring(a.length()),execCtx);
-		}
-		a = findNumber(cond);
-		if (a!=null) {
-			return a+internalEvaluateIf(originalCondition,cond.substring(a.length()),execCtx);
-		}
-		a = findString(cond);
-		throw new JavascribeException("Couldn't evaluate boolean condition '"+originalCondition+"'");
-	}
-	*/
+	public static String parsePartialExpression(String s,CodeExecutionContext execCtx) throws JavascribeException {
+		StringBuilder build = new StringBuilder();
+		s = s.trim();
+		int i = s.indexOf("{{");
+		int previousEnd = 0;
+		build.append('\'');
 
-	/*
-	private static String findString(String cond) {
-		StringBuilder b = new StringBuilder();
-		char starter = 0;
-		
-		if ((cond.startsWith("\"")) || (cond.startsWith("'"))) {
-			starter = cond.charAt(0);
-		} else return null;
-		b.append('\'');
-		for(int i=1;i<cond.length();i++) {
-			if (cond.charAt(i)==starter) break;
-			b.append(cond.charAt(i));
-		}
-		b.append('\'');
-		
-		return b.toString();
-	}
-	*/
-
-	/*
-	private static String findNumber(String cond) {
-		StringBuilder b = new StringBuilder();
-		for(int i=0;i<cond.length();i++) {
-			if (Character.isDigit(cond.charAt(i))) {
-				b.append(cond.charAt(i));
-			} else break;
-		}
-		if (b.length()==0) return null;
-		
-		return b.toString();
-	}
-	*/
-
-	/*
-	private static String findFullReference(String cond) {
-		StringBuilder b = new StringBuilder();
-		
-		char c = cond.charAt(0);
-		if (!Character.isJavaIdentifierStart(c)) return null;
-		b.append(c);
-		for(int i=1;i<cond.length();i++) {
-			c = cond.charAt(i);
-			if ((!Character.isJavaIdentifierPart(c)) && 
-					(c!='.')) break;
-			b.append(c);
-		}
-		if (b.length()==0) return null;
-		try {// Make sure it's not a number
-			Integer.parseInt(b.toString());
-			return null;
-		} catch(Exception e) { }
-		return b.toString();
-	}
-	*/
-
-	/*
-	private static String findRecognizedAtom(String cond) {
-		for(String s : atomsForBoolean) {
-			if (cond.startsWith(s)) return s;
-		}
-		return null;
-	}
-	*/
-	
-	// Returns a number (integer or decimal) if the expression starts with one
-	/*
-	private static String findNumberLiteral(String expr) {
-		for(int i=0;i<expr.length();i++) {
-			char c = expr.charAt(i);
-			if ((Character.isDigit(c)) || (c=='.')) continue;
-			if (i==0) return null;
-			return expr.substring(0, i);
-		}
-		return null;
-	}
-	*/
-	
-	// For use when looking for an atom that might be a string expression
-	// returns null if the expr doesn't start with a string ' "
-	/*
-	private static String findStringLiteral(String expr) {
-		char start = expr.charAt(0);
-		
-		if ((start!='\'') && (start!='"')) return null;
-		
-		String ignore = "\\"+start;
-		for(int i=1;i<expr.length();i++) {
-			char c = expr.charAt(i);
-			if (i<expr.length()-1) {
-				if (expr.substring(i, i+2).equals(ignore)) {
-					i++;
-					continue;
-				}
-				if (c==start) {
-					// This is the end of the string
-					return expr.substring(0, i+1);
-				}
+		while(i>=0) {
+			String append = s.substring(previousEnd, i);
+			int end = s.indexOf("}}", i+2);
+			build.append(append.replace("'", "\\'"));
+			String add = s.substring(i+2, end).trim();
+			JaEval2 eval = new JaEval2(add,execCtx);
+			populateImpliedVariables(eval);
+			JaEvalResult result = eval.parseExpression();
+			if (result.getErrorMessage()!=null) {
+				throw new JavascribeException(result.getErrorMessage());
 			}
+
+			String ref = result.getResult().toString();
+			build.append("'+((function(){try{return "+ref+"?"+ref+":'';}catch(_e){return '';}})())+'");
+			previousEnd = end + 2;
+			i = s.indexOf("{{", previousEnd);
 		}
-		return null;
-	}
-	*/
-
-	/*
-	private static String findVariableReference(String expr,CodeExecutionContext execCtx) {
-		String ref = null;
-
-		if (!Character.isJavaIdentifierStart(expr.charAt(0))) return null;
-		// It's a variable reference
-		int i = 1;
-		for(i=1;i<expr.length();i++) {
-			if (Character.isJavaIdentifierPart(expr.charAt(i))) continue;
-			if (expr.charAt(i)=='.') continue;
+		if (previousEnd < s.length()) {
+			build.append(s.substring(previousEnd).replace("'","\\'"));
 		}
-		ref = expr.substring(0,i);
-		try {
-		if (ExpressionUtil.buildValueExpression(ref, null, execCtx)!=null) return ref;
-		} catch(Exception e) { }
-		String modelRef = PAGE_VAR+".model."+ref;
-		try {
-			if (ExpressionUtil.buildValueExpression(modelRef, null, execCtx)!=null) return ref;
-		} catch(Exception e) { }
-
-		return null;
+		build.append('\'');
+		
+		return build.toString();
 	}
-	*/
+
+	public static void populateImpliedVariables(JaEval2 eval) {
+		eval.addImpliedVariable(DirectiveUtils.LOCAL_MODEL_VAR)
+				.addImpliedVariable(DirectiveUtils.PAGE_VAR)
+				.addImpliedVariable(DirectiveUtils.PAGE_VAR+".model");
+	}
+
+	// Converts a HTML identifier with - for word separator, into a lower camcel string.
+	public static String getLowerCamelFromHtml(String html) {
+		String ret = html;
+		int index = ret.indexOf('-');
+		while(index>0) {
+			if (index>=ret.length()-1) throw new IllegalArgumentException("Tried to convert an invalid string '"+html+"' from HTML to lower camel case");
+			char c = ret.charAt(index+1);
+			c = Character.toUpperCase(c);
+			ret = ret.substring(0, index)+c+ret.substring(index+2);
+			index = ret.indexOf('-');
+		}
+		if (index==0) throw new IllegalArgumentException("Tried to convert an invalid string '"+html+"' from HTML to lower camel case");
+		
+		return ret;
+	}
 	
 }
 

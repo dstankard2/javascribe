@@ -39,10 +39,10 @@ public class PageProcessor {
 		init.append("this.view.page = document.getElementById('"+page.getPageName()+"');\n");
 		
 		type.addAttribute("controller", "Controller");
-		src.getSource().append(page.getPageName()+".controller = new JSController();\n");
-		src.getSource().append(page.getPageName()+".event = function(event,callback) {\n"
-				+ "if (callback) this.controller.addEventListener(event,callback);\n"
-				+ "else this.controller.dispatch(event);\n}.bind("+page.getPageName()+");\n");
+		src.getSource().append(page.getPageName()+".controller = new EventDispatcher();\n");
+		src.getSource().append(page.getPageName()+".event = function(event,callback) {this.controller.event(event,callback);}.bind("+page.getPageName()+");\n");
+//				+ "if (callback) this.controller.addEventListener(event,callback);\n"
+//				+ "else this.controller.dispatch(event);\n}.bind("+page.getPageName()+");\n");
 		
 		JavascriptObjectType viewType = new JavascriptObjectType(page.getPageName()+"View");
 		type.addAttribute("view", page.getPageName()+"View");
