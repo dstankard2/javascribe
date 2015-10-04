@@ -88,18 +88,7 @@ public class ElementParser {
 
 			String fnVar = newVarName("_f","object",execCtx);
 			String event = attributes.get("js-event");
-			String eventRef = null;
 			
-			if (event.startsWith("@")) {
-				eventRef = event.substring(1);
-				String t = execCtx.evaluateTypeForExpression(eventRef);
-				if ((t==null) || (!t.equals("string"))) {
-					throw new JavascribeException("Found illegal value for js-event: '"+event+"'");
-				}
-				eventRef = ExpressionUtil.evaluateValueExpression("${"+eventRef+"}", "string", execCtx);
-				event = null;
-			}
-
 			code.append("var "+fnVar+" = function() {\n");
 			CodeExecutionContext newCtx = new CodeExecutionContext(execCtx);
 			String iter = newVarName("_i", "integer", newCtx);
@@ -111,6 +100,14 @@ public class ElementParser {
 
 			continueParsing(newCtx,rctx);
 			code.append("}.bind("+DirectiveUtils.PAGE_VAR+");\n");
+
+			StringTokenizer tok = new StringTokenizer(event,",");
+			while(tok.hasMoreTokens()) {
+				String s = tok.nextToken();
+				String ref = DirectiveUtils.parsePartialExpression(s, execCtx);
+				code.append(DirectiveUtils.PAGE_VAR+".event("+ref+","+fnVar+","+eltVar+");\n");
+			}
+			/*
 			if (event!=null) {
 				StringTokenizer tok = new StringTokenizer(event,",");
 				while(tok.hasMoreTokens()) {
@@ -120,6 +117,7 @@ public class ElementParser {
 			} else {
 				code.append(DirectiveUtils.PAGE_VAR+".controller.addEventListener("+eventRef+","+fnVar+","+eltVar+");\n");
 			}
+			*/
 			
 			code.append(fnVar+"();\n");
 		} else {

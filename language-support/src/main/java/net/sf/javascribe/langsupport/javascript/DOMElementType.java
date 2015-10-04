@@ -9,8 +9,8 @@ public class DOMElementType extends JavascriptBaseObjectType {
 	public DOMElementType() {
 		addAttribute("style", "DOMStyle");
 		addAttribute("classList", "DOMClassList");
-		addAttribute("min","object");
-		addAttribute("max","object");
+		addAttribute("min","integer");
+		addAttribute("max","integer");
 
 		addAttribute("className","string");
 		addAttribute("contentEditable","boolean");

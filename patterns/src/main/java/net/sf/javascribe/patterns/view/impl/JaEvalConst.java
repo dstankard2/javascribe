@@ -4,6 +4,7 @@ public class JaEvalConst {
 
 	public static final String[] expr = new String[] {
 		"($expr$)",
+		"$string$", 
 		"new $fnCall$",
 		"$fnCall$",
 		"!$expr$",
@@ -31,8 +32,8 @@ public class JaEvalConst {
 		"$expr$<$expr$",
 		"$expr$>$expr$",
 		"$expr$%$expr$",
-		"$string$", 
 		"$number$", 
+		"$string$+$expr$",
 		"$varRef$",
 		"true",
 		"false",

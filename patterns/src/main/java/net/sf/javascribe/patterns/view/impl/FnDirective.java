@@ -67,7 +67,8 @@ public class FnDirective implements ElementDirective {
 		}
 		if (event!=null) {
 			if (DirectiveUtils.getPageName(ctx)!=null) {
-				code.append(DirectiveUtils.PAGE_VAR+".event('"+event+"',"+name+","+ctx.getContainerVarName()+");\n");
+				String ref = DirectiveUtils.parsePartialExpression(event, execCtx);
+				code.append(DirectiveUtils.PAGE_VAR+".event("+ref+","+name+","+ctx.getContainerVarName()+");\n");
 			}
 		}
 	}

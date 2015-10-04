@@ -26,7 +26,8 @@ public class JaEval2 {
 	public JaEvalResult parseExpression() {
 		exprOnly = true;
 		JaEvalResult res = JaEvalResult.newInstance(code,true);
-		JaEvalResult ret = readExpression(res,true,null);
+		JaEvalResult ret = readPattern("$expr$", res, true, null);
+		//JaEvalResult ret = readExpression(res,true,null);
 		if (ret==null) {
 			res.setErrorMessage("Couldn't parse expression '"+code+"'");
 			ret = res;
@@ -133,19 +134,20 @@ public class JaEval2 {
 		JaEvalResult ret = null;
 		
 		if (name.equals("number")) ret = readNumberLiteral(currentResult);
-		else if (name.equals("expr")) ret = readExpression(currentResult, false, startIgnore);
+		//else if (name.equals("expr")) ret = readExpression(currentResult, false, startIgnore);
 		else if (name.equals("string")) ret = readStringLiteral(currentResult);
 		else if (name.equals("identifier")) ret = readIdentifier(currentResult);
 		else if (name.equals("fnCall")) ret = readFunctionCall(currentResult);
 		else if (name.equals("varRef")) ret = readVarRef(currentResult);
 		else {
 			if (name.equals("codeLine")) patterns = JaEvalConst.codeLine;
+			else if (name.equals("expr")) patterns = JaEvalConst.expr;
 			else {
 				throw new RuntimeException("Couldn't do an eval because a pattern contained '"+name+"'");
 			}
 			for(String s : patterns) {
 				JaEvalResult res = readPattern(s,currentResult,false,startIgnore);
-				if (res==null) continue;
+				if ((res==null) || (res.getErrorMessage()!=null)) continue;
 				ret = currentResult;
 				ret.merge(res,true);
 			}
@@ -393,17 +395,17 @@ public class JaEval2 {
 		return ret;
 	}
 
+	/*
 	protected JaEvalResult readExpression(JaEvalResult currentResult,boolean readTilEnd,String startIgnore) {
 		JaEvalResult res = null;
 
 		for(String s : JaEvalConst.expr) {
 			res = readPattern(s,currentResult,readTilEnd, startIgnore);
-			if (res!=null) {
-				return res;
-			}
+			if (res!=null) return res;
 		}
 		return null;
 	}
+	*/
 
 	protected JaEvalResult readPattern(String pattern,JaEvalResult currentResult,boolean readTilEnd,String startIgnore) {
 		JaEvalResult ret = currentResult.createNew(exprOnly);
