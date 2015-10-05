@@ -26,8 +26,7 @@ public class JaEval2 {
 	public JaEvalResult parseExpression() {
 		exprOnly = true;
 		JaEvalResult res = JaEvalResult.newInstance(code,true);
-		JaEvalResult ret = readPattern("$expr$", res, true, null);
-		//JaEvalResult ret = readExpression(res,true,null);
+		JaEvalResult ret = readPart("expr", res, null);
 		if (ret==null) {
 			res.setErrorMessage("Couldn't parse expression '"+code+"'");
 			ret = res;
@@ -145,11 +144,12 @@ public class JaEval2 {
 			else {
 				throw new RuntimeException("Couldn't do an eval because a pattern contained '"+name+"'");
 			}
+			ret = currentResult.createNew(false);
 			for(String s : patterns) {
 				JaEvalResult res = readPattern(s,currentResult,false,startIgnore);
 				if ((res==null) || (res.getErrorMessage()!=null)) continue;
-				ret = currentResult;
 				ret.merge(res,true);
+				break;
 			}
 		}
 		
@@ -180,7 +180,8 @@ public class JaEval2 {
 				ret.getResult().append(',');
 			} else firstParam = false;
 			
-			JaEvalResult sub = readPattern("$expr$",ret,false,null);
+			JaEvalResult sub = readPart("expr", ret, null);
+			//JaEvalResult sub = readPattern("$expr$",ret,false,null);
 			if (sub==null) return null;
 			if (sub.getErrorMessage()!=null) return sub;
 			ret.merge(sub,true);
@@ -411,12 +412,9 @@ public class JaEval2 {
 		JaEvalResult ret = currentResult.createNew(exprOnly);
 		int end = 0;
 		int prevEnd = -1;
-		boolean sendStartIgnore = false;
 
 		if (startIgnore!=null) {
 			if (pattern.startsWith("$"+startIgnore+"$")) return null;
-		} else {
-			if (pattern.startsWith("$")) sendStartIgnore = true;
 		}
 		int i = pattern.indexOf('$');
 		while(i>=0) {
@@ -453,8 +451,7 @@ public class JaEval2 {
 				sub = readCodeBlock(ret, str);
 			} else {
 				// Look for name
-				if (sendStartIgnore) {
-					sendStartIgnore = false; // ??
+				if (i==0) {
 					sub = readPart(name,ret,name);
 				} else {
 					sub = readPart(name,ret,null);
