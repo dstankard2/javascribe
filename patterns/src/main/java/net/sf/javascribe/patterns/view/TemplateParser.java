@@ -15,6 +15,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.nodes.TextNode;
+import org.jsoup.parser.Parser;
 
 public class TemplateParser {
 
@@ -53,8 +54,11 @@ public class TemplateParser {
 	protected static String generateJavascriptCode(String template,ProcessorContext ctx,String obj,JavascriptFunctionType fn,CodeExecutionContext execCtx) throws JavascribeException {
 		StringBuilder b = new StringBuilder();
 		//Document doc = Jsoup.parse(template.trim(), "//", Parser.htmlParser());
-		Document doc = Jsoup.parse(template.trim());
+		//Document doc = Jsoup.parseBodyFragment("<div>"+template.trim()+"</div>");
+		Document doc = Jsoup.parse(template.trim(), "//", Parser.xmlParser());
+		//Document doc = Jsoup.parse(template.trim());
 		
+		/*
 		Node htmlNode = doc.childNode(0);
 		if (!htmlNode.nodeName().equals("html")) {
 			throw new JavascribeException("huh?");
@@ -62,9 +66,11 @@ public class TemplateParser {
 		if (htmlNode.childNodes().size()<2) {
 			throw new JavascribeException("hi");
 		}
-		Node bodyNode = htmlNode.childNode(1);
+		*/
+		//Node bodyNode = htmlNode.childNode(1);
 		
-		List<Node> nodeList = bodyNode.childNodes();
+		List<Node> nodeList = doc.childNodes();
+		//List<Node> nodeList = bodyNode.childNodes();
 		if (nodeList.size()>1) {
 			throw new JavascribeException("TemplateParser doesn't support a template with multiple HTML elements at the root.  Perhaps use a container 'div' element");
 		}

@@ -165,7 +165,7 @@ public class DirectiveUtils {
 			}
 
 			String ref = result.getResult().toString();
-			build.append("'+((function(){try{return "+ref+"?"+ref+":'';}catch(_e){return '';}})())+'");
+			build.append("'+((function(){try{return "+ref+"!=undefined?"+ref+":'';}catch(_e){return '';}})())+'");
 			previousEnd = end + 2;
 			i = s.indexOf("{{", previousEnd);
 		}

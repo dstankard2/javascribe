@@ -136,14 +136,18 @@ public class ElementParser {
 			if (s.startsWith("js-")) continue;
 			if (s.equals("class")) continue;
 			String val = rctx.getDomAttributes().get(s).trim();
-			s = DirectiveUtils.getLowerCamelFromHtml(s);
+			//s = DirectiveUtils.getLowerCamelFromHtml(s);
 			if (s.equals("style")) code.append(addStyle(eltVar,val));
 			else {
 				String ref = DirectiveUtils.parsePartialExpression(val, execCtx);
 				if (ref==null) {
 					throw new JavascribeException("Couldn't evaluate attribute '"+s+"' with value '"+val+"'");
 				}
-				code.append(eltVar+"."+s+" = "+ref+";\n");
+				if (s.indexOf('-')>=0) {
+					code.append(eltVar+".setAttribute('"+s+"',"+ref+");\n");
+				} else {
+					code.append(eltVar+"."+s+" = "+ref+";\n");
+				}
 				/*
 				if ((val.startsWith("{{")) && (val.endsWith("}}"))) {
 					String ref = val.substring(2, val.length()-2).trim();
