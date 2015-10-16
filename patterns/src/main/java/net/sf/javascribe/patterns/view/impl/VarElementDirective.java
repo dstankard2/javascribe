@@ -18,13 +18,17 @@ public class VarElementDirective implements ElementDirective {
 	public void generateCode(DirectiveContext ctx) throws JavascribeException {
 		StringBuilder b = ctx.getCode();
 		String name = ctx.getDomAttributes().get("name");
-		String value = ctx.getDomAttributes().get("value");
-		boolean done = false;
+		String type = ctx.getDomAttributes().get("type");
 
+		if ((name==null) || (type==null) || (name.trim().length()==0) || (type.trim().length()==0)) {
+			throw new JavascribeException("js-var element directive requires 'name' and 'type'");
+		}
 		if (ctx.getExecCtx().getVariableType(name)!=null) {
 			throw new JavascribeException("Cannot declare a variable named '"+name+"' as there is already another one");
 		}
-		String valueExpr = null;
+		b.append("var "+name+";\n");
+		ctx.getExecCtx().addVariable(name, type);
+		/*
 		if ((value.startsWith("${")) && (value.endsWith("}"))) {
 			valueExpr = value.substring(2, value.length()-1);
 			String finalValue = DirectiveUtils.getValidReference(valueExpr, ctx.getExecCtx());
@@ -42,10 +46,8 @@ public class VarElementDirective implements ElementDirective {
 				}
 			}
 		}
+		*/
 		
-		if (!done) {
-			throw new JavascribeException("Invalid value for js-var directive");
-		}
 	}
 
 }

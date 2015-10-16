@@ -11,13 +11,11 @@ import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.VariableType;
-import net.sf.javascribe.api.expressions.ExpressionUtil;
 import net.sf.javascribe.langsupport.javascript.JavascriptBaseObjectType;
 import net.sf.javascribe.langsupport.javascript.JavascriptFunctionType;
 import net.sf.javascribe.patterns.view.impl.IfDirective;
 import net.sf.javascribe.patterns.view.impl.JaEval2;
 import net.sf.javascribe.patterns.view.impl.JaEvalResult;
-import net.sf.javascribe.patterns.view.impl.JavascriptEvaluator;
 import net.sf.javascribe.patterns.view.impl.LoopDirective;
 
 import org.jsoup.nodes.Attribute;
@@ -107,17 +105,6 @@ public class ElementParser {
 				String ref = DirectiveUtils.parsePartialExpression(s, execCtx);
 				code.append(DirectiveUtils.PAGE_VAR+".event("+ref+","+fnVar+","+eltVar+");\n");
 			}
-			/*
-			if (event!=null) {
-				StringTokenizer tok = new StringTokenizer(event,",");
-				while(tok.hasMoreTokens()) {
-					String s = tok.nextToken();
-					code.append(DirectiveUtils.PAGE_VAR+".controller.addEventListener('"+s+"',"+fnVar+","+eltVar+");\n");
-				}
-			} else {
-				code.append(DirectiveUtils.PAGE_VAR+".controller.addEventListener("+eventRef+","+fnVar+","+eltVar+");\n");
-			}
-			*/
 			
 			code.append(fnVar+"();\n");
 		} else {
@@ -136,7 +123,6 @@ public class ElementParser {
 			if (s.startsWith("js-")) continue;
 			if (s.equals("class")) continue;
 			String val = rctx.getDomAttributes().get(s).trim();
-			//s = DirectiveUtils.getLowerCamelFromHtml(s);
 			if (s.equals("style")) code.append(addStyle(eltVar,val));
 			else {
 				String ref = DirectiveUtils.parsePartialExpression(val, execCtx);
@@ -167,11 +153,16 @@ public class ElementParser {
 			code.append(eltVar+".id = '"+elt.id()+"';\n");
 		}
 		if ((elt.className()!=null) && (elt.className().trim().length()>0)) {
+			String t = elt.className().trim();
+			String val = DirectiveUtils.parsePartialExpression(t, execCtx);
+			code.append(eltVar+".className = "+val+";\n");
+			/*
 			StringTokenizer tok = new StringTokenizer(elt.className()," ");
 			while(tok.hasMoreTokens()) {
 				String t = tok.nextToken().trim();
 				code.append(eltVar+".classList.add('"+t+"');\n");
 			}
+			*/
 		}
 	}
 

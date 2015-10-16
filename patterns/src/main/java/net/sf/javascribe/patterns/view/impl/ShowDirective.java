@@ -25,12 +25,13 @@ public class ShowDirective implements AttributeDirective {
 		String boolVar = ctx.newVarName("_b", "boolean", execCtx);
 		b.append("var "+boolVar+";\n");
 		b.append("try {\n");
-		JavascriptEvaluator eval = new JavascriptEvaluator(cond,execCtx);
-		eval.parseExpression();
-		if (eval.getError()!=null) {
-			throw new JavascribeException(eval.getError());
+		JaEval2 eval = new JaEval2(cond,execCtx);
+		//JavascriptEvaluator eval = new JavascriptEvaluator(cond,execCtx);
+		JaEvalResult res = eval.parseExpression();
+		if (res.getErrorMessage()!=null) {
+			throw new JavascribeException(res.getErrorMessage());
 		}
-		String s = eval.getResult();
+		String s = res.getResult().toString();
 		b.append("if ("+s+") "+boolVar+" = true;\n");
 		b.append("}catch(_err){};\n");
 		b.append("if (!"+boolVar+") "+eltVar+".style.display = 'none';\n");

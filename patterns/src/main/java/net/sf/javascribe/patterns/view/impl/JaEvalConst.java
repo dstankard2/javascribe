@@ -48,13 +48,11 @@ public class JaEvalConst {
 	public static final String[] codeLine = new String[] {
 		"var $identifier$;",
 		"var $identifier$=$expr$;",
-		//"new $fnCall$;",// This is an expression
-		"if($expr$)$codeLine$",
-		"if($expr$){$codeLines$}",
-		"for($declaration$;$expr$;$expr$)$codeLine$",
-		"for($declaration$;$expr$;$expr$){$codeLines$}",
+		"if ($expr$) $codeLine$",
+		"if ($expr$) { $codeLines$}",
+		"for ($declaration$;$expr$;$expr$) $codeLine$",
+		"for ($declaration$;$expr$;$expr$) { $codeLines$}",
 		"return $expr$;",
-		//"$varRef$=$expr$;", // assignment
 		"$fnCall$;",
 		"$expr$;"
 	};

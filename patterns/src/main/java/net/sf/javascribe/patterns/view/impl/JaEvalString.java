@@ -76,4 +76,7 @@ public class JaEvalString {
 	public void skip(int chars) {
 		index+=chars;
 	}
+	public void append(String s) {
+		code = code + s;
+	}
 }

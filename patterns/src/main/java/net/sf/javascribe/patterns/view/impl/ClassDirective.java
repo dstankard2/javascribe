@@ -41,12 +41,13 @@ public class ClassDirective implements AttributeDirective {
 				String bool = ctx.newVarName("_b", "boolean", ctx.getExecCtx());
 				String name = names.next();
 				String value = node.findValue(name).asText();
-				JavascriptEvaluator eval = new JavascriptEvaluator(value,ctx.getExecCtx());
-				eval.parseExpression();
-				if (eval.getError()!=null) {
-					throw new JavascribeException(eval.getError());
+				JaEval2 eval = new JaEval2(value,ctx.getExecCtx());
+				//JavascriptEvaluator eval = new JavascriptEvaluator(value,ctx.getExecCtx());
+				JaEvalResult res = eval.parseExpression();
+				if (res.getErrorMessage()!=null) {
+					throw new JavascribeException(res.getErrorMessage());
 				}
-				String cond = eval.getResult();
+				String cond = res.getResult().toString();
 				//String cond = DirectiveUtils.evaluateIf(value, ctx.getExecCtx());
 				code.append("var "+bool+";\ntry {\n");
 				code.append("if ("+cond+") "+bool+" = true;\n} catch(err) {}\n");

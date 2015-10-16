@@ -56,7 +56,11 @@ public class PageModelProcessor {
 				.append(pageName).append(".model.get").append(attr)
 				.append(" = function() {return this.").append(name).append(";}.bind("+pageName+".model);\n");
 
-		code.append(pageName).append(".model.set"+attr+" = function(val) {\nvar oldValue = this."+name+";\nif (oldValue===val) return;\nthis."+name+" = val;\n");
+		code.append(pageName).append(".model.set"+attr+" = function(val) {\n");
+		if ((typeName.equals("integer")) || (typeName.equals("longint"))) {
+			code.append("if (isNaN(val)) val = undefined;\nelse val = Number(val);\n");
+		}
+		code.append("var oldValue = this."+name+";\nif (oldValue===val) return;\nthis."+name+" = val;\n");
 		if ((onChange!=null) && (onChange.trim().length()>0)) {
 			String vals[] = onChange.split(",");
 			for(String v : vals) {

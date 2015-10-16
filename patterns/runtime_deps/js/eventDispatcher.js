@@ -9,21 +9,24 @@ function EventDispatcher() {
 
 	var domWatch = { };
 	
-	var observer = new MutationObserver(function(mutations) {
-		mutations.forEach(function(m) {
-			if (m.type!='childList') return;
-			if (!m.removedNodes) return;
-			for(var i=0;i<m.removedNodes.length;i++) {
-				console.log('detected that a node is removed from DOM');
-				if (domWatch[m.removedNodes[i]]) {
-					var arr = domWatch[m.removedNodes[i]];
-					for(var i2=0;i2<arr.length;i2++) {
-						removeListener(arr[i2]);
-					}
-				}
-			}
-		});
-	});
+	var obs;
+	function _initObserver() {
+		if (window.MutationObserver) {
+
+		    obs = new MutationObserver(function (e) {
+		      if ((e[0].removedNodes) && (e[0].removedNodes.length)) {
+		        var l = e[0].removedNodes.length;
+		        for(var i=0;i<l;i++) {
+		          var node = e[0].removedNodes[i];
+		          if (node._elt) {
+		            console.log('A node was removed with mark as '+node._elt);
+		          }
+		        }
+		      }
+		    });
+		    obs.observe(document.body, { childList: true });
+		}
+	}
 	
 	var removeListener = function(fn) {
 		for(var k in listeners) {
@@ -38,6 +41,7 @@ function EventDispatcher() {
 	return {
 		// Adds the specified callback function as a listener to the specified event.
 		addEventListener: function(name,callback,domElement) {
+			if (!obs) _initObserver();
 			if (typeof(listeners[name]) =='undefined') {
 				listeners[name] = new Array();
 			}
@@ -69,9 +73,9 @@ function EventDispatcher() {
 				list[i](event);
 			}
 		},
-		event: function(name,fn) {
+		event: function(name,fn,elt) {
 			if (fn) {
-				this.addEventListener(name,fn);
+				this.addEventListener(name,fn,elt);
 			} else {
 				this.dispatch(name,{});
 			}

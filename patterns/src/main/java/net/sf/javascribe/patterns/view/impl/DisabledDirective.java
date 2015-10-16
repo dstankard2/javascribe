@@ -21,12 +21,14 @@ public class DisabledDirective implements AttributeDirective {
 		ctx.getTemplateAttributes().remove("js-disabled");
 		ctx.continueRenderElement();
 		
-		JavascriptEvaluator eval = new JavascriptEvaluator(value,ctx.getExecCtx());
-		eval.parseExpression();
-		if (eval.getError()!=null) {
-			throw new JavascribeException(eval.getError());
+		JaEval2 eval = new JaEval2(value,ctx.getExecCtx());
+		//JavascriptEvaluator eval = new JavascriptEvaluator(value,ctx.getExecCtx());
+		JaEvalResult result = eval.parseExpression();
+		if (result.getErrorMessage()!=null) {
+			throw new JavascribeException(result.getErrorMessage());
 		}
-		String cond = eval.getResult();
+		String cond = result.getResult().toString();
+		//String cond = eval.getResult();
 		code.append("try {\n");
 		code.append("if ("+cond+") "+ctx.getElementVarName()+".disabled = true;\n");
 		code.append("else "+ctx.getElementVarName()+".disabled = false;\n");

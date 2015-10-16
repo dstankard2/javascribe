@@ -5,18 +5,16 @@ public class JaEvalResult {
 	private JaEvalString remaining = null;
 	private String errorMessage = null;
 	private StringBuilder result = new StringBuilder();
-	private boolean exprOnly = false;
 
-	public static JaEvalResult newInstance(String code,boolean exprOnly) {
-		return new JaEvalResult(code,exprOnly,0);
+	public static JaEvalResult newInstance(String code) {
+		return new JaEvalResult(code,0);
 	}
-	protected JaEvalResult(String code,boolean exprOnly,int place) {
+	protected JaEvalResult(String code,int place) {
 		this.remaining = new JaEvalString(code,place);
-		this.exprOnly = exprOnly;
 	}
 	
-	public JaEvalResult createNew(boolean exprOnly) {
-		JaEvalResult ret = new JaEvalResult(remaining.getCode(),exprOnly,0);
+	public JaEvalResult createNew() {
+		JaEvalResult ret = new JaEvalResult(remaining.getCode(),0);
 		return ret;
 	}
 	
@@ -44,9 +42,6 @@ public class JaEvalResult {
 	}
 	public void setResult(StringBuilder result) {
 		this.result = result;
-	}
-	public boolean getExprOnly() {
-		return exprOnly;
 	}
 	public JaEvalString getRemaining() {
 		return remaining;

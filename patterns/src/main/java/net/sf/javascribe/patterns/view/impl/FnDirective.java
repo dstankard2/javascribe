@@ -21,7 +21,7 @@ public class FnDirective implements ElementDirective {
 
 	@Override
 	public void generateCode(DirectiveContext ctx) throws JavascribeException {
-		String html = ctx.getInnerHtml();
+		String html = DirectiveUtils.unescapeXml(ctx.getInnerHtml());
 		String name = ctx.getDomAttributes().get("name");
 		String params = ctx.getDomAttributes().get("params");
 		String event = ctx.getDomAttributes().get("event");

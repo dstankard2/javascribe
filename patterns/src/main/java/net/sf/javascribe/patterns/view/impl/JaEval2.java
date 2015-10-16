@@ -10,7 +10,6 @@ public class JaEval2 {
 	
 	private List<String> impliedVars = new ArrayList<String>();
 	private String code = null;
-	private boolean exprOnly = false;
 	CodeExecutionContext execCtx = null;
 
 	public JaEval2(String code,CodeExecutionContext execCtx) {
@@ -24,8 +23,7 @@ public class JaEval2 {
 	}
 
 	public JaEvalResult parseExpression() {
-		exprOnly = true;
-		JaEvalResult res = JaEvalResult.newInstance(code,true);
+		JaEvalResult res = JaEvalResult.newInstance(code);
 		JaEvalResult ret = readPart("expr", res, null);
 		if (ret==null) {
 			res.setErrorMessage("Couldn't parse expression '"+code+"'");
@@ -35,12 +33,15 @@ public class JaEval2 {
 	}
 	
 	public JaEvalResult parseCodeBlock() {
-		exprOnly = false;
-		JaEvalResult res = JaEvalResult.newInstance(code, false);
+		JaEvalResult res = JaEvalResult.newInstance(code);
 		JaEvalResult ret = null;
 		char c = res.getRemaining().nextNonWs();
 		if (c!=0) {
 			res.getRemaining().backtrack();
+			if ((!res.getRemaining().getCode().endsWith(";")) 
+					&& (!res.getRemaining().getCode().endsWith("}"))) {
+				res.getRemaining().append(";");
+			}
 			ret = readCodeBlock(res,null);
 		}
 		if (ret==null) {
@@ -54,7 +55,7 @@ public class JaEval2 {
 		JaEvalResult ret = null;
 		JaEvalResult current = null;
 
-		ret = currentResult.createNew(false);
+		ret = currentResult.createNew();
 
 		while(ret.getRemaining().getRemaining()>0) {
 			current = readCodeLine(ret);
@@ -92,7 +93,7 @@ public class JaEval2 {
 	}
 	
 	protected JaEvalResult readAssignment(JaEvalResult currentResult) {
-		JaEvalResult ret = currentResult.createNew(false);
+		JaEvalResult ret = currentResult.createNew();
 		JaEvalResult sub = null;
 		String varRef = null;
 		String value = null;
@@ -144,7 +145,7 @@ public class JaEval2 {
 			else {
 				throw new RuntimeException("Couldn't do an eval because a pattern contained '"+name+"'");
 			}
-			ret = currentResult.createNew(false);
+			ret = currentResult.createNew();
 			for(String s : patterns) {
 				JaEvalResult res = readPattern(s,currentResult,false,startIgnore);
 				if ((res==null) || (res.getErrorMessage()!=null)) continue;
@@ -157,7 +158,7 @@ public class JaEval2 {
 	}
 	
 	protected JaEvalResult readFunctionCall(JaEvalResult currentResult) {
-		JaEvalResult ret = currentResult.createNew(true);
+		JaEvalResult ret = currentResult.createNew();
 		String ref = readVariableReference(ret);
 		if (ref==null) {
 			return null;
@@ -192,7 +193,7 @@ public class JaEval2 {
 	}
 	
 	protected JaEvalResult readVarRef(JaEvalResult currentResult) {
-		JaEvalResult ret = currentResult.createNew(true);
+		JaEvalResult ret = currentResult.createNew();
 		String ref = readVariableReference(ret);
 		if (ref==null) {
 			return null;
@@ -312,7 +313,7 @@ public class JaEval2 {
 	
 	protected JaEvalResult readIdentifier(JaEvalResult currentResult) {
 		JaEvalResult ret = null;
-		ret = currentResult.createNew(true);
+		ret = currentResult.createNew();
 		boolean first = true;
 		StringBuilder ref = new StringBuilder();
 		
@@ -348,7 +349,7 @@ public class JaEval2 {
 	}
 
 	protected JaEvalResult readNumberLiteral(JaEvalResult currentResult) {
-		JaEvalResult ret = currentResult.createNew(true);
+		JaEvalResult ret = currentResult.createNew();
 
 		boolean first = true;
 		boolean decimal = false;
@@ -372,7 +373,7 @@ public class JaEval2 {
 	}
 	
 	protected JaEvalResult readStringLiteral(JaEvalResult currentResult) {
-		JaEvalResult ret = currentResult.createNew(exprOnly);
+		JaEvalResult ret = currentResult.createNew();
 		
 		char first = ret.getRemaining().nextNonWs();
 		boolean escaped = false;
@@ -409,7 +410,7 @@ public class JaEval2 {
 	*/
 
 	protected JaEvalResult readPattern(String pattern,JaEvalResult currentResult,boolean readTilEnd,String startIgnore) {
-		JaEvalResult ret = currentResult.createNew(exprOnly);
+		JaEvalResult ret = currentResult.createNew();
 		int end = 0;
 		int prevEnd = -1;
 

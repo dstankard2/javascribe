@@ -199,5 +199,23 @@ public class DirectiveUtils {
 		return ret;
 	}
 	
+	protected static String replace(String str,String replace,String replacement) {
+		int i = str.indexOf(replace);
+		while(i>=0) {
+			str = str.substring(0, i) + replacement + str.substring(i+replace.length());
+			i = str.indexOf(replace);
+		}
+		return str;
+	}
+	
+	public static String unescapeXml(String str) {
+		str = replace(str,"&quot;","\"");
+		str = replace(str,"&lt;","<");
+		str = replace(str,"&gt;",">");
+		str = replace(str,"&amp;","&");
+		str = replace(str,"&apos;","'");
+		return str;
+	}
+	
 }
 
