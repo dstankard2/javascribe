@@ -21,12 +21,7 @@ public class IfDirective implements AttributeDirective {
 		CodeExecutionContext existingCtx = ctx.getExecCtx();
 
 		JaEval2 eval = new JaEval2(cond,existingCtx);
-		if (existingCtx.getTypeForVariable(DirectiveUtils.PAGE_VAR)!=null) {
-			eval.addImpliedVariable(DirectiveUtils.PAGE_VAR).addImpliedVariable(DirectiveUtils.PAGE_VAR+".model");
-		}
-		if (existingCtx.getTypeForVariable(DirectiveUtils.LOCAL_MODEL_VAR)!=null) {
-			eval.addImpliedVariable(DirectiveUtils.LOCAL_MODEL_VAR);
-		}
+		DirectiveUtils.populateImpliedVariables(eval);
 		//JavascriptEvaluator eval = new JavascriptEvaluator(cond,existingCtx);
 		JaEvalResult result = eval.parseExpression();
 		if (result.getErrorMessage()!=null) {

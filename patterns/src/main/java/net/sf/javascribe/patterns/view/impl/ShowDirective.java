@@ -4,6 +4,7 @@ import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.patterns.view.AttributeDirective;
 import net.sf.javascribe.patterns.view.DirectiveContext;
+import net.sf.javascribe.patterns.view.DirectiveUtils;
 
 //This is not scannable because it will be added to the renderer list manually.
 public class ShowDirective implements AttributeDirective {
@@ -26,7 +27,7 @@ public class ShowDirective implements AttributeDirective {
 		b.append("var "+boolVar+";\n");
 		b.append("try {\n");
 		JaEval2 eval = new JaEval2(cond,execCtx);
-		//JavascriptEvaluator eval = new JavascriptEvaluator(cond,execCtx);
+		DirectiveUtils.populateImpliedVariables(eval);
 		JaEvalResult res = eval.parseExpression();
 		if (res.getErrorMessage()!=null) {
 			throw new JavascribeException(res.getErrorMessage());

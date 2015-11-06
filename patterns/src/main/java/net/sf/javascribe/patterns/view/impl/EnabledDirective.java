@@ -4,6 +4,7 @@ import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.annotation.Scannable;
 import net.sf.javascribe.patterns.view.AttributeDirective;
 import net.sf.javascribe.patterns.view.DirectiveContext;
+import net.sf.javascribe.patterns.view.DirectiveUtils;
 
 @Scannable
 public class EnabledDirective implements AttributeDirective {
@@ -21,7 +22,7 @@ public class EnabledDirective implements AttributeDirective {
 		ctx.continueRenderElement();
 		
 		JaEval2 eval = new JaEval2(value,ctx.getExecCtx());
-		//JavascriptEvaluator eval = new JavascriptEvaluator(value,ctx.getExecCtx());
+		DirectiveUtils.populateImpliedVariables(eval);
 		JaEvalResult res = eval.parseExpression();
 		if (res.getErrorMessage()!=null) {
 			throw new JavascribeException(res.getErrorMessage());

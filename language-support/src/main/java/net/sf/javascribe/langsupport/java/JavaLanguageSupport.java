@@ -22,6 +22,7 @@ public class JavaLanguageSupport implements LanguageSupport {
 		ret.add(new Java5BooleanType());
 		ret.add(new Java5DateType());
 		ret.add(new Java5IntegerType());
+		ret.add(new Java5FloatType());
 		ret.add(new Java5ListType());
 		ret.add(new Java5LongIntType());
 		ret.add(new Java5MapType());

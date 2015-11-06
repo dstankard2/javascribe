@@ -45,7 +45,7 @@ public class HtmlTemplateProcessor {
 		
 		VariableType t = ctx.getType(obj);
 		JavascriptBaseObjectType jsType = null;
-		JavascriptSourceFile src = JavascriptUtils.getSourceFile(ctx);
+		JavascriptSourceFile src = DirectiveUtils.getJavascriptFileWithTemplatingUtilities(ctx);
 		
 		if (t==null) {
 			src.getSource().append("var "+obj+" = {};\n");

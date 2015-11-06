@@ -89,11 +89,7 @@ public class ElementParser {
 			
 			code.append("var "+fnVar+" = function() {\n");
 			CodeExecutionContext newCtx = new CodeExecutionContext(execCtx);
-			String iter = newVarName("_i", "integer", newCtx);
-			code.append("if (!"+containerVar+") return;\n");
-			code.append("for(var "+iter+"=0;"+iter+"<"+containerVar+".childNodes.length;"+iter+"++)\n");
-			code.append("if ("+containerVar+".childNodes["+iter+"]._elt == '"+eltVar+"') {\n");
-			code.append(containerVar+".removeChild("+containerVar+".childNodes["+iter+"]);"+iter+"--;}\n");
+			code.append("_rem("+containerVar+",'"+eltVar+"');\n");
 			code.append(eltVar+" = null;\n");
 
 			continueParsing(newCtx,rctx);
@@ -208,7 +204,7 @@ public class ElementParser {
 			String n = findLowerCamelFromHtml(htmlAttr);
 			String val = atts.get(htmlAttr);
 			JaEval2 eval = new JaEval2(val,execCtx);
-			eval.addImpliedVariable(DirectiveUtils.PAGE_VAR).addImpliedVariable(DirectiveUtils.PAGE_VAR+".model");
+			DirectiveUtils.populateImpliedVariables(eval);
 			JaEvalResult result = eval.parseExpression();
 			if (result.getErrorMessage()!=null) {
 				throw new JavascribeException("Couldn't build template call - "+result.getErrorMessage());

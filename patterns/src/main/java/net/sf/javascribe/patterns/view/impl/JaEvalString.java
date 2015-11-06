@@ -40,14 +40,14 @@ public class JaEvalString {
 		}
 		return c;
 	}
-	public void toNextNonWs() {
+	public void skipWs() {
 		if (getRemaining()<1) return;
 		char c = next();
-		while(Character.isWhitespace(c)) {
-			if (getRemaining()<1) return;
+		while((c>0) && (Character.isWhitespace(c))) {
 			c = next();
 		}
-		backtrack();
+		if (c>0)
+			backtrack();
 	}
 	public int getRemaining() {
 		int ret = code.length()-index;

@@ -49,7 +49,7 @@ public class TemplateSetProcessor {
 		JavascriptObjectType type = new JavascriptObjectType(obj);
 		ctx.addAttribute(obj, type.getName());
 		ctx.getTypes().addType(type);
-		JavascriptSourceFile src = JavascriptUtils.getSourceFile(ctx);
+		JavascriptSourceFile src = DirectiveUtils.getJavascriptFileWithTemplatingUtilities(ctx);
 		
 		src.getSource().append("var "+obj+" = { };\n");
 		for(SingleTemplate tmp : comp.getTemplate()) {

@@ -269,7 +269,7 @@ public class JaEval2 {
 		
 		do {
 			if (first) {
-				currentResult.getRemaining().toNextNonWs();
+				currentResult.getRemaining().skipWs();
 				expectingFirst = false;
 			}
 			if (currentResult.getRemaining().getRemaining()==0) {

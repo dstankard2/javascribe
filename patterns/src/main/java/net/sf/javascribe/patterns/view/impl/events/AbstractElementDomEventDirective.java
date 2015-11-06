@@ -4,6 +4,7 @@ import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.patterns.view.AttributeDirective;
 import net.sf.javascribe.patterns.view.DirectiveContext;
+import net.sf.javascribe.patterns.view.DirectiveUtils;
 import net.sf.javascribe.patterns.view.impl.JaEval2;
 import net.sf.javascribe.patterns.view.impl.JaEvalResult;
 
@@ -26,7 +27,7 @@ public abstract class AbstractElementDomEventDirective extends AbstractDomEventD
 		execCtx.addVariable("$event", "DomEvent");
 		
 		JaEval2 eval = new JaEval2(userString,execCtx);
-		//JavascriptEvaluator eval = new JavascriptEvaluator(userString,execCtx);
+		DirectiveUtils.populateImpliedVariables(eval);
 		JaEvalResult result = eval.parseCodeBlock();
 		if (result.getErrorMessage()!=null) {
 			throw new JavascribeException("Couldn't build DOM event lsitener: "+result.getErrorMessage());

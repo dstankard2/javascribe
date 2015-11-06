@@ -2,8 +2,11 @@ package net.sf.javascribe.patterns.view;
 
 import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JavascribeException;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.expressions.ExpressionUtil;
 import net.sf.javascribe.langsupport.javascript.JavascriptFunctionType;
+import net.sf.javascribe.langsupport.javascript.JavascriptSourceFile;
+import net.sf.javascribe.langsupport.javascript.JavascriptUtils;
 import net.sf.javascribe.patterns.js.page.PageModelType;
 import net.sf.javascribe.patterns.js.page.PageType;
 import net.sf.javascribe.patterns.view.impl.JaEval2;
@@ -215,6 +218,51 @@ public class DirectiveUtils {
 		str = replace(str,"&amp;","&");
 		str = replace(str,"&apos;","'");
 		return str;
+	}
+	
+	private static final String REM_FUNC = 
+			"if (!window._rem) {\n" + 
+			"window._rem = function(parent,toRemove){\n" +
+			"if (!parent)return;\n" +
+			"for(var _i=0;_i<parent.childNodes.length;_i++){" +
+			"if (parent.childNodes[_i]._elt==toRemove){" +
+			"parent.removeChild(parent.childNodes[_i]);_i--;\n" +
+			"}\n" +
+			"}\n" +
+			"}\n" +
+			"}\n";
+	private static final String INS_FUNC = 
+			"if (!window._ins) {\n" +
+			"window._ins = function(parent,elt,prev) {\n" +
+			"for(var i=0;i<parent.childNodes.length;i++) {\n" +
+			"var done = true;\n" +
+			"var n = parent.childNodes[i];\n" +
+			"for(var i2=0;i2<prev.length;i2++) {\n" +
+			"if (n._elt==prev[i2]) {\n"+
+			"done = false;\nbreak;\n" +
+			"}\n" +
+			"}\n" +
+			"if (done) {\n" +
+			"parent.insertBefore(elt,n);\n" +
+			"return;\n"+
+			"}\n" +
+			"}\n" +
+			"parent.appendChild(elt);\n"+
+			"};\n" +
+			"}\n";
+	
+	public static JavascriptSourceFile getJavascriptFileWithTemplatingUtilities(ProcessorContext ctx) throws JavascribeException {
+		JavascriptSourceFile ret = JavascriptUtils.getSourceFile(ctx);
+		String propName = "net.sf.javascribe.patterns.view.DirectiveUtils_Fn_"+ret.getPath();
+		
+		Object val = ctx.getObject(propName);
+		if (val==null) {
+			ctx.putObject(propName, Boolean.TRUE);
+			ret.getSource().append(INS_FUNC);
+			ret.getSource().append(REM_FUNC);
+		}
+		
+		return ret;
 	}
 	
 }

@@ -19,26 +19,7 @@ import org.jsoup.parser.Parser;
 
 public class TemplateParser {
 
-	private static final String INS_FUNC = 
-			"if (!window._ins) {\n" +
-			"window._ins = function(parent,elt,prev) {\n" +
-			"for(var i=0;i<parent.childNodes.length;i++) {\n" +
-			"var done = true;\n" +
-			"var n = parent.childNodes[i];\n" +
-			"for(var i2=0;i2<prev.length;i2++) {\n" +
-			"if (n._elt==prev[i2]) {\n"+
-			"done = false;\nbreak;\n" +
-			"}\n" +
-			"}\n" +
-			"if (done) {\n" +
-			"parent.insertBefore(elt,n);\n" +
-			"return;\n"+
-			"}\n" +
-			"}\n" +
-			"parent.appendChild(elt);\n"+
-			"};\n" +
-			"}\n";
-	
+	/*
 	public static String parseJavascriptCode(String template,
 			ProcessorContext ctx,String obj,JavascriptFunctionType fn) throws JavascribeException {
 		CodeExecutionContext execCtx = null;
@@ -50,6 +31,7 @@ public class TemplateParser {
 		
 		return b.toString();
 	}
+	*/
 	
 	protected static String generateJavascriptCode(String template,ProcessorContext ctx,String obj,JavascriptFunctionType fn,CodeExecutionContext execCtx) throws JavascribeException {
 		StringBuilder b = new StringBuilder();
@@ -63,7 +45,7 @@ public class TemplateParser {
 			throw new JavascribeException("TemplateParser doesn't support a template with multiple HTML elements at the root.  Perhaps use a container 'div' element");
 		}
 
-		b.append(INS_FUNC);
+		//b.append(INS_FUNC);
 		b.append("var "+DirectiveUtils.DOCUMENT_REF+" = document;\n");
 		String retVar = "_r";
 		b.append("var "+retVar+" = document.createElement('div');\n");

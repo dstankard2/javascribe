@@ -42,13 +42,12 @@ public class ClassDirective implements AttributeDirective {
 				String name = names.next();
 				String value = node.findValue(name).asText();
 				JaEval2 eval = new JaEval2(value,ctx.getExecCtx());
-				//JavascriptEvaluator eval = new JavascriptEvaluator(value,ctx.getExecCtx());
+				DirectiveUtils.populateImpliedVariables(eval);
 				JaEvalResult res = eval.parseExpression();
 				if (res.getErrorMessage()!=null) {
 					throw new JavascribeException(res.getErrorMessage());
 				}
 				String cond = res.getResult().toString();
-				//String cond = DirectiveUtils.evaluateIf(value, ctx.getExecCtx());
 				code.append("var "+bool+";\ntry {\n");
 				code.append("if ("+cond+") "+bool+" = true;\n} catch(err) {}\n");
 				code.append("if ("+bool+") "+ctx.getElementVarName()+".classList.add('"+name+"');\n");

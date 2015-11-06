@@ -94,6 +94,8 @@ public class MySql55SchemaReader implements DatabaseSchemaReader {
 					col.setJavaType("date");
 				} else if (s.indexOf("text")==0) {
 					col.setJavaType("string");
+				} else if (s.indexOf("float")==0) {
+					col.setJavaType("float");
 				} else {
 					System.out.println("Found no type for "+s);
 				}
