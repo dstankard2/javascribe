@@ -3,7 +3,7 @@ package net.sf.javascribe.patterns.view.impl;
 import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.annotation.Scannable;
-import net.sf.javascribe.patterns.view.AttributeDirective;
+import net.sf.javascribe.patterns.view.AttributeDirectiveBase;
 import net.sf.javascribe.patterns.view.DirectiveContext;
 import net.sf.javascribe.patterns.view.DirectiveUtils;
 
@@ -15,7 +15,7 @@ import net.sf.javascribe.patterns.view.DirectiveUtils;
  *
  */
 @Scannable
-public class OnChangeDirective implements AttributeDirective {
+public class OnChangeDirective extends AttributeDirectiveBase {
 
 	@Override
 	public String getAttributeName() {
@@ -32,7 +32,7 @@ public class OnChangeDirective implements AttributeDirective {
 		
 		// The ModelDirective will handle this attribute.
 		if (ctx.getTemplateAttributes().get("js-model")!=null) {
-			ctx.continueRenderElement();
+			ctx.continueRenderElement(ctx.getExecCtx());
 			return;
 		}
 		
@@ -58,7 +58,7 @@ public class OnChangeDirective implements AttributeDirective {
 		} else {
 			throw new JavascribeException("There is no event dispatcher available to trigger an event on");
 		}
-		ctx.continueRenderElement();
+		ctx.continueRenderElement(ctx.getExecCtx());
 		String changeEventStr = DirectiveUtils.parsePartialExpression(change, execCtx);
 		StringBuilder fn = new StringBuilder();
 		fn.append("function() {\n");

@@ -11,7 +11,6 @@ import net.sf.javascribe.langsupport.javascript.JavascriptBaseObjectType;
 import net.sf.javascribe.langsupport.javascript.JavascriptFunctionType;
 import net.sf.javascribe.langsupport.javascript.JavascriptObjectType;
 import net.sf.javascribe.langsupport.javascript.JavascriptSourceFile;
-import net.sf.javascribe.langsupport.javascript.JavascriptUtils;
 
 import org.apache.log4j.Logger;
 
@@ -73,7 +72,9 @@ public class HtmlTemplateProcessor {
 		fn.setReturnType("DOMElement");
 		
 		CodeExecutionContext execCtx = new CodeExecutionContext(null,ctx.getTypes());
-		String code = TemplateParser.generateJavascriptCode(text, ctx, obj, fn, execCtx);
+		TempPars parser = new TempPars(text,ctx,obj,fn);
+		String code = parser.generateJavascriptCode(execCtx);
+		//String code = TemplateParser.generateJavascriptCode(text, ctx, obj, fn, execCtx);
 		StringBuilder s = src.getSource();
 		s.append(obj+'.'+name+" = function(");
 		boolean first = true;

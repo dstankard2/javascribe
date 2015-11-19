@@ -6,12 +6,12 @@ import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.api.annotation.Scannable;
 import net.sf.javascribe.api.expressions.ExpressionUtil;
-import net.sf.javascribe.patterns.view.AttributeDirective;
+import net.sf.javascribe.patterns.view.AttributeDirectiveBase;
 import net.sf.javascribe.patterns.view.DirectiveContext;
 import net.sf.javascribe.patterns.view.DirectiveUtils;
 
 @Scannable
-public class ModelDirective implements AttributeDirective {
+public class ModelDirective extends AttributeDirectiveBase {
 
 	@Override
 	public String getAttributeName() {

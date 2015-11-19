@@ -1,6 +1,7 @@
 package net.sf.javascribe.patterns.view;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import net.sf.javascribe.api.CodeExecutionContext;
@@ -114,6 +115,10 @@ public class DirectiveContextImpl implements DirectiveContext {
 	@Override
 	public JavascriptFunctionType getFunction() {
 		return function;
+	}
+	
+	public List<String> getPreviousEltVars() {
+		return null;
 	}
 
 }

@@ -2,12 +2,15 @@ package net.sf.javascribe.patterns.view.impl;
 
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.annotation.Scannable;
-import net.sf.javascribe.patterns.view.AttributeDirective;
+import net.sf.javascribe.patterns.view.AttributeDirectiveBase;
 import net.sf.javascribe.patterns.view.DirectiveContext;
 
 @Scannable
-public class VarAttributeDirective implements AttributeDirective {
+public class VarAttributeDirective extends AttributeDirectiveBase {
 
+	@Override
+	public int getPriority() { return 3; }
+	
 	@Override
 	public String getAttributeName() {
 		return "js-var";
@@ -24,10 +27,9 @@ public class VarAttributeDirective implements AttributeDirective {
 		if (ctx.getExecCtx().getVariableType(name)!=null) {
 			throw new JavascribeException("Cannot declare a variable named '"+name+"' as there is already another one in the current code execution context");
 		}
-		ctx.continueRenderElement();
-		
 		b.append("var "+name+" = "+ctx.getElementVarName()+";\n");
 		ctx.getExecCtx().addVariable(name, ctx.getExecCtx().getVariableType(ctx.getElementVarName()));
+		ctx.continueRenderElement(ctx.getExecCtx());
 	}
 
 }

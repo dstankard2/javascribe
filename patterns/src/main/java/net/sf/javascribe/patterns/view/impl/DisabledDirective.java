@@ -2,12 +2,12 @@ package net.sf.javascribe.patterns.view.impl;
 
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.annotation.Scannable;
-import net.sf.javascribe.patterns.view.AttributeDirective;
+import net.sf.javascribe.patterns.view.AttributeDirectiveBase;
 import net.sf.javascribe.patterns.view.DirectiveContext;
 import net.sf.javascribe.patterns.view.DirectiveUtils;
 
 @Scannable
-public class DisabledDirective implements AttributeDirective {
+public class DisabledDirective extends AttributeDirectiveBase {
 
 	@Override
 	public String getAttributeName() {
@@ -20,7 +20,7 @@ public class DisabledDirective implements AttributeDirective {
 		String value = ctx.getTemplateAttributes().get("js-disabled");
 		
 		ctx.getTemplateAttributes().remove("js-disabled");
-		ctx.continueRenderElement();
+		ctx.continueRenderElement(ctx.getExecCtx());
 		
 		JaEval2 eval = new JaEval2(value,ctx.getExecCtx());
 		DirectiveUtils.populateImpliedVariables(eval);

@@ -180,8 +180,8 @@ public class JavascribeUtils {
 					throw new JavascribeException("Could not find type for attribute '"+attribName+"'");
 			}
 			else {
-				attribName = att.substring(0, i);
-				attribType = att.substring(i+1);
+				attribName = att.substring(0, i).trim();
+				attribType = att.substring(i+1).trim();
 				if (ctx.getType(attribType)==null) {
 					throw new JavascribeException("Found invalid attribute type '"+attribType+"' for attribute '"+attribName+"'");
 				}

@@ -4,13 +4,12 @@ import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.annotation.Scannable;
 import net.sf.javascribe.patterns.js.page.PageModelType;
 import net.sf.javascribe.patterns.js.page.PageType;
-import net.sf.javascribe.patterns.js.page.PageUtils;
-import net.sf.javascribe.patterns.view.AttributeDirective;
+import net.sf.javascribe.patterns.view.AttributeDirectiveBase;
 import net.sf.javascribe.patterns.view.DirectiveContext;
 import net.sf.javascribe.patterns.view.DirectiveUtils;
 
 @Scannable
-public class PageAwareDirective implements AttributeDirective {
+public class PageAwareDirective extends AttributeDirectiveBase {
 
 	@Override
 	public void generateCode(DirectiveContext ctx) throws JavascribeException {
@@ -30,7 +29,6 @@ public class PageAwareDirective implements AttributeDirective {
 		ctx.getProcessorContext().getTypes().addType(modelType);
 		pageType.addAttribute("model", modelType.getName());
 		pageType.addAttribute("_isTemplate", "string");
-		//PageUtils.ensureModel(ctx.getProcessorContext(), pageType);
 		ctx.getFunction().addParam(pageVar, pageTypeName);
 		ctx.getExecCtx().addVariable(pageVar, pageTypeName);
 		if ((ref!=null) && (ref.trim().length()>0)) {
@@ -41,7 +39,7 @@ public class PageAwareDirective implements AttributeDirective {
 			ctx.getCode().append("var "+ref+" = "+pageVar+";\n");
 			ctx.getExecCtx().addVariable(ref, pageTypeName);
 		}
-		ctx.continueRenderElement();
+		ctx.continueRenderElement(ctx.getExecCtx());
 	}
 
 	@Override

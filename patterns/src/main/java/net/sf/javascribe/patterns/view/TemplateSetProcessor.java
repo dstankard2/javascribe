@@ -87,7 +87,11 @@ public class TemplateSetProcessor {
 				fn.addParam(a.getName(), a.getType());
 			}
 
+			TempPars p = new TempPars(tmpl.toString(),ctx,obj,fn);
+			String code = p.generateJavascriptCode(execCtx);
+			/*
 			String code = TemplateParser.generateJavascriptCode(tmpl.toString(), ctx, obj, fn, execCtx);
+			*/
 			
 			b.append(obj+'.'+tmp.getName()+" = function(");
 			boolean first = true;

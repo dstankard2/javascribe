@@ -1,5 +1,11 @@
 package net.sf.javascribe.patterns.view;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.ProcessorContext;
@@ -21,6 +27,56 @@ public class DirectiveUtils {
 	public static final String LOCAL_MODEL_VAR = "_model";
 	
 	public static final String DOCUMENT_REF = "_d";
+	
+	public static final String TEMPLATE_ROOT_ELEMENT_REF = "_r";
+
+	public static List<AttributeDirective> getAttributeDirectives(ProcessorContext ctx) throws JavascribeException {
+		List<AttributeDirective> ret = new ArrayList<AttributeDirective>();
+		String objName = "net.sf.javascribe.view.templating.AttributeDirectives";
+		
+		List<AttributeDirectiveBase> systemDirectives = (List<AttributeDirectiveBase>)ctx.getObject(objName);
+		if (systemDirectives==null) {
+			systemDirectives = new ArrayList<AttributeDirectiveBase>();
+			ctx.putObject(objName, systemDirectives);
+			List<Class<?>> cls = ctx.getEngineProperties().getScannedClassesOfInterface(AttributeDirective.class);
+			for(Class<?> cl : cls) {
+				AttributeDirectiveBase dir;
+				try {
+					dir = (AttributeDirectiveBase)cl.newInstance();
+					systemDirectives.add(dir);
+				} catch(Exception e) {
+					throw new JavascribeException("Couldn't find attribute directives",e);
+				}
+			}
+			Collections.sort(systemDirectives);
+		}
+		for(AttributeDirective d : systemDirectives) {
+			ret.add(d);
+		}
+		return ret;
+	}
+	public static Map<String,ElementDirective> getElementDirectives(ProcessorContext ctx) throws JavascribeException {
+		Map<String,ElementDirective> ret = new HashMap<String,ElementDirective>();
+		String objName = "net.sf.javascribe.view.templating.ElementDirectives";
+		
+		ret = (Map<String,ElementDirective>)ctx.getObject(objName);
+		if (ret==null) {
+			ret = new HashMap<String,ElementDirective>();
+			ctx.putObject(objName, ret);
+			List<Class<?>> cls = ctx.getEngineProperties().getScannedClassesOfInterface(ElementDirective.class);
+			for(Class<?> cl : cls) {
+				ElementDirective dir;
+				try {
+					dir = (ElementDirective)cl.newInstance();
+					ret.put(dir.getElementName(), dir);
+				} catch(Exception e) {
+					throw new JavascribeException("Couldn't load attribute directives",e);
+				}
+			}
+		}
+		
+		return ret;
+	}
 
 	public static String getEventForModelRef(String modelRef) {
 		String ret = modelRef+"Changed";
@@ -265,5 +321,15 @@ public class DirectiveUtils {
 		return ret;
 	}
 	
+	public static String newVarName(String baseName,String type,CodeExecutionContext execCtx) {
+		for(int i=0;i<100;i++) {
+			if (execCtx.getVariableType(baseName+i)==null) {
+				execCtx.addVariable(baseName+i, type);
+				return baseName+i;
+			}
+		}
+		return null;
+	}
+
 }
 

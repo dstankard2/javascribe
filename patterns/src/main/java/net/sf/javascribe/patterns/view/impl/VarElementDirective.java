@@ -3,7 +3,6 @@ package net.sf.javascribe.patterns.view.impl;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.annotation.Scannable;
 import net.sf.javascribe.patterns.view.DirectiveContext;
-import net.sf.javascribe.patterns.view.DirectiveUtils;
 import net.sf.javascribe.patterns.view.ElementDirective;
 
 @Scannable

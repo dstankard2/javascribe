@@ -2,13 +2,13 @@ package net.sf.javascribe.patterns.view.impl.events;
 
 import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JavascribeException;
-import net.sf.javascribe.patterns.view.AttributeDirective;
+import net.sf.javascribe.patterns.view.AttributeDirectiveBase;
 import net.sf.javascribe.patterns.view.DirectiveContext;
 import net.sf.javascribe.patterns.view.DirectiveUtils;
 import net.sf.javascribe.patterns.view.impl.JaEval2;
 import net.sf.javascribe.patterns.view.impl.JaEvalResult;
 
-public abstract class AbstractElementDomEventDirective extends AbstractDomEventDirective implements AttributeDirective {
+public abstract class AbstractElementDomEventDirective extends AttributeDirectiveBase {
 
 	@Override
 	public abstract String getAttributeName();
@@ -43,7 +43,7 @@ public abstract class AbstractElementDomEventDirective extends AbstractDomEventD
 		StringBuilder code = ctx.getCode();
 		String domEvent = getDomEvent();
 
-		ctx.continueRenderElement();
+		ctx.continueRenderElement(ctx.getExecCtx());
 		
 		StringBuilder eventCode = new StringBuilder();
 		eventCode.append("function($event) {\n");

@@ -8,12 +8,12 @@ import net.sf.javascribe.langsupport.javascript.JavascriptUtils;
 import net.sf.javascribe.patterns.js.page.PageModelType;
 import net.sf.javascribe.patterns.js.page.PageType;
 import net.sf.javascribe.patterns.js.page.PageUtils;
-import net.sf.javascribe.patterns.view.AttributeDirective;
+import net.sf.javascribe.patterns.view.AttributeDirectiveBase;
 import net.sf.javascribe.patterns.view.DirectiveContext;
 import net.sf.javascribe.patterns.view.DirectiveUtils;
 
 @Scannable
-public class PageDirective implements AttributeDirective {
+public class PageDirective extends AttributeDirectiveBase {
 
 	@Override
 	public String getAttributeName() {
@@ -58,7 +58,7 @@ public class PageDirective implements AttributeDirective {
 		b.append(var+".id = '"+pageName+"';\n");
 		StringBuilder init = PageUtils.getInitFunction(ctx.getProcessorContext(), pageName);
 		init.append("var _page;\n");
-		execCtx.addVariable("_page", "div");
+		execCtx.addVariable("_page", pageName);
 		init.append("var "+ctx.getTemplateObj()+" = window."+ctx.getTemplateObj()+";\n");
 		init.append(JavascriptUtils.invokeFunction("_page", ctx.getTemplateObj(), ctx.getFunction(), execCtx).getCodeText());
 		init.append("this.view.page.parentNode.replaceChild(_page,this.view.page);\n");

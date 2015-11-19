@@ -2,13 +2,16 @@ package net.sf.javascribe.patterns.view.impl;
 
 import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JavascribeException;
-import net.sf.javascribe.patterns.view.AttributeDirective;
+import net.sf.javascribe.patterns.view.AttributeDirectiveBase;
 import net.sf.javascribe.patterns.view.DirectiveContext;
 import net.sf.javascribe.patterns.view.DirectiveUtils;
 
 // This is not scannable because it will be added to the renderer list manually.
-public class LoopDirective implements AttributeDirective {
+public class LoopDirective extends AttributeDirectiveBase {
 
+	@Override
+	public int getPriority() { return 2; }
+	
 	@Override
 	public String getAttributeName() {
 		return "js-loop";

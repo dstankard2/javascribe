@@ -1,5 +1,6 @@
 package net.sf.javascribe.patterns.view;
 
+import java.util.List;
 import java.util.Map;
 
 import net.sf.javascribe.api.CodeExecutionContext;
@@ -21,10 +22,10 @@ public interface DirectiveContext {
 	public String getContainerVarName();
 	public String newVarName(String baseName,String type,CodeExecutionContext execCtx);
 	public void continueRenderElement(CodeExecutionContext execCtx) throws JavascribeException;
-	public void continueRenderElement() throws JavascribeException;
 	public String getInnerHtml();
 	public String getTemplateObj();
 	public JavascriptFunctionType getFunction();
+	public List<String> getPreviousEltVars();
 
 }
 

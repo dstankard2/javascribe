@@ -5,7 +5,7 @@ import java.util.StringTokenizer;
 
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.annotation.Scannable;
-import net.sf.javascribe.patterns.view.AttributeDirective;
+import net.sf.javascribe.patterns.view.AttributeDirectiveBase;
 import net.sf.javascribe.patterns.view.DirectiveContext;
 import net.sf.javascribe.patterns.view.DirectiveUtils;
 
@@ -15,7 +15,7 @@ import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.map.ObjectMapper;
 
 @Scannable
-public class ClassDirective implements AttributeDirective {
+public class ClassDirective extends AttributeDirectiveBase {
 
 	@Override
 	public String getAttributeName() {

@@ -7,8 +7,6 @@ import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.langsupport.javascript.JavascriptFunctionType;
-import net.sf.javascribe.patterns.view.impl.JaEval2;
-import net.sf.javascribe.patterns.view.impl.JaEvalResult;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -19,26 +17,9 @@ import org.jsoup.parser.Parser;
 
 public class TemplateParser {
 
-	/*
-	public static String parseJavascriptCode(String template,
-			ProcessorContext ctx,String obj,JavascriptFunctionType fn) throws JavascribeException {
-		CodeExecutionContext execCtx = null;
-		StringBuilder b = new StringBuilder();
-		
-		execCtx = new CodeExecutionContext(null,ctx.getTypes());
-		addParams(execCtx,fn);
-		b.append(generateJavascriptCode(template,ctx,obj,fn,execCtx));
-		
-		return b.toString();
-	}
-	*/
-	
 	protected static String generateJavascriptCode(String template,ProcessorContext ctx,String obj,JavascriptFunctionType fn,CodeExecutionContext execCtx) throws JavascribeException {
 		StringBuilder b = new StringBuilder();
-		//Document doc = Jsoup.parse(template.trim(), "//", Parser.htmlParser());
-		//Document doc = Jsoup.parseBodyFragment("<div>"+template.trim()+"</div>");
 		Document doc = Jsoup.parse(template.trim(), "//", Parser.xmlParser());
-		//Document doc = Jsoup.parse(template.trim());
 
 		List<Node> nodeList = doc.childNodes();
 		if (nodeList.size()>1) {
@@ -95,38 +76,6 @@ public class TemplateParser {
 		code.append(containerVar+".appendChild("+var+");\n");
 		code.append("}catch(_err){}\n");
 		return var;
-		/*
-		int i = text.indexOf("{{");
-		int previousEnd = 0;
-		code.append("try {\n");
-		//code.append("var "+var+" = document.createTextNode('");
-		while(i>=0) {
-			String append = text.substring(previousEnd, i);
-			int end = text.indexOf("}}", i+2);
-			code.append(append.replace("'", "\\'"));
-			String add = text.substring(i+2, end).trim();
-			JaEval2 eval = new JaEval2(add,execCtx);
-			eval.addImpliedVariable(DirectiveUtils.PAGE_VAR)
-				.addImpliedVariable(DirectiveUtils.PAGE_VAR+".model")
-				.addImpliedVariable(DirectiveUtils.LOCAL_MODEL_VAR);
-			//JavascriptEvaluator eval = new JavascriptEvaluator(add,execCtx);
-			JaEvalResult result = eval.parseExpression();
-			if (result.getErrorMessage()!=null) {
-				throw new JavascribeException(result.getErrorMessage());
-			}
-			String ref = result.getResult().toString();
-			code.append("'+((function(){try{return "+ref+"?"+ref+":'';}catch(_e){return '';}}.bind("+containerVar+"))())+'");
-			previousEnd = end + 2;
-			i = text.indexOf("{{", previousEnd);
-		}
-		if (previousEnd < text.length()) {
-			code.append(text.substring(previousEnd).replace("'","\\'"));
-		}
-		code.append("');\n");
-		code.append(containerVar+".appendChild("+var+");\n");
-		code.append("}catch(_err){}\n");
-		return var;
-		*/
 	}
 
 	protected static String var(CodeExecutionContext execCtx) {

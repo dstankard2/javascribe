@@ -36,6 +36,9 @@ public class ModelAttributeDirective implements ElementDirective {
 			throw new JavascribeException("Directive js-model-attribute is only valid when used on a page template");
 		}
 		PageType pageType = (PageType)ctx.getProcessorContext().getType(pageName);
+		if (pageType==null) {
+			throw new JavascribeException("Page '"+pageName+"' was not found");
+		}
 		
 		String attrType = ctx.getProcessorContext().getAttributeType(name);
 		if (attrType==null) {
