@@ -5,7 +5,9 @@ import java.util.StringTokenizer;
 
 import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JavascribeException;
+import net.sf.javascribe.api.annotation.Scannable;
 
+@Scannable
 public class EventAttributeDirective extends AttributeDirectiveBase {
 
 	@Override
@@ -49,6 +51,7 @@ public class EventAttributeDirective extends AttributeDirectiveBase {
 		}
 		code.append('\''+eltVar+'\'');
 		code.append("];\n");
+		code.append("if ("+eltVar+")");
 		code.append("window._ins("+containerVar+","+eltVar+","+elList+");\n");
 		
 		code.append("};\n");
@@ -57,7 +60,7 @@ public class EventAttributeDirective extends AttributeDirectiveBase {
 		while(tok.hasMoreTokens()) {
 			String s = tok.nextToken().trim();
 			String ref = DirectiveUtils.parsePartialExpression(s, newCtx);
-			code.append(dispatcher+".event("+ref+","+fnVar+","+eltVar+");\n");
+			code.append(dispatcher+".event("+ref+","+fnVar+","+containerVar+");\n");
 		}
 		code.append(fnVar+"();\n");
 	}

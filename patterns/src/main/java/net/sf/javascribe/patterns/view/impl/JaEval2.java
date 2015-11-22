@@ -52,19 +52,14 @@ public class JaEval2 {
 	}
 	
 	protected JaEvalResult readCodeBlock(JaEvalResult currentResult,String ending) {
-		JaEvalResult ret = null;
-		JaEvalResult current = null;
-
-		ret = currentResult.createNew();
+		JaEvalResult ret = currentResult.createNew();
 
 		while(ret.getRemaining().getRemaining()>0) {
-			current = readCodeLine(ret);
+			JaEvalResult current = this.readPart("codeLine", ret, null);
 			if (current==null) return null;
 			if (current.getErrorMessage()!=null) return current;
 			ret.merge(current,true);
-			char c = ret.getRemaining().nextNonWs();
-			if (c>0) ret.getRemaining().backtrack();
-			if (ret.getRemaining().startsWith(ending)) {
+			if ((ending!=null) && (ret.getRemaining().startsWith(ending))) {
 				ret.getResult().append(ending);
 				for(int i=0;i<ending.length();i++) {
 					ret.getRemaining().next();
@@ -74,10 +69,13 @@ public class JaEval2 {
 		return ret;
 	}
 
+	/*
 	// Never returns null
 	protected JaEvalResult readCodeLine(JaEvalResult currentResult) {
 		JaEvalResult ret = null;
 		
+		currentResult = currentResult.createNew();
+		currentResult.getRemaining().skipWs();
 		for(String s : JaEvalConst.codeLine) {
 			ret = readPattern(s,currentResult, false, null);
 			if (ret==null) continue;
@@ -91,6 +89,7 @@ public class JaEval2 {
 		
 		return ret;
 	}
+	*/
 	
 	protected JaEvalResult readAssignment(JaEvalResult currentResult) {
 		JaEvalResult ret = currentResult.createNew();
@@ -113,7 +112,8 @@ public class JaEval2 {
 		String line = null;
 		try {
 			line = ExpressionUtil.evaluateSetExpression(varRef, value, execCtx);
-		} catch(Exception e) {}
+		} catch(Exception e) {
+		}
 		for(String v : impliedVars) {
 			if (line!=null) break;
 			try {
@@ -121,10 +121,16 @@ public class JaEval2 {
 			} catch(Exception e) { }
 		}
 		if (line==null) {
-			ret.setErrorMessage("Couldn't evaluate assignment '"+varRef+"' = '"+value+"'");
+			line = varRef+" = "+value+";\n";
+		}
+		ret.getResult().append(line+";\n");
+		/*
+		if (line==null) {
+			ret.setErrorMessage("Couldn't evaluate assignment '"+varRef+" = "+value+"' - Check the left side of the assignment");
 		} else {
 			ret.getResult().append(line+";\n");
 		}
+		*/
 		
 		return ret;
 	}
@@ -134,11 +140,13 @@ public class JaEval2 {
 		JaEvalResult ret = null;
 		
 		if (name.equals("number")) ret = readNumberLiteral(currentResult);
-		//else if (name.equals("expr")) ret = readExpression(currentResult, false, startIgnore);
 		else if (name.equals("string")) ret = readStringLiteral(currentResult);
 		else if (name.equals("identifier")) ret = readIdentifier(currentResult);
 		else if (name.equals("fnCall")) ret = readFunctionCall(currentResult);
 		else if (name.equals("varRef")) ret = readVarRef(currentResult);
+		else if (name.equals("declaration")) ret = readDeclaration(currentResult);
+		else if (name.equals("assignment")) ret = readAssignment(currentResult);
+		else if (name.equals("codeLines")) ret = readCodeBlock(currentResult, null);
 		else {
 			if (name.equals("codeLine")) patterns = JaEvalConst.codeLine;
 			else if (name.equals("expr")) patterns = JaEvalConst.expr;
@@ -154,6 +162,13 @@ public class JaEval2 {
 			}
 		}
 		
+		return ret;
+	}
+	
+	protected JaEvalResult readDeclaration(JaEvalResult currentResult) {
+		JaEvalResult ret = null;
+		ret = this.readPattern("var $identifier$;", currentResult, false, null);
+		if (ret==null) ret = this.readPattern("var $identifier$_=_$expr$;", currentResult, false, null);
 		return ret;
 	}
 	
@@ -397,18 +412,6 @@ public class JaEval2 {
 		return ret;
 	}
 
-	/*
-	protected JaEvalResult readExpression(JaEvalResult currentResult,boolean readTilEnd,String startIgnore) {
-		JaEvalResult res = null;
-
-		for(String s : JaEvalConst.expr) {
-			res = readPattern(s,currentResult,readTilEnd, startIgnore);
-			if (res!=null) return res;
-		}
-		return null;
-	}
-	*/
-
 	protected JaEvalResult readPattern(String pattern,JaEvalResult currentResult,boolean readTilEnd,String startIgnore) {
 		JaEvalResult ret = currentResult.createNew();
 		int end = 0;
@@ -423,13 +426,15 @@ public class JaEval2 {
 				String skip = pattern.substring(prevEnd+1, i);
 				for(int j=0;j<skip.length();j++) {
 					char nextSkip = skip.charAt(j);
-					if (Character.isWhitespace(nextSkip)) {
-						if (!Character.isWhitespace(ret.getRemaining().next())) return null;
-						char t = ret.getRemaining().nextNonWs();
-						if (t!=0) ret.getRemaining().backtrack();
+					if (nextSkip==' ') {
+						char t = ret.getRemaining().next();
+						if ((t==0) || (!Character.isWhitespace(t))) return null;
+						ret.getRemaining().skipWs();
 						ret.getResult().append(' ');
+					} else if (nextSkip=='_') {
+						ret.getRemaining().skipWs();
 					} else {
-						char test = ret.getRemaining().nextNonWs();
+						char test = ret.getRemaining().next();
 						if (test!=skip.charAt(j)) {
 							return null;
 						}
@@ -476,15 +481,22 @@ public class JaEval2 {
 			else endStr = pattern;
 			boolean first = true;
 			while(endStr.length()>0) {
-				char c;
-				if (first) c = ret.getRemaining().nextNonWs();
-				else c = ret.getRemaining().next();
 				char pc = endStr.charAt(0);
-				if (c!=pc) {
-					return null;
+				if (pc=='_') {
+					ret.getRemaining().skipWs();
+				} else if (pc==' ') {
+					char c = ret.getRemaining().next();
+					if ((c==0) || (!Character.isWhitespace(c))) return null;
+					ret.getResult().append(' ');
+					ret.getRemaining().skipWs();
+				} else {
+					char c = ret.getRemaining().next();
+					if (c!=pc) {
+						return null;
+					}
+					ret.getResult().append(c);
 				}
 				endStr = endStr.substring(1);
-				ret.getResult().append(c);
 			}
 		}
 		if (readTilEnd) {

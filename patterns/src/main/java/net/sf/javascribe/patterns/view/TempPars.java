@@ -61,7 +61,7 @@ public class TempPars {
 			}
 		}
 		
-		b.append("})();");
+		b.append("})();\n");
 		
 		return b.toString();
 	}
@@ -74,6 +74,8 @@ public class TempPars {
 			ElPa parser = new ElPa(elt,ctx,containerVar,obj,fn,previousEltVars,this);
 			parser.parseElement(execCtx);
 			ret = parser.getElementCode();
+			String var = parser.getEltVar();
+			if (var!=null) previousEltVars.add(var);
 		} else if (node instanceof TextNode) {
 			ret = processTextNode((TextNode)node,containerVar,execCtx);
 		}

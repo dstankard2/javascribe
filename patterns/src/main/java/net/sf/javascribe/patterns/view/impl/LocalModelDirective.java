@@ -53,7 +53,7 @@ public class LocalModelDirective implements ElementDirective {
 		}
 		String var = DirectiveUtils.LOCAL_MODEL_VAR;
 		StringBuilder code = ctx.getCode();
-		code.append("var "+var+" + {};\n");
+		code.append("var "+var+" = {};\n");
 		if (ref!=null) {
 			code.append("var "+ref+" = "+var+";\n");
 		}

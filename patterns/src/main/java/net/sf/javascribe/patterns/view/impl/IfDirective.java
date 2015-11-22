@@ -26,7 +26,6 @@ public class IfDirective extends AttributeDirectiveBase {
 
 		JaEval2 eval = new JaEval2(cond,existingCtx);
 		DirectiveUtils.populateImpliedVariables(eval);
-		//JavascriptEvaluator eval = new JavascriptEvaluator(cond,existingCtx);
 		JaEvalResult result = eval.parseExpression();
 		if (result.getErrorMessage()!=null) {
 			throw new JavascribeException(result.getErrorMessage());

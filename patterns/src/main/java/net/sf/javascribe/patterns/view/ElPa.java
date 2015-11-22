@@ -38,8 +38,8 @@ public class ElPa implements DirectiveContext {
 
 	String eltVar = null;
 
-	boolean elementDirectiveCalled = false;
 	boolean isTemplateCall = false;
+	boolean isElementDirective = false;
 	boolean elementCreated = false;
 	boolean domPropertiesAdded = false;
 	List<CodeExecutionContext> contexts = new ArrayList<CodeExecutionContext>();
@@ -66,6 +66,7 @@ public class ElPa implements DirectiveContext {
 		elementDirectives = DirectiveUtils.getElementDirectives(ctx);
 
 		isTemplateCall = elt.nodeName().indexOf('.')>0;
+		isElementDirective = elementDirectives.get(elt.nodeName())!=null;
 		
 		for(Attribute att : elt.attributes().asList()) {
 			String key = att.getKey();
@@ -78,27 +79,65 @@ public class ElPa implements DirectiveContext {
 			}
 		}
 		
-		eltVar = DirectiveUtils.newVarName("_e", "DOMElement", execCtx);
-		
-		code.append("var "+eltVar+";\n");
-		
-		this.continueParsing(execCtx);
+		if (!isElementDirective) {
+			eltVar = DirectiveUtils.newVarName("_e", "DOMElement", execCtx);
+			code.append("var "+eltVar+";\n");
+			this.continueParsing(execCtx);
+		} else {
+			this.contexts.add(execCtx);
+			ElementDirective d = elementDirectives.get(elt.nodeName());
+			d.generateCode(this);
+			this.contexts.remove(0);
+		}
 	}
 
 	private void continueParsing(CodeExecutionContext execCtx) throws JavascribeException {
 		contexts.add(execCtx);
-		if (attributeDirectives.size()>0) {
+		boolean attributeDirectiveCalled = false;
+		while(attributeDirectives.size()>0) {
 			AttributeDirective next = attributeDirectives.get(0);
 			attributeDirectives.remove(0);
-			if ((!elementCreated) && (next.getPriority()>=3) 
-					&& (!isTemplateCall) && (elementDirectives.get(elt.nodeName())==null)) {
+			if ((!elementCreated) && (next.getPriority()>=3) && (!isTemplateCall)) {
 				elementCreated = true;
 				code.append(eltVar+" = "+DirectiveUtils.DOCUMENT_REF+
 						".createElement('"+elt.nodeName()+"');\n");
 				code.append(eltVar+"._elt = '"+eltVar+"';\n");
-				if (templateAttributes.get("js-event")==null) {
-					code.append(containerVar+".appendChild("+eltVar+");\n");
+			}
+			String att = next.getAttributeName();
+			if (templateAttributes.get(att)!=null) {
+				next.generateCode(this);
+				attributeDirectiveCalled = true;
+			}
+		}
+		if (!attributeDirectiveCalled) {
+			if (isTemplateCall) {
+				code.append(processTemplateCall(elt.nodeName(),execCtx,this));
+				code.append(eltVar+"._elt = '"+eltVar+"';\n");
+				code.append(containerVar+".appendChild("+eltVar+");\n");
+			} else {
+				if (!elementCreated) {
+					code.append(eltVar+" = "+DirectiveUtils.DOCUMENT_REF+
+							".createElement('"+elt.nodeName()+"');\n");
+					code.append(eltVar+"._elt = '"+eltVar+"';\n");
 				}
+				addDomProperties(execCtx);
+				code.append(containerVar+".appendChild("+eltVar+");\n");
+				// Process children
+				if ((elt.childNodes()!=null) && (elt.childNodes().size()>0)) {
+					String append = caller.processChildNodeList(elt.childNodes(), eltVar, execCtx);
+					code.append(append);
+				}
+			}
+		}
+		/*
+		if (attributeDirectives.size()>0) {
+			AttributeDirective next = attributeDirectives.get(0);
+			attributeDirectives.remove(0);
+			if ((!elementCreated) && (next.getPriority()>=3) && (!isTemplateCall)) {
+				elementCreated = true;
+				code.append(eltVar+" = "+DirectiveUtils.DOCUMENT_REF+
+						".createElement('"+elt.nodeName()+"');\n");
+				code.append(eltVar+"._elt = '"+eltVar+"';\n");
 			}
 			String att = next.getAttributeName();
 			if (templateAttributes.get(att)!=null) {
@@ -107,14 +146,21 @@ public class ElPa implements DirectiveContext {
 				continueParsing(execCtx);
 			}
 		} else {
+			// Create element if necessary
+			if ((!elementCreated) && (!isTemplateCall)) {
+				code.append(eltVar+" = "+DirectiveUtils.DOCUMENT_REF+
+						".createElement('"+elt.nodeName()+"');\n");
+				code.append(eltVar+"._elt = '"+eltVar+"';\n");
+			}
+			
 			// Element directive or template call or element
 			if (isTemplateCall) {
 				code.append(processTemplateCall(elt.nodeName(),execCtx,this));
-			} else if (elementDirectives.get(elt.nodeName())!=null) {
-				ElementDirective d = elementDirectives.get(elt.nodeName());
-				d.generateCode(this);
+				code.append(eltVar+"._elt = '"+eltVar+"';\n");
+				code.append(containerVar+".appendChild("+eltVar+");\n");
 			} else {
 				addDomProperties(execCtx);
+				code.append(containerVar+".appendChild("+eltVar+");\n");
 				// Process children
 				if ((elt.childNodes()!=null) && (elt.childNodes().size()>0)) {
 					String append = caller.processChildNodeList(elt.childNodes(), eltVar, execCtx);
@@ -122,6 +168,7 @@ public class ElPa implements DirectiveContext {
 				}
 			}
 		}
+			*/
 		contexts.remove(contexts.size()-1);
 	}
 	

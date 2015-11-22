@@ -2,11 +2,12 @@ package net.sf.javascribe.patterns.view.impl;
 
 import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JavascribeException;
+import net.sf.javascribe.api.annotation.Scannable;
 import net.sf.javascribe.patterns.view.AttributeDirectiveBase;
 import net.sf.javascribe.patterns.view.DirectiveContext;
 import net.sf.javascribe.patterns.view.DirectiveUtils;
 
-// This is not scannable because it will be added to the renderer list manually.
+@Scannable
 public class LoopDirective extends AttributeDirectiveBase {
 
 	@Override
