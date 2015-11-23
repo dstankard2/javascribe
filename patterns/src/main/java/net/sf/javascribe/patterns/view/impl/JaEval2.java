@@ -24,7 +24,7 @@ public class JaEval2 {
 
 	public JaEvalResult parseExpression() {
 		JaEvalResult res = JaEvalResult.newInstance(code);
-		JaEvalResult ret = readPart("expr", res, null);
+		JaEvalResult ret = readPart("expr",res,null);
 		if (ret==null) {
 			res.setErrorMessage("Couldn't parse expression '"+code+"'");
 			ret = res;
@@ -55,16 +55,24 @@ public class JaEval2 {
 		JaEvalResult ret = currentResult.createNew();
 
 		while(ret.getRemaining().getRemaining()>0) {
+			ret.getRemaining().skipWs();
+			if ((ending!=null) && (ret.getRemaining().startsWith(ending))) {
+				ret.getRemaining().skip(ending.length());
+				ret.getResult().append(ending);
+				return ret;
+			}
 			JaEvalResult current = this.readPart("codeLine", ret, null);
 			if (current==null) return null;
 			if (current.getErrorMessage()!=null) return current;
 			ret.merge(current,true);
+			/*
 			if ((ending!=null) && (ret.getRemaining().startsWith(ending))) {
 				ret.getResult().append(ending);
 				for(int i=0;i<ending.length();i++) {
 					ret.getRemaining().next();
 				}
 			}
+			*/
 		}
 		return ret;
 	}
@@ -143,6 +151,7 @@ public class JaEval2 {
 		else if (name.equals("string")) ret = readStringLiteral(currentResult);
 		else if (name.equals("identifier")) ret = readIdentifier(currentResult);
 		else if (name.equals("fnCall")) ret = readFunctionCall(currentResult);
+		else if (name.equals("forLoop")) ret = readForLoop(currentResult);
 		else if (name.equals("varRef")) ret = readVarRef(currentResult);
 		else if (name.equals("declaration")) ret = readDeclaration(currentResult);
 		else if (name.equals("assignment")) ret = readAssignment(currentResult);
@@ -155,13 +164,59 @@ public class JaEval2 {
 			}
 			ret = currentResult.createNew();
 			for(String s : patterns) {
-				JaEvalResult res = readPattern(s,currentResult,false,startIgnore);
+				JaEvalResult res = readPattern(s,ret,false,startIgnore);
 				if ((res==null) || (res.getErrorMessage()!=null)) continue;
 				ret.merge(res,true);
 				break;
 			}
 		}
 		
+		return ret;
+	}
+	
+	protected JaEvalResult readForLoop(JaEvalResult currentResult) {
+		JaEvalResult ret = currentResult.createNew();
+		JaEvalResult current = null;
+		
+		ret.getRemaining().skipWs();
+		if (!ret.getRemaining().startsWith("for")) return null;
+		ret.getRemaining().skip(3);
+		ret.getRemaining().skipWs();
+		ret.getResult().append("for");
+		char c = ret.getRemaining().next();
+		if (c!='(') return null;
+		ret.getRemaining().skipWs();
+		ret.getResult().append('(');
+		current = readPart("declaration",ret,null);
+		if ((current==null) || (current.getErrorMessage()!=null)) return current;
+		ret.merge(current, true);
+		current = readPart("expr",ret,null);
+		if ((current==null) || (current.getErrorMessage()!=null)) return current;
+		ret.merge(current,true);
+		ret.getRemaining().skipWs();
+		c = ret.getRemaining().next();
+		if (c!=';') return null;
+		ret.getResult().append(';');
+		// Just read the third expression of the for loop and leave it as is
+		c = ret.getRemaining().next();
+		while(c!=')') {
+			ret.getResult().append(c);
+			c = ret.getRemaining().next();
+		}
+		ret.getResult().append(')');
+		ret.getRemaining().skipWs();
+		c = ret.getRemaining().next();
+		if (c==0) return null;
+		else if (c=='{') {
+			ret.getResult().append('{');
+			current = readCodeBlock(ret,"}");
+		} else {
+			ret.getRemaining().backtrack();
+			current = readPart("codeLine", ret, null);
+		}
+		if ((current==null) || (current.getErrorMessage()!=null)) return current;
+		ret.merge(current, true);
+
 		return ret;
 	}
 	
@@ -281,6 +336,8 @@ public class JaEval2 {
 		boolean first = true;
 		int place = currentResult.getRemaining().getPlace();
 		boolean expectingFirst = true;
+		boolean inObjectRef = false;
+		StringBuilder subExpr = null;
 		
 		do {
 			if (first) {
@@ -288,6 +345,7 @@ public class JaEval2 {
 				expectingFirst = false;
 			}
 			if (currentResult.getRemaining().getRemaining()==0) {
+				if (inObjectRef) return null;
 				if (build.length()>0) return build.toString();
 				else return null;
 			}
@@ -301,20 +359,34 @@ public class JaEval2 {
 					return null;
 				}
 			} else {
-				if (c=='.') {
+				if (inObjectRef) {
+					if (c==']') {
+						JaEval2 eval = new JaEval2(subExpr.toString(),execCtx);
+						JaEvalResult result = eval.parseExpression();
+						if (result.getErrorMessage()!=null) return null;
+						build.append('[').append(result.getResult().toString()).append(']');
+						inObjectRef = false;
+					} else {
+						subExpr.append(c);
+					}
+				} else if (c=='[') {
+					subExpr = new StringBuilder();
+					inObjectRef = true;
+				} else if (c=='.') {
 					build.append(c);
 					first = true;
-				}
-				else if (Character.isWhitespace(c)) {
+				} else if (Character.isWhitespace(c)) {
 					expectingFirst = true;
-				}
-				else if (Character.isJavaIdentifierPart(c)) {
+				} else if (Character.isJavaIdentifierPart(c)) {
 					if (expectingFirst) {
 						// Something unexpected (or don't know what to do yet)
 						currentResult.getRemaining().setPlace(place);
 						return null;
 					}
 					build.append(c);
+				} else if (inObjectRef) {
+					// The string was "ayz["
+					return null;
 				} else {
 					// Reached the end.
 					currentResult.getRemaining().backtrack();
@@ -479,7 +551,6 @@ public class JaEval2 {
 			String endStr;
 			if (prevEnd>=0) endStr = pattern.substring(prevEnd+1);
 			else endStr = pattern;
-			boolean first = true;
 			while(endStr.length()>0) {
 				char pc = endStr.charAt(0);
 				if (pc=='_') {

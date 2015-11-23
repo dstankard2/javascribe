@@ -42,17 +42,19 @@ public class JaEvalConst {
 	};
 	
 	public static final String[] codeLine = new String[] {
+		"_$forLoop$_$codeLine$",
+		"_$forLoop$_{_$codeLines_}",
 		"_var $identifier$_;",
 		"_var $identifier$_=_$expr$;",
 		"_if_(_$expr$_)_$codeLine$",
 		"_if_(_$expr$_)_{_$codeLines$}",
-		"_for_(_$declaration$_$expr$_;_$expr$_)_{_$codeLines$_}", // Declaration ends with ;
-		"_for_(_$declaration$_$expr$_;_$expr$_)_$codeLine$", //Declaration ends with ;
+		"_while(_$expr$_)_$codeLine$",
+		"_while(_$expr$_)_{$codeLines}",
 		"_$assignment$",
 		"_return $expr$;",
 		"_$fnCall$;",
-		"_$expr$;",
-		";"
+		"_$expr$;"
+		//";"
 	};
 	
 }
