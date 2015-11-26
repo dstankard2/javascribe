@@ -57,48 +57,18 @@ public class JaEval2 {
 		while(ret.getRemaining().getRemaining()>0) {
 			ret.getRemaining().skipWs();
 			if ((ending!=null) && (ret.getRemaining().startsWith(ending))) {
-				ret.getRemaining().skip(ending.length());
-				ret.getResult().append(ending);
 				return ret;
+				//return ret;
 			}
 			JaEvalResult current = this.readPart("codeLine", ret, null);
 			if (current==null) return null;
 			if (current.getErrorMessage()!=null) return current;
 			ret.merge(current,true);
-			/*
-			if ((ending!=null) && (ret.getRemaining().startsWith(ending))) {
-				ret.getResult().append(ending);
-				for(int i=0;i<ending.length();i++) {
-					ret.getRemaining().next();
-				}
-			}
-			*/
+			ret.getResult().append('\n');
 		}
 		return ret;
 	}
 
-	/*
-	// Never returns null
-	protected JaEvalResult readCodeLine(JaEvalResult currentResult) {
-		JaEvalResult ret = null;
-		
-		currentResult = currentResult.createNew();
-		currentResult.getRemaining().skipWs();
-		for(String s : JaEvalConst.codeLine) {
-			ret = readPattern(s,currentResult, false, null);
-			if (ret==null) continue;
-			if (ret.getErrorMessage()!=null) {
-				return ret;
-			} else {
-				break;
-			}
-		}
-		if (ret==null) ret = readAssignment(currentResult);
-		
-		return ret;
-	}
-	*/
-	
 	protected JaEvalResult readAssignment(JaEvalResult currentResult) {
 		JaEvalResult ret = currentResult.createNew();
 		JaEvalResult sub = null;
@@ -109,7 +79,9 @@ public class JaEval2 {
 		if (varRef==null) return null;
 		char c = ret.getRemaining().nextNonWs();
 		if (c!='=') return null;
-		sub = readPattern("$expr$",ret,false,null);
+		ret.getRemaining().skipWs();
+		sub = readPart("expr",ret,null);
+		//sub = readPattern("$expr$",ret,false,null);
 		if (sub==null) return null;
 		if (sub.getErrorMessage()!=null) return sub;
 		ret.merge(sub, false);
@@ -153,6 +125,7 @@ public class JaEval2 {
 		else if (name.equals("fnCall")) ret = readFunctionCall(currentResult);
 		else if (name.equals("forLoop")) ret = readForLoop(currentResult);
 		else if (name.equals("varRef")) ret = readVarRef(currentResult);
+		else if (name.equals("fnArgs")) ret = readFnArgs(currentResult);
 		else if (name.equals("declaration")) ret = readDeclaration(currentResult);
 		else if (name.equals("assignment")) ret = readAssignment(currentResult);
 		else if (name.equals("codeLines")) ret = readCodeBlock(currentResult, null);
@@ -162,14 +135,34 @@ public class JaEval2 {
 			else {
 				throw new RuntimeException("Couldn't do an eval because a pattern contained '"+name+"'");
 			}
-			ret = currentResult.createNew();
+			//ret = currentResult.createNew();
 			for(String s : patterns) {
-				JaEvalResult res = readPattern(s,ret,false,startIgnore);
-				if ((res==null) || (res.getErrorMessage()!=null)) continue;
-				ret.merge(res,true);
-				break;
+				ret = readPattern(s,currentResult,false,startIgnore);
+				if ((ret!=null) && (ret.getErrorMessage()==null)) break;
+				ret = null;
 			}
 		}
+		
+		return ret;
+	}
+	
+	protected JaEvalResult readFnArgs(JaEvalResult currentResult) {
+		boolean first = true;
+		JaEvalResult ret = currentResult.createNew();
+		
+		char c = ret.getRemaining().nextNonWs();
+		while((c!=')') && (c!=0)) {
+			if ((!first) && (c!=',')) return null;
+			else if (first) ret.getRemaining().backtrack();
+			if (!first) ret.getResult().append(',');
+			first = false;
+			JaEvalResult res = readIdentifier(ret);
+			if (res==null) return null;
+			ret.merge(res, true);
+			c = ret.getRemaining().nextNonWs();
+		}
+		if (c==')') ret.getRemaining().backtrack();
+		else if (c==0) ret = null;
 		
 		return ret;
 	}
@@ -517,8 +510,8 @@ public class JaEval2 {
 			end = pattern.indexOf('$', i+1);
 			String name = pattern.substring(i+1, end);
 			JaEvalResult sub;
-			if (name=="codeLines") {
-				int x = end;
+			if (name.equals("codeLines")) {
+				int x = end+1;
 				String str = "";
 				while((x<pattern.length()) && (pattern.charAt(x)!='$')) {
 					str = str + pattern.charAt(x);

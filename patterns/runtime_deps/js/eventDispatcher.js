@@ -5,28 +5,31 @@ function JSEvent(name,data) {
 }
 
 function EventDispatcher() {
-	var listeners = { };
+	var _listeners = { };
 
-	var domWatch = { };
+	var _debug = false;
 	
-	var obs;
+	var _domWatch = { };
+	
+	var _obs;
 	function _initObserver() {
 		if (window.MutationObserver) {
 
-		    obs = new MutationObserver(function (e) {
+		    _obs = new MutationObserver(function (e) {
 		      if ((e[0].removedNodes) && (e[0].removedNodes.length)) {
 		        var l = e[0].removedNodes.length;
 		        for(var i=0;i<l;i++) {
 		          var node = e[0].removedNodes[i];
-		          if (node._elt) {
-		            console.log('A node was removed with mark as '+node._elt);
+		          if (_domWatch[node]) {
+		        	  if (_debug) console.log('A watched node has been removed - TODO: remove '+_domWatch[node].length+' listeners');
 		          }
 		        }
 		      }
 		    });
-		    obs.observe(document.body, { childList: true });
+		    _obs.observe(document.body, { childList: true });
 		}
 	}
+	_initObserver();
 	
 	var removeListener = function(fn) {
 		for(var k in listeners) {
@@ -41,30 +44,29 @@ function EventDispatcher() {
 	return {
 		// Adds the specified callback function as a listener to the specified event.
 		addEventListener: function(name,callback,domElement) {
-			if (!obs) _initObserver();
-			if (typeof(listeners[name]) =='undefined') {
-				listeners[name] = new Array();
+			if (typeof(_listeners[name]) =='undefined') {
+				_listeners[name] = [];
 			}
-			var list = listeners[name];
+			var list = _listeners[name];
 			list.push(callback);
 			if (domElement) {
-				if (!domWatch.hasOwnProperty(domElement)) {
-					domWatch[domElement] = [ ];
+				if (!_domWatch.hasOwnProperty(domElement)) {
+					_domWatch[domElement] = [ ];
 				}
-				domWatch[domElement].push(callback);
+				_domWatch[domElement].push(callback);
 			}
 		},
 		removeEventListener: function(callback) {
 			removeListener(fn);
 		},
 		clearBindings: function() {
-			listeners = { };
-			domWatch = { };
+			_listeners = { };
+			_domWatch = { };
 		},
 		// Dispatches the given event name with the given data
 		dispatch: function(name,data) {
-			if (typeof(listeners[name]) =='undefined') return;
-			var list = listeners[name];
+			if (typeof(_listeners[name]) =='undefined') return;
+			var list = _listeners[name];
 			var i;
 
 			if (data==null) data = { };
@@ -79,9 +81,11 @@ function EventDispatcher() {
 			} else {
 				this.dispatch(name,{});
 			}
+		},
+		debug: function(value) {
+			_debug = value;
 		}
 	}
 		
-
 }
 

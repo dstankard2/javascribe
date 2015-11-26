@@ -3,6 +3,9 @@ package net.sf.javascribe.patterns.view.impl;
 public class JaEvalConst {
 
 	public static final String[] expr = new String[] {
+		"function_(_$fnArgs$_)_{$codeLines$}",
+		"new $fnCall$",
+		"typeof $expr$",
 		"$expr$_?_$expr$_:_$expr$",
 		"$expr$_===_$expr$",
 		"$expr$_<==_$expr$",
@@ -21,11 +24,8 @@ public class JaEvalConst {
 		"$expr$_>_$expr$",
 		"$expr$_%_$expr$",
 		"(_$expr$_)",
-		"new $fnCall$",
-		"$fnCall$",
 		"!_$expr$",
-		"typeof $expr$",
-		"function_(_$fnArgs$_)_{_$codeLines$_}",
+		"$fnCall$",
 		"$varRef$_[_$expr$_]",
 		"$varRef$",
 		"$number$", 
@@ -43,7 +43,7 @@ public class JaEvalConst {
 	
 	public static final String[] codeLine = new String[] {
 		"_$forLoop$_$codeLine$",
-		"_$forLoop$_{_$codeLines_}",
+		"_$forLoop$_{_$codeLines$_}",
 		"_var $identifier$_;",
 		"_var $identifier$_=_$expr$;",
 		"_if_(_$expr$_)_$codeLine$",
@@ -54,7 +54,6 @@ public class JaEvalConst {
 		"_return $expr$;",
 		"_$fnCall$;",
 		"_$expr$;"
-		//";"
 	};
 	
 }

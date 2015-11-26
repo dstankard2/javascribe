@@ -28,6 +28,7 @@ public class FnDirective implements ElementDirective {
 		StringBuilder code = ctx.getCode();
 		CodeExecutionContext execCtx = ctx.getExecCtx();
 		CodeExecutionContext newCtx = new CodeExecutionContext(execCtx);
+		boolean isFunction = ((event!=null) || (name!=null));
 
 		if (params==null) params = "";
 		if (newCtx.getTypeForVariable(name)!=null) {
@@ -40,36 +41,49 @@ public class FnDirective implements ElementDirective {
 			if (event==null) execute = true;
 		}
 		else execCtx.addVariable(name, "function");
-		
-		code.append("function "+name+"(");
-		if (params.trim().length()>0) {
-			boolean first = true;
-			List<Attribute> atts = JavascribeUtils.readAttributes(ctx.getProcessorContext(), params);
-			for(Attribute att : atts) {
-				if (first) first = false;
-				else code.append(',');
-				code.append(att.getName());
-				if (att.getType()==null) throw new JavascribeException("Couldn't find type for js-fn param named '"+att.getName()+"'");
-				newCtx.addVariable(att.getName(), att.getType());
+
+		if (isFunction) {
+			code.append("function "+name+"(");
+			if (params.trim().length()>0) {
+				boolean first = true;
+				List<Attribute> atts = JavascribeUtils.readAttributes(ctx.getProcessorContext(), params);
+				for(Attribute att : atts) {
+					if (first) first = false;
+					else code.append(',');
+					code.append(att.getName());
+					if (att.getType()==null) throw new JavascribeException("Couldn't find type for js-fn param named '"+att.getName()+"'");
+					newCtx.addVariable(att.getName(), att.getType());
+				}
 			}
+			code.append(") {\n");
+		} else {
+			code.append("(function() {");
 		}
-		code.append(") {\n");
 		JaEval2 eval = new JaEval2(html,newCtx);
 		DirectiveUtils.populateImpliedVariables(eval);
 		JaEvalResult result = eval.parseCodeBlock();
 		if (result.getErrorMessage()!=null) {
 			throw new JavascribeException("Couldn't build js-fn - Error parsing code: '"+result.getErrorMessage()+"'");
 		}
-		code.append(result.getResult().toString());
-		code.append("}\n");
-		if (execute) {
-			code.append(name+"();\n");
-		}
-		if (event!=null) {
-			if (DirectiveUtils.getPageName(ctx)!=null) {
-				String ref = DirectiveUtils.parsePartialExpression(event, execCtx);
-				code.append(DirectiveUtils.PAGE_VAR+".event("+ref+","+name+","+ctx.getContainerVarName()+");\n");
+		code.append(result.getResult().toString().trim());
+		if (isFunction) {
+			code.append("}\n");
+			if (execute) {
+				code.append(name+"();\n");
 			}
+		} else {
+			code.append("})();\n");
+		}
+		
+		if (event!=null) {
+			String dispatcher = null;
+			if (execCtx.getVariableType(DirectiveUtils.PAGE_VAR)!=null) dispatcher = DirectiveUtils.PAGE_VAR+".event";
+			else if (execCtx.getVariableType(DirectiveUtils.EVENT_DISPATCHER_VAR)!=null) dispatcher = DirectiveUtils.EVENT_DISPATCHER_VAR+".event";
+			if (dispatcher==null) {
+				throw new JavascribeException("Couldn't attach a js-fn to event '"+event+"' because there is no event dispatcher present");
+			}
+			String ref = DirectiveUtils.parsePartialExpression(event, execCtx);
+			code.append(dispatcher+"("+ref+","+name+","+ctx.getContainerVarName()+");\n");
 		}
 	}
 

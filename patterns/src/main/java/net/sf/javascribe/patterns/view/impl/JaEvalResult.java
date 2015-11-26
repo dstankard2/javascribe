@@ -21,7 +21,7 @@ public class JaEvalResult {
 	// Other result is appended to this one, the remaining for this one is set to other's remaining
 	public void merge(JaEvalResult other,boolean appendResult) {
 		if (appendResult)
-			result.append(other.result.toString());
+			result.append(other.result.toString().trim());
 		if (errorMessage==null) {
 			errorMessage = other.getErrorMessage();
 		}

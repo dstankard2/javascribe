@@ -78,6 +78,9 @@ public class TempPars {
 			if (var!=null) previousEltVars.add(var);
 		} else if (node instanceof TextNode) {
 			ret = processTextNode((TextNode)node,containerVar,execCtx);
+		} else {
+			// TODO: Handle cases
+			ret = "";
 		}
 		
 		return ret;
