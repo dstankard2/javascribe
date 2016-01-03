@@ -40,7 +40,7 @@ public class JavascriptEvaluator {
 		JavascriptEvalResult ret = null;
 		
 		//ret = readPattern("$expr$",res,true,null);
-		ret = readExpression(res, null, true);
+		ret = readExpression(res, null, null);
 		//ret = readPart("expr", res, null);
 		if (ret==null) {
 			ret = res;
@@ -58,11 +58,6 @@ public class JavascriptEvaluator {
 		int end = 0;
 		int prevEnd = -1;
 
-		/*
-		if (startIgnore!=null) {
-			if (pattern.startsWith("$"+startIgnore+"$")) return null;
-		}
-		*/
 		ret.getRemaining().skipWs();
 		int i = pattern.indexOf('$');
 		while(i>=0) {
@@ -96,18 +91,16 @@ public class JavascriptEvaluator {
 			}
 			
 			JavascriptEvalResult sub = null;
-			String str = null;
-			if (!readTilEnd) {
-				int x = end+1;
-				str = "";
+			String str = "";
+			int x = end+1;
+			if (x>=pattern.length()) {
+				str = null;
+			} else {
 				while((x<pattern.length()) && (pattern.charAt(x)!='$')) {
 					if (pattern.charAt(x)!='_')
 						str = str + pattern.charAt(x);
 					x++;
 				}
-				//if (str.equals("")) str = null;
-			} else {
-				str = "";
 			}
 			sub = readPart(name, ret, skip, str);
 			/*
@@ -183,22 +176,25 @@ public class JavascriptEvaluator {
 		if (name.equals("number")) ret = readNumberLiteral(current);
 		else if (name.equals("string")) ret = readStringLiteral(current);
 		else if (name.equals("identifier")) ret = readIdentifier(current);
-		//else if (name.equals("fnCall")) ret = readFunctionCall(current); There is an expression for this
 		else if (name.equals("forLoop")) ret = readForLoop(current);
 		else if (name.equals("varRef")) ret = readVariableReference(current);
 		else if (name.equals("fnArgs")) ret = readFnArgs(current);
 		else if (name.equals("declaration")) ret = readDeclaration(current);
 		else if (name.equals("assignment")) ret = readAssignment(current);
 		else if (name.equals("codeLines")) ret = readCodeBlock(current, ending);
-		else if (name.equals("expr")) ret = readExpression(current,startIgnore,(ending==null));
+		else if (name.equals("expr")) ret = readExpression(current,startIgnore,ending);
 
+		if ((ret!=null) && (ending!=null) && (ending.length()>0)) {
+			if (!ret.getRemaining().toString().startsWith(ending)) ret = null;
+		}
+		
 		return ret;
 	}
 
 	// Start of evaluations
-	protected JavascriptEvalResult readExpression(JavascriptEvalResult current,String startIgnore,boolean readTilEnd) {
+	protected JavascriptEvalResult readExpression(JavascriptEvalResult current,String startIgnore,String ending) {
 		JavascriptEvalResult ret = current.createNew();
-		//int i = 9999;
+		boolean readTilEnd = (ending==null);
 
 		current = current.createNew();
 		current.getRemaining().skipWs();
@@ -207,6 +203,11 @@ public class JavascriptEvaluator {
 				if (s.startsWith(startIgnore)) continue;
 			}
 			ret = readPattern(s, current, readTilEnd);
+			if ((ret!=null) && (ending!=null) && (ending.length()>0)) {
+				if (!ret.getRemaining().toString().startsWith(ending)) {
+					ret = null;
+				}
+			}
 			if (ret!=null) break;
 		}
 
@@ -255,7 +256,7 @@ public class JavascriptEvaluator {
 		char c = ret.getRemaining().next(true);
 		if (c!='=') return null;
 		ret.getRemaining().skipWs();
-		sub = readExpression(ret,null,false);
+		sub = readExpression(ret,null,"");
 		//sub = readPart("expr",ret,null);
 		if (sub==null) return null;
 		if (sub.getErrorMessage()!=null) return sub;
@@ -300,7 +301,7 @@ public class JavascriptEvaluator {
 		sub = readPattern("$declaration$;", ret, false);
 		if ((sub==null) || (sub.getErrorMessage()!=null)) return sub;
 		ret.merge(sub, true);
-		sub = readExpression(ret,null,false);
+		sub = readExpression(ret,null,"");
 		//sub = readPart("expr",ret,null);
 		if ((sub==null) || (sub.getErrorMessage()!=null)) return sub;
 		ret.merge(sub,true);
@@ -343,7 +344,7 @@ public class JavascriptEvaluator {
 			else if (first) ret.getRemaining().backtrack();
 			if (!first) ret.getResult().append(',');
 			first = false;
-			JavascriptEvalResult res = readExpression(ret, null, false);
+			JavascriptEvalResult res = readExpression(ret, null, "");
 			//JavascriptEvalResult res = readIdentifier(ret);
 			if (res==null) return null;
 			ret.merge(res, true);

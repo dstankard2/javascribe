@@ -24,12 +24,13 @@ public class IfDirective extends AttributeDirectiveBase {
 		String cond = ctx.getTemplateAttributes().get("js-if");
 		CodeExecutionContext existingCtx = ctx.getExecCtx();
 
-		JaEval2 eval = new JaEval2(cond,existingCtx);
+		JavascriptEvaluator eval = new JavascriptEvaluator(cond,existingCtx);
 		DirectiveUtils.populateImpliedVariables(eval);
-		JaEvalResult result = eval.parseExpression();
+		JavascriptEvalResult result = eval.evalExpression();
 		if (result.getErrorMessage()!=null) {
 			throw new JavascribeException(result.getErrorMessage());
 		}
+		String temp = result.getResult().toString();
 		String finalCond = result.getResult().toString();
 
 		String boolVar = ctx.newVarName("_b", "boolean", existingCtx);

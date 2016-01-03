@@ -6,6 +6,8 @@ public class JaEvalConst {
 		"function_(_$fnArgs$_)_{$codeLines$}",
 		"new $fnCall$",
 		"typeof $expr$",
+		"(_$expr$_)",
+		"!_$expr$",
 		"$expr$_?_$expr$_:_$expr$",
 		"$expr$_===_$expr$",
 		"$expr$_<==_$expr$",

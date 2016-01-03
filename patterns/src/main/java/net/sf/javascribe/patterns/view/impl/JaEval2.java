@@ -321,7 +321,7 @@ public class JaEval2 {
 		
 		return "_$$$"+ref;
 	}
-	
+
 	// Reads a reference to variable in the current execCtx
 	// will accept any reference that starts with "window." or "document."
 	protected String readVariableReference(JaEvalResult currentResult) {
@@ -416,7 +416,7 @@ public class JaEval2 {
 			c = ret.getRemaining().next();
 		}
 		if (first) ret = null;
-		if (c!=0) ret.getRemaining().backtrack();
+		else if (c!=0) ret.getRemaining().backtrack();
 		ret.getResult().append(ref.toString());
 		return ret;
 	}
