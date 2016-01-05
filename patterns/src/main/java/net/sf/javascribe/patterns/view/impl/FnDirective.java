@@ -59,9 +59,9 @@ public class FnDirective implements ElementDirective {
 		} else {
 			code.append("(function() {");
 		}
-		JaEval2 eval = new JaEval2(html,newCtx);
+		JavascriptEvaluator eval = new JavascriptEvaluator(html,newCtx);
 		DirectiveUtils.populateImpliedVariables(eval);
-		JaEvalResult result = eval.parseCodeBlock();
+		JavascriptEvalResult result = eval.evalCodeBlock();
 		if (result.getErrorMessage()!=null) {
 			throw new JavascribeException("Couldn't build js-fn - Error parsing code: '"+result.getErrorMessage()+"'");
 		}

@@ -14,8 +14,8 @@ import net.sf.javascribe.api.VariableType;
 import net.sf.javascribe.langsupport.javascript.JavascriptBaseObjectType;
 import net.sf.javascribe.langsupport.javascript.JavascriptFunctionType;
 import net.sf.javascribe.patterns.view.impl.IfDirective;
-import net.sf.javascribe.patterns.view.impl.JaEval2;
-import net.sf.javascribe.patterns.view.impl.JaEvalResult;
+import net.sf.javascribe.patterns.view.impl.JavascriptEvalResult;
+import net.sf.javascribe.patterns.view.impl.JavascriptEvaluator;
 import net.sf.javascribe.patterns.view.impl.LoopDirective;
 
 import org.jsoup.nodes.Attribute;
@@ -203,9 +203,9 @@ public class ElementParser {
 			String htmlAttr = names.next();
 			String n = findLowerCamelFromHtml(htmlAttr);
 			String val = atts.get(htmlAttr);
-			JaEval2 eval = new JaEval2(val,execCtx);
+			JavascriptEvaluator eval = new JavascriptEvaluator(val,execCtx);
 			DirectiveUtils.populateImpliedVariables(eval);
-			JaEvalResult result = eval.parseExpression();
+			JavascriptEvalResult result = eval.evalExpression();
 			if (result.getErrorMessage()!=null) {
 				throw new JavascribeException("Couldn't build template call - "+result.getErrorMessage());
 			}

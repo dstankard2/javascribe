@@ -16,7 +16,7 @@ import net.sf.javascribe.langsupport.javascript.JavascriptUtils;
 import net.sf.javascribe.patterns.js.page.PageModelType;
 import net.sf.javascribe.patterns.js.page.PageType;
 import net.sf.javascribe.patterns.view.impl.JaEval2;
-import net.sf.javascribe.patterns.view.impl.JaEvalResult;
+import net.sf.javascribe.patterns.view.impl.JavascriptEvalResult;
 import net.sf.javascribe.patterns.view.impl.JavascriptEvaluator;
 
 public class DirectiveUtils {
@@ -217,9 +217,9 @@ public class DirectiveUtils {
 			int end = s.indexOf("}}", i+2);
 			build.append(append.replace("'", "\\'"));
 			String add = s.substring(i+2, end).trim();
-			JaEval2 eval = new JaEval2(add,execCtx);
+			JavascriptEvaluator eval = new JavascriptEvaluator(add,execCtx);
 			populateImpliedVariables(eval);
-			JaEvalResult result = eval.parseExpression();
+			JavascriptEvalResult result = eval.evalExpression();
 			if (result.getErrorMessage()!=null) {
 				throw new JavascribeException(result.getErrorMessage());
 			}
@@ -235,13 +235,6 @@ public class DirectiveUtils {
 		build.append('\'');
 		
 		return build.toString();
-	}
-
-	@Deprecated
-	public static void populateImpliedVariables(JaEval2 eval) {
-		eval.addImpliedVariable(DirectiveUtils.LOCAL_MODEL_VAR)
-				.addImpliedVariable(DirectiveUtils.PAGE_VAR)
-				.addImpliedVariable(DirectiveUtils.PAGE_VAR+".model");
 	}
 
 	public static void populateImpliedVariables(JavascriptEvaluator eval) {

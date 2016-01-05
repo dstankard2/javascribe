@@ -5,8 +5,8 @@ import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.patterns.view.AttributeDirectiveBase;
 import net.sf.javascribe.patterns.view.DirectiveContext;
 import net.sf.javascribe.patterns.view.DirectiveUtils;
-import net.sf.javascribe.patterns.view.impl.JaEval2;
-import net.sf.javascribe.patterns.view.impl.JaEvalResult;
+import net.sf.javascribe.patterns.view.impl.JavascriptEvalResult;
+import net.sf.javascribe.patterns.view.impl.JavascriptEvaluator;
 
 public abstract class AbstractElementDomEventDirective extends AttributeDirectiveBase {
 
@@ -26,11 +26,12 @@ public abstract class AbstractElementDomEventDirective extends AttributeDirectiv
 		
 		execCtx.addVariable("$event", "DomEvent");
 		
-		JaEval2 eval = new JaEval2(userString,execCtx);
+		if (!userString.endsWith(";")) userString = userString + ";";
+		JavascriptEvaluator eval = new JavascriptEvaluator(userString,execCtx);
 		DirectiveUtils.populateImpliedVariables(eval);
-		JaEvalResult result = eval.parseCodeBlock();
+		JavascriptEvalResult result = eval.evalCodeBlock();
 		if (result.getErrorMessage()!=null) {
-			throw new JavascribeException("Couldn't build DOM event lsitener: "+result.getErrorMessage());
+			throw new JavascribeException("Couldn't build DOM event listener: "+result.getErrorMessage());
 		}
 		b.append(result.getResult().toString());
 		

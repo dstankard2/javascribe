@@ -22,9 +22,9 @@ public class DisabledDirective extends AttributeDirectiveBase {
 		ctx.getTemplateAttributes().remove("js-disabled");
 		ctx.continueRenderElement(ctx.getExecCtx());
 		
-		JaEval2 eval = new JaEval2(value,ctx.getExecCtx());
+		JavascriptEvaluator eval = new JavascriptEvaluator(value,ctx.getExecCtx());
 		DirectiveUtils.populateImpliedVariables(eval);
-		JaEvalResult result = eval.parseExpression();
+		JavascriptEvalResult result = eval.evalExpression();
 		if (result.getErrorMessage()!=null) {
 			throw new JavascribeException(result.getErrorMessage());
 		}

@@ -26,7 +26,6 @@ public class JavascriptEvaluator {
 		JavascriptEvalResult res = JavascriptEvalResult.newInstance(code);
 		
 		ret = readCodeBlock(res, null);
-		//ret = readPattern("$codeLines$",res,true,null);
 		if (ret==null) {
 			ret = res;
 			res.setErrorMessage("Couldn't eval code block '"+code+"'");
@@ -39,9 +38,7 @@ public class JavascriptEvaluator {
 		JavascriptEvalResult res = JavascriptEvalResult.newInstance(code);
 		JavascriptEvalResult ret = null;
 		
-		//ret = readPattern("$expr$",res,true,null);
 		ret = readExpression(res, null, null);
-		//ret = readPart("expr", res, null);
 		if (ret==null) {
 			ret = res;
 			ret.setErrorMessage("Couldn't evaluate Javascript expression '"+code+"'");
@@ -49,15 +46,54 @@ public class JavascriptEvaluator {
 		return ret;
 	}
 	
+	// Ending = null -> There should be no more non-whitespace.
+	// Ending is "" -> Return true always
+	// Ending is not empty -> current.getRemaining should start with ending
+	protected boolean testEnding(JavascriptEvalResult current,String ending) {
+		boolean ret = false;
+		if (current!=null) {
+			current.getRemaining().skipWs();
+			if (ending==null) {
+				ret = (current.getRemaining().next(false)==0);
+			} else {
+				if (ending.equals("")) ret = true;
+				else return (current.getRemaining().startsWith(ending));
+			}
+		}
+		return ret;
+	}
 	
-	
+	// If ending==null then read all remaining characters.
+	// If ending is "" then read as much as possible.
+	// If ending is non-zero-length string, then return a result if the remaining starts with ending
 	// Entry point of reading a string
-	protected JavascriptEvalResult readPattern(String pattern,JavascriptEvalResult current,boolean readTilEnd) {
+	protected JavascriptEvalResult readPattern(String pattern,JavascriptEvalResult current,String ending) {
 		JavascriptEvalResult ret = current.createNew();
 		
 		int end = 0;
 		int prevEnd = -1;
 
+		/*
+		// debugging...
+		if ((pattern.equals("$assignment$;")) 
+				&& (current.getRemaining().toString().equals("str = 'abc';"))) {
+			System.out.println("hi");
+		} else if (pattern.equals("$expr$&&$expr$") 
+				&& (current.getRemaining().toString().equals("(email) && i)"))) {
+			System.out.println("hi");
+		} else if ((pattern.equals("($expr$)")) 
+				&& (current.getRemaining().toString().equals("(email) && i)"))) {
+			System.out.println("hi");
+		} else if ((pattern.equals("$varRef$"))
+				&& (current.getRemaining().toString().equals("email) && i)"))
+				&& (ending.equals(")"))) {
+			System.out.println("hi");
+		} else if ((pattern.equals("$varRef$"))
+				&& (current.getRemaining().toString().equals("i)"))) {
+			System.out.println("hi");
+		}
+			*/
+		
 		ret.getRemaining().skipWs();
 		int i = pattern.indexOf('$');
 		while(i>=0) {
@@ -94,35 +130,18 @@ public class JavascriptEvaluator {
 			String str = "";
 			int x = end+1;
 			if (x>=pattern.length()) {
-				str = null;
+				str = "";
 			} else {
 				while((x<pattern.length()) && (pattern.charAt(x)!='$')) {
-					if (pattern.charAt(x)!='_')
-						str = str + pattern.charAt(x);
+					char c = pattern.charAt(x);
+					if ((c=='_') || (c==' ')) {
+						break;
+					}
+					str = str + pattern.charAt(x);
 					x++;
 				}
 			}
 			sub = readPart(name, ret, skip, str);
-			/*
-			if (name.equals("codeLines")) {
-				int x = end+1;
-				String str = "";
-				while((x<pattern.length()) && (pattern.charAt(x)!='$')) {
-					str = str + pattern.charAt(x);
-					x++;
-				}
-				if (str.equals("")) str = null;
-				// Read a code block
-				sub = readCodeBlock(ret, str);
-			} else {
-				// Look for name
-				if (i==0) {
-					sub = readPart(name, ret, name);
-				} else {
-					sub = readPart(name,ret,null);
-				}
-			}
-			*/
 			if (sub==null) {
 				return null;
 			}
@@ -159,12 +178,8 @@ public class JavascriptEvaluator {
 				endStr = endStr.substring(1);
 			}
 		}
-		if (readTilEnd) {
-			ret.getRemaining().skipWs();
-			// This is not a match if the code still has non-WS
-			if (ret.getRemaining().next(false)!=0) {
-				return null;
-			}
+		if (!testEnding(ret,ending)) {
+			return null;
 		}
 		
 		return ret;
@@ -177,24 +192,23 @@ public class JavascriptEvaluator {
 		else if (name.equals("string")) ret = readStringLiteral(current);
 		else if (name.equals("identifier")) ret = readIdentifier(current);
 		else if (name.equals("forLoop")) ret = readForLoop(current);
-		else if (name.equals("varRef")) ret = readVariableReference(current);
+		else if (name.equals("varRef")) ret = readVariableReference(current,true);
 		else if (name.equals("fnArgs")) ret = readFnArgs(current);
 		else if (name.equals("declaration")) ret = readDeclaration(current);
 		else if (name.equals("assignment")) ret = readAssignment(current);
 		else if (name.equals("codeLines")) ret = readCodeBlock(current, ending);
+		else if (name.equals("codeLine")) ret = readCodeLine(current);
 		else if (name.equals("expr")) ret = readExpression(current,startIgnore,ending);
 
-		if ((ret!=null) && (ending!=null) && (ending.length()>0)) {
-			if (!ret.getRemaining().toString().startsWith(ending)) ret = null;
+		if (!testEnding(ret,ending)) {
+			ret = null;
 		}
-		
 		return ret;
 	}
 
 	// Start of evaluations
 	protected JavascriptEvalResult readExpression(JavascriptEvalResult current,String startIgnore,String ending) {
 		JavascriptEvalResult ret = current.createNew();
-		boolean readTilEnd = (ending==null);
 
 		current = current.createNew();
 		current.getRemaining().skipWs();
@@ -202,12 +216,7 @@ public class JavascriptEvaluator {
 			if (startIgnore!=null) {
 				if (s.startsWith(startIgnore)) continue;
 			}
-			ret = readPattern(s, current, readTilEnd);
-			if ((ret!=null) && (ending!=null) && (ending.length()>0)) {
-				if (!ret.getRemaining().toString().startsWith(ending)) {
-					ret = null;
-				}
-			}
+			ret = readPattern(s, current, ending);
 			if (ret!=null) break;
 		}
 
@@ -235,8 +244,8 @@ public class JavascriptEvaluator {
 		JavascriptEvalResult ret = null;
 
 		for(String s : JavascriptEvalConst.codeLine) {
-			ret = readPattern(s,current,false);
-			if ((ret!=null) && (ret.getErrorMessage()!=null)) break;
+			ret = readPattern(s,current,"");
+			if (ret!=null) break;
 		}
 		
 		return ret;
@@ -248,7 +257,7 @@ public class JavascriptEvaluator {
 		String varRef = null;
 		String value = null;
 		
-		sub = readVariableReference(ret);
+		sub = readVariableReference(ret,false);
 		if (sub==null) return null;
 		ret.merge(sub, false);
 		varRef = sub.getResult().toString();
@@ -256,16 +265,16 @@ public class JavascriptEvaluator {
 		char c = ret.getRemaining().next(true);
 		if (c!='=') return null;
 		ret.getRemaining().skipWs();
-		sub = readExpression(ret,null,"");
-		//sub = readPart("expr",ret,null);
+		sub = readExpression(ret,null,";");
 		if (sub==null) return null;
 		if (sub.getErrorMessage()!=null) return sub;
 		ret.merge(sub, false);
 		value = sub.getResult().toString();
-		
+		ret.getRemaining().skip(1); // skip ;
 		String line = null;
 		try {
 			line = ExpressionUtil.evaluateSetExpression(varRef, value, execCtx);
+			if (!line.endsWith(";")) line = line + ";";
 		} catch(Exception e) {
 		}
 		if (line==null) {
@@ -277,9 +286,11 @@ public class JavascriptEvaluator {
 			}
 		}
 		if (line==null) {
-			line = varRef+" = "+value+";\n";
+			line = varRef+" = "+value+";";
+		} else {
+			line = line.trim();
 		}
-		ret.getResult().append(line+";\n");
+		ret.getResult().append(line);
 		
 		return ret;
 	}
@@ -298,7 +309,7 @@ public class JavascriptEvaluator {
 		ret.getRemaining().skipWs();
 		ret.getResult().append('(');
 		//current = readPattern("declaration",ret,null);
-		sub = readPattern("$declaration$;", ret, false);
+		sub = readPattern("$declaration$;", ret, ";");
 		if ((sub==null) || (sub.getErrorMessage()!=null)) return sub;
 		ret.merge(sub, true);
 		sub = readExpression(ret,null,"");
@@ -338,28 +349,40 @@ public class JavascriptEvaluator {
 		JavascriptEvalResult ret = current.createNew();
 		
 		ret.getRemaining().skipWs();
-		char c = ret.getRemaining().next(true);
-		while((c!=')') && (c!=0)) {
-			if ((!first) && (c!=',')) return null;
-			else if (first) ret.getRemaining().backtrack();
-			if (!first) ret.getResult().append(',');
-			first = false;
-			JavascriptEvalResult res = readExpression(ret, null, "");
-			//JavascriptEvalResult res = readIdentifier(ret);
-			if (res==null) return null;
-			ret.merge(res, true);
+		boolean done = false;
+		while(!done) {
 			ret.getRemaining().skipWs();
-			c = ret.getRemaining().next(true);
+			if (ret.getRemaining().startsWith(')')) {
+				done = true;
+			} else {
+				if (!first) {
+					if (!ret.getRemaining().startsWith(',')) return null;
+					ret.getRemaining().skip(1);
+					ret.getResult().append(',');
+				} else {
+					first = false;
+				}
+				JavascriptEvalResult res = readExpression(ret, null, ")");
+				if (res!=null) {
+					ret.merge(res, true);
+					done = true;
+				} else {
+					res = readExpression(ret,null,",");
+					if (res!=null) {
+						ret.merge(res, true);
+					} else {
+						return null;
+					}
+				}
+			}
 		}
-		if (c==')') ret.getRemaining().backtrack();
-		else if (c==0) ret = null;
-		
+
 		return ret;
 	}
 	
 	// Reads any variable reference, without validating it.
 	// TODO: finish
-	protected JavascriptEvalResult readVariableReference(JavascriptEvalResult current) {
+	protected JavascriptEvalResult readVariableReference(JavascriptEvalResult current,boolean evaluate) {
 		JavascriptEvalResult ret = current.createNew();
 		
 		while(true) {
@@ -381,13 +404,17 @@ public class JavascriptEvaluator {
 			String ref = ret.getResult().toString();
 			ret = JavascriptEvalResult.newInstance(remaining);
 			ref = getFinalRef(ref);
-			String finalRef = null;
-			try {
-				finalRef = ExpressionUtil.evaluateValueExpression("${"+ref+"}", "object", execCtx);
-			} catch(Exception e) {
+			if (evaluate) {
+				String finalRef = null;
+				try {
+					finalRef = ExpressionUtil.evaluateValueExpression("${"+ref+"}", "object", execCtx);
+				} catch(Exception e) {
+				}
+				if (finalRef==null) finalRef = ref;
+				ret.getResult().append(finalRef);
+			} else {
+				ret.getResult().append(ref);
 			}
-			if (finalRef==null) finalRef = ref;
-			ret.getResult().append(finalRef);
 		}
 		
 		return ret;
@@ -434,8 +461,8 @@ public class JavascriptEvaluator {
 
 	protected JavascriptEvalResult readDeclaration(JavascriptEvalResult current) {
 		JavascriptEvalResult ret = null;
-		ret = this.readPattern("var $identifier$_;", current, false);
-		if (ret==null) ret = this.readPattern("var $identifier$_=_$expr$;", current, false);
+		ret = this.readPattern("var $identifier$", current, ";");
+		if (ret==null) ret = this.readPattern("var $identifier$_=_$expr$", current, ";");
 		return ret;
 	}
 

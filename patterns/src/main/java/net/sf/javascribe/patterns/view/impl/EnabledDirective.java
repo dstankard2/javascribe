@@ -21,9 +21,9 @@ public class EnabledDirective extends AttributeDirectiveBase {
 		
 		ctx.continueRenderElement(ctx.getExecCtx());
 		
-		JaEval2 eval = new JaEval2(value,ctx.getExecCtx());
+		JavascriptEvaluator eval = new JavascriptEvaluator(value,ctx.getExecCtx());
 		DirectiveUtils.populateImpliedVariables(eval);
-		JaEvalResult res = eval.parseExpression();
+		JavascriptEvalResult res = eval.evalExpression();
 		if (res.getErrorMessage()!=null) {
 			throw new JavascribeException(res.getErrorMessage());
 		}
