@@ -13,8 +13,9 @@ function EventDispatcher() {
 	
 	var _obs;
 	function _initObserver() {
-		if (window.MutationObserver) {
+		if (_obs) return;
 
+		if (window.MutationObserver) {
 		    _obs = new MutationObserver(function (e) {
 		      if ((e[0].removedNodes) && (e[0].removedNodes.length)) {
 		        var l = e[0].removedNodes.length;
@@ -29,7 +30,6 @@ function EventDispatcher() {
 		    _obs.observe(document.body, { childList: true });
 		}
 	}
-	_initObserver();
 	
 	var removeListener = function(fn) {
 		for(var k in listeners) {
@@ -44,6 +44,7 @@ function EventDispatcher() {
 	return {
 		// Adds the specified callback function as a listener to the specified event.
 		addEventListener: function(name,callback,domElement) {
+			_initObserver();
 			if (typeof(_listeners[name]) =='undefined') {
 				_listeners[name] = [];
 			}

@@ -73,11 +73,11 @@ public class JavascriptEvaluator {
 		int end = 0;
 		int prevEnd = -1;
 
-		/*
 		// debugging...
-		if ((pattern.equals("$assignment$;")) 
-				&& (current.getRemaining().toString().equals("str = 'abc';"))) {
+		if ((pattern.equals("$varRef$($fnArgs$)")) 
+				&& (current.getRemaining().toString().startsWith("$event.stopPropagation()"))) {
 			System.out.println("hi");
+			/*
 		} else if (pattern.equals("$expr$&&$expr$") 
 				&& (current.getRemaining().toString().equals("(email) && i)"))) {
 			System.out.println("hi");
@@ -91,8 +91,8 @@ public class JavascriptEvaluator {
 		} else if ((pattern.equals("$varRef$"))
 				&& (current.getRemaining().toString().equals("i)"))) {
 			System.out.println("hi");
-		}
 			*/
+		}
 		
 		ret.getRemaining().skipWs();
 		int i = pattern.indexOf('$');
@@ -189,8 +189,9 @@ public class JavascriptEvaluator {
 		JavascriptEvalResult ret = null;
 		
 		if (name.equals("number")) ret = readNumberLiteral(current);
+		else if (name.equals("thenElse")) ret = readThenElse(current);
 		else if (name.equals("string")) ret = readStringLiteral(current);
-		else if (name.equals("identifier")) ret = readIdentifier(current);
+		else if (name.equals("identifier")) ret = readIdentifier(current,false);
 		else if (name.equals("forLoop")) ret = readForLoop(current);
 		else if (name.equals("varRef")) ret = readVariableReference(current,true);
 		else if (name.equals("fnArgs")) ret = readFnArgs(current);
@@ -223,19 +224,63 @@ public class JavascriptEvaluator {
 		return ret;
 	}
 	
+	// Reads a portion after "if (expr)"
+	protected JavascriptEvalResult readThenElse(JavascriptEvalResult current) {
+		JavascriptEvalResult ret = current.createNew();
+		boolean done = false;
+		JavascriptEvalResult sub = null;
+		boolean elseDone = false;
+		
+		while(!done) {
+			// Read some code lines
+			ret.getRemaining().skipWs();
+			sub = readPattern("{$codeLines$}",ret,"");
+			if (sub==null) sub = readPattern("$codeLine$",ret,"");
+			// If there are no codelines then the structure is invalid.
+			if (sub==null) {
+				ret.setErrorMessage("Couldn't read if then else structure");
+				return ret;
+			}
+			ret.merge(sub, true);
+			// We're done after reading codelines for the else.
+			if (elseDone) {
+				done = true;
+			} else {
+				ret.getRemaining().skipWs();
+				// Read else if, else
+				sub = readPattern("else if ($expr$)",ret,"");
+				if (sub==null) {
+					sub = readPattern("else_",ret,"");
+					if (sub!=null) {
+						elseDone = true;
+					} else {
+						// Done with the if then else structure
+						done = true;
+					}
+				}
+				if (sub!=null) {
+					ret.merge(sub, true);
+				}
+			}
+		}
+		return ret;
+	}
+	
 	protected JavascriptEvalResult readCodeBlock(JavascriptEvalResult current,String ending) {
 		JavascriptEvalResult ret = current.createNew();
 
-		while(ret.getRemaining().next(false)!=0) {
-			ret.getRemaining().skipWs();
-			if ((ending!=null) && (ret.getRemaining().startsWith(ending))) {
-				return ret;
-			}
+		ret.getRemaining().skipWs();
+		//boolean done = ((ret.getRemaining().next(false)==0) 
+		//		|| ((ending==null) || (ending.length()==0) || (ret.getRemaining().startsWith(ending))));
+		//while(!done) {
+		while((ret.getRemaining().next(false)!=0) 
+				&& ((ending==null || ending.length()==0) || (!ret.getRemaining().startsWith(ending)))) {
 			JavascriptEvalResult sub = readCodeLine(ret);
 			if (sub==null) return null;
 			if (sub.getErrorMessage()!=null) return sub;
 			ret.merge(sub,true);
 			ret.getResult().append('\n');
+			ret.getRemaining().skipWs();
 		}
 		return ret;
 	}
@@ -384,19 +429,56 @@ public class JavascriptEvaluator {
 	// TODO: finish
 	protected JavascriptEvalResult readVariableReference(JavascriptEvalResult current,boolean evaluate) {
 		JavascriptEvalResult ret = current.createNew();
+		boolean idRequired = true; // Means we have to find an identifier in this loop iteration
+		boolean done = false;
 		
-		while(true) {
+		while(!done) {
 			ret.getRemaining().skipWs();
-			JavascriptEvalResult id = readIdentifier(ret);
-			if (id==null) {
-				ret = null;
-				break;
+			JavascriptEvalResult id = readIdentifier(ret, true);
+			if (id!=null) {
+				ret.merge(id, true);
+				ret.getRemaining().skipWs();
+				if (ret.getRemaining().startsWith('.')) {
+					ret.getResult().append('.');
+					ret.getRemaining().skip(1);
+					idRequired = true;
+				} else {
+					idRequired = false;
+				}
+			} else {
+				done = true;
+				if (idRequired) {
+					ret = null;
+				}
 			}
-			ret.merge(id, true);
-			ret.getRemaining().skipWs();
-			if (!ret.getRemaining().startsWith('.')) break;
-			ret.getRemaining().next(true);
-			ret.getResult().append('.');
+			/*
+			JavascriptEvalResult id = readPattern("$identifier$",ret,".");
+			if (id==null) {
+				id = readPattern("$identifier$",ret,"");
+				if (id!=null) {
+					done = true;
+				} else {
+					if (idRequired) {
+						ret = null;
+						done = true;
+					}
+				}
+			} else {
+				//ret.merge(id, true);
+				ret.getRemaining().skip(1);
+				ret.getResult().append('.');
+				idRequired = true;
+			}
+			if ((id==null) && (ret!=null)) {
+				if (ret.getResult().length()==0) {
+					ret = null;
+				}
+				done = true;
+			}
+			if ((ret!=null) && (id!=null)) {
+				ret.merge(id, true);
+			}
+			*/
 		}
 		
 		if (ret!=null) {
@@ -466,11 +548,19 @@ public class JavascriptEvaluator {
 		return ret;
 	}
 
-	protected JavascriptEvalResult readIdentifier(JavascriptEvalResult current) {
+	protected JavascriptEvalResult readIdentifier(JavascriptEvalResult current,boolean testFnCall) {
 		JavascriptEvalResult ret = null;
 		ret = current.createNew();
 		boolean first = true;
 		StringBuilder ref = new StringBuilder();
+		
+		if (testFnCall) {
+			JavascriptEvalResult sub = readPattern("$identifier$($fnArgs$)",ret,"");
+			if (sub!=null) {
+				ret.merge(sub, true);
+				return ret;
+			}
+		}
 		
 		ret.getRemaining().skipWs();
 		char c = ret.getRemaining().next(true);
@@ -491,7 +581,7 @@ public class JavascriptEvaluator {
 			}
 			c = ret.getRemaining().next(true);
 		}
-		if (first) ret = null;
+		if (first) return null;
 		else {
 			if (c!=0) ret.getRemaining().backtrack();
 			// Check if it is a keyword
@@ -500,6 +590,16 @@ public class JavascriptEvaluator {
 			}
 			ret.getResult().append(ref.toString());
 		}
+		ret.getRemaining().skipWs();
+		if (ret.getRemaining().startsWith('[')) {
+			JavascriptEvalResult sub = readPattern("[$expr$]",ret,"");
+			if (sub==null) {
+				ret.setErrorMessage("Invalid array or property reference");
+			} else {
+				ret.merge(sub, true);
+			}
+		}
+		
 		return ret;
 	}
 

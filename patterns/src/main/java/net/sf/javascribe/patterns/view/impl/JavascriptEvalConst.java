@@ -28,50 +28,12 @@ public class JavascriptEvalConst {
 		"$expr$-$expr$",
 		"$expr$%$expr$",
 		"$expr$?$expr$:$expr$",
-		"$varRef$[$expr$]",
-		"$varRef$($fnArgs$)",
 		"$varRef$",
 		"true",
 		"false",
 		"undefined",
 		"null"
 	};
-
-	/*
-	public static final String[] expr = new String[] {
-		"$number$", 
-		"$string$", 
-		"function_(_$fnArgs$_)_{$codeLines$}", // function declaration
-		"typeof $expr$",
-		"(_$expr$_)",
-		"!_$expr$",
-		"new $varRef$_(_$fnArgs$_)", // instantiation function call
-		"$expr$_?_$expr$_:_$expr$",
-		"$expr$_===_$expr$",
-		"$expr$_<==_$expr$",
-		"$expr$_>==_$expr$",
-		"$expr$_!=_$expr$",
-		"$expr$_==_$expr$",
-		"$expr$_<=_$expr$",
-		"$expr$_>=_$expr$",
-		"$expr$_&&_$expr$",
-		"$expr$_||_$expr$",
-		"$expr$_+_$expr$",
-		"$expr$_-_$expr$",
-		"$expr$_*_$expr$",
-		"$expr$_/_$expr$",
-		"$expr$_<_$expr$",
-		"$expr$_>_$expr$",
-		"$expr$_%_$expr$",
-		"$varRef$_(_$fnArgs$_)", // function call
-		"$varRef$",
-		"$varRef$_[_$expr$_]",
-		"true",
-		"false",
-		"undefined",
-		"null"
-	};
-	*/
 
 	// Keywords that varRefs and identifiers cannot be equal to
 	public static final String[] keywords = new String[] {
@@ -83,14 +45,13 @@ public class JavascriptEvalConst {
 		"$forLoop$_{_$codeLines$_}",
 		"var $identifier$_;",
 		"var $identifier$_=_$expr$;",
-		"if_($expr$)_$codeLine$",
-		"if_(_$expr$_)_{_$codeLines$}",
+		"if_($expr$)$thenElse$",
+		//"if_(_$expr$_)_{_$codeLines$}",
 		"while(_$expr$_)_$codeLine$",
 		"while(_$expr$_)_{$codeLines$}",
 		"$assignment$",
 		"return $expr$;",
 		"debugger_;",
-		//"$fnCall$;",
 		"$expr$;"
 	};
 	
