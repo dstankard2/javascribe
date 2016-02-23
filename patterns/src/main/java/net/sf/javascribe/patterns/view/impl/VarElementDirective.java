@@ -19,34 +19,31 @@ public class VarElementDirective implements ElementDirective {
 		String name = ctx.getDomAttributes().get("name");
 		String type = ctx.getDomAttributes().get("type");
 
-		if ((name==null) || (type==null) || (name.trim().length()==0) || (type.trim().length()==0)) {
-			throw new JavascribeException("js-var element directive requires 'name' and 'type'");
+		if ((name==null) || (name.trim().length()==0)) {
+			throw new JavascribeException("js-var element directive required attribute 'name'");
 		}
+
 		if (ctx.getExecCtx().getVariableType(name)!=null) {
 			throw new JavascribeException("Cannot declare a variable named '"+name+"' as there is already another one");
 		}
-		b.append("var "+name+";\n");
-		ctx.getExecCtx().addVariable(name, type);
-		/*
-		if ((value.startsWith("${")) && (value.endsWith("}"))) {
-			valueExpr = value.substring(2, value.length()-1);
-			String finalValue = DirectiveUtils.getValidReference(valueExpr, ctx.getExecCtx());
-			if (finalValue!=null) {
-				b.append("var "+name+" = "+finalValue+";\n");
-				String type = DirectiveUtils.getReferenceType(valueExpr, ctx.getExecCtx());
-				ctx.getExecCtx().addVariable(name, type);
-				done = true;
-			} else {
-				String type = ctx.getDomAttributes().get("type");
-				if (type!=null) {
-					b.append("var "+name+" = "+value+";\n");
-					ctx.getExecCtx().addVariable(name, type);
-					done = true;
-				}
+		
+		if ((type!=null) && (type.trim().length()==0)) {
+			type = null;
+		}
+		if (type==null) {
+			type = ctx.getProcessorContext().getAttributeType(name);
+			if (type==null) {
+				throw new JavascribeException("Couldn't find a type for variable '"+name+"'");
+			}
+		} else {
+			String test = ctx.getProcessorContext().getAttributeType(name);
+			if ((test!=null) && (!test.equals(type))) {
+				throw new JavascribeException("Couldn't declare variable '"+name+"' of type '"+type+"' as it conflicts with an existing system attribute");
 			}
 		}
-		*/
 		
+		b.append("var "+name+";\n");
+		ctx.getExecCtx().addVariable(name, type);
 	}
 
 }

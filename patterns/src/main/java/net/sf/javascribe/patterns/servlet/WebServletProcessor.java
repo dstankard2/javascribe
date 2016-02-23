@@ -93,7 +93,9 @@ public class WebServletProcessor {
 			JavaBeanType type = (JavaBeanType)ctx.getType(servlet.getSessionDataType());
 			String varName = JavascribeUtils.getLowerCamelName(servlet.getSessionDataType());
 			JsomUtils.merge(methodCode, (JavaCode)type.declare(varName,execCtx));
+			methodCode.append("if (request.getSession(false)!=null) {\n");
 			methodCode.append(varName+" = ("+type.getClassName()+")request.getSession().getAttribute(\""+varName+"\");\n");
+			methodCode.append("}\n");
 			execCtx.addVariable(varName, servlet.getSessionDataType());
 			methodCode.append("request.setAttribute(\""+varName+"\","+varName+");\n");
 		}

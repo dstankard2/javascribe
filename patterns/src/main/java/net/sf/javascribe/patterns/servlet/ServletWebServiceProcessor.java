@@ -145,7 +145,9 @@ public class ServletWebServiceProcessor {
 				String sessionDataVar = JavascribeUtils.getLowerCamelName(sessionDataType);
 				JsomUtils.merge(methodCode, (JavaCode)dataObjectType.declare(sessionDataVar,execCtx));
 				methodCode.addImport(dataObjectType.getImport());
-				methodCode.append(sessionDataVar+" = ("+dataObjectType.getClassName()+")request.getSession(true).getAttribute(\""+sessionDataVar+"\");\n");
+				methodCode.append("if (request.getSession(false)!=null) {\n");
+				methodCode.append(sessionDataVar+" = ("+dataObjectType.getClassName()+")request.getSession(false).getAttribute(\""+sessionDataVar+"\");\n");
+				methodCode.append("}\n");
 				execCtx.addVariable(sessionDataVar, sessionDataType);
 			}
 

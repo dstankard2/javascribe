@@ -15,7 +15,6 @@ import net.sf.javascribe.langsupport.javascript.JavascriptSourceFile;
 import net.sf.javascribe.langsupport.javascript.JavascriptUtils;
 import net.sf.javascribe.patterns.js.page.PageModelType;
 import net.sf.javascribe.patterns.js.page.PageType;
-import net.sf.javascribe.patterns.view.impl.JaEval2;
 import net.sf.javascribe.patterns.view.impl.JavascriptEvalResult;
 import net.sf.javascribe.patterns.view.impl.JavascriptEvaluator;
 

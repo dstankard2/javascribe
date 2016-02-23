@@ -14,7 +14,6 @@ import net.sf.javascribe.api.annotation.Scannable;
 import net.sf.javascribe.langsupport.javascript.JavascriptFunctionType;
 import net.sf.javascribe.langsupport.javascript.JavascriptObjectType;
 import net.sf.javascribe.langsupport.javascript.JavascriptSourceFile;
-import net.sf.javascribe.langsupport.javascript.JavascriptUtils;
 
 import org.apache.log4j.Logger;
 
@@ -50,6 +49,15 @@ public class TemplateSetProcessor {
 		ctx.addAttribute(obj, type.getName());
 		ctx.getTypes().addType(type);
 		JavascriptSourceFile src = DirectiveUtils.getJavascriptFileWithTemplatingUtilities(ctx);
+
+		if (comp.getRef().trim().length()>0) {
+			String ref = comp.getRef();
+			if (ctx.getAttributeType(ref)!=null) {
+				throw new JavascribeException("Couldn't create ref '"+ref+"' to template set, because that ref is already a system attribute");
+			}
+			src.getSource().append("window."+ref+" = "+obj+";\n");
+			ctx.addAttribute(ref, obj);
+		}
 		
 		src.getSource().append("var "+obj+" = { };\n");
 		for(SingleTemplate tmp : comp.getTemplate()) {
@@ -117,14 +125,6 @@ public class TemplateSetProcessor {
 			b.append("}\n");
 			
 			src.getSource().append(b.toString());
-		}
-		if (comp.getRef().trim().length()>0) {
-			String ref = comp.getRef();
-			if (ctx.getAttributeType(ref)!=null) {
-				throw new JavascribeException("Couldn't create ref '"+ref+"' to template set, because that ref is already a system attribute");
-			}
-			src.getSource().append("window."+ref+" = "+obj+";\n");
-			ctx.addAttribute(ref, obj);
 		}
 	}
 

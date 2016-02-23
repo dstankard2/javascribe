@@ -12,6 +12,7 @@ import net.sf.javascribe.api.annotation.ProcessorMethod;
 import net.sf.javascribe.api.annotation.Scannable;
 import net.sf.javascribe.langsupport.java.JavaVariableType;
 import net.sf.javascribe.langsupport.java.jsom.JsomUtils;
+import net.sf.javascribe.langsupport.javascript.JavascriptObjectType;
 import net.sf.jsom.java5.Java5Annotation;
 import net.sf.jsom.java5.Java5MemberDeclaration;
 import net.sf.jsom.java5.Java5SourceFile;
@@ -39,7 +40,14 @@ public class JsonObjectProcessor {
 		AttributeHolder holder = (AttributeHolder)type;
 		
 		applyJsonAnnotations(holder,ctx);
-		
+
+		ctx.setLanguageSupport("Javascript");
+		JavascriptObjectType obj = new JavascriptObjectType(holder.getName());
+		for(String att : holder.getAttributeNames()) {
+			String t = holder.getAttributeType(att);
+			obj.addAttribute(att, t);
+		}
+		ctx.getTypes().addType(obj);
 	}
 	
 	protected void applyJsonAnnotations(AttributeHolder type,ProcessorContext ctx) throws JavascribeException {
