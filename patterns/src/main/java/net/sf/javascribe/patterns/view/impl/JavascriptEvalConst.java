@@ -10,6 +10,8 @@ public class JavascriptEvalConst {
 		"typeof $expr$",
 		"new $varRef$($fnArgs$)",
 		"function_($fnArgs$)_{$codeLines$}", // function declaration
+		"$objDef$",
+		"$arrayDef$",
 		"$expr$>==$expr$",
 		"$expr$<==$expr$",
 		"$expr$===$expr$",

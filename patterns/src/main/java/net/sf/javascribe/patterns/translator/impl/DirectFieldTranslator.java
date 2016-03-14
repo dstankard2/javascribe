@@ -38,7 +38,7 @@ public class DirectFieldTranslator implements FieldTranslator {
 		}
 		
 		for(String f : fieldsToTranslate) {
-			boolean done = false;
+			boolean fieldTranslated = false;
 			List<String> localVars = execCtx.getVariableNames();
 			for(String v : localVars) {
 				if (v.equals(targetVarName)) continue;
@@ -46,11 +46,11 @@ public class DirectFieldTranslator implements FieldTranslator {
 					remove.add(f);
 					ret.appendCodeText(targetType.getCodeToSetAttribute(targetVarName, f, v, execCtx));
 					ret.appendCodeText(";\n");
-					done = true;
+					fieldTranslated = true;
 					break;
 				}
 			}
-			if (!done) {
+			if (!fieldTranslated) {
 				for(String v : localVars) {
 					if (v.equals(targetVarName)) continue;
 					VariableType type = execCtx.getTypeForVariable(v);
@@ -58,7 +58,7 @@ public class DirectFieldTranslator implements FieldTranslator {
 						AttributeHolder h = (AttributeHolder)type;
 						if (h.getAttributeType(f)!=null) {
 							remove.add(f);
-							done = true;
+							fieldTranslated = true;
 							
 							if (checkNull) {
 								ret.appendCodeText("if ("+v+"!=null)");

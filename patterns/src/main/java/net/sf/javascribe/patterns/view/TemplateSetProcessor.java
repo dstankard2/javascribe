@@ -50,6 +50,8 @@ public class TemplateSetProcessor {
 		ctx.getTypes().addType(type);
 		JavascriptSourceFile src = DirectiveUtils.getJavascriptFileWithTemplatingUtilities(ctx);
 
+		src.getSource().append("var "+obj+" = { };\n");
+
 		if (comp.getRef().trim().length()>0) {
 			String ref = comp.getRef();
 			if (ctx.getAttributeType(ref)!=null) {
@@ -59,7 +61,6 @@ public class TemplateSetProcessor {
 			ctx.addAttribute(ref, obj);
 		}
 		
-		src.getSource().append("var "+obj+" = { };\n");
 		for(SingleTemplate tmp : comp.getTemplate()) {
 			StringBuilder b = new StringBuilder();
 			JavascriptFunctionType fn = new JavascriptFunctionType(tmp.getName());

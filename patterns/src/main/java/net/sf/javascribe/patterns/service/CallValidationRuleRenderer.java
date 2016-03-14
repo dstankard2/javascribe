@@ -67,7 +67,7 @@ public class CallValidationRuleRenderer implements NestingServiceOperationRender
 				execCtx.addVariable(varName, typeName);
 			}
 
-			ret.append(JavaUtils.callJavaOperation("returnValue.validationMessages", varName, operation, execCtx, explicitParams));
+			JsomUtils.merge(ret, JavaUtils.callJavaOperation("returnValue.validationMessages", varName, operation, execCtx, explicitParams));
 			ret.append("if (returnValue.getValidationMessages()==null) returnValue.setValidationMessages(new java.util.ArrayList<String>());\n");
 			ret.append("if (returnValue.getValidationMessages().size()>0) {\n");
 			ret.append("returnValue.setStatus(1);\n}\n");

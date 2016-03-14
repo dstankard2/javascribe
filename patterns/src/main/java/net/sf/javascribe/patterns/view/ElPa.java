@@ -13,8 +13,6 @@ import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.VariableType;
 import net.sf.javascribe.langsupport.javascript.JavascriptBaseObjectType;
 import net.sf.javascribe.langsupport.javascript.JavascriptFunctionType;
-import net.sf.javascribe.patterns.view.impl.JaEval2;
-import net.sf.javascribe.patterns.view.impl.JaEvalResult;
 import net.sf.javascribe.patterns.view.impl.JavascriptEvalResult;
 import net.sf.javascribe.patterns.view.impl.JavascriptEvaluator;
 
@@ -295,13 +293,6 @@ public class ElPa implements DirectiveContext {
 		return b.toString();
 	}
 
-	protected void invokeDirective(Directive r,CodeExecutionContext execCtx,DirectiveContextImpl rctx) throws JavascribeException {
-		CodeExecutionContext origCtx = rctx.getExecCtx();
-		rctx.setExecCtx(execCtx);
-		r.generateCode(rctx);
-		rctx.setExecCtx(origCtx);
-	}
-	
 	public String newVarName(String baseName,String type,CodeExecutionContext execCtx) {
 		for(int i=0;i<10000;i++) {
 			String s = baseName+i;

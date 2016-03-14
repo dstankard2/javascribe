@@ -55,7 +55,6 @@ public class ClassificationFinalizer {
 			JavaBeanType classificationType = (JavaBeanType)ctx.getTypes().getType(s);
 			if (fitsClassification(beanType,classificationType)) {
 				src.getPublicClass().addImplementedInterface(classificationType.getImport());
-				break;
 			}
 		}
 	}

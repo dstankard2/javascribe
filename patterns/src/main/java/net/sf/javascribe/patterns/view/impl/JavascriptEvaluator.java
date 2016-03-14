@@ -187,7 +187,7 @@ public class JavascriptEvaluator {
 	
 	protected JavascriptEvalResult readPart(String name,JavascriptEvalResult current,String startIgnore,String ending) {
 		JavascriptEvalResult ret = null;
-		
+
 		if (name.equals("number")) ret = readNumberLiteral(current);
 		else if (name.equals("thenElse")) ret = readThenElse(current);
 		else if (name.equals("string")) ret = readStringLiteral(current);
@@ -200,14 +200,86 @@ public class JavascriptEvaluator {
 		else if (name.equals("codeLines")) ret = readCodeBlock(current, ending);
 		else if (name.equals("codeLine")) ret = readCodeLine(current);
 		else if (name.equals("expr")) ret = readExpression(current,startIgnore,ending);
+		else if (name.equals("objDef")) ret = readObjDef(current);
+		else if (name.equals("arrayDef")) ret = readArrayDef(current);
 
 		if (!testEnding(ret,ending)) {
 			ret = null;
 		}
 		return ret;
 	}
+	
+	protected JavascriptEvalResult readObjDef(JavascriptEvalResult current) {
+		JavascriptEvalResult ret = current.createNew();
+
+		ret.getRemaining().skipWs();
+		if (!ret.getRemaining().startsWith('{')) return null;
+		ret.getResult().append('{');
+		ret.getRemaining().skip(1);
+		boolean done = false;
+
+		ret.getRemaining().skipWs();
+		if (ret.getRemaining().next(false)=='}') {
+			ret.getResult().append(ret.getRemaining().next(true));
+			return ret;
+		}
+		while(!done) {
+			JavascriptEvalResult r = readIdentifier(ret, false);
+			if ((r==null) || (r.getErrorMessage()!=null)) return r;
+			ret.merge(r, true);
+			ret.getRemaining().skipWs();
+			if (!ret.getRemaining().startsWith(':')) return null;
+			ret.getResult().append(':');
+			ret.getRemaining().skip(1);
+			r = readExpression(ret, null, null);
+			if ((r==null) || (r.getErrorMessage()!=null)) return r;
+			ret.merge(r, true);
+			ret.getRemaining().skipWs();
+			char c = ret.getRemaining().next(true);
+			ret.getResult().append(c);
+			if (c=='}') {
+				done = true;
+			} else if (c!=',') {
+				ret.setErrorMessage("Invalid object definition in code expression");
+				return ret;
+			}
+		}
+		
+		return ret;
+	}
 
 	// Start of evaluations
+	protected JavascriptEvalResult readArrayDef(JavascriptEvalResult current) {
+		JavascriptEvalResult ret = current.createNew();
+
+		ret.getRemaining().skipWs();
+		if (!ret.getRemaining().startsWith('[')) return null;
+		ret.getResult().append('[');
+		ret.getRemaining().skip(1);
+		boolean done = false;
+		
+		ret.getRemaining().skipWs();
+		if (ret.getRemaining().next(false)==']') {
+			ret.getResult().append(ret.getRemaining().next(true));
+			return ret;
+		}
+		while(!done) {
+			JavascriptEvalResult r = readExpression(ret, null,",");
+			if (r==null) {
+				r = readExpression(ret,null,"]");
+				if (r!=null) {
+					if (r.getErrorMessage()!=null) return r;
+					done = true;
+				}
+			} else if (r.getErrorMessage()!=null) return r;
+			ret.merge(r, true);
+			ret.getRemaining().skipWs();
+			ret.getResult().append(ret.getRemaining().next(true));
+		}
+		
+		return ret;
+	}
+
 	protected JavascriptEvalResult readExpression(JavascriptEvalResult current,String startIgnore,String ending) {
 		JavascriptEvalResult ret = current.createNew();
 
@@ -250,7 +322,7 @@ public class JavascriptEvaluator {
 				// Read else if, else
 				sub = readPattern("else if ($expr$)",ret,"");
 				if (sub==null) {
-					sub = readPattern("else_",ret,"");
+					sub = readPattern("else ",ret,"");
 					if (sub!=null) {
 						elseDone = true;
 					} else {
@@ -319,7 +391,9 @@ public class JavascriptEvaluator {
 		String line = null;
 		try {
 			line = ExpressionUtil.evaluateSetExpression(varRef, value, execCtx);
+			line = line.trim();
 			if (!line.endsWith(";")) line = line + ";";
+			line = line + '\n';
 		} catch(Exception e) {
 		}
 		if (line==null) {
@@ -332,8 +406,6 @@ public class JavascriptEvaluator {
 		}
 		if (line==null) {
 			line = varRef+" = "+value+";";
-		} else {
-			line = line.trim();
 		}
 		ret.getResult().append(line);
 		
@@ -426,6 +498,7 @@ public class JavascriptEvaluator {
 	}
 	
 	// Reads any variable reference, without validating it.
+	// If assignable is true, the variable ref can't end with a function call (can't end with ')')
 	// TODO: finish
 	protected JavascriptEvalResult readVariableReference(JavascriptEvalResult current,boolean evaluate) {
 		JavascriptEvalResult ret = current.createNew();
@@ -451,34 +524,6 @@ public class JavascriptEvaluator {
 					ret = null;
 				}
 			}
-			/*
-			JavascriptEvalResult id = readPattern("$identifier$",ret,".");
-			if (id==null) {
-				id = readPattern("$identifier$",ret,"");
-				if (id!=null) {
-					done = true;
-				} else {
-					if (idRequired) {
-						ret = null;
-						done = true;
-					}
-				}
-			} else {
-				//ret.merge(id, true);
-				ret.getRemaining().skip(1);
-				ret.getResult().append('.');
-				idRequired = true;
-			}
-			if ((id==null) && (ret!=null)) {
-				if (ret.getResult().length()==0) {
-					ret = null;
-				}
-				done = true;
-			}
-			if ((ret!=null) && (id!=null)) {
-				ret.merge(id, true);
-			}
-			*/
 		}
 		
 		if (ret!=null) {
@@ -502,7 +547,7 @@ public class JavascriptEvaluator {
 		return ret;
 	}
 	
-	protected String getFinalRef(String ref) {//,JavascriptEvalResult currentResult,boolean isFunction) {
+	protected String getFinalRef(String ref) {
 		String type = null;
 
 		for(String s : JavascriptEvalConst.keywords) {
@@ -512,25 +557,11 @@ public class JavascriptEvaluator {
 		try {
 			type = execCtx.evaluateTypeForExpression(ref);
 			if (type!=null) return ref;
-			/*
-			if (type!=null) {
-				if ((isFunction) && (!type.equals("function"))) {
-					currentResult.setErrorMessage("Found a function reference '"+ref+"' but it was not a function");
-				}
-				return ref;
-			}
-			*/
-			
 		} catch(Exception e) { }
 		for(String s : this.impliedVars) {
 			try {
 				type = execCtx.evaluateTypeForExpression(s+'.'+ref);
 				if (type!=null) {
-					/*
-					if ((isFunction) && (!type.equals("function"))) {
-						currentResult.setErrorMessage("Found a function reference '"+ref+"' but it was not a function");
-					}
-					*/
 					return s+'.'+ref;
 				}
 			} catch(Exception e) {
@@ -553,6 +584,8 @@ public class JavascriptEvaluator {
 		ret = current.createNew();
 		boolean first = true;
 		StringBuilder ref = new StringBuilder();
+		
+		
 		
 		if (testFnCall) {
 			JavascriptEvalResult sub = readPattern("$identifier$($fnArgs$)",ret,"");

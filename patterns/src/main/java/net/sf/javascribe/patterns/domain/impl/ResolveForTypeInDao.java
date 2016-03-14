@@ -6,7 +6,6 @@ import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.annotation.Scannable;
 import net.sf.javascribe.langsupport.java.JavaCode;
-import net.sf.javascribe.langsupport.java.JavaCodeImpl;
 import net.sf.javascribe.langsupport.java.JavaOperation;
 import net.sf.javascribe.langsupport.java.JavaServiceObjectType;
 import net.sf.javascribe.langsupport.java.JavaUtils;
@@ -59,9 +58,7 @@ public class ResolveForTypeInDao implements Resolver {
 				}
 			}
 			if (!fit) continue;
-			String call = JavaUtils.callJavaOperation(attribute, objName, op, execCtx, null);
-			JavaCodeImpl code = new JavaCodeImpl();
-			code.appendCodeText(call);
+			JavaCode code = JavaUtils.callJavaOperation(attribute, objName, op, execCtx, null);
 			return code;
 		}
 		return null;

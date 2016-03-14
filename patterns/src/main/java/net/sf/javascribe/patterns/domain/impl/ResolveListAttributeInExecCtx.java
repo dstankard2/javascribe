@@ -108,8 +108,8 @@ public class ResolveListAttributeInExecCtx implements Resolver {
 		child.addVariable(loopItem, loopItemType.getName());
 		JavaUtils.append(ret, (JavaCode)elementType.declare(elementAttribute, child));
 		child.addVariable(elementAttribute, elementTypeName);
-		String invoke = JavaUtils.callJavaOperation(elementAttribute, dep, op, child, null);
-		ret.appendCodeText(invoke);
+		JavaCode invoke = JavaUtils.callJavaOperation(elementAttribute, dep, op, child, null);
+		JavaUtils.append(ret, invoke);
 		JavaUtils.append(ret, (JavaCode)listType.appendToList(returnValue, elementAttribute, child));
 		ret.appendCodeText("\n}\n");
 

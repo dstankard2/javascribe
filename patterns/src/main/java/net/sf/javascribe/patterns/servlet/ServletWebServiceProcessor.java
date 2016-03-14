@@ -36,6 +36,7 @@ public class ServletWebServiceProcessor {
 
 	private static final Logger log = Logger.getLogger(ServletWebServiceProcessor.class);
 
+	// TODO: Clean all this up
 	@ProcessorMethod(componentClass=ServletWebService.class)
 	public void process(ServletWebService webService,ProcessorContext ctx) throws JavascribeException {
 		Java5SourceFile src = null;
@@ -137,28 +138,32 @@ public class ServletWebServiceProcessor {
 
 			// Read user session data if it is there.
 			String sessionDataType = webService.getSessionDataType();
+			boolean hasSessionData = false;
+			String sessionDataAttribute = null;
 			if (sessionDataType.trim().length()>0) {
 				VariableType vtype = ctx.getTypes().getType(sessionDataType);
 				if (vtype==null) throw new JavascribeException("Could not find session data type '"+sessionDataType+"'");
 				if (!(vtype instanceof JavaBeanType)) throw new JavascribeException("Type '"+sessionDataType+"' is not a data object");
 				JavaBeanType dataObjectType = (JavaBeanType)vtype;
-				String sessionDataVar = JavascribeUtils.getLowerCamelName(sessionDataType);
-				JsomUtils.merge(methodCode, (JavaCode)dataObjectType.declare(sessionDataVar,execCtx));
+				sessionDataAttribute = JavascribeUtils.getLowerCamelName(sessionDataType);
+				//String sessionDataVar = JavascribeUtils.getLowerCamelName(sessionDataType);
+				JsomUtils.merge(methodCode, (JavaCode)dataObjectType.declare(sessionDataAttribute,execCtx));
 				methodCode.addImport(dataObjectType.getImport());
 				methodCode.append("if (request.getSession(false)!=null) {\n");
-				methodCode.append(sessionDataVar+" = ("+dataObjectType.getClassName()+")request.getSession(false).getAttribute(\""+sessionDataVar+"\");\n");
+				methodCode.append(sessionDataAttribute+" = ("+dataObjectType.getClassName()+")request.getSession(false).getAttribute(\""+sessionDataAttribute+"\");\n");
 				methodCode.append("}\n");
-				execCtx.addVariable(sessionDataVar, sessionDataType);
+				execCtx.addVariable(sessionDataAttribute, sessionDataType);
+				hasSessionData = true;
 			}
 
 			// Call service layer
 			String resultName = null;
-			String serviceResultType = null; // For putting into the web service variable type.
+			//String serviceResultTypeName = null; // For putting into the web service variable type.
+			JavaBeanType serviceResultType = null;
 			if (webService.getService().trim().length()>0) {
 				String objName = JavascribeUtils.getObjectName(webService.getService());
 				String ruleName = JavascribeUtils.getRuleName(webService.getService());
 				String objInst = JavascribeUtils.getLowerCamelName(objName);
-				JavaBeanType resultType = null;
 
 				JavaServiceObjectType obj = (JavaServiceObjectType)ctx.getType(objName);
 				if (obj==null) {
@@ -175,12 +180,14 @@ public class ServletWebServiceProcessor {
 				JsomUtils.merge(methodCode, (JavaCode)obj.instantiate(objInst,null));
 				resultName = op.getReturnType();
 				if (resultName!=null) {
-					resultType = (JavaBeanType)ctx.getTypes().getType(resultName);
-					JsomUtils.merge(methodCode, (JavaCode)resultType.declare("serviceResult",execCtx));
+					serviceResultType = (JavaBeanType)ctx.getTypes().getType(resultName);
+					JsomUtils.merge(methodCode, (JavaCode)serviceResultType.declare("serviceResult",execCtx));
 					execCtx.addVariable("serviceResult", resultName);
-					methodCode.append(JavaUtils.callJavaOperation("serviceResult", objInst, op, execCtx, null));
+					JsomUtils.merge(methodCode,JavaUtils.callJavaOperation("serviceResult", objInst, op, execCtx, null));
+					//methodCode.append(JavaUtils.callJavaOperation("serviceResult", objInst, op, execCtx, null));
 				} else {
-					methodCode.append(JavaUtils.callJavaOperation(null, objInst, op, execCtx, null));
+					JsomUtils.merge(methodCode, JavaUtils.callJavaOperation(null, objInst, op, execCtx, null));
+					//methodCode.append(JavaUtils.callJavaOperation(null, objInst, op, execCtx, null));
 				}
 			}
 
@@ -199,6 +206,7 @@ public class ServletWebServiceProcessor {
 				if ((returnValue==null) || (returnValue.trim().length()==0)) {
 					methodCode.append("out.print(\"{ \"status\" : \"0\" }\"");
 				} else {
+					String webResultType = null;
 					methodCode.addImport("org.codehaus.jackson.JsonFactory");
 					methodCode.addImport("org.codehaus.jackson.map.ObjectMapper");
 					methodCode.addImport("org.codehaus.jackson.JsonGenerator");
@@ -206,9 +214,13 @@ public class ServletWebServiceProcessor {
 					methodCode.append("JsonGenerator generator = factory.createJsonGenerator(out);\n");
 					methodCode.append("generator.writeObject(");
 					ValueExpression expr = ExpressionUtil.buildValueExpression(returnValue, "object", execCtx);
-					serviceResultType = expr.getVarReferenceExpressionEntry(0).getType().getName();
+					webResultType = expr.getVarReferenceExpressionEntry(0).getType().getName();
 					methodCode.append(ExpressionUtil.getEvaluatedExpression(expr, execCtx));
 					methodCode.append(");\ngenerator.flush();\n");
+					//AttributeHolder holder = (AttributeHolder)execCtx.getTypeForVariable(returnValue);
+					if (serviceResultType.getAttributeType(sessionDataAttribute)!=null) {
+						methodCode.append("request.getSession(true).setAttribute(\""+sessionDataAttribute+"\","+serviceResultType.getCodeToRetrieveAttribute("serviceResult", sessionDataAttribute, "object", execCtx)+");\n");
+					}
 				}
 
 				methodCode.append("out.flush();\n");
@@ -223,7 +235,7 @@ public class ServletWebServiceProcessor {
 			methodCode.append("}\n}\n// End of WebService "+webService.getPath()+'\n');
 
 			// Add web service type.
-			addType(webService,serviceResultType,type);
+			addType(webService,resultName,type);
 
 			modifyWebXml(ctx,webService,servicePkg,serviceClassName);
 		} catch(CodeGenerationException e) {

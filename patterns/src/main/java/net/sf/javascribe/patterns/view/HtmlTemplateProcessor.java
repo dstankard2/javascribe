@@ -74,7 +74,6 @@ public class HtmlTemplateProcessor {
 		CodeExecutionContext execCtx = new CodeExecutionContext(null,ctx.getTypes());
 		TempPars parser = new TempPars(text,ctx,obj,fn);
 		String code = parser.generateJavascriptCode(execCtx);
-		//String code = TemplateParser.generateJavascriptCode(text, ctx, obj, fn, execCtx);
 		StringBuilder s = src.getSource();
 		s.append(obj+'.'+name+" = function(");
 		boolean first = true;

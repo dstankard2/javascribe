@@ -9,7 +9,9 @@ import net.sf.javascribe.api.AttributeHolder;
 import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.ProcessorContext;
+import net.sf.javascribe.api.VariableType;
 import net.sf.javascribe.api.annotation.Scannable;
+import net.sf.javascribe.api.types.ListType;
 import net.sf.javascribe.langsupport.java.JavaCode;
 import net.sf.javascribe.langsupport.java.JavaOperation;
 import net.sf.javascribe.langsupport.java.JavaServiceObjectType;
@@ -100,7 +102,7 @@ public class DependencyScanTranslator implements FieldTranslator {
 		return new JsomJavaCode(ret);
 	}
 	
-	private boolean tryServiceObject(JavaServiceObjectType srv,String targetVarName,String field,String ref,Java5CodeSnippet code,CodeExecutionContext execCtx) {
+	private boolean tryServiceObject(JavaServiceObjectType srv,String targetVarName,String field,String ref,Java5CodeSnippet code,CodeExecutionContext execCtx) throws JavascribeException {
 		String name = "get"+Character.toUpperCase(field.charAt(0))+field.substring(1);
 		AttributeHolder targetType = null;
 		
@@ -110,7 +112,7 @@ public class DependencyScanTranslator implements FieldTranslator {
 			if (!op.getName().equals(name)) {
 				continue;
 			}
-			if (attemptInvoke(op,targetVarName,field,targetType,execCtx,ref,code)) {
+			if (attemptInvoke(op,targetVarName,field,targetType.getAttributeType(field),targetType,execCtx,ref,code)) {
 				return true;
 			}
 		}
@@ -118,12 +120,30 @@ public class DependencyScanTranslator implements FieldTranslator {
 		return false;
 	}
 	
-	private boolean attemptInvoke(JavaOperation op,String targetVarName,String attribName,AttributeHolder targetType,CodeExecutionContext execCtx,String ref,Java5CodeSnippet code) {
-		String result = null;
+	private boolean attemptInvoke(JavaOperation op,String targetVarName,String attribName,String attribTypeName,AttributeHolder targetType,CodeExecutionContext execCtx,String ref,Java5CodeSnippet code) {
 		
 		try {
-			result = JavaUtils.callJavaOperation(null, ref, op, execCtx, null,false).trim();
-			String c = targetType.getCodeToSetAttribute(targetVarName, attribName, result.trim(), execCtx).trim();
+			VariableType attribType = execCtx.getType(attribTypeName);
+			if (execCtx.getTypeForVariable(attribName)==null) {
+				try {
+					if (attribTypeName.startsWith("list/")) {
+						ListType l = (ListType)attribType;
+						JsomUtils.merge(code,(JavaCode)l.declare(attribName, attribTypeName.substring(5), execCtx));
+					} else {
+						JsomUtils.merge(code, (JavaCode)attribType.declare(attribName, execCtx));
+					}
+					execCtx.addVariable(attribName, attribTypeName);
+				} catch(CodeGenerationException e) {
+					throw new JavascribeException("Internal error",e);
+				}
+			}
+			JavaCode result = JavaUtils.callJavaOperation(attribName, ref, op, execCtx, null,false);
+			try {
+				JsomUtils.merge(code, result);
+			} catch(CodeGenerationException e) {
+				throw new JavascribeException("Couldn't invoke method",e);
+			}
+			String c = targetType.getCodeToSetAttribute(targetVarName, attribName, attribName, execCtx).trim();
 			code.append(c+";\n");
 		} catch(JavascribeException e) {
 			return false;

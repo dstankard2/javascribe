@@ -94,6 +94,8 @@ public class JavascribeUtils {
 		return ret;
 	}
 	
+	// This method doesn't really provide a complete solution for Java.
+	@Deprecated
 	public static ValueExpression findParameterValue(String paramName,String paramTypeName,CodeExecutionContext execCtx,Map<String,String> explicitParams) throws JavascribeException {
 		if ((explicitParams!=null) && (explicitParams.containsKey(paramName))) {
 			log.debug("Found value for parameter "+paramName+" as "+explicitParams.get(paramName));

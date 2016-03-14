@@ -4,9 +4,10 @@ import java.util.HashMap;
 import java.util.List;
 
 import net.sf.javascribe.api.CodeExecutionContext;
-import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.JavascribeUtils;
+import net.sf.javascribe.api.ProcessorContext;
+import net.sf.javascribe.langsupport.java.JavaCode;
 import net.sf.javascribe.langsupport.java.JavaOperation;
 import net.sf.javascribe.langsupport.java.JavaServiceObjectType;
 import net.sf.javascribe.langsupport.java.JavaUtils;
@@ -75,9 +76,8 @@ public class CallBusinessRuleRenderer implements ServiceOperationRenderer {
 					}
 				}
 			}
-			Java5CodeSnippet code = new Java5CodeSnippet();
-			code.append(JavaUtils.callJavaOperation(res, varName, operation, execCtx, explicitParams));
-			ret.merge(code);
+			JavaCode code = JavaUtils.callJavaOperation(res, varName, operation, execCtx, explicitParams);
+			JsomUtils.merge(ret, code);
 		} catch(CodeGenerationException e) {
 			throw new JavascribeException("JSOM exception rendering a business rule call",e);
 		}

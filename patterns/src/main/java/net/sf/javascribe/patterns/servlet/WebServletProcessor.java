@@ -126,7 +126,8 @@ public class WebServletProcessor {
 				resultType = (JavaBeanType)ctx.getTypes().getType(resultName);
 				JsomUtils.merge(methodCode, (JavaCode)resultType.declare("serviceResult",execCtx));
 				execCtx.addVariable("serviceResult", resultName);
-				methodCode.append(JavaUtils.callJavaOperation("serviceResult", objInst, op, execCtx, null));
+				JsomUtils.merge(methodCode,JavaUtils.callJavaOperation("serviceResult", objInst, op, execCtx, null));
+				//methodCode.append(JavaUtils.callJavaOperation("serviceResult", objInst, op, execCtx, null));
 				List<String> attNames = resultType.getAttributeNames();
 				for(String a : attNames) {
 					methodCode.append("request.setAttribute(\""+a+"\",");
@@ -134,7 +135,8 @@ public class WebServletProcessor {
 					methodCode.append(");\n");
 				}
 			} else {
-				methodCode.append(JavaUtils.callJavaOperation(null, objInst, op, execCtx, null));
+				JsomUtils.merge(methodCode, JavaUtils.callJavaOperation(null, objInst, op, execCtx, null));
+				//methodCode.merge(JavaUtils.callJavaOperation(null, objInst, op, execCtx, null));
 			}
 		}
 		methodCode.append("boolean forwarded = false;\n");

@@ -5,10 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.javascribe.api.AttributeHolder;
 import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.api.ProcessorContext;
+import net.sf.javascribe.api.VariableType;
 import net.sf.javascribe.api.expressions.ExpressionUtil;
 import net.sf.javascribe.api.expressions.ValueExpression;
 
@@ -94,7 +96,7 @@ public class JavaUtils {
 	 * @return
 	 * @throws JavascribeException
 	 */
-	public static String callJavaOperation(String resultName,String objName,JavaOperation op,CodeExecutionContext execCtx,Map<String,String> explicitParams) throws JavascribeException {
+	public static JavaCode callJavaOperation(String resultName,String objName,JavaOperation op,CodeExecutionContext execCtx,Map<String,String> explicitParams) throws JavascribeException {
 		return callJavaOperation(resultName,objName,op,execCtx,explicitParams,true);
 	}
 
@@ -112,40 +114,85 @@ public class JavaUtils {
 	 * @return
 	 * @throws JavascribeException
 	 */
-	public static String callJavaOperation(String resultName,String objName,JavaOperation op,CodeExecutionContext execCtx,Map<String,String> explicitParams,boolean addSemicolon) throws JavascribeException {
-		StringBuilder build = new StringBuilder();
+	public static JavaCode callJavaOperation(String resultName,String objName,JavaOperation op,CodeExecutionContext execCtx,Map<String,String> explicitParams,boolean addSemicolon) throws JavascribeException {
+		JavaCode ret = new JavaCodeImpl();
+		JavaCode decl = new JavaCodeImpl();
+		JavaCode invoke = new JavaCodeImpl();
 		
 		log.debug("Building Java operation call for "+objName+"."+op.getName());
-		build.append(objName).append('.');
+		invoke.appendCodeText(objName+'.');
 		if (explicitParams==null) {
 			explicitParams = new HashMap<String,String>();
 		}
 
-		build.append(op.getName()+"(");
+		invoke.appendCodeText(op.getName()+"(");
 		List<String> paramNames = op.getParameterNames();
 		boolean first = true;
 		for(String p : paramNames) {
 			if (first) first = false;
-			else build.append(',');
+			else invoke.appendCodeText(",");
+			if (explicitParams.get(p)!=null) {
+				invoke.appendCodeText(explicitParams.get(p));
+			} else if (execCtx.getTypeForVariable(p)!=null) {
+				invoke.appendCodeText(p);
+			} else {
+				// Check attribute holders
+				List<String> vars = execCtx.getVariableNames();
+				// Check variables
+				boolean found = false;
+				for(String v : vars) {
+					VariableType type = execCtx.getTypeForVariable(v);
+					if (type instanceof AttributeHolder) {
+						AttributeHolder holder = (AttributeHolder)type;
+						if (holder.getAttributeType(p)!=null) {
+							log.debug("Found parameter "+p+" in attribute holder "+v);
+							String paramTypeName = holder.getAttributeType(p);
+							JavaVariableType paramType = (JavaVariableType)execCtx.getType(paramTypeName);
+							if (execCtx.getTypeForVariable(p)==null) {
+								JavaUtils.append(decl, (JavaCode)paramType.declare(p, execCtx));
+								execCtx.addVariable(p, paramTypeName);
+							}
+							decl.appendCodeText("if ("+v+"!=null) {\n");
+							decl.appendCodeText(p+" = ");
+							decl.appendCodeText(holder.getCodeToRetrieveAttribute(v, p, paramTypeName, execCtx));
+							decl.appendCodeText(";}\n");
+							invoke.appendCodeText(p);
+							found = true;
+							break;
+						}
+					}
+				}
+				if (!found) {
+					throw new JavascribeException("Couldn't find parameter '"+p+"' in current execution context");
+				}
+				
+			}
+
+					/*
+			//JavaCode p = findParameter(p,execCtx,explicitParams);
 			ValueExpression expr = JavascribeUtils.findParameterValue(p,op.getParameterTypes().get(p),execCtx,explicitParams);
 			if (expr==null) {
 				throw new JavascribeException("Error calling operation "+objName+"."+op.getName()+": Could not find parameter '"+p+"'");
 			}
 			build.append(ExpressionUtil.getEvaluatedExpression(expr, execCtx));
+			*/
 		}
-		build.append(")");
+		invoke.appendCodeText(")");
 		if ((resultName!=null) && (resultName.trim().length()>0)) {
-			ValueExpression expr = ExpressionUtil.buildExpressionFromCode(build.toString(),op.getReturnType());
-			build = new StringBuilder();
-			build.append(ExpressionUtil.evaluateSetExpression(resultName, expr, execCtx));
+			ValueExpression expr = ExpressionUtil.buildExpressionFromCode(invoke.getCodeText(),op.getReturnType());
+			invoke = new JavaCodeImpl();
+			invoke.appendCodeText(ExpressionUtil.evaluateSetExpression(resultName, expr, execCtx));
+			//build.append(ExpressionUtil.evaluateSetExpression(resultName, expr, execCtx));
 		}
 		if (addSemicolon) {
-			build.append(';');
+			invoke.appendCodeText(";");
 		}
-		build.append('\n');
+		invoke.appendCodeText("\n");
+		JavaUtils.append(decl, invoke);
+		JavaUtils.append(ret, decl);
 
-		return build.toString();
+		return ret;
 	}
-
+	
 }
 

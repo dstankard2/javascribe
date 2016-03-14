@@ -142,7 +142,7 @@ public class ScheduledJobProcessor {
 				if ((job.getParams()!=null) && (job.getParams().trim().length()>0)) {
 					params = JavascribeUtils.readParameters(ctx, job.getParams());
 				}
-				code.append(JavaUtils.callJavaOperation(null, objInst, op, execCtx, params));
+				JsomUtils.merge(code, JavaUtils.callJavaOperation(null, objInst, op, execCtx, params));
 			} catch(CodeGenerationException e) {
 				throw new JavascribeException("JSOM Exception while processing scheduled job",e);
 			}

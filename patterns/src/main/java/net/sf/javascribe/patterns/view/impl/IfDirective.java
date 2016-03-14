@@ -30,7 +30,7 @@ public class IfDirective extends AttributeDirectiveBase {
 		if (result.getErrorMessage()!=null) {
 			throw new JavascribeException(result.getErrorMessage());
 		}
-		String temp = result.getResult().toString();
+		//String temp = result.getResult().toString();
 		String finalCond = result.getResult().toString();
 
 		String boolVar = ctx.newVarName("_b", "boolean", existingCtx);

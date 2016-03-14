@@ -8,6 +8,7 @@ import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.types.ListType;
 import net.sf.javascribe.langsupport.java.ExceptionType;
 import net.sf.javascribe.langsupport.java.JavaCode;
+import net.sf.javascribe.langsupport.java.JavaCodeImpl;
 import net.sf.javascribe.langsupport.java.JavaVariableType;
 import net.sf.javascribe.langsupport.java.JavaVariableTypeImpl;
 import net.sf.javascribe.langsupport.java.jsom.JavascribeJavaCodeSnippet;
@@ -163,6 +164,20 @@ public class WebUtils {
 		}
 		execCtx.addVariable(name, typeName);
 		code.append("request.setAttribute(\"input_"+name+"\","+name+");\n");
+	}
+	
+	public static JavaCode getSession(String requestVar,String sessionVar,CodeExecutionContext execCtx) {
+		JavaCodeImpl ret = new JavaCodeImpl();
+		
+		
+		return ret;
+	}
+	
+	public static JavaCode getVariableFromSession(String session,String variable,CodeExecutionContext execCtx) {
+		JavaCodeImpl ret = new JavaCodeImpl();
+		
+		
+		return ret;
 	}
 	
 }
