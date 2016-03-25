@@ -19,7 +19,7 @@ import net.sf.javascribe.patterns.view.impl.JavascriptEvaluator;
 import org.jsoup.nodes.Attribute;
 import org.jsoup.nodes.Element;
 
-public class ElPa implements DirectiveContext {
+public class ElementParser implements DirectiveContext {
 	Map<String,ElementDirective> elementDirectives = null;
 	List<AttributeDirective> attributeDirectives = null;
 
@@ -34,7 +34,7 @@ public class ElPa implements DirectiveContext {
 	String templateObj = null;
 	JavascriptFunctionType function = null;
 	List<String> previousEltVars = null;
-	TempPars caller = null;
+	TemplateParser caller = null;
 
 	String eltVar = null;
 
@@ -51,7 +51,9 @@ public class ElPa implements DirectiveContext {
 		return eltVar;
 	}
 	
-	public ElPa(Element elt,ProcessorContext ctx,String containerVar,String templateObj,JavascriptFunctionType fn,List<String> previousElementVars, TempPars caller) {
+	public ElementParser(Element elt,ProcessorContext ctx,String containerVar,String templateObj,JavascriptFunctionType fn,List<String> previousElementVars, TemplateParser caller) throws JavascribeException {
+		attributeDirectives = DirectiveUtils.getAttributeDirectives(ctx);
+		elementDirectives = DirectiveUtils.getElementDirectives(ctx);
 		this.elt = elt;
 		this.ctx = ctx;
 		this.containerVar =containerVar;
@@ -59,15 +61,16 @@ public class ElPa implements DirectiveContext {
 		this.function = fn;
 		this.previousEltVars = previousElementVars;
 		this.caller = caller;
+		isTemplateCall = elt.nodeName().indexOf('.')>0;
+		isElementDirective = elementDirectives.get(elt.nodeName())!=null;
+	}
+	
+	public boolean isDomElement() {
+		if (isElementDirective) return false;
+		return true;
 	}
 
 	public void parseElement(CodeExecutionContext execCtx) throws JavascribeException {
-		attributeDirectives = DirectiveUtils.getAttributeDirectives(ctx);
-		elementDirectives = DirectiveUtils.getElementDirectives(ctx);
-
-		isTemplateCall = elt.nodeName().indexOf('.')>0;
-		isElementDirective = elementDirectives.get(elt.nodeName())!=null;
-		
 		for(Attribute att : elt.attributes().asList()) {
 			String key = att.getKey();
 			String val = att.getValue();
@@ -129,46 +132,6 @@ public class ElPa implements DirectiveContext {
 				}
 			}
 		}
-		/*
-		if (attributeDirectives.size()>0) {
-			AttributeDirective next = attributeDirectives.get(0);
-			attributeDirectives.remove(0);
-			if ((!elementCreated) && (next.getPriority()>=3) && (!isTemplateCall)) {
-				elementCreated = true;
-				code.append(eltVar+" = "+DirectiveUtils.DOCUMENT_REF+
-						".createElement('"+elt.nodeName()+"');\n");
-				code.append(eltVar+"._elt = '"+eltVar+"';\n");
-			}
-			String att = next.getAttributeName();
-			if (templateAttributes.get(att)!=null) {
-				next.generateCode(this);
-			} else {
-				continueParsing(execCtx);
-			}
-		} else {
-			// Create element if necessary
-			if ((!elementCreated) && (!isTemplateCall)) {
-				code.append(eltVar+" = "+DirectiveUtils.DOCUMENT_REF+
-						".createElement('"+elt.nodeName()+"');\n");
-				code.append(eltVar+"._elt = '"+eltVar+"';\n");
-			}
-			
-			// Element directive or template call or element
-			if (isTemplateCall) {
-				code.append(processTemplateCall(elt.nodeName(),execCtx,this));
-				code.append(eltVar+"._elt = '"+eltVar+"';\n");
-				code.append(containerVar+".appendChild("+eltVar+");\n");
-			} else {
-				addDomProperties(execCtx);
-				code.append(containerVar+".appendChild("+eltVar+");\n");
-				// Process children
-				if ((elt.childNodes()!=null) && (elt.childNodes().size()>0)) {
-					String append = caller.processChildNodeList(elt.childNodes(), eltVar, execCtx);
-					code.append(append);
-				}
-			}
-		}
-			*/
 		contexts.remove(contexts.size()-1);
 	}
 	

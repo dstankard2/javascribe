@@ -36,12 +36,6 @@ public class BindingsProcessor {
 		JavascriptSourceFile src = JavascriptUtils.getSourceFile(ctx);
 		PageType type = PageUtils.getPageType(ctx, comp.getPageName());
 
-		if (type.getAttributeType("controller")==null) {
-			// TODO: When it begins to matter and make sense, add JS_Controller type.
-			type.addAttribute("controller", "Controller");
-			src.getSource().append(comp.getPageName()+".controller = new JSController();\n");
-		}
-		
 		StringBuilder init = PageUtils.getInitFunction(ctx, comp.getPageName());
 
 		Map<String,ElementBinderEntry> binders = BinderUtils.getElementBinders(ctx);
@@ -124,9 +118,9 @@ public class BindingsProcessor {
 			throw new JavascribeException("Generic binding requires a target");
 		}
 		if (type.hasOperation(target)) {
-			init.append("this.controller.addEventListener(\""+binding.getEvent()+"\",this."+target+");\n");
+			init.append("this.event(\""+binding.getEvent()+"\",this."+target+");\n");
 		} else {
-			init.append("this.controller.addEventListener(\""+binding.getEvent()+"\","+target+");\n");
+			init.append("this.event(\""+binding.getEvent()+"\","+target+");\n");
 		}
 	}
 	

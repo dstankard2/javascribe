@@ -80,7 +80,7 @@ public class PageNavigationProcessor {
 				if (first) first = false;
 				else src.getSource().append("else ");
 				src.getSource().append("if (temp=='"+p.getName()+"') {\n");
-				src.getSource().append(p.getName()+".controller.dispatch('"+p.getOnHide()+"'); }\n");
+				src.getSource().append(p.getName()+".event('"+p.getOnHide()+"'); }\n");
 			}
 		}
 		
@@ -121,7 +121,7 @@ public class PageNavigationProcessor {
 			}
 			showPageCode.append("}\n");
 			if (p.getOnShow().trim().length()>0) {
-				showPageCode.append(p.getName()+".controller.dispatch('"+p.getOnShow()+"');\n");
+				showPageCode.append(p.getName()+".event('"+p.getOnShow()+"');\n");
 			}
 			showPageCode.append("}\n");
 		}
@@ -141,7 +141,7 @@ public class PageNavigationProcessor {
 				if (first) first = false;
 				else refreshPageCode.append("else ");
 				refreshPageCode.append("if (this.currentPage=='"+p.getName()+"') {\n");
-				refreshPageCode.append(p.getName()+".controller.dispatch('"+p.getOnRefresh()+"');\n");
+				refreshPageCode.append(p.getName()+".event('"+p.getOnRefresh()+"');\n");
 				refreshPageCode.append("}\n");
 			}
 		}

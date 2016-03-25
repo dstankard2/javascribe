@@ -15,13 +15,13 @@ import org.jsoup.nodes.Node;
 import org.jsoup.nodes.TextNode;
 import org.jsoup.parser.Parser;
 
-public class TempPars {
+public class TemplateParser {
 	String template;
 	ProcessorContext ctx;
 	String obj;
 	JavascriptFunctionType fn;
 	
-	public TempPars(String template,ProcessorContext ctx,String obj,JavascriptFunctionType fn) {
+	public TemplateParser(String template,ProcessorContext ctx,String obj,JavascriptFunctionType fn) {
 		this.template = template;
 		this.ctx = ctx;
 		this.obj = obj;
@@ -33,21 +33,42 @@ public class TempPars {
 		Document doc = Jsoup.parse(template.trim(), "//", Parser.xmlParser());
 
 		List<Node> nodeList = doc.childNodes();
-		if (nodeList.size()>1) {
-			throw new JavascribeException("TemplateParser doesn't support a template with multiple HTML elements at the root.  Perhaps use a container 'div' element");
-		}
+		List<ElementParser> rootParsers = new ArrayList<ElementParser>();
 
 		b.append("var "+DirectiveUtils.DOCUMENT_REF+" = document;\n");
 		String retVar = DirectiveUtils.TEMPLATE_ROOT_ELEMENT_REF;
 		b.append("var "+retVar+" = document.createElement('div');\n");
 		execCtx.addVariable(retVar, "DOMElement");
-		b.append(processChildNodeList(nodeList,retVar,execCtx));
+
+		boolean hasElement = false;
+		for(Node node : nodeList) {
+			if (node instanceof Element) {
+				ElementParser p = new ElementParser((Element)node,ctx,retVar,obj,fn,new ArrayList<String>(),this);
+				if ((p.isDomElement()) && (hasElement)) {
+					throw new JavascribeException("A HTML template can only have one element at the root.");
+				}
+				if (p.isDomElement()) {
+					hasElement = true;
+				}
+				rootParsers.add(p);
+			} else if (node instanceof TextNode) {
+				String text = ((TextNode)node).getWholeText();
+				if (text.trim().length()>0) {
+					throw new JavascribeException("A HTML template may not have text in the DOM root");
+				}
+			}
+		}
+		
+		for(ElementParser p : rootParsers) {
+			p.parseElement(execCtx);
+			b.append(p.getElementCode());
+		}
 
 		b.append("return "+retVar+".childNodes[0];\n");
 		
 		return b.toString();
 	}
-
+	
 	public String processChildNodeList(List<Node> nodeList,String containerVar,CodeExecutionContext execCtx) throws JavascribeException {
 		StringBuilder b = new StringBuilder();
 		List<String> children = new ArrayList<String>();
@@ -71,7 +92,7 @@ public class TempPars {
 		
 		if (node instanceof Element) {
 			Element elt = (Element)node;
-			ElPa parser = new ElPa(elt,ctx,containerVar,obj,fn,previousEltVars,this);
+			ElementParser parser = new ElementParser(elt,ctx,containerVar,obj,fn,previousEltVars,this);
 			parser.parseElement(execCtx);
 			ret = parser.getElementCode();
 			String var = parser.getEltVar();

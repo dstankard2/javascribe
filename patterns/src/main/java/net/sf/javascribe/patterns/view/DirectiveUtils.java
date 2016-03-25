@@ -307,6 +307,19 @@ public class DirectiveUtils {
 			"};\n" +
 			"}\n";
 	
+	public static void ensureJavascriptTemplatingUtilities(ProcessorContext ctx) throws JavascribeException {
+		JavascriptSourceFile ret = JavascriptUtils.getSourceFile(ctx);
+		String propName = "net.sf.javascribe.patterns.view.DirectiveUtils_Fn_"+ret.getPath();
+		
+		Object val = ctx.getObject(propName);
+		if (val==null) {
+			ctx.putObject(propName, Boolean.TRUE);
+			ret.getSource().append(INS_FUNC);
+			ret.getSource().append(REM_FUNC);
+		}
+	}
+
+	/*
 	public static JavascriptSourceFile getJavascriptFileWithTemplatingUtilities(ProcessorContext ctx) throws JavascribeException {
 		JavascriptSourceFile ret = JavascriptUtils.getSourceFile(ctx);
 		String propName = "net.sf.javascribe.patterns.view.DirectiveUtils_Fn_"+ret.getPath();
@@ -320,6 +333,7 @@ public class DirectiveUtils {
 		
 		return ret;
 	}
+	*/
 	
 	public static String newVarName(String baseName,String type,CodeExecutionContext execCtx) {
 		for(int i=0;i<100;i++) {

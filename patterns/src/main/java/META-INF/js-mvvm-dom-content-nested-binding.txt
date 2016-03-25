@@ -1,4 +1,4 @@
-this.controller.addEventListener('${lowerCamelModelAttrib}Changed',
+this.event('${lowerCamelModelAttrib}Changed',
 	function() {
 		var val = null;
 		var elt = this.view.${element};

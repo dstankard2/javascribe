@@ -13,5 +13,5 @@ var ${eltVar}_model = function() {
 	${eltVar}.value = val;
 };
 ${eltVar}_model.bind(_page);
-_page.controller.addEventListener('${controllerEvent}',${eltVar}_model,${eltVar});
+_page.event('${controllerEvent}',${eltVar}_model,${eltVar});
 ${eltVar}_model();

@@ -4,7 +4,7 @@ if (${holder}!=null) {
 this.model.${setter};
 }
 }.bind(${pageName});
-this.controller.addEventListener('${event}',
+this.event('${event}',
 	function() {
 		if (${holder}!=null) {
 			if (this.view.${element}.innerHTML != this.model.${getter}) {

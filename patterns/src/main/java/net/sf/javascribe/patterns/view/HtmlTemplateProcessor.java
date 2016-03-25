@@ -10,7 +10,9 @@ import net.sf.javascribe.api.annotation.Scannable;
 import net.sf.javascribe.langsupport.javascript.JavascriptBaseObjectType;
 import net.sf.javascribe.langsupport.javascript.JavascriptFunctionType;
 import net.sf.javascribe.langsupport.javascript.JavascriptObjectType;
+//import net.sf.javascribe.langsupport.javascript.JavascriptSourceFile;
 import net.sf.javascribe.langsupport.javascript.JavascriptSourceFile;
+import net.sf.javascribe.langsupport.javascript.JavascriptUtils;
 
 import org.apache.log4j.Logger;
 
@@ -44,7 +46,9 @@ public class HtmlTemplateProcessor {
 		
 		VariableType t = ctx.getType(obj);
 		JavascriptBaseObjectType jsType = null;
-		JavascriptSourceFile src = DirectiveUtils.getJavascriptFileWithTemplatingUtilities(ctx);
+		DirectiveUtils.ensureJavascriptTemplatingUtilities(ctx);
+		
+		JavascriptSourceFile src = JavascriptUtils.getSourceFile(ctx);
 		
 		if (t==null) {
 			src.getSource().append("var "+obj+" = {};\n");
@@ -72,7 +76,7 @@ public class HtmlTemplateProcessor {
 		fn.setReturnType("DOMElement");
 		
 		CodeExecutionContext execCtx = new CodeExecutionContext(null,ctx.getTypes());
-		TempPars parser = new TempPars(text,ctx,obj,fn);
+		TemplateParser parser = new TemplateParser(text,ctx,obj,fn);
 		String code = parser.generateJavascriptCode(execCtx);
 		StringBuilder s = src.getSource();
 		s.append(obj+'.'+name+" = function(");

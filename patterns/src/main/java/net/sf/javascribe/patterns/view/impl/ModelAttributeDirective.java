@@ -54,10 +54,6 @@ public class ModelAttributeDirective implements ElementDirective {
 		if (pageType.getAttributeType("_isTemplate")==null) {
 			PageUtils.ensureModel(ctx.getProcessorContext(), pageType);
 			PageModelType modelType = DirectiveUtils.getPageModelType(ctx);
-			
-			if (modelType.getAttributeType(name)!=null) {
-				throw new JavascribeException("Directive js-model-attribute tried to add attribute '"+name+"' to the model but it was already there.");
-			}
 
 			StringBuilder initCode = PageUtils.getInitFunction(ctx.getProcessorContext(), pageName);
 			PageModelProcessor.addModelAttribute(modelType, name, type, initCode, onChange, pageName);

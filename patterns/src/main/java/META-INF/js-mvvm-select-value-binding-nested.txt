@@ -2,7 +2,7 @@ document.getElementById('${element}').onchange=function() {
 	this.model.set${upperTargetName}(this.view.${element}.value);
 	this.controller.dispatch
 }.bind(${pageName});
-this.controller.addEventListener('${event}',
+this.event('${event}',
 	function() {
 		var sel = this.view.${element};
 		var value = ${targetFunc};

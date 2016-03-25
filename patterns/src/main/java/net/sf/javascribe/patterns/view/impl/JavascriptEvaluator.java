@@ -231,7 +231,10 @@ public class JavascriptEvaluator {
 			if (!ret.getRemaining().startsWith(':')) return null;
 			ret.getResult().append(':');
 			ret.getRemaining().skip(1);
-			r = readExpression(ret, null, null);
+			r = readExpression(ret, null, ",");
+			if (r==null) {
+				r = readExpression(ret, null, "}");
+			}
 			if ((r==null) || (r.getErrorMessage()!=null)) return r;
 			ret.merge(r, true);
 			ret.getRemaining().skipWs();
@@ -271,6 +274,7 @@ public class JavascriptEvaluator {
 					if (r.getErrorMessage()!=null) return r;
 					done = true;
 				}
+				else return null;
 			} else if (r.getErrorMessage()!=null) return r;
 			ret.merge(r, true);
 			ret.getRemaining().skipWs();

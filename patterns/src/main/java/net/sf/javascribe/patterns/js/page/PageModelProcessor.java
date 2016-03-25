@@ -22,10 +22,7 @@ public class PageModelProcessor {
 		}
 		
 		log.info("Processing model for page '"+model.getPageName()+"'");
-		
-//		JavascriptSourceFile src = JavascriptUtils.getSourceFile(ctx);
 
-//		StringBuilder code = src.getSource();
 		StringBuilder initCode = PageUtils.getInitFunction(ctx, model.getPageName());
 		String pageName = model.getPageName();
 		
@@ -52,11 +49,11 @@ public class PageModelProcessor {
 		
 		modelType.addAttribute(name, typeName);
 		String attr = "" + Character.toUpperCase(name.charAt(0)) + name.substring(1);
-		code.append(pageName).append(".model.").append(name).append(" = undefined;\n")
-				.append(pageName).append(".model.get").append(attr)
+		code.append("this.model.").append(name).append(" = undefined;\n")
+				.append("this.model.get").append(attr)
 				.append(" = function() {return this.").append(name).append(";}.bind("+pageName+".model);\n");
 
-		code.append(pageName).append(".model.set"+attr+" = function(val) {\n");
+		code.append("this.model.set"+attr+" = function(val) {\n");
 		if ((typeName.equals("integer")) || (typeName.equals("longint"))) {
 			code.append("if (isNaN(val)) val = undefined;\nelse val = Number(val);\n");
 		}
@@ -64,10 +61,10 @@ public class PageModelProcessor {
 		if ((onChange!=null) && (onChange.trim().length()>0)) {
 			String vals[] = onChange.split(",");
 			for(String v : vals) {
-				code.append(pageName+".controller.dispatch(\""+v+"\",{ oldValue : oldValue, value : this."+name+" });\n");
+				code.append(pageName+".event(\""+v+"\");\n");
 			}
 		}
-		code.append(pageName+".controller.dispatch(\""+name+"Changed\",{ oldValue : oldValue, value : this."+name+"});\n");
+		code.append(pageName+".event(\""+name+"Changed\");\n");
 		code.append("}.bind("+pageName+".model);\n");
 	}
 	

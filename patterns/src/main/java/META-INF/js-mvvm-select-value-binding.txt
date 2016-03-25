@@ -1,7 +1,7 @@
 this.view.${element}.onchange=function() {
 	this.model.set${upperTargetName}(this.view.${element}.value);
 }.bind(${pageName});
-this.controller.addEventListener('${event}',
+this.event('${event}',
 	function() {
 		var sel = this.view.${element};
 		var value = ${function};

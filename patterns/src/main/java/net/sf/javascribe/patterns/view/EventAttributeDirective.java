@@ -23,6 +23,11 @@ public class EventAttributeDirective extends AttributeDirectiveBase {
 		StringBuilder code = ctx.getCode();
 		String event = ctx.getTemplateAttributes().get("js-event");
 		CodeExecutionContext execCtx = ctx.getExecCtx();
+		String parent = ctx.getContainerVarName();
+		
+		if (parent.equals(DirectiveUtils.TEMPLATE_ROOT_ELEMENT_REF)) {
+			throw new JavascribeException("You may not use js-event on the root element of a template");
+		}
 		
 		String dispatcher = null;
 		if (execCtx.getVariableType(DirectiveUtils.PAGE_VAR)!=null) dispatcher = DirectiveUtils.PAGE_VAR;
@@ -65,5 +70,5 @@ public class EventAttributeDirective extends AttributeDirectiveBase {
 		code.append(fnVar+"();\n");
 	}
 	
-	
 }
+

@@ -6,63 +6,83 @@ function JSEvent(name,data) {
 
 function EventDispatcher() {
 	var _listeners = { };
+	
+	var _domListeners = {};
 
 	var _debug = false;
+
+	function _removeListeners(ele) {
+		if (_domListeners[ele]) {
+			var objs = _domListeners[ele];
+			var num = 0;
+			for(var i=0;i<objs.length;i++) {
+				var obj = objs[i];
+				_removeListener(obj.event,obj.fn);
+				num++;
+			}
+			_domListeners[ele] = undefined;
+			//console.log('I removed '+num+' listeners associated with element '+ele._elt);
+		}
+	}
 	
-	var _domWatch = { };
+	function _removeListener(event,fn) {
+		var listeners = _listeners[event];
+		var i = listeners.indexOf(fn);
+		if (i>=0) {
+			listeners.splice(i,1);
+		}
+	}
 	
 	var _obs;
 	function _initObserver() {
 		if (_obs) return;
-
 		if (window.MutationObserver) {
-		    _obs = new MutationObserver(function (e) {
-		      if ((e[0].removedNodes) && (e[0].removedNodes.length)) {
-		        var l = e[0].removedNodes.length;
-		        for(var i=0;i<l;i++) {
-		          var node = e[0].removedNodes[i];
-		          if (_domWatch[node]) {
-		        	  if (_debug) console.log('A watched node has been removed - TODO: remove '+_domWatch[node].length+' listeners');
-		          }
-		        }
-		      }
-		    });
-		    _obs.observe(document.body, { childList: true });
+			_obs = new MutationObserver(function (e) {
+				for(var i=0;i<e.length;i++) {
+					var record = e[i];
+					if ((record.removedNodes) && (record.removedNodes.length)) {
+						var l = e[i].removedNodes;
+						for(var j=0;j<l.length;j++) {
+							var node = l[j];
+							if (node._elt) {
+								_removeListeners(node);
+							}
+						}
+					}
+				}
+			});
+			var config = {
+				attributes: true,
+				childList: true,
+				characterData: true,
+				subtree: true
+			};
+			//_obs.observe(document.body,config);
 		}
 	}
-	
-	var removeListener = function(fn) {
-		for(var k in listeners) {
-			var arr = listeners[k];
-			var i = arr.indexOf(fn);
-			if (i>=0) {
-				arr.splice(i,1);
-			}
-		}
-	}
-	
+
 	return {
-		// Adds the specified callback function as a listener to the specified event.
 		addEventListener: function(name,callback,domElement) {
 			_initObserver();
-			if (typeof(_listeners[name]) =='undefined') {
+			if (_listeners[name]==undefined) {
 				_listeners[name] = [];
 			}
 			var list = _listeners[name];
 			list.push(callback);
 			if (domElement) {
-				if (!_domWatch.hasOwnProperty(domElement)) {
-					_domWatch[domElement] = [ ];
+				var obj = {
+					fn: callback,
+					event: name
+				};
+				if (!_domListeners[domElement]) {
+					_domListeners[domElement] = [];
 				}
-				_domWatch[domElement].push(callback);
+				_domListeners[domElement].push(obj);
+				//console.log('I added an event listener contingent on element '+domElement._elt);
 			}
 		},
 		removeEventListener: function(callback) {
 			removeListener(fn);
-		},
-		clearBindings: function() {
-			_listeners = { };
-			_domWatch = { };
 		},
 		// Dispatches the given event name with the given data
 		dispatch: function(name,data) {
@@ -87,6 +107,7 @@ function EventDispatcher() {
 			_debug = value;
 		}
 	}
-		
+
+
 }
 

@@ -13,7 +13,6 @@ import net.sf.javascribe.api.annotation.ProcessorMethod;
 import net.sf.javascribe.api.annotation.Scannable;
 import net.sf.javascribe.langsupport.java.JavaBeanType;
 import net.sf.javascribe.langsupport.javascript.JavascriptBaseObjectType;
-import net.sf.javascribe.langsupport.javascript.JavascriptSourceFile;
 import net.sf.javascribe.langsupport.javascript.JavascriptUtils;
 import net.sf.javascribe.patterns.js.page.elements.BinderUtils;
 import net.sf.javascribe.patterns.servlet.SingleUrlService;
@@ -63,8 +62,7 @@ public class WsClientProcessor {
 		ctx.setLanguageSupport("Javascript");
 		
 		log.info("Processing WSClient on page '"+pageName+"': "+comp.getModule()+"."+comp.getService());
-		JavascriptSourceFile src = JavascriptUtils.getSourceFile(ctx);
-		StringBuilder code = src.getSource();
+		StringBuilder code = PageUtils.getInitFunction(ctx, pageName);
 		
 		PageType pageType = PageUtils.getPageType(ctx, pageName);
 		
@@ -75,8 +73,6 @@ public class WsClientProcessor {
 		PageUtils.ensureModel(ctx, pageType);
 		PageModelType modelType = PageUtils.getModelType(ctx, pageName);
 
-//		HashMap<String,String> modelAttributes = PageUtils.getModelAttributes(ctx, pageName);
-		
 		if (modelType==null) {
 			throw new JavascribeException("Page '"+pageName+"' is required to have a model.");
 		}
@@ -195,7 +191,7 @@ public class WsClientProcessor {
 			successFunc.append("this.model.set"+Character.toUpperCase(n.charAt(0))+n.substring(1)+"(data."+n+");\n");
 		}
 		if ((comp.getCompleteEvent()!=null) && (comp.getCompleteEvent().trim().length()>0)) {
-			successFunc.append(pageName+".controller.dispatch(\""+comp.getCompleteEvent()+"\");\n");
+			successFunc.append("this.eventDispatcher.dispatch(\""+comp.getCompleteEvent()+"\");\n");
 		}
 		successFunc.append("}.bind("+comp.getPageName()+")\n");
 		

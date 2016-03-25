@@ -26,11 +26,11 @@ public class PageUtils {
 	
 	public static void ensureModel(ProcessorContext ctx,PageType pageType) throws JavascribeException {
 		if (pageType.getAttributeType("model")==null) {
+			StringBuilder init = getInitFunction(ctx, pageType.getName());
 			PageModelType type = new PageModelType(pageType.getName());
 			ctx.getTypes().addType(type);
 			pageType.addAttribute("model", type.getName());
-			JavascriptSourceFile src = JavascriptUtils.getSourceFile(ctx);
-			src.getSource().append(pageType.getName()+".model = { };\n");
+			init.append("this.model = { };\n");
 		}
 	}
 	

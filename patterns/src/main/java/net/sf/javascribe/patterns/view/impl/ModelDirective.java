@@ -47,8 +47,22 @@ public class ModelDirective extends AttributeDirectiveBase {
 			} else {
 				params.put("changeEvent", "onchange");
 			}
-			String val = "${_page.model."+model+"}";
-			val = ExpressionUtil.evaluateValueExpression(val, "object", ctx.getExecCtx());
+			String expr = "${_page.model."+model+"}";
+			String val = null;
+			try {
+				val = ExpressionUtil.evaluateValueExpression(expr, "object", ctx.getExecCtx());
+			} catch(Exception e) { }
+			if (val==null) {
+				expr = "$"+DirectiveUtils.LOCAL_MODEL_VAR+".model."+model+"}";
+				try {
+					val = ExpressionUtil.evaluateValueExpression(expr, "object", ctx.getExecCtx());
+				} catch(Exception e) { }
+			}
+			if (val==null) {
+				throw new JavascribeException("Couldn't evaluate model reference '"+model+"'");
+			}
+			//String val = "${_page.model."+model+"}";
+			//val = ExpressionUtil.evaluateValueExpression(val, "object", ctx.getExecCtx());
 			params.put("getter", val);
 			changeEvent = ctx.getTemplateAttributes().get("js-onchange");
 			params.put("controllerEvent",DirectiveUtils.getEventForModelRef(model));

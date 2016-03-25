@@ -16,5 +16,5 @@ var ${fn} = function() {
 		}
 	}
 }.bind(_page);
-_page.controller.addEventListener('${controllerEvent}',${fn},${eltVar});
+_page.event('${controllerEvent}',${fn},${eltVar});
 ${fn}();

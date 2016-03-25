@@ -29,29 +29,29 @@ public class PageProcessor {
 
 		log.info("Processing page '"+page.getPageName()+"'");
 
+		String pageName = page.getPageName();
 		JavascriptSourceFile src = JavascriptUtils.getSourceFile(ctx);
-		src.getSource().append("var "+page.getPageName()+"={ };\n");
-		PageType type = new PageType(page.getPageName());
-		ctx.getTypes().addType(type);
+		src.getSource().append("var "+pageName+"={ };\n");
+		PageType pageType = new PageType(pageName);
+		ctx.getTypes().addType(pageType);
 		
-		StringBuilder init = PageUtils.getInitFunction(ctx, page.getPageName());
+		StringBuilder init = PageUtils.getInitFunction(ctx, pageName);
 		init.append("this.view = { };\n");
-		init.append("this.view.page = document.getElementById('"+page.getPageName()+"');\n");
+		init.append("this.view.page = document.getElementById('"+pageName+"');\n");
+		init.append("this.eventDispatcher = new EventDispatcher();\n");
+		pageType.addAttribute("eventDispatcher", "EventDispatcher");
+		init.append("this.event = function(event,callback,element) {this.eventDispatcher.event(event,callback,element);}.bind("+page.getPageName()+");\n");
+		//src.getSource().append(page.getPageName()+".controller = new EventDispatcher();\n");
+		//src.getSource().append(page.getPageName()+".event = function(event,callback,element) {this.controller.event(event,callback,element);}.bind("+page.getPageName()+");\n");
 		
-		type.addAttribute("controller", "Controller");
-		src.getSource().append(page.getPageName()+".controller = new EventDispatcher();\n");
-		src.getSource().append(page.getPageName()+".event = function(event,callback) {this.controller.event(event,callback);}.bind("+page.getPageName()+");\n");
-//				+ "if (callback) this.controller.addEventListener(event,callback);\n"
-//				+ "else this.controller.dispatch(event);\n}.bind("+page.getPageName()+");\n");
-		
-		JavascriptObjectType viewType = new JavascriptObjectType(page.getPageName()+"View");
-		type.addAttribute("view", page.getPageName()+"View");
+		JavascriptObjectType viewType = new JavascriptObjectType(pageName+"View");
+		pageType.addAttribute("view", pageName+"View");
 		ctx.getTypes().addType(viewType);
 		JavascriptFunctionType initFn = new JavascriptFunctionType("init");
-		type.addOperation(initFn);
-		ctx.addAttribute(page.getPageName(), page.getPageName());
+		pageType.addOperation(initFn);
+		ctx.addAttribute(pageName, pageName);
 
-		ctx.addComponent(new PageFinalizer(page.getPageName(),src.getPath()));
+		ctx.addComponent(new PageFinalizer(pageName,src.getPath()));
 	}
 	
 }

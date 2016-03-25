@@ -1,4 +1,4 @@
-this.controller.addEventListener('${event}',
+this.event('${event}',
 	function() {
 		this.view.${element}.className = ${function};
 	}.bind(${pageName})

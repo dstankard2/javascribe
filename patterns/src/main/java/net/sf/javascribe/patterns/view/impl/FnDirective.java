@@ -21,7 +21,7 @@ public class FnDirective implements ElementDirective {
 
 	@Override
 	public void generateCode(DirectiveContext ctx) throws JavascribeException {
-		String html = DirectiveUtils.unescapeXml(ctx.getInnerHtml());
+		String html = DirectiveUtils.unescapeXml(ctx.getInnerHtml()).trim();
 		String name = ctx.getDomAttributes().get("name");
 		String params = ctx.getDomAttributes().get("params");
 		String event = ctx.getDomAttributes().get("event");
@@ -59,6 +59,14 @@ public class FnDirective implements ElementDirective {
 		} else {
 			code.append("(function() {");
 		}
+		
+
+		if ((html.startsWith("<!--"))) {
+		//if ((html.startsWith("<!--")) && (html.endsWith("-->"))) {
+			html = html.substring(4).trim();
+			html = html.substring(0, html.length()-3).trim();
+		}
+		
 		JavascriptEvaluator eval = new JavascriptEvaluator(html,newCtx);
 		DirectiveUtils.populateImpliedVariables(eval);
 		JavascriptEvalResult result = eval.evalCodeBlock();

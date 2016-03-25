@@ -1,4 +1,4 @@
-this.controller.addEventListener('${event}',
+this.event('${event}',
 	function() {
 		var val;
 		var elt = this.view.${element};

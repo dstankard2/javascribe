@@ -14,6 +14,7 @@ import net.sf.javascribe.api.annotation.Scannable;
 import net.sf.javascribe.langsupport.javascript.JavascriptFunctionType;
 import net.sf.javascribe.langsupport.javascript.JavascriptObjectType;
 import net.sf.javascribe.langsupport.javascript.JavascriptSourceFile;
+import net.sf.javascribe.langsupport.javascript.JavascriptUtils;
 
 import org.apache.log4j.Logger;
 
@@ -48,7 +49,8 @@ public class TemplateSetProcessor {
 		JavascriptObjectType type = new JavascriptObjectType(obj);
 		ctx.addAttribute(obj, type.getName());
 		ctx.getTypes().addType(type);
-		JavascriptSourceFile src = DirectiveUtils.getJavascriptFileWithTemplatingUtilities(ctx);
+		DirectiveUtils.ensureJavascriptTemplatingUtilities(ctx);
+		JavascriptSourceFile src = JavascriptUtils.getSourceFile(ctx);
 
 		src.getSource().append("var "+obj+" = { };\n");
 
@@ -96,7 +98,7 @@ public class TemplateSetProcessor {
 				fn.addParam(a.getName(), a.getType());
 			}
 
-			TempPars p = new TempPars(tmpl.toString(),ctx,obj,fn);
+			TemplateParser p = new TemplateParser(tmpl.toString(),ctx,obj,fn);
 			String code = p.generateJavascriptCode(execCtx);
 			/*
 			String code = TemplateParser.generateJavascriptCode(tmpl.toString(), ctx, obj, fn, execCtx);

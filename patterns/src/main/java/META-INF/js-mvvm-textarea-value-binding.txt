@@ -2,7 +2,7 @@
 this.view.${element}.onchange=function() {
 	this.model.${setter};
 }.bind(${pageName});
-this.controller.addEventListener('${event}',
+this.event('${event}',
 	function() {
 		if (this.view.${element}.value != this.model.${getter}) {
 			this.view.${element}.value = this.model.${getter};

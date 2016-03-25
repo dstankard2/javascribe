@@ -22,30 +22,31 @@ public class PageFuncProcessor {
 
 		ctx.setLanguageSupport("Javascript");
 
-		if ((func.getPageName()==null) || (func.getPageName().trim().length()==0)) {
+		String pageName = func.getPageName();
+		if ((pageName==null) || (pageName.trim().length()==0)) {
 			throw new JavascribeException("Found an invalid page func with no pageName");
 		}
 		if ((func.getName()==null) || (func.getName().trim().length()==0)) {
 			throw new JavascribeException("Found an invalid page func with no name");
 		}
-		
-		log.info("Processing fn '"+func.getPageName()+"."+func.getName()+"'");
-		
-		JavascriptSourceFile src = JavascriptUtils.getSourceFile(ctx);
-		
-		src.getSource().append(func.getPageName()+'.'+func.getName()+" = function(");
-		if (func.getParams()!=null) {
-			src.getSource().append(func.getParams());
-		}
-		src.getSource().append(") {\n");
-		if ((func.getCode()!=null) && (func.getCode().getValue()!=null)) {
-			src.getSource().append(func.getCode().getValue().trim()).append('\n');
-		}
-		src.getSource().append("}.bind("+func.getPageName()+");\n");
-		PageType type = PageUtils.getPageType(ctx, func.getPageName());
+		PageType type = PageUtils.getPageType(ctx, pageName);
 		if (type==null) {
 			throw new JavascribeException("Tried to add a function to a page which was not found: '"+func.getPageName()+"'");
 		}
+		
+		log.info("Processing fn '"+pageName+"."+func.getName()+"'");
+		
+		StringBuilder src = PageUtils.getInitFunction(ctx, pageName);
+		
+		src.append("this."+func.getName()+" = function(");
+		if (func.getParams()!=null) {
+			src.append(func.getParams());
+		}
+		src.append(") {\n");
+		if ((func.getCode()!=null) && (func.getCode().getValue()!=null)) {
+			src.append(func.getCode().getValue().trim()).append('\n');
+		}
+		src.append("}.bind("+pageName+");\n");
 		JavascriptFunctionType fn = new JavascriptFunctionType(func.getName());
 
 		type.addOperation(fn);
