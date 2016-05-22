@@ -22,6 +22,7 @@ public interface DirectiveContext {
 	public String getContainerVarName();
 	public String newVarName(String baseName,String type,CodeExecutionContext execCtx);
 	public void continueRenderElement(CodeExecutionContext execCtx) throws JavascribeException;
+	public void continueRenderElement() throws JavascribeException;
 	public String getInnerHtml();
 	public String getTemplateObj();
 	public JavascriptFunctionType getFunction();

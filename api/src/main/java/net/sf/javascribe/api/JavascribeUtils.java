@@ -170,12 +170,12 @@ public class JavascribeUtils {
 			String attribName,attribType;
 			int i = att.indexOf(':');
 			if (i < 0) {
-				attribName = att;
-				attribType = ctx.getAttributeType(att);
+				attribName = att.trim();
+				attribType = ctx.getAttributeType(attribName);
 				
 				if (attribType==null) {
-					if (att.endsWith("String")) attribType = "string";
-					if (att.endsWith("Id")) attribType = "integer";
+					if (attribName.endsWith("String")) attribType = "string";
+					if (attribName.endsWith("Id")) attribType = "integer";
 				}
 				
 				if (attribType==null) 

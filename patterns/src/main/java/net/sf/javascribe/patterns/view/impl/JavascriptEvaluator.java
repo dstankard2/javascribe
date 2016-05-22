@@ -23,7 +23,7 @@ public class JavascriptEvaluator {
 	
 	public JavascriptEvalResult evalCodeBlock() {
 		JavascriptEvalResult ret = null;
-		JavascriptEvalResult res = JavascriptEvalResult.newInstance(code);
+		JavascriptEvalResult res = JavascriptEvalResult.newInstance(code.trim());
 		
 		ret = readCodeBlock(res, null);
 		if (ret==null) {

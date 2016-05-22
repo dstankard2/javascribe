@@ -127,9 +127,9 @@ public class DirectiveUtils {
 		}
 
 		if (changeEvent!=null) {
-			b.append(PAGE_VAR+".controller.dispatch('"+changeEvent+"');\n");
+			b.append(PAGE_VAR+".event('"+changeEvent+"');\n");
 		} else {
-			b.append(PAGE_VAR+".controller.dispatch('"+getEventForModelRef(modelRef)+"');\n");
+			b.append(PAGE_VAR+".event('"+getEventForModelRef(modelRef)+"');\n");
 		}
 		return b.toString();
 	}

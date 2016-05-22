@@ -1,6 +1,7 @@
 package net.sf.javascribe.patterns.view;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -27,6 +28,9 @@ public class ElementParser implements DirectiveContext {
 	Map<String,String> domAttributes = new HashMap<String,String>();
 	Map<String,String> templateAttributes = new HashMap<String,String>();
 
+	protected static final List<String> domElementProperties = Arrays.asList("nowrap");
+	protected static final List<String> domElementAttributes = Arrays.asList("colspan");
+	
 	ProcessorContext ctx = null;
 	Element elt = null;
 	String containerVar = null;
@@ -136,12 +140,24 @@ public class ElementParser implements DirectiveContext {
 	}
 	
 	private void addDomProperties(CodeExecutionContext execCtx) throws JavascribeException {
+		//List<String> propertyDomAttributes = new ArrayList<String>();
+		//propertyDomAttributes.add("colspan");
+		//propertyDomAttributes.add("nowrap");
+		
 		for(String s : domAttributes.keySet()) {
 		//for(String s : rctx.getDomAttributes().keySet()) {
 			if (s.equals("class")) continue;
 			String val = domAttributes.get(s);
 			//String val = rctx.getDomAttributes().get(s).trim();
 			if (s.equals("style")) code.append(addStyle(eltVar,val));
+			else if (domElementAttributes.indexOf(s)>=0) {
+				String ref = DirectiveUtils.parsePartialExpression(val, execCtx);
+				code.append(eltVar+"."+s+" = "+ref+";\n");
+			}
+			else if (domElementProperties.indexOf(s)>=0) {
+				String ref = DirectiveUtils.parsePartialExpression(val, execCtx);
+				code.append(eltVar+".setAttribute('"+s+"',"+ref+");\n");
+			}
 			else {
 				String ref = DirectiveUtils.parsePartialExpression(val, execCtx);
 				if (ref==null) {
@@ -305,6 +321,10 @@ public class ElementParser implements DirectiveContext {
 	@Override
 	public void continueRenderElement(CodeExecutionContext execCtx) throws JavascribeException {
 		this.continueParsing(execCtx);
+	}
+	@Override
+	public void continueRenderElement() throws JavascribeException {
+		this.continueParsing(this.getExecCtx());
 	}
 	@Override
 	public String getInnerHtml() {

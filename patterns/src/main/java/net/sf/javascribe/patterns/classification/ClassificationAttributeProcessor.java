@@ -55,7 +55,9 @@ public class ClassificationAttributeProcessor {
 		String className = null;
 		JavascribeVariableTypeResolver types = new JavascribeVariableTypeResolver(ctx);
 
-		if (classification==null) throw new JavascribeException("No classification named '"+name+"' found");
+		if (classification==null) {
+			throw new JavascribeException("No classification named '"+name+"' found");
+		}
 		if (processed.contains(name)) return;
 
 		pkg = JavaUtils.findPackageName(ctx, ctx.getRequiredProperty(Classification.CLASSIFICATION_PKG));
@@ -70,18 +72,23 @@ public class ClassificationAttributeProcessor {
 		JavaBeanType type = (JavaBeanType)ctx.getType(classification.getName());
 		
 		if ((classification.getExt()!=null) && (classification.getExt().trim().length()>0)) {
-			String t = classification.getExt();
-			if (!processed.contains(t)) {
-				processClassification(t,classifications.get(t),ctx,processed,classifications,classificationNames);
+			String ext = classification.getExt();
+			String[] supers = ext.split(",");
+			for(String t : supers) {
+				if (!processed.contains(t)) {
+					processClassification(t,classifications.get(t),ctx,processed,classifications,classificationNames);
+				}
+				JavaBeanType superType = (JavaBeanType)ctx.getTypes().getType(t);
+				src.getPublicClass().addImplementedInterface(superType.getClassName());
+				//src.getPublicClass().setSuperClass(superType.getClassName());
+				src.addImport(superType.getImport());
+				// Add attributes from supertype
+				List<String> superAtts = superType.getAttributeNames();
+				for(String s : superAtts) {
+					type.addAttribute(s, superType.getAttributeType(s));
+				}
 			}
-			// Add attributes from supertype
-			JavaBeanType superType = (JavaBeanType)ctx.getTypes().getType(classification.getExt());
-			src.getPublicClass().setSuperClass(superType.getClassName());
-			src.addImport(superType.getImport());
-			List<String> superAtts = superType.getAttributeNames();
-			for(String s : superAtts) {
-				type.addAttribute(s, superType.getAttributeType(s));
-			}
+			//String t = classification.getExt();
 		}
 		// Add attributes declared
 		List<Attribute> attributes = JavascribeUtils.readAttributes(ctx, classification.getAttributes());

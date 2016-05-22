@@ -33,6 +33,9 @@ public class CorePatternConstants {
 	// Depends on entity manager
 	public static final int PRIORITY_THREAD_LOCAL_TX_LOCATOR = 12500;
 	
+	// Depends on entity manager
+	public static final int PRIORITY_JPA_DAO_FACTORY = 13750;
+	
 	// depends on entity manager
 	public static final int PRIORITY_EJBQL_QUERY = 15000;
 	
@@ -45,9 +48,6 @@ public class CorePatternConstants {
 	// Comes after Data Object
 	public static final int PRIORITY_CLASSIFICATION_FINALIZER = PRIORITY_DATA_OBJECT+1;
 
-	// Depends on entity manager
-	public static final int PRIORITY_JPA_DAO_FACTORY = 15000;
-	
 	// Depends on DAO Factory
 	public static final int PRIORITY_UPDATE_ENTITY_RULE = 16250;
 

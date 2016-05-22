@@ -1,113 +1,141 @@
 
-function JSEvent(name,data) {
-	this.name = name;
-	this.data = data;
-}
-
 function EventDispatcher() {
 	var _listeners = { };
+
+	var _listenerEntries = EventDispatcher.$$listenerEntries;
 	
 	var _domListeners = {};
 
 	var _debug = false;
 
-	function _removeListeners(ele) {
-		if (_domListeners[ele]) {
-			var objs = _domListeners[ele];
-			var num = 0;
-			for(var i=0;i<objs.length;i++) {
-				var obj = objs[i];
-				_removeListener(obj.event,obj.fn);
-				num++;
+	function _removeListeners(node) {
+		var list = EventDispatcher.$$listenerEntries;
+		for(var i=0;i<list.length;i++) {
+			var entry = list[i];
+			if (node==entry.element) {
+				var dispatcher = entry.dispatcher;
+				var event = entry.event;
+				var callback = entry.callback;
+				dispatcher.removeListener(event,callback);
 			}
-			_domListeners[ele] = undefined;
-			//console.log('I removed '+num+' listeners associated with element '+ele._elt);
 		}
 	}
 	
-	function _removeListener(event,fn) {
-		var listeners = _listeners[event];
-		var i = listeners.indexOf(fn);
-		if (i>=0) {
-			listeners.splice(i,1);
+	function _removeListenersForAll(node) {
+		if (node.$$hasListeners) {
+			_removeListeners(node);
+			node.$$hasListeners = undefined;
+		}
+		var children = node.childNodes;
+		for(var i=0;i<children.length;i++) {
+			_removeListenersForAll(children[i]);
 		}
 	}
-	
-	var _obs;
+
+	function _checkRemove(elt) {
+		if (elt.$$remove) {
+			try {
+				elt.$$remove();
+				elt.$$remove = undefined;
+			} catch(err) {
+				console.error(err);
+			}
+		}
+		var children = elt.childNodes;
+		for(var i=0;i<children.length;i++) {
+			_checkRemove(children[i]);
+		}
+	}
+
 	function _initObserver() {
-		if (_obs) return;
-		if (window.MutationObserver) {
-			_obs = new MutationObserver(function (e) {
+		if (EventDispatcher.$$observer) return;
+		if (EventDispatcher.$$domListener) return;
+		var mutationObserver = window.MutationObserver ||
+			window.WebKitMutationObserver || 
+			window.MozMutationObserver;
+		if (mutationObserver) {
+			EventDispatcher.$$observer = new mutationObserver(function (e) {
 				for(var i=0;i<e.length;i++) {
 					var record = e[i];
 					if ((record.removedNodes) && (record.removedNodes.length)) {
-						var l = e[i].removedNodes;
+						var l = record.removedNodes;
 						for(var j=0;j<l.length;j++) {
 							var node = l[j];
-							if (node._elt) {
-								_removeListeners(node);
-							}
+							_removeListenersForAll(node);
+							_checkRemove(node);
 						}
 					}
 				}
+				if (_debug) {
+					console.log('Removed listeners '+EventDispatcher.$$listenerEntries.length);
+				}
 			});
 			var config = {
-				attributes: true,
 				childList: true,
-				characterData: true,
 				subtree: true
 			};
-			//_obs.observe(document.body,config);
+			EventDispatcher.$$observer.observe(document.body,config);
 		}
 	}
 
 	return {
 		addEventListener: function(name,callback,domElement) {
+			var inst = this;
+
 			_initObserver();
+
 			if (_listeners[name]==undefined) {
 				_listeners[name] = [];
 			}
 			var list = _listeners[name];
 			list.push(callback);
 			if (domElement) {
-				var obj = {
-					fn: callback,
-					event: name
+				var listeners = EventDispatcher.$$listenerEntries;
+				var listenerEntry = {
+					dispatcher: inst,
+					event: name,
+					callback: callback,
+					element: domElement
 				};
-				if (!_domListeners[domElement]) {
-					_domListeners[domElement] = [];
-				}
-				_domListeners[domElement].push(obj);
-				//console.log('I added an event listener contingent on element '+domElement._elt);
+				listeners.push(listenerEntry);
+				domElement.$$hasListeners = true;
 			}
 		},
-		removeEventListener: function(callback) {
-			removeListener(fn);
-		},
 		// Dispatches the given event name with the given data
-		dispatch: function(name,data) {
+		dispatch: function(name) {
 			if (typeof(_listeners[name]) =='undefined') return;
 			var list = _listeners[name];
 			var i;
 
-			if (data==null) data = { };
-			var event = new JSEvent(name,data);
 			for(i=0;i<list.length;i++) {
-				list[i](event);
+				list[i]();
 			}
 		},
 		event: function(name,fn,elt) {
 			if (fn) {
 				this.addEventListener(name,fn,elt);
 			} else {
-				this.dispatch(name,{});
+				this.dispatch(name);
 			}
 		},
 		debug: function(value) {
 			_debug = value;
+		},
+		removeListener: function(event,callback) {
+			var listeners = EventDispatcher.$$listenerEntries;
+			for(var i=0;i<listeners.length;i++) {
+				var entry = listeners[i];
+				if (entry.dispatcher==this) {
+					if ((entry.event==event) && (entry.callback==callback)) {
+						listeners.splice(i,1);
+						i--;
+					}
+				}
+			}
 		}
 	}
 
-
 }
+
+EventDispatcher.$$listenerEntries = [];
 
