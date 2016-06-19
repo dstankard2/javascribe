@@ -25,7 +25,7 @@ public class EventAttributeDirective extends AttributeDirectiveBase {
 		CodeExecutionContext execCtx = ctx.getExecCtx();
 		String parent = ctx.getContainerVarName();
 		
-		if (parent.equals(DirectiveUtils.TEMPLATE_ROOT_ELEMENT_REF)) {
+		if (parent==null) {
 			throw new JavascribeException("You may not use js-event on the root element of a template");
 		}
 		
@@ -43,6 +43,7 @@ public class EventAttributeDirective extends AttributeDirectiveBase {
 		String eltVar = ctx.getElementVarName();
 		code.append("var "+fnVar+" = function() {\n");
 		CodeExecutionContext newCtx = new CodeExecutionContext(execCtx);
+		code.append("if ("+containerVar+") {\n");
 		code.append("_rem("+containerVar+",'"+eltVar+"');\n");
 		code.append(eltVar+" = null;\n");
 		ctx.continueRenderElement(newCtx);
@@ -58,7 +59,7 @@ public class EventAttributeDirective extends AttributeDirectiveBase {
 		code.append("];\n");
 		code.append("if ("+eltVar+")");
 		code.append("window._ins("+containerVar+","+eltVar+","+elList+");\n");
-		
+		code.append("}\n");
 		code.append("};\n");
 		
 		StringTokenizer tok = new StringTokenizer(event,",");

@@ -59,7 +59,6 @@ public class DirectFieldTranslator implements FieldTranslator {
 						if (h.getAttributeType(f)!=null) {
 							remove.add(f);
 							fieldTranslated = true;
-							
 							if (checkNull) {
 								ret.appendCodeText("if ("+v+"!=null)");
 							}

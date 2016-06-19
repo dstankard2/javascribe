@@ -73,27 +73,6 @@ public class JavascriptEvaluator {
 		int end = 0;
 		int prevEnd = -1;
 
-		// debugging...
-		if ((pattern.equals("$varRef$($fnArgs$)")) 
-				&& (current.getRemaining().toString().startsWith("$event.stopPropagation()"))) {
-			System.out.println("hi");
-			/*
-		} else if (pattern.equals("$expr$&&$expr$") 
-				&& (current.getRemaining().toString().equals("(email) && i)"))) {
-			System.out.println("hi");
-		} else if ((pattern.equals("($expr$)")) 
-				&& (current.getRemaining().toString().equals("(email) && i)"))) {
-			System.out.println("hi");
-		} else if ((pattern.equals("$varRef$"))
-				&& (current.getRemaining().toString().equals("email) && i)"))
-				&& (ending.equals(")"))) {
-			System.out.println("hi");
-		} else if ((pattern.equals("$varRef$"))
-				&& (current.getRemaining().toString().equals("i)"))) {
-			System.out.println("hi");
-			*/
-		}
-		
 		ret.getRemaining().skipWs();
 		int i = pattern.indexOf('$');
 		while(i>=0) {
@@ -202,11 +181,25 @@ public class JavascriptEvaluator {
 		else if (name.equals("expr")) ret = readExpression(current,startIgnore,ending);
 		else if (name.equals("objDef")) ret = readObjDef(current);
 		else if (name.equals("arrayDef")) ret = readArrayDef(current);
+		else if (name.equals("comment")) ret = readComment(current);
 
 		if (!testEnding(ret,ending)) {
 			ret = null;
 		}
 		return ret;
+	}
+	
+	protected JavascriptEvalResult readComment(JavascriptEvalResult current) {
+		/*
+		JavascriptEvalResult ret = current.createNew();
+		
+		ret.getRemaining().skipWs();
+		if (ret.getRemaining().startsWith("//")) {
+			// skip until after \n
+		}
+		*/
+
+		return null;
 	}
 	
 	protected JavascriptEvalResult readObjDef(JavascriptEvalResult current) {

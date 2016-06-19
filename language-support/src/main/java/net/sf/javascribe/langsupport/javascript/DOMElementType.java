@@ -26,7 +26,10 @@ public class DOMElementType extends JavascriptBaseObjectType {
 		addAttribute("tabIndex","integer");
 		addAttribute("tagName","string");
 		addAttribute("value","object");
-		
+		JavascriptFunctionType fn = new JavascriptFunctionType("addEventListener");
+		fn.addParam("event", "string");
+		fn.addParam("callback", "function");
+		addOperation(fn);
 	}
 
 }

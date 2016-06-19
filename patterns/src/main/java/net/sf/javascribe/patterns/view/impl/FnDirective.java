@@ -84,6 +84,9 @@ public class FnDirective implements ElementDirective {
 		}
 		
 		if (event!=null) {
+			if (ctx.getContainerVarName()==null) {
+				throw new JavascribeException("You may not assign an event to a js-fn unless it is inside a HTML Template DOM Element");
+			}
 			String dispatcher = null;
 			if (execCtx.getVariableType(DirectiveUtils.PAGE_VAR)!=null) dispatcher = DirectiveUtils.PAGE_VAR+".event";
 			else if (execCtx.getVariableType(DirectiveUtils.EVENT_DISPATCHER_VAR)!=null) dispatcher = DirectiveUtils.EVENT_DISPATCHER_VAR+".event";

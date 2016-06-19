@@ -43,6 +43,7 @@ public class JavascriptEvalConst {
 	};
 
 	public static final String[] codeLine = new String[] {
+		"$comment$",
 		"$forLoop$_$codeLine$",
 		"$forLoop$_{_$codeLines$_}",
 		"var $identifier$_;",

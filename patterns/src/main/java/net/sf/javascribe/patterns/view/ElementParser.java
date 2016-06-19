@@ -28,8 +28,8 @@ public class ElementParser implements DirectiveContext {
 	Map<String,String> domAttributes = new HashMap<String,String>();
 	Map<String,String> templateAttributes = new HashMap<String,String>();
 
-	protected static final List<String> domElementProperties = Arrays.asList("nowrap");
-	protected static final List<String> domElementAttributes = Arrays.asList("colspan");
+	protected static final List<String> domElementProperties = Arrays.asList("nowrap","disabled");
+	protected static final List<String> domElementAttributes = Arrays.asList(new String[] {"colspan"});
 	
 	ProcessorContext ctx = null;
 	Element elt = null;
@@ -120,7 +120,8 @@ public class ElementParser implements DirectiveContext {
 			if (isTemplateCall) {
 				code.append(processTemplateCall(elt.nodeName(),execCtx,this));
 				code.append(eltVar+"._elt = '"+eltVar+"';\n");
-				code.append(containerVar+".appendChild("+eltVar+");\n");
+				if (containerVar!=null)
+					code.append(containerVar+".appendChild("+eltVar+");\n");
 			} else {
 				if (!elementCreated) {
 					code.append(eltVar+" = "+DirectiveUtils.DOCUMENT_REF+
@@ -128,7 +129,8 @@ public class ElementParser implements DirectiveContext {
 					code.append(eltVar+"._elt = '"+eltVar+"';\n");
 				}
 				addDomProperties(execCtx);
-				code.append(containerVar+".appendChild("+eltVar+");\n");
+				if (containerVar!=null)
+					code.append(containerVar+".appendChild("+eltVar+");\n");
 				// Process children
 				if ((elt.childNodes()!=null) && (elt.childNodes().size()>0)) {
 					String append = caller.processChildNodeList(elt.childNodes(), eltVar, execCtx);
@@ -153,6 +155,9 @@ public class ElementParser implements DirectiveContext {
 			else if (domElementAttributes.indexOf(s)>=0) {
 				String ref = DirectiveUtils.parsePartialExpression(val, execCtx);
 				code.append(eltVar+"."+s+" = "+ref+";\n");
+			}
+			else if (s.equals("disabled")) {
+				code.append(eltVar+".disabled = true;\n");
 			}
 			else if (domElementProperties.indexOf(s)>=0) {
 				String ref = DirectiveUtils.parsePartialExpression(val, execCtx);

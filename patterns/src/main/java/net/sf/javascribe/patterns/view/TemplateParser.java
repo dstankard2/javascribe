@@ -36,14 +36,14 @@ public class TemplateParser {
 		List<ElementParser> rootParsers = new ArrayList<ElementParser>();
 
 		b.append("var "+DirectiveUtils.DOCUMENT_REF+" = document;\n");
-		String retVar = DirectiveUtils.TEMPLATE_ROOT_ELEMENT_REF;
-		b.append("var "+retVar+" = document.createElement('div');\n");
-		execCtx.addVariable(retVar, "DOMElement");
+		//String retVar = DirectiveUtils.TEMPLATE_ROOT_ELEMENT_REF;
+		//b.append("var "+retVar+" = document.createElement('div');\n");
+		//execCtx.addVariable(retVar, "DOMElement");
 
 		boolean hasElement = false;
 		for(Node node : nodeList) {
 			if (node instanceof Element) {
-				ElementParser p = new ElementParser((Element)node,ctx,retVar,obj,fn,new ArrayList<String>(),this);
+				ElementParser p = new ElementParser((Element)node,ctx,null,obj,fn,new ArrayList<String>(),this);
 				if ((p.isDomElement()) && (hasElement)) {
 					throw new JavascribeException("A HTML template can only have one element at the root.");
 				}
@@ -64,7 +64,8 @@ public class TemplateParser {
 			b.append(p.getElementCode());
 		}
 
-		b.append("return "+retVar+".childNodes[0];\n");
+		b.append("return _e0;\n");
+		//b.append("return "+retVar+".childNodes[0];\n");
 		
 		return b.toString();
 	}
