@@ -12,6 +12,8 @@ import net.sf.javascribe.langsupport.java.LocatedJavaServiceObjectType;
  * A service represents a Java business logic service that is found via a service locator.
  * @author Dave
  */
+// TODO: Not sure this is still working or necessary
+@Deprecated
 public class CustomLogicObjectType extends LocatedJavaServiceObjectType implements Injectable {
 	
 	public CustomLogicObjectType(String locatorClass,String serviceName,String pkg,String className) {

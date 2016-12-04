@@ -45,8 +45,6 @@ public class CustomLogicProcessor {
 
 		className = f.getName().substring(0,f.getName().length()-5);
 		CustomLogicObjectType ret = new CustomLogicObjectType(locatorClassName,className,pkg,className);
-		ret.setClassName(className);
-		ret.setPkg(pkg);
 		// TODO: this is not right.  to fix.
 		ctx.addAttribute(JavascribeUtils.getLowerCamelName(className), className);
 

@@ -8,11 +8,11 @@ import java.util.Map;
 import net.sf.javascribe.api.AttributeHolder;
 import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JavascribeException;
-import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.VariableType;
 import net.sf.javascribe.api.expressions.ExpressionUtil;
 import net.sf.javascribe.api.expressions.ValueExpression;
+import net.sf.javascribe.api.types.ListType;
 
 import org.apache.log4j.Logger;
 
@@ -37,6 +37,32 @@ public class JavaUtils {
 		}
 	}
 
+	public static JavaCode declare(String varName,String typeName,ProcessorContext ctx,CodeExecutionContext execCtx) throws JavascribeException {
+		JavaCode ret = null;
+		JavaVariableType type = getJavaType(typeName,ctx);
+		
+		if (typeName.startsWith("list/")) {
+			String listType = typeName.substring(5);
+			ListType lt = (ListType)type;
+			ret = (JavaCode)lt.declare(varName, listType, execCtx);
+		} else {
+			ret = (JavaCode)type.declare(varName, execCtx);
+		}
+		
+		return ret;
+	}
+	
+	public static JavaVariableType getJavaType(String name,ProcessorContext ctx) throws JavascribeException {
+		VariableType t = ctx.getType(name);
+		
+		if (t==null) return null;
+		if (!(t instanceof JavaVariableType)) {
+			throw new JavascribeException("Type '"+name+"' is not a Java type");
+		}
+		
+		return (JavaVariableType)t;
+	}
+	
 	/**
 	 * Adds the Java source file to the generated code distribution, taking into 
 	 * account its package, class name and the root dir of the generated Java files.
@@ -179,9 +205,13 @@ public class JavaUtils {
 		}
 		invoke.appendCodeText(")");
 		if ((resultName!=null) && (resultName.trim().length()>0)) {
-			ValueExpression expr = ExpressionUtil.buildExpressionFromCode(invoke.getCodeText(),op.getReturnType());
-			invoke = new JavaCodeImpl();
-			invoke.appendCodeText(ExpressionUtil.evaluateSetExpression(resultName, expr, execCtx));
+			JavaCode temp = new JavaCodeImpl();
+			temp.appendCodeText(resultName);
+			temp.appendCodeText(" = ");
+			temp.appendCodeText(invoke.getCodeText());
+			invoke = temp;
+			//ValueExpression expr = ExpressionUtil.buildExpressionFromCode(invoke.getCodeText(),op.getReturnType());
+			//invoke.appendCodeText(ExpressionUtil.evaluateSetExpression(resultName, expr, execCtx));
 			//build.append(ExpressionUtil.evaluateSetExpression(resultName, expr, execCtx));
 		}
 		if (addSemicolon) {
@@ -192,6 +222,14 @@ public class JavaUtils {
 		JavaUtils.append(ret, decl);
 
 		return ret;
+	}
+	
+	public static String getPkg(String fullyQualifiedClassName) {
+		int i = fullyQualifiedClassName.lastIndexOf('.');
+		if (i<0) return null;
+		String val = fullyQualifiedClassName.substring(0, i);
+		if (val.equals("java.lang")) return null;
+		return val;
 	}
 	
 }

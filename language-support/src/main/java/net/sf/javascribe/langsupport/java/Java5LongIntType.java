@@ -1,6 +1,5 @@
 package net.sf.javascribe.langsupport.java;
 
-import net.sf.javascribe.api.Code;
 import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.expressions.CodeFragmentExpressionAtom;
@@ -14,28 +13,20 @@ import net.sf.javascribe.langsupport.java.jsom.JsomJavaCode;
 import net.sf.jsom.java5.Java5CodeSnippet;
 import net.sf.jsom.java5.Java5Type;
 
-public class Java5LongIntType implements IntegerType,JavaVariableType,Java5Type {
+public class Java5LongIntType extends JavaVariableTypeBase implements IntegerType,Java5Type {
 
-	@Override
-	public String getClassName() {
-		return "Long";
+	public Java5LongIntType() {
+		super("longint",null,"Long");
 	}
-
-	@Override
-	public String getImport() {
-		return null;
-	}
-
-	@Override
-	public String getName() {
-		return "longint";
-	}
-
+	
 	@Override
 	public Java5CodeSnippet instantiate(String varName, String value) {
 		Java5CodeSnippet ret = new Java5CodeSnippet();
 		
-		ret.append(varName+" = "+value+";\n");
+		if (varName!=null) {
+			ret.append(varName+" = ");
+		}
+		ret.append(value+";\n");
 		
 		return ret;
 	}
@@ -73,14 +64,13 @@ public class Java5LongIntType implements IntegerType,JavaVariableType,Java5Type 
 	}
 
 	@Override
-	public Code instantiate(String name, String value,
-			CodeExecutionContext execCtx) throws JavascribeException {
+	public JavaCode instantiate(String name, String value,
+			CodeExecutionContext execCtx) {
 		return new JsomJavaCode(instantiate(name,value));
 	}
 
 	@Override
-	public Code declare(String name, CodeExecutionContext execCtx)
-			throws JavascribeException {
+	public JavaCode declare(String name, CodeExecutionContext execCtx) {
 		return new JsomJavaCode(declare(name));
 	}
 	

@@ -28,9 +28,9 @@ public class RemoveAttributeDirective extends AttributeDirectiveBase {
 		if (result.getErrorMessage()!=null) {
 			throw new JavascribeException(result.getErrorMessage());
 		}
-		fn.append(ctx.getElementVarName()+".$$remove = function() {\n");
+		fn.append(ctx.getElementVarName()+".$$remove.push(function() {\n");
 		fn.append(result.getResult().toString());
-		fn.append("\n};\n");
+		fn.append("\n});\n");
 	}
 
 }

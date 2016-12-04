@@ -7,9 +7,23 @@ import net.sf.javascribe.api.JavascribeException;
 
 public interface ServiceLocator extends JavaVariableType {
 
+	public String instantiate();
+	
+	/**
+	 * Returns a list of variable type names of services available.
+	 * @return Variable type names
+	 */
 	public List<String> getAvailableServices();
-	public String getService(String factoryInstanceName,String serviceName,String serviceInstanceName,CodeExecutionContext execCtx) throws JavascribeException;
-	public String getService(String factoryInstanceName,String serviceName,CodeExecutionContext execCtx) throws JavascribeException;
+	/**
+	 * 
+	 * @param factoryInstanceName
+	 * @param serviceName
+	 * @param serviceInstanceName
+	 * @param execCtx
+	 * @return
+	 * @throws JavascribeException
+	 */
+	public String getService(String factoryInstanceRef,String serviceName,CodeExecutionContext execCtx) throws JavascribeException;
 
 }
 

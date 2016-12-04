@@ -1,58 +1,35 @@
 package net.sf.javascribe.langsupport.java;
 
-import net.sf.javascribe.api.CodeExecutionContext;
-import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.types.DateType;
-import net.sf.javascribe.langsupport.java.jsom.JsomJavaCode;
+import net.sf.javascribe.langsupport.java.jsom.JsomUtils;
 import net.sf.jsom.java5.Java5CodeSnippet;
 import net.sf.jsom.java5.Java5Type;
 
-public class Java5DateType implements Java5Type,JavaVariableType,DateType {
+public class Java5DateType extends JavaVariableTypeBase implements Java5Type,DateType {
 
+	public Java5DateType() {
+		super("date","java.sql","Date");
+	}
+	
 	@Override
-	public String getName() {
-		return "date";
+	public String instantiate() {
+		StringBuilder b = new StringBuilder();
+		b.append("new java.util.Date(System.currentTimeMillis());\n");
+		return b.toString();
 	}
 
 	@Override
 	public Java5CodeSnippet instantiate(String varName, String value) {
 		Java5CodeSnippet ret = new Java5CodeSnippet();
-		
-		ret.append(varName+" = new Date(System.currentTimeMillis());\n");
-		
+		JsomUtils.merge(ret, instantiate(varName,value,null));
 		return ret;
 	}
 
 	@Override
 	public Java5CodeSnippet declare(String varName) {
 		Java5CodeSnippet ret = new Java5CodeSnippet();
-		
-		ret.addImport(getImport());
-		ret.append("Date "+varName+" = null;\n");
-		
+		JsomUtils.merge(ret, super.declare(varName,null));
 		return ret;
-	}
-
-	@Override
-	public String getClassName() {
-		return "Date";
-	}
-
-	@Override
-	public String getImport() {
-		return "java.sql.Date";
-	}
-
-	@Override
-	public JavaCode instantiate(String name, String value,
-			CodeExecutionContext execCtx) {
-		return new JsomJavaCode(instantiate(name,value));
-	}
-
-	@Override
-	public JavaCode declare(String name, CodeExecutionContext execCtx)
-			throws JavascribeException {
-		return new JsomJavaCode(declare(name));
 	}
 
 }

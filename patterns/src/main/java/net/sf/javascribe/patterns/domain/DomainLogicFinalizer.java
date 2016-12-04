@@ -12,7 +12,6 @@ import net.sf.javascribe.langsupport.java.Injectable;
 import net.sf.javascribe.langsupport.java.LocatedJavaServiceObjectType;
 import net.sf.javascribe.langsupport.java.jsom.JavascribeVariableTypeResolver;
 import net.sf.javascribe.langsupport.java.jsom.JsomUtils;
-import net.sf.jsom.CodeGenerationException;
 import net.sf.jsom.java5.Java5ClassDefinition;
 import net.sf.jsom.java5.Java5CodeSnippet;
 import net.sf.jsom.java5.Java5DeclaredMethod;
@@ -47,61 +46,57 @@ public class DomainLogicFinalizer {
 
 		String pkg = DomainLogicCommon.getDomainLogicPkg(ctx);
 
-		try {
-			// Create a service locator
-			String serviceLocatorName = DomainLogicCommon.getServiceLocatorName(ctx);
-			Java5SourceFile locatorFile = JsomUtils.createJavaSourceFile(ctx);
-			locatorFile.setPackageName(pkg);
-			Java5ClassDefinition cl = locatorFile.getPublicClass();
-			cl.setClassName(serviceLocatorName);
-			JsomUtils.addJavaFile(locatorFile, ctx);
+		// Create a service locator
+		String serviceLocatorName = DomainLogicCommon.getServiceLocatorName(ctx);
+		Java5SourceFile locatorFile = JsomUtils.createJavaSourceFile(ctx);
+		locatorFile.setPackageName(pkg);
+		Java5ClassDefinition cl = locatorFile.getPublicClass();
+		cl.setClassName(serviceLocatorName);
+		JsomUtils.addJavaFile(locatorFile, ctx);
 
-			DomainServiceLocatorType locatorType = new DomainServiceLocatorType(serviceLocatorName,pkg,serviceLocatorName);
-			ctx.getTypes().addType(locatorType);
+		DomainServiceLocatorType locatorType = new DomainServiceLocatorType(serviceLocatorName,pkg,serviceLocatorName);
+		ctx.getTypes().addType(locatorType);
 
-			for(String obj : objs) {
-				locatorType.getAvailableServices().add(obj);
-				LocatedJavaServiceObjectType type = (LocatedJavaServiceObjectType)ctx.getType(obj);
-				DomainLogicFile file = DomainLogicCommon.getDomainObjectFile(obj, ctx);
-				
-				String impl = ctx.getProperty(DomainLogicCommon.DOMAIN_LOGIC_IMPLEMENTATION_PREFIX+obj);
-				boolean useImpl = false;
-				if ((file.getPublicClass().isAbstract()) || (file.getPublicClass().isInterface())) {
-					if (impl==null) {
-						throw new JavascribeException("Domain Logic implementation class not found for "+obj+" which has abstract methods.  The implementation class must be specified in property '"+DomainLogicCommon.DOMAIN_LOGIC_IMPLEMENTATION_PREFIX+obj+"'");
-					} else {
-						useImpl = true;
-					}
-				}
-				
-				Java5DeclaredMethod locatorMethod = new Java5DeclaredMethod(new JavascribeVariableTypeResolver(ctx));
-				locatorMethod.setName("get"+obj);
-				Java5CodeSnippet locatorCode = new Java5CodeSnippet();
-				locatorMethod.setMethodBody(locatorCode);
-				JsomUtils.merge(locatorCode, type.declare("_ret"));
-				cl.addMethod(locatorMethod);
-				locatorMethod.setType(obj);
-				if (useImpl) {
-					locatorCode.append("_ret = new "+impl+"();\n");
+		for(String obj : objs) {
+			locatorType.getAvailableServices().add(obj);
+			LocatedJavaServiceObjectType type = (LocatedJavaServiceObjectType)ctx.getType(obj);
+			DomainLogicFile file = DomainLogicCommon.getDomainObjectFile(obj, ctx);
+			
+			String impl = ctx.getProperty(DomainLogicCommon.DOMAIN_LOGIC_IMPLEMENTATION_PREFIX+obj);
+			boolean useImpl = false;
+			if ((file.getPublicClass().isAbstract()) || (file.getPublicClass().isInterface())) {
+				if (impl==null) {
+					throw new JavascribeException("Domain Logic implementation class not found for "+obj+" which has abstract methods.  The implementation class must be specified in property '"+DomainLogicCommon.DOMAIN_LOGIC_IMPLEMENTATION_PREFIX+obj+"'");
 				} else {
-					JsomUtils.merge(locatorCode, type.instantiate("_ret", null));
+					useImpl = true;
 				}
-
-				List<String> deps = file.getDependencies();
-				for(String dep : deps) {
-					String typeName = ctx.getAttributeType(dep);
-					if (typeName==null) {
-						throw new JavascribeException("Couldn't find type '"+typeName+"' for dependency '"+dep+"'");
-					}
-					Injectable inj = (Injectable)ctx.getType(typeName);
-					locatorFile.addImport(inj.getImport());
-					JsomUtils.merge(locatorCode,inj.getInstance(dep, null));
-					locatorCode.append("_ret.set"+(JavascribeUtils.getUpperCamelName(dep))+"("+dep+");\n");
-				}
-				locatorCode.append("return _ret;\n");
 			}
-		} catch(CodeGenerationException e) {
-			throw new JavascribeException("Caught a JSOM exception",e);
+			
+			Java5DeclaredMethod locatorMethod = new Java5DeclaredMethod(new JavascribeVariableTypeResolver(ctx));
+			locatorMethod.setName("get"+obj);
+			Java5CodeSnippet locatorCode = new Java5CodeSnippet();
+			locatorMethod.setMethodBody(locatorCode);
+			JsomUtils.merge(locatorCode, type.declare("_ret"));
+			cl.addMethod(locatorMethod);
+			locatorMethod.setType(obj);
+			if (useImpl) {
+				locatorCode.append("_ret = new "+impl+"();\n");
+			} else {
+				JsomUtils.merge(locatorCode, type.instantiate("_ret", null));
+			}
+
+			List<String> deps = file.getDependencies();
+			for(String dep : deps) {
+				String typeName = ctx.getAttributeType(dep);
+				if (typeName==null) {
+					throw new JavascribeException("Couldn't find type '"+typeName+"' for dependency '"+dep+"'");
+				}
+				Injectable inj = (Injectable)ctx.getType(typeName);
+				locatorFile.addImport(inj.getImport());
+				JsomUtils.merge(locatorCode,inj.getInstance(dep, null));
+				locatorCode.append("_ret.set"+(JavascribeUtils.getUpperCamelName(dep))+"("+dep+");\n");
+			}
+			locatorCode.append("return _ret;\n");
 		}
 	}
 

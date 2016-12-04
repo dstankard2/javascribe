@@ -1,7 +1,7 @@
 package net.sf.javascribe.patterns.translator.impl;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import net.sf.javascribe.api.AttributeHolder;
 import net.sf.javascribe.api.CodeExecutionContext;
@@ -12,6 +12,7 @@ import net.sf.javascribe.api.annotation.Scannable;
 import net.sf.javascribe.langsupport.java.JavaCode;
 import net.sf.javascribe.langsupport.java.JavaCodeImpl;
 import net.sf.javascribe.patterns.translator.FieldTranslator;
+import net.sf.javascribe.patterns.translator.FieldTranslatorContext;
 
 @Scannable
 public class DirectFieldTranslator implements FieldTranslator {
@@ -23,6 +24,43 @@ public class DirectFieldTranslator implements FieldTranslator {
 		return "directSet";
 	}
 
+	@Override
+	public JavaCode getAttribute(String attributeName, String attributeType, String targetVariable, FieldTranslatorContext translatorCtx) throws JavascribeException {
+		ProcessorContext ctx = translatorCtx.getCtx();
+		CodeExecutionContext execCtx = translatorCtx.getExecCtx();
+		Map<String,String> params = translatorCtx.getParams();
+
+		// Do we check that the dependency is null?
+		boolean checkNull = false;
+		
+		if (ctx.getProperty(CHECK_NULL)!=null) {
+			checkNull = true;
+		}
+		
+		Set<String> paramNames = params.keySet();
+		for (String n : paramNames) {
+		//List<String> localVars = execCtx.getVariableNames();
+		//for(String v : localVars) {
+			if (n.equals(targetVariable)) continue;
+			VariableType type = execCtx.getTypeForVariable(n);
+			if (type instanceof AttributeHolder) {
+				AttributeHolder h = (AttributeHolder)type;
+				if (h.getAttributeType(attributeName)!=null) {
+					JavaCode ret = new JavaCodeImpl();
+					if (checkNull) {
+						ret.appendCodeText("if ("+n+"!=null)");
+					}
+					String ref = h.getCodeToRetrieveAttribute(n, attributeName, "object", execCtx);
+					ret.appendCodeText(targetVariable+" = "+ref+";\n");
+					return ret;
+				}
+			}
+		}
+		
+		return null;
+	}
+
+	/*
 	@Override
 	public JavaCode translateFields(AttributeHolder targetType,
 			String targetVarName, CodeExecutionContext execCtx,ProcessorContext ctx,
@@ -74,5 +112,6 @@ public class DirectFieldTranslator implements FieldTranslator {
 		
 		return ret;
 	}
+	*/
 
 }

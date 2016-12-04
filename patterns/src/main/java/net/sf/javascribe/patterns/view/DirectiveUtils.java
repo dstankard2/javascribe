@@ -275,7 +275,58 @@ public class DirectiveUtils {
 		str = replace(str,"&apos;","'");
 		return str;
 	}
-	
+
+	private static final String REM_CODE = 
+	"if (!window._rem) {\n"+
+	"/* Invoke remove functions on the element.  $$remove is an array of functions */\n"+
+	"window._invokeRem = function(elt) {\n"+
+	"if ((elt.$$remove) && (elt.$$remove.length)) {\n"+
+	"for(var i=0;i<elt.$$remove.length;i++) {\n"+
+	"elt.$$remove[i]();\n"+
+	"}\n"+
+	"delete elt.$$remove;\n"+
+	"}\n"+
+	"};\n"+
+	"/* If only parent is passed, remove all its children recursively and call $remove on the parent */\n"+
+	"/* If parent is defined, remove toRemove and remove all its children */\n"+
+	"window._rem = function(parent,toRemove){\n"+
+	"if (!toRemove) {\n"+
+	"for(var i=0;i<parent.childNodes.length;i++) {\n"+
+	"var node = parent.childNodes[i];\n"+
+	"window._rem(node);\n"+
+	"};\n"+
+	"window._invokeRem(parent);\n"+
+	"} else {\n"+
+	"for(var _i=0;_i<parent.childNodes.length;_i++) {\n"+
+	"if (parent.childNodes[_i]._elt==toRemove) {\n"+
+	"var node = parent.childNodes[_i];\n"+
+	"window._rem(node);\n"+
+	"parent.removeChild(node);_i--;\n"+
+	"}\n"+
+	"}\n"+
+	"}\n"+
+	"};\n"+
+	"/* Insert an element in its due place under parent, depending on prev */\n"+
+	"window._ins = function(parent,elt,prev) {\n"+
+	"for(var i=0;i<parent.childNodes.length;i++) {\n"+
+	"var done = true;\n"+
+	"var n = parent.childNodes[i];\n"+
+	"for(var i2=0;i2<prev.length;i2++) {\n"+
+	"if (n._elt==prev[i2]) {\n"+
+	"done = false;\n"+
+	"break;\n"+
+	"}\n"+
+	"}\n"+
+	"if (done) {\n"+
+	"parent.insertBefore(elt,n);\n"+
+	"return;\n"+
+	"}\n"+
+	"}\n"+
+	"parent.appendChild(elt);\n"+
+	"};\n"+
+	"}\n";
+
+	/*
 	private static final String REM_FUNC = 
 			"if (!window._rem) {\n" + 
 			"window._rem = function(parent,toRemove){\n" +
@@ -306,6 +357,7 @@ public class DirectiveUtils {
 			"parent.appendChild(elt);\n"+
 			"};\n" +
 			"}\n";
+	*/
 	
 	public static void ensureJavascriptTemplatingUtilities(ProcessorContext ctx) throws JavascribeException {
 		JavascriptSourceFile ret = JavascriptUtils.getSourceFile(ctx);
@@ -314,8 +366,8 @@ public class DirectiveUtils {
 		Object val = ctx.getObject(propName);
 		if (val==null) {
 			ctx.putObject(propName, Boolean.TRUE);
-			ret.getSource().append(INS_FUNC);
-			ret.getSource().append(REM_FUNC);
+			//ret.getSource().append(INS_FUNC);
+			ret.getSource().append(REM_CODE);
 		}
 	}
 

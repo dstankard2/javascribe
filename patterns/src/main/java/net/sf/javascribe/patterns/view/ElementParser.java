@@ -1,7 +1,6 @@
 package net.sf.javascribe.patterns.view;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -12,6 +11,7 @@ import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.VariableType;
+import net.sf.javascribe.langsupport.javascript.DOMElementType;
 import net.sf.javascribe.langsupport.javascript.JavascriptBaseObjectType;
 import net.sf.javascribe.langsupport.javascript.JavascriptFunctionType;
 import net.sf.javascribe.patterns.view.impl.JavascriptEvalResult;
@@ -28,8 +28,10 @@ public class ElementParser implements DirectiveContext {
 	Map<String,String> domAttributes = new HashMap<String,String>();
 	Map<String,String> templateAttributes = new HashMap<String,String>();
 
+	/*
 	protected static final List<String> domElementProperties = Arrays.asList("nowrap","disabled");
 	protected static final List<String> domElementAttributes = Arrays.asList(new String[] {"colspan"});
+	*/
 	
 	ProcessorContext ctx = null;
 	Element elt = null;
@@ -109,6 +111,7 @@ public class ElementParser implements DirectiveContext {
 				code.append(eltVar+" = "+DirectiveUtils.DOCUMENT_REF+
 						".createElement('"+elt.nodeName()+"');\n");
 				code.append(eltVar+"._elt = '"+eltVar+"';\n");
+				code.append(eltVar+".$$remove = [];\n");
 			}
 			String att = next.getAttributeName();
 			if (templateAttributes.get(att)!=null) {
@@ -127,6 +130,7 @@ public class ElementParser implements DirectiveContext {
 					code.append(eltVar+" = "+DirectiveUtils.DOCUMENT_REF+
 							".createElement('"+elt.nodeName()+"');\n");
 					code.append(eltVar+"._elt = '"+eltVar+"';\n");
+					code.append(eltVar+".$$remove = [];\n");
 				}
 				addDomProperties(execCtx);
 				if (containerVar!=null)
@@ -145,6 +149,7 @@ public class ElementParser implements DirectiveContext {
 		//List<String> propertyDomAttributes = new ArrayList<String>();
 		//propertyDomAttributes.add("colspan");
 		//propertyDomAttributes.add("nowrap");
+		DOMElementType eltType = new DOMElementType();
 		
 		for(String s : domAttributes.keySet()) {
 		//for(String s : rctx.getDomAttributes().keySet()) {
@@ -152,18 +157,18 @@ public class ElementParser implements DirectiveContext {
 			String val = domAttributes.get(s);
 			//String val = rctx.getDomAttributes().get(s).trim();
 			if (s.equals("style")) code.append(addStyle(eltVar,val));
-			else if (domElementAttributes.indexOf(s)>=0) {
-				String ref = DirectiveUtils.parsePartialExpression(val, execCtx);
-				code.append(eltVar+"."+s+" = "+ref+";\n");
-			}
 			else if (s.equals("disabled")) {
 				code.append(eltVar+".disabled = true;\n");
-			}
-			else if (domElementProperties.indexOf(s)>=0) {
+			} else if (s.equalsIgnoreCase("colspan")) {
 				String ref = DirectiveUtils.parsePartialExpression(val, execCtx);
-				code.append(eltVar+".setAttribute('"+s+"',"+ref+");\n");
-			}
-			else {
+				code.append(eltType.getCodeToSetAttribute(eltVar, "colSpan", ref, execCtx));
+				code.append(";\n");
+			} else if (!eltType.getAttributeType(s).equals("object")) {
+				// This DOM attribute from the HTML is in the DOMElement type.
+				String ref = DirectiveUtils.parsePartialExpression(val, execCtx);
+				code.append(eltType.getCodeToSetAttribute(eltVar, s, ref, execCtx));
+				code.append(";\n");
+			} else {
 				String ref = DirectiveUtils.parsePartialExpression(val, execCtx);
 				if (ref==null) {
 					throw new JavascribeException("Couldn't evaluate attribute '"+s+"' with value '"+val+"'");

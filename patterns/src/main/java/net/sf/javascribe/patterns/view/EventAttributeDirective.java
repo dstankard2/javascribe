@@ -64,9 +64,11 @@ public class EventAttributeDirective extends AttributeDirectiveBase {
 		
 		StringTokenizer tok = new StringTokenizer(event,",");
 		while(tok.hasMoreTokens()) {
+			String rv = DirectiveUtils.newVarName("_rv", "function", execCtx);
 			String s = tok.nextToken().trim();
 			String ref = DirectiveUtils.parsePartialExpression(s, newCtx);
-			code.append(dispatcher+".event("+ref+","+fnVar+","+containerVar+");\n");
+			code.append("var "+rv+" = "+dispatcher+".event("+ref+","+fnVar+");\n");
+			code.append(containerVar+".$$remove.push(function() {"+rv+"();});\n");
 		}
 		code.append(fnVar+"();\n");
 	}

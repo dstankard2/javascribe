@@ -12,16 +12,11 @@ import net.sf.javascribe.api.JavascribeException;
  * This type is instantiated via the instantiate method (default constructor).
  * @author Dave
  */
-public class JavaServiceObjectType implements JavaVariableType,Injectable {
-	private String className = null;
-	private String pkg = null;
-	private String name = null;
+public class JavaServiceObjectType extends JavaVariableTypeBase implements Injectable {
 	private List<JavaOperation> methods = new ArrayList<JavaOperation>();
 	
 	public JavaServiceObjectType(String name,String pkg,String className) {
-		this.className = className;
-		this.pkg = pkg;
-		this.name = name;
+		super(name,pkg,className);
 	}
 	
 	public void addMethod(JavaOperation op) {
@@ -39,23 +34,7 @@ public class JavaServiceObjectType implements JavaVariableType,Injectable {
 	}
 	
 	@Override
-	public String getClassName() {
-		return className;
-	}
-
-	@Override
-	public String getImport() {
-		return pkg+'.'+className;
-	}
-
-	@Override
-	public String getName() {
-		return name;
-	}
-
-	@Override
-	public JavaCode declare(String name, CodeExecutionContext execCtx)
-			throws JavascribeException {
+	public JavaCode declare(String name, CodeExecutionContext execCtx) {
 		JavaCodeImpl ret = new JavaCodeImpl();
 		
 		ret.addImport(getImport());
@@ -68,17 +47,8 @@ public class JavaServiceObjectType implements JavaVariableType,Injectable {
 		return declare(varName,null);
 	}
 
-	public void setClassName(String className) {
-		this.className = className;
-	}
-
-	public void setPkg(String pkg) {
-		this.pkg = pkg;
-	}
-
 	@Override
-	public JavaCode instantiate(String name, String value,CodeExecutionContext execCtx) throws JavascribeException {
-		// TODO Auto-generated method stub
+	public JavaCode instantiate(String name, String value,CodeExecutionContext execCtx) {
 		JavaCodeImpl ret = new JavaCodeImpl();
 		
 		ret.appendCodeText(name+" = new "+getClassName()+"();\n");

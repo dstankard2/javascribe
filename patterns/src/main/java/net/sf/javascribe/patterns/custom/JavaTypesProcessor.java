@@ -1,10 +1,11 @@
 package net.sf.javascribe.patterns.custom;
 
-import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.annotation.Processor;
 import net.sf.javascribe.api.annotation.ProcessorMethod;
 import net.sf.javascribe.api.annotation.Scannable;
+import net.sf.javascribe.langsupport.java.JavaUtils;
 import net.sf.javascribe.langsupport.java.JavaVariableType;
 import net.sf.javascribe.langsupport.java.JavaVariableTypeImpl;
 
@@ -24,7 +25,7 @@ public class JavaTypesProcessor {
 					|| (t.getClazz().trim().length()==0)) {
 				throw new JavascribeException("Invalid JavaType specified - Attributes 'class', 'import' and 'name' are all required.");
 			}
-			type = new JavaVariableTypeImpl(t.getName(), t.getIm(), t.getClazz());
+			type = new JavaVariableTypeImpl(t.getName(), JavaUtils.getPkg(t.getIm()), t.getClazz());
 			ctx.getTypes().addType(type);
 		}
 	}

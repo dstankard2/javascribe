@@ -110,8 +110,6 @@ public class JpaDaoFactoryProcessor {
 		try {
 			// Create the DAO type
 			daoType = new DataAccessJavaServiceObjectType(daoClassName,modelPkg,daoClassName);
-			daoType.setClassName(daoClassName);
-			daoType.setPkg(modelPkg);
 			ctx.getTypes().addType(daoType);
 
 			// Create the DAO file.

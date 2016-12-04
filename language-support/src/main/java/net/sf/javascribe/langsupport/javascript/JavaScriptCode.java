@@ -26,7 +26,7 @@ public class JavascriptCode implements Code {
 	}
 
 	@Override
-	public String getCodeText() throws JavascribeException {
+	public String getCodeText() {
 		return src.toString();
 	}
 

@@ -89,11 +89,11 @@ public class WebUtils {
 		
 		ctx.setLanguageSupport("Java");
 		if (ctx.getTypes().getType("HttpServletRequest")==null) {
-			type = new JavaVariableTypeImpl("HttpServletRequest","javax.servlet.http.HttpServletRequest","HttpServletRequest");
+			type = new JavaVariableTypeImpl("HttpServletRequest","javax.servlet.http","HttpServletRequest");
 			ctx.getTypes().addType(type);
 		}
 		if (ctx.getTypes().getType("HttpServletResponse")==null) {
-			type = new JavaVariableTypeImpl("HttpServletResponse","javax.servlet.http.HttpServletResponse","HttpServletResponse");
+			type = new JavaVariableTypeImpl("HttpServletResponse","javax.servlet.http","HttpServletResponse");
 			ctx.getTypes().addType(type);
 		}
 
@@ -108,7 +108,7 @@ public class WebUtils {
 
 		// For generating context listeners
 		if (ctx.getTypes().getType("ServletContextEvent")==null) {
-			type = new JavaVariableTypeImpl("ServletContextEvent","javax.servlet.ServletContextEvent","ServletContextEvent");
+			type = new JavaVariableTypeImpl("ServletContextEvent","javax.servlet","ServletContextEvent");
 			ctx.getTypes().addType(type);
 		}
 	}

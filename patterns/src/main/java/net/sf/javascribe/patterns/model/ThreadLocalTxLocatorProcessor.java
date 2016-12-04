@@ -1,16 +1,15 @@
 package net.sf.javascribe.patterns.model;
 
-import org.apache.log4j.Logger;
-
-import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.TextSourceFile;
 import net.sf.javascribe.api.annotation.Processor;
 import net.sf.javascribe.api.annotation.ProcessorMethod;
 import net.sf.javascribe.api.annotation.Scannable;
 import net.sf.javascribe.langsupport.java.JavaUtils;
-import net.sf.javascribe.langsupport.java.jsom.JsomJavaVariableType;
-import net.sf.jsom.java5.Java5TypeImpl;
+import net.sf.javascribe.langsupport.java.JavaVariableTypeImpl;
+
+import org.apache.log4j.Logger;
 
 @Scannable
 @Processor
@@ -46,8 +45,7 @@ public class ThreadLocalTxLocatorProcessor {
 		}
 		ctx.getTypes().addType(type);
 		if (ctx.getType("EntityManagerFactory")==null) {
-			Java5TypeImpl factoryType = new Java5TypeImpl("EntityManagerFactory","javax.persistence.EntityManagerFactory","EntityManagerFactory");
-			ctx.getTypes().addType(new JsomJavaVariableType(factoryType));
+			ctx.getTypes().addType(new JavaVariableTypeImpl("EntityManagerFactory","javax.persistence","EntityManagerFactory"));
 		}
 
 		TextSourceFile src = new TextSourceFile();

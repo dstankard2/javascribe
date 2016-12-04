@@ -1,15 +1,15 @@
 package net.sf.javascribe.patterns.translator;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-
-import org.apache.log4j.Logger;
+import java.util.Map;
 
 import net.sf.javascribe.api.Attribute;
-import net.sf.javascribe.api.AttributeHolder;
 import net.sf.javascribe.api.CodeExecutionContext;
-import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.JavascribeUtils;
+import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.VariableType;
 import net.sf.javascribe.api.annotation.Processor;
 import net.sf.javascribe.api.annotation.ProcessorMethod;
@@ -24,6 +24,8 @@ import net.sf.jsom.CodeGenerationException;
 import net.sf.jsom.java5.Java5CodeSnippet;
 import net.sf.jsom.java5.Java5DeclaredMethod;
 import net.sf.jsom.java5.Java5SourceFile;
+
+import org.apache.log4j.Logger;
 
 @Scannable
 @Processor
@@ -78,7 +80,6 @@ public class DataObjectTranslatorProcessor {
 				src.getPublicClass().setClassName(className);
 				JsomUtils.addJavaFile(src, ctx);
 				type = new JavaServiceObjectType(className,pkg,className);
-				type.setPkg(pkg);
 				ctx.getTypes().addType(type);
 				ctx.addAttribute(JavascribeUtils.getLowerCamelName(className), className);
 			} else {
@@ -88,7 +89,6 @@ public class DataObjectTranslatorProcessor {
 			resultType = (JavaBeanType)var;
 
 			List<Attribute> inputs = JavascribeUtils.readAttributes(ctx, comp.getParams());
-			List<String> attribs = resultType.getAttributeNames();
 
 			CodeExecutionContext execCtx = new CodeExecutionContext(null, ctx.getTypes());
 			Java5DeclaredMethod method = new Java5DeclaredMethod(new JavascribeVariableTypeResolver(ctx.getTypes()));
@@ -97,24 +97,63 @@ public class DataObjectTranslatorProcessor {
 			method.setType(resultType.getName());
 			method.setMethodBody(body);
 			src.getPublicClass().addMethod(method);
+			Map<String,String> inputMap = new HashMap<String,String>();
 			for(Attribute i : inputs) {
 				execCtx.addVariable(i.getName(), i.getType());
 				method.addArg(i.getType(), i.getName());
+				inputMap.put(i.getName(), i.getType());
 			}
 			type.addMethod(JsomUtils.createJavaOperation(method));
 
-			execCtx.addVariable("_ret", resultType.getName());
+			//execCtx.addVariable("_ret", resultType.getName());
 			JsomUtils.merge(body, (JavaCode)resultType.declare("_ret", execCtx));
 			JsomUtils.merge(body, (JavaCode)resultType.instantiate("_ret", null, execCtx));
 
 			List<FieldTranslator> trans = DataObjectTranslatorUtils.geTranslationStrategy(comp.getStrategy(), ctx);
 			
+			FieldTranslatorContextImpl translatorContext = new FieldTranslatorContextImpl(ctx,execCtx,inputMap);
+			List<String> toTranslate = resultType.getAttributeNames();
+			while(toTranslate.size()>0) {
+				List<String> toRemove = new ArrayList<String>();
+				for(String field : toTranslate) {
+					String fieldTypeName = resultType.getAttributeType(field);
+					if (execCtx.getVariableType(field)==null) {
+						// The field isn't in the execCtx, try to translate it.
+						JavaCode code = null;
+						for(FieldTranslator tr : trans) {
+							code = tr.getAttribute(field, fieldTypeName, field, translatorContext);
+							if (code!=null) {
+								break;
+							}
+						}
+						if (code!=null) {
+							JsomUtils.merge(body, JavaUtils.declare(field, fieldTypeName, ctx, execCtx));
+							// Add the field to the execCtx
+							execCtx.addVariable(field, fieldTypeName);
+							JsomUtils.merge(body, code);
+							String setter = resultType.getCodeToSetAttribute("_ret", field, field, execCtx);
+							body.append(setter+";\n");
+							toRemove.add(field);
+						}
+					} else {
+						// We already have the field in the execCtx, translate it to the target.
+						String merge = resultType.getCodeToSetAttribute("_ret", field, field, execCtx)+";\n";
+						body.append(merge);
+						toRemove.add(field);
+					}
+				}
+				if (toRemove.size()==0) {
+					throw new JavascribeException("Translator was unable to translate field '"+toTranslate.get(0)+"'");
+				} else {
+					toTranslate.removeAll(toRemove);
+				}
+			}
+			/*
 			for(FieldTranslator tr : trans) {
 				JavaCode append = tr.translateFields(resultType, "_ret", execCtx, ctx,attribs);
 				JsomUtils.merge(body, append);
 				if (attribs.size()==0) break;
 			}
-			
 			if (attribs.size()>0) {
 				throw new JavascribeException("Could not translate field '"+attribs.get(0)+"'");
 			}
@@ -143,6 +182,7 @@ public class DataObjectTranslatorProcessor {
 				if (!done)
 					throw new JavascribeException("Couldn't find any translation for field '"+a+"' in result type");
 			}
+			*/
 			// Return the result
 			body.append("return _ret;\n");
 		} catch(CodeGenerationException e) {

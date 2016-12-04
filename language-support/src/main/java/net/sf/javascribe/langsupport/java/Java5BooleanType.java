@@ -12,16 +12,10 @@ import net.sf.javascribe.langsupport.java.jsom.JsomJavaCode;
 import net.sf.jsom.java5.Java5CodeSnippet;
 import net.sf.jsom.java5.Java5Type;
 
-public class Java5BooleanType implements BooleanType,JavaVariableType,Java5Type {
+public class Java5BooleanType extends JavaVariableTypeBase implements BooleanType,Java5Type {
 
-	@Override
-	public String getClassName() {
-	    return "Boolean";
-	}
-
-	@Override
-	public String getImport() { 
-		return null;
+	public Java5BooleanType() {
+		super("boolean",null,"Boolean");
 	}
 	
 	@Override
@@ -59,14 +53,13 @@ public class Java5BooleanType implements BooleanType,JavaVariableType,Java5Type 
 	}
 
 	@Override
-	public String getName() {
-		return "boolean";	}
-
-	@Override
 	public Java5CodeSnippet instantiate(String varName, String value) {
 		Java5CodeSnippet ret = new Java5CodeSnippet();
 		
-		ret.append(varName+" = "+value+";\n");
+		if (varName!=null) {
+			ret.append(varName+" = ");
+		}
+		ret.append(value+";\n");
 		
 		return ret;
 	}
@@ -81,14 +74,12 @@ public class Java5BooleanType implements BooleanType,JavaVariableType,Java5Type 
 	}
 
 	@Override
-	public JavaCode instantiate(String name, String value,
-			CodeExecutionContext execCtx) throws JavascribeException {
+	public JavaCode instantiate(String name, String value,CodeExecutionContext execCtx) {
 		return new JsomJavaCode(instantiate(name, value));
 	}
 
 	@Override
-	public JavaCode declare(String name, CodeExecutionContext execCtx)
-			throws JavascribeException {
+	public JavaCode declare(String name, CodeExecutionContext execCtx) {
 		return new JsomJavaCode(declare(name));
 	}
 

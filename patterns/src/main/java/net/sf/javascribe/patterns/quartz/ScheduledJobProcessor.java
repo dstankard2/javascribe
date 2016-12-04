@@ -17,7 +17,6 @@ import net.sf.javascribe.langsupport.java.JavaUtils;
 import net.sf.javascribe.langsupport.java.JavaVariableTypeImpl;
 import net.sf.javascribe.langsupport.java.jsom.JavascribeJavaCodeSnippet;
 import net.sf.javascribe.langsupport.java.jsom.JavascribeVariableTypeResolver;
-import net.sf.javascribe.langsupport.java.jsom.JsomJava5TypeImpl;
 import net.sf.javascribe.langsupport.java.jsom.JsomUtils;
 import net.sf.javascribe.patterns.CorePatternConstants;
 import net.sf.javascribe.patterns.servlet.WebUtils;
@@ -104,7 +103,7 @@ public class ScheduledJobProcessor {
 
 				// Add type for JobExecutionContext if it's not there
 				if (ctx.getTypes().getType("JobExecutionContext")==null) {
-					ctx.getTypes().addType(new JavaVariableTypeImpl("JobExecutionContext","org.quartz.JobExecutionContext","JobExecutionContext"));
+					ctx.getTypes().addType(new JavaVariableTypeImpl("JobExecutionContext","org.quartz","JobExecutionContext"));
 				}
 
 				processFile = JsomUtils.createJavaSourceFile(ctx);
@@ -153,7 +152,7 @@ public class ScheduledJobProcessor {
 
 	private void addQuartzTypes(ProcessorContext ctx) throws JavascribeException {
 		if (ctx.getTypes().getType("Scheduler")==null) {
-			ctx.getTypes().addType(new JsomJava5TypeImpl("Scheduler","org.quartz.Scheduler","Scheduler"));
+			ctx.getTypes().addType(new JavaVariableTypeImpl("Scheduler","org.quartz","Scheduler"));
 		}
 
 	}

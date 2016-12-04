@@ -96,7 +96,7 @@ public class JsomUtils {
 	 * @return
 	 * @throws JavascribeException
 	 */
-	public static Java5CodeSnippet toJsomCode(JavaCode code) throws JavascribeException {
+	public static Java5CodeSnippet toJsomCode(JavaCode code) {
 		Java5CodeSnippet ret = new Java5CodeSnippet();
 		
 		for(String s : code.getImports()) {
@@ -140,9 +140,13 @@ public class JsomUtils {
 		return ret;
 	}
 	
-	public static void merge(Java5CompatibleCodeSnippet code,JavaCode merge) throws CodeGenerationException,JavascribeException {
-		Java5CodeSnippet m = toJsomCode(merge);
-		code.merge(m);
+	public static void merge(Java5CompatibleCodeSnippet code,JavaCode merge) {
+		try {
+			Java5CodeSnippet m = toJsomCode(merge);
+			code.merge(m);
+		} catch(CodeGenerationException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**

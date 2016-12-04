@@ -100,9 +100,7 @@ public class EjbqlQueryProcessor {
 				JsomUtils.merge(code, loc.getEntityManager("this.tx", null));
 				cons.setMethodBody(code);
 				src.getPublicClass().addMethod(cons);
-				objType = new DataAccessJavaServiceObjectType(query.getQuerySet(),pkg,query.getQuerySet());
-				objType.setPkg(pkg);
-				objType.setClassName(className);
+				objType = new DataAccessJavaServiceObjectType(className,pkg,className);
 				String lowerCamel = JavascribeUtils.getLowerCamelName(objType.getName());
 				JsomUtils.addJavaFile(src, ctx);
 				ctx.getTypes().addType(objType);

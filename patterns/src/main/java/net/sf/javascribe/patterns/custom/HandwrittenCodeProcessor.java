@@ -36,7 +36,6 @@ import net.sf.javascribe.langsupport.java.jsom.JsomUtils;
 import net.sf.javascribe.patterns.servlet.WebServletFilter;
 import net.sf.javascribe.patterns.servlet.WebUtils;
 import net.sf.javascribe.patterns.servlet.WebXmlFile;
-import net.sf.jsom.CodeGenerationException;
 import net.sf.jsom.java5.Java5CodeSnippet;
 import net.sf.jsom.java5.Java5DeclaredMethod;
 import net.sf.jsom.java5.Java5SourceFile;
@@ -46,7 +45,7 @@ import org.apache.log4j.Logger;
 @Scannable
 @Processor
 public class HandwrittenCodeProcessor {
-	static Logger log = Logger.getLogger(HandwrittenCodeProcessor.class);
+	public static Logger log = Logger.getLogger(HandwrittenCodeProcessor.class);
 
 	@ProcessorMethod(componentClass=HandwrittenCode.class)
 	public void process(HandwrittenCode comp,ProcessorContext ctx) throws JavascribeException {
@@ -293,29 +292,27 @@ public class HandwrittenCodeProcessor {
 			locator.setType(name);
 			Java5CodeSnippet code = new Java5CodeSnippet();
 			locator.setMethodBody(code);
-			try {
-				JsomUtils.merge(code, srvType.declare("_ret"));
-				code.append("_ret = new "+name+"();\n");
 
-				for(String dep : deps) {
-					String upperCamel = JavascribeUtils.getUpperCamelName(dep);
-					String typeName = ctx.getAttributeType(dep);
-					if (typeName==null) {
-						throw new JavascribeException("Found an unrecognized dependency '"+dep+"'");
-					}
-					VariableType type = ctx.getType(typeName);
-					if (!(type instanceof Injectable)) {
-						throw new JavascribeException("Found a dependency '"+typeName+"' that is not an injectable type");
-					}
-					Injectable inj = (Injectable)type;
-					JsomUtils.merge(code, inj.getInstance(dep, null));
-					code.append("_ret.set"+upperCamel+"("+dep+");\n");
+			JsomUtils.merge(code, srvType.declare("_ret"));
+			code.append("_ret = new "+name+"();\n");
+
+			for(String dep : deps) {
+				String upperCamel = JavascribeUtils.getUpperCamelName(dep);
+				String typeName = ctx.getAttributeType(dep);
+				if (typeName==null) {
+					throw new JavascribeException("Found an unrecognized dependency '"+dep+"'");
 				}
-				code.append("return _ret;\n");
-				locatorFile.getPublicClass().addMethod(locator);
-			} catch(CodeGenerationException e) {
-				throw new JavascribeException("JSOM Exception",e);
+				VariableType type = ctx.getType(typeName);
+				if (!(type instanceof Injectable)) {
+					throw new JavascribeException("Found a dependency '"+typeName+"' that is not an injectable type");
+				}
+				Injectable inj = (Injectable)type;
+				JsomUtils.merge(code, inj.getInstance(dep, null));
+				code.append("_ret.set"+upperCamel+"("+dep+");\n");
 			}
+			code.append("return _ret;\n");
+			locatorFile.getPublicClass().addMethod(locator);
+
 		} else {
 			srvType = new JavaServiceObjectType(name, pkg, name);
 		}

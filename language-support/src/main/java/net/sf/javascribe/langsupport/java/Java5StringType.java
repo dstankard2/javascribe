@@ -12,29 +12,16 @@ import net.sf.javascribe.langsupport.java.jsom.JsomJavaCode;
 import net.sf.jsom.java5.Java5CodeSnippet;
 import net.sf.jsom.java5.Java5Type;
 
-public class Java5StringType implements JavaVariableType,Java5Type,StringType {
+public class Java5StringType extends JavaVariableTypeBase implements Java5Type,StringType {
 
-	@Override
-	public String getClassName() {
-		return "String";
+	public Java5StringType() {
+		super("string",null,"String");
 	}
-
-	@Override
-	public String getImport() {
-		return null;
-	}
-
-	@Override
-	public String getName() {
-		return "string";
-	}
-
+	
 	@Override
 	public Java5CodeSnippet instantiate(String varName, String value) {
 		Java5CodeSnippet ret = new Java5CodeSnippet();
-		
 		ret.append(varName+" = "+value+";\n");
-		
 		return ret;
 	}
 
@@ -86,9 +73,7 @@ public class Java5StringType implements JavaVariableType,Java5Type,StringType {
 	}
 
 	@Override
-	public JavaCode declare(String name, CodeExecutionContext execCtx)
-			throws JavascribeException {
-
+	public JavaCode declare(String name, CodeExecutionContext execCtx) {
 		return new JsomJavaCode(declare(name));
 	}
 

@@ -84,6 +84,7 @@ public class FnDirective implements ElementDirective {
 		}
 		
 		if (event!=null) {
+			String container = ctx.getContainerVarName();
 			if (ctx.getContainerVarName()==null) {
 				throw new JavascribeException("You may not assign an event to a js-fn unless it is inside a HTML Template DOM Element");
 			}
@@ -93,8 +94,13 @@ public class FnDirective implements ElementDirective {
 			if (dispatcher==null) {
 				throw new JavascribeException("Couldn't attach a js-fn to event '"+event+"' because there is no event dispatcher present");
 			}
-			String ref = DirectiveUtils.parsePartialExpression(event, execCtx);
-			code.append(dispatcher+"("+ref+","+name+","+ctx.getContainerVarName()+");\n");
+			String events[] = event.split(",");
+			for(String e : events) {
+				String ref = DirectiveUtils.parsePartialExpression(e, execCtx);
+				String cb = DirectiveUtils.newVarName("_cb", "function", execCtx);
+				code.append("var "+cb+" = "+dispatcher+"("+ref+","+name+");\n");
+				code.append(container+".$$remove.push("+cb+");\n");
+			}
 		}
 	}
 

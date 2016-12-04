@@ -23,13 +23,12 @@ public class DomainServiceLocatorType extends JavaServiceObjectType implements I
 	}
 	
 	@Override
-	public JavaCode instantiate(String varName, String value,CodeExecutionContext execCtx)
-			throws JavascribeException {
-		throw new JavascribeException("JpaDaoFactory does not support instantiate");
+	public JavaCode instantiate(String varName, String value,CodeExecutionContext execCtx) {
+		throw new RuntimeException("JpaDaoFactory does not support instantiate");
 	}
 
 	@Override
-	public JavaCode declare(String varName,CodeExecutionContext execCtx) throws JavascribeException {
+	public JavaCode declare(String varName,CodeExecutionContext execCtx) {
 		JavaCodeImpl ret = new JavaCodeImpl();
 		ret.addImport(getImport());
 		ret.appendCodeText(getClassName()+" "+varName+" = null;\n");
@@ -52,15 +51,6 @@ public class DomainServiceLocatorType extends JavaServiceObjectType implements I
 	@Override
 	public List<String> getAvailableServices() {
 		return serviceNames;
-	}
-
-	@Override
-	public String getService(String locatorInstanceName,String serviceName,String serviceInstanceName,CodeExecutionContext execCtx) throws JavascribeException {
-		StringBuilder build = new StringBuilder();
-		
-		build.append(serviceInstanceName+" = "+locatorInstanceName+".get"+serviceName+"();\n");
-		
-		return build.toString();
 	}
 
 	@Override

@@ -1,7 +1,6 @@
 package net.sf.javascribe.langsupport.java;
 
 import net.sf.javascribe.api.CodeExecutionContext;
-import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.types.MapType;
 import net.sf.javascribe.langsupport.java.jsom.JsomJavaCode;
 import net.sf.jsom.CodeGenerationException;
@@ -16,13 +15,13 @@ import net.sf.jsom.java5.Java5Type;
  * @author Dave
  *
  */
-public class Java5MapType implements JavaVariableType,Java5Type,MapType {
+// TODO: Map type should take parameters for both key type and element type
+public class Java5MapType extends JavaVariableTypeBase implements Java5Type,MapType {
 
-	@Override
-	public String getName() {
-		return "map";
+	public Java5MapType() {
+		super("map","java.util","Map");
 	}
-
+	
 	@Override
 	public CodeSnippet instantiate(String varName, String value) {
 		return null;
@@ -50,7 +49,7 @@ public class Java5MapType implements JavaVariableType,Java5Type,MapType {
 			CodeExecutionContext execCtx) {
 		Java5CodeSnippet code = new Java5CodeSnippet();
 		JavaVariableType eltType = (JavaVariableType)execCtx.getTypes().getType(elementType);
-		
+
 		code.addImport(eltType.getImport());
 		code.addImport("java.util.HashMap");
 		code.append(varName+" = new HashMap<String,"+eltType.getClassName()+">();\n");
@@ -69,10 +68,8 @@ public class Java5MapType implements JavaVariableType,Java5Type,MapType {
 	}
 
 	@Override
-	public JavaCode declare(String name, CodeExecutionContext execCtx)
-			throws JavascribeException {
-		// TODO Auto-generated method stub
-		return null;
+	public JavaCode declare(String name, CodeExecutionContext execCtx) {
+		throw new RuntimeException("Map must be declared with an element type");
 	}
 
 }

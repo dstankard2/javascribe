@@ -10,43 +10,31 @@ import net.sf.javascribe.api.expressions.ValueExpression;
 import net.sf.javascribe.api.expressions.VarReferenceExpressionAtom;
 import net.sf.javascribe.api.types.IntegerType;
 import net.sf.javascribe.langsupport.java.jsom.JsomJavaCode;
+import net.sf.javascribe.langsupport.java.jsom.JsomUtils;
 import net.sf.jsom.java5.Java5CodeSnippet;
 import net.sf.jsom.java5.Java5Type;
 
-public class Java5IntegerType implements IntegerType,JavaVariableType,Java5Type {
+public class Java5IntegerType extends JavaVariableTypeBase implements IntegerType,Java5Type {
 
-	@Override
-	public String getClassName() {
-		return "Integer";
-	}
-
-	@Override
-	public String getImport() {
-		return null;
-	}
-
-	@Override
-	public String getName() {
-		return "integer";
+	public Java5IntegerType() {
+		super("integer",null,"Integer");
 	}
 
 	@Override
 	public Java5CodeSnippet instantiate(String varName, String value) {
 		Java5CodeSnippet ret = new Java5CodeSnippet();
-		
-		ret.append(varName+" = "+value+";\n");
-		
+		JsomUtils.merge(ret, super.instantiate(varName, value, null));
 		return ret;
 	}
 
 	@Override
 	public Java5CodeSnippet declare(String varName) {
 		Java5CodeSnippet ret = new Java5CodeSnippet();
-		
-		ret.append("Integer "+varName+" = null;\n");
+		JsomUtils.merge(ret, super.declare(varName,null));
 		return ret;
 	}
 
+	@Override
 	public String evaluateExpression(ValueExpression expr,CodeExecutionContext execCtx) throws JavascribeException {
 	    StringBuilder build = new StringBuilder();
 		ExpressionAtom atom = expr.getAtom(0);
@@ -72,14 +60,7 @@ public class Java5IntegerType implements IntegerType,JavaVariableType,Java5Type 
 	}
 
 	@Override
-	public JavaCode instantiate(String name, String value,
-			CodeExecutionContext execCtx) throws JavascribeException {
-		return new JsomJavaCode(instantiate(name, value));
-	}
-
-	@Override
-	public JavaCode declare(String name, CodeExecutionContext execCtx)
-			throws JavascribeException {
+	public JavaCode declare(String name, CodeExecutionContext execCtx) {
 		return new JsomJavaCode(declare(name));
 	}
 	

@@ -2,14 +2,8 @@ package net.sf.javascribe.langsupport.java.jsom;
 
 import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JavascribeException;
-import net.sf.javascribe.api.expressions.CodeFragmentExpressionAtom;
-import net.sf.javascribe.api.expressions.ExpressionUtil;
-import net.sf.javascribe.api.expressions.ValueExpression;
 import net.sf.javascribe.langsupport.java.JavaBeanType;
-import net.sf.javascribe.langsupport.java.JavaCode;
-import net.sf.javascribe.langsupport.java.JavaCodeImpl;
 import net.sf.jsom.CodeGenerationException;
-import net.sf.jsom.java5.Java5CodeSnippet;
 import net.sf.jsom.java5.Java5CompatibleCodeSnippet;
 import net.sf.jsom.java5.Java5Type;
 
@@ -19,6 +13,7 @@ public class JsomJavaBeanType extends JavaBeanType implements Java5Type {
 		super(name, pkg, cl);
 	}
 
+	/*
 	public JavaCode declare(String varName, CodeExecutionContext execCtx) {
 		JavaCodeImpl ret = new JavaCodeImpl();
 		
@@ -30,7 +25,9 @@ public class JsomJavaBeanType extends JavaBeanType implements Java5Type {
 
 		return ret;
 	}
+	*/
 
+	/*
 	@Override
 	public JsomJavaCode instantiate(String varName, String value,
 			CodeExecutionContext execCtx) throws JavascribeException {
@@ -50,6 +47,7 @@ public class JsomJavaBeanType extends JavaBeanType implements Java5Type {
 		}
 		return new JsomJavaCode(ret);
 	}
+	*/
 
 	@Override
 	public String getCodeToRetrieveAttribute(String varName, String attribName,
@@ -82,13 +80,8 @@ public class JsomJavaBeanType extends JavaBeanType implements Java5Type {
 	}
 
 	@Override
-	public Java5CompatibleCodeSnippet instantiate(String varName, String value)
-			throws CodeGenerationException {
-		try {
-			return new JavascribeJavaCodeSnippet(instantiate(varName, value,null));
-		} catch (JavascribeException e) {
-			throw new CodeGenerationException("Javascribe exception while instantiating bean type", e);
-		}
+	public Java5CompatibleCodeSnippet instantiate(String varName, String value) {
+		return new JavascribeJavaCodeSnippet(instantiate(varName, value,null));
 	}
 
 	@Override

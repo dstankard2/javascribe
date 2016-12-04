@@ -8,7 +8,7 @@ var ${eltVar}_model = function() {
 	var val = null;
 	try {
 		val = ${getter};
-		if (!val) val = '';
+		if ((val===undefined) || (val===null)) val = '';
 	} catch(err) { }
 	${eltVar}.value = val;
 };

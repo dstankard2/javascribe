@@ -57,8 +57,6 @@ public class ServiceProcessor {
 			serviceType = (JavaServiceObjectType)ctx.getTypes().getType(serviceName);
 			if (serviceType==null) {
 				serviceType = new JavaServiceObjectType(serviceName,servicePkg,serviceName);
-				serviceType.setClassName(serviceName);
-				serviceType.setPkg(servicePkg);
 				ctx.getTypes().addType(serviceType);
 			}
 

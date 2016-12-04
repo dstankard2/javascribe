@@ -1,17 +1,13 @@
 package net.sf.javascribe.patterns.translator.impl;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 
-import net.sf.javascribe.api.AttributeHolder;
 import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.ProcessorContext;
-import net.sf.javascribe.api.VariableType;
 import net.sf.javascribe.api.annotation.Scannable;
-import net.sf.javascribe.api.types.ListType;
 import net.sf.javascribe.langsupport.java.JavaCode;
 import net.sf.javascribe.langsupport.java.JavaOperation;
 import net.sf.javascribe.langsupport.java.JavaServiceObjectType;
@@ -19,11 +15,8 @@ import net.sf.javascribe.langsupport.java.JavaUtils;
 import net.sf.javascribe.langsupport.java.JavaVariableType;
 import net.sf.javascribe.langsupport.java.LocatedJavaServiceObjectType;
 import net.sf.javascribe.langsupport.java.ServiceLocator;
-import net.sf.javascribe.langsupport.java.jsom.JsomJavaCode;
-import net.sf.javascribe.langsupport.java.jsom.JsomUtils;
 import net.sf.javascribe.patterns.translator.FieldTranslator;
-import net.sf.jsom.CodeGenerationException;
-import net.sf.jsom.java5.Java5CodeSnippet;
+import net.sf.javascribe.patterns.translator.FieldTranslatorContext;
 
 @Scannable
 public class DependencyScanTranslator implements FieldTranslator {
@@ -36,18 +29,15 @@ public class DependencyScanTranslator implements FieldTranslator {
 	}
 
 	@Override
-	public JavaCode translateFields(AttributeHolder targetType,
-			String targetVarName, CodeExecutionContext execCtx,ProcessorContext ctx,
-			List<String> fieldsToTranslate) throws JavascribeException {
-		Java5CodeSnippet ret = new Java5CodeSnippet();
-		List<String> remove = new ArrayList<String>();
-		
+	public JavaCode getAttribute(String attributeName, String attributeType, String targetVariable, FieldTranslatorContext translatorCtx) throws JavascribeException {
+		ProcessorContext ctx = translatorCtx.getCtx();
+		CodeExecutionContext execCtx = translatorCtx.getExecCtx();
+
 		String depString = ctx.getRequiredProperty(DATA_OBJECT_TRANSLATOR_DEPENDENCIES);
 		
-		HashMap<String,JavaServiceObjectType> deps = new HashMap<String,JavaServiceObjectType>();
+		HashMap<String,JavaServiceObjectType> refs = new HashMap<String,JavaServiceObjectType>();
 		StringTokenizer tok = new StringTokenizer(depString,",");
 		
-		try {
 		while(tok.hasMoreTokens()) {
 			String s = tok.nextToken();
 			String typeName = ctx.getAttributeType(s);
@@ -58,98 +48,64 @@ public class DependencyScanTranslator implements FieldTranslator {
 			if (type==null) {
 				throw new JavascribeException("Found an invalid dependency for a translator: '"+s+"'");
 			}
+			
 			if (type instanceof ServiceLocator) {
 				ServiceLocator locator = (ServiceLocator)type;
-				JsomUtils.merge(ret, (JavaCode)locator.declare(s, execCtx));
-				JsomUtils.merge(ret, (JavaCode)locator.instantiate(s, null, execCtx));
-				execCtx.addVariable(s, type.getName());
-				List<String> services = locator.getAvailableServices();
-				for(String service : services) {
-					String ref = locator.getService(s, service, execCtx);
+				String inst = locator.instantiate();
+				
+				for(String service : locator.getAvailableServices()) {
+					String ref = locator.getService(inst, service, execCtx);
 					JavaServiceObjectType srv = (JavaServiceObjectType)ctx.getObject(service);
-					deps.put(ref, srv);
+					refs.put(ref, srv);
 				}
 			} else if (type instanceof LocatedJavaServiceObjectType) {
 				LocatedJavaServiceObjectType srv = (LocatedJavaServiceObjectType)type;
-				deps.put(s, srv);
-				JsomUtils.merge(ret, srv.getInstance(s, null));
+				String ref = srv.getAnonymousInstance();
+				refs.put(ref,srv);
 			} else if (type instanceof JavaServiceObjectType) {
-				deps.put(s, (JavaServiceObjectType)type);
 				JavaServiceObjectType srv = (JavaServiceObjectType)type;
-				JsomUtils.merge(ret, (JavaCode)srv.declare(s));
-				JsomUtils.merge(ret, (JavaCode)srv.instantiate(s, null));
-			} 
+				String ref = srv.instantiate();
+				refs.put(ref, srv);
+			}
+
 		}
 		
-		for(String f : fieldsToTranslate) {
-			for(String dep : deps.keySet()) {
-				JavaVariableType type = deps.get(dep);
-				if (type instanceof JavaServiceObjectType) {
-					JavaServiceObjectType srv = (JavaServiceObjectType)type;
-					boolean result = tryServiceObject(srv,targetVarName,f,dep,ret,execCtx);
-					if (result) {
-						remove.add(f);
-						break;
-					}
-				}
+		for(String ref : refs.keySet()) {
+			JavaServiceObjectType srv = refs.get(ref);
+			JavaCode result = tryServiceObject(targetVariable,srv,attributeName,attributeType,ref,execCtx);
+			if (result!=null) {
+				return result;
 			}
 		}
-		fieldsToTranslate.removeAll(remove);
-		} catch(CodeGenerationException e) {
-			throw new JavascribeException("JSOM exception while generating data object translator",e);
-		}
-		
-		return new JsomJavaCode(ret);
+
+		return null;
 	}
-	
-	private boolean tryServiceObject(JavaServiceObjectType srv,String targetVarName,String field,String ref,Java5CodeSnippet code,CodeExecutionContext execCtx) throws JavascribeException {
-		String name = "get"+Character.toUpperCase(field.charAt(0))+field.substring(1);
-		AttributeHolder targetType = null;
-		
-		targetType = (AttributeHolder)execCtx.getTypeForVariable(targetVarName);
+
+	private JavaCode tryServiceObject(String resultVariable,JavaServiceObjectType srv,String attribute,String attributeType,String serviceRef,CodeExecutionContext execCtx) throws JavascribeException {
+		String name = "get"+Character.toUpperCase(attribute.charAt(0))+attribute.substring(1);
 		
 		for(JavaOperation op : srv.getMethods()) {
 			if (!op.getName().equals(name)) {
 				continue;
 			}
-			if (attemptInvoke(op,targetVarName,field,targetType.getAttributeType(field),targetType,execCtx,ref,code)) {
-				return true;
+			if (!op.getReturnType().equals(attributeType)) continue;
+			JavaCode result = attemptInvoke(serviceRef,op,resultVariable,execCtx);
+			if (result!=null) {
+				return result;
 			}
 		}
 		
-		return false;
+		return null;
 	}
 	
-	private boolean attemptInvoke(JavaOperation op,String targetVarName,String attribName,String attribTypeName,AttributeHolder targetType,CodeExecutionContext execCtx,String ref,Java5CodeSnippet code) {
-		
+	private JavaCode attemptInvoke(String serviceRef,JavaOperation op,String resultVar,CodeExecutionContext execCtx) {
+		JavaCode ret = null;
 		try {
-			VariableType attribType = execCtx.getType(attribTypeName);
-			if (execCtx.getTypeForVariable(attribName)==null) {
-				try {
-					if (attribTypeName.startsWith("list/")) {
-						ListType l = (ListType)attribType;
-						JsomUtils.merge(code,(JavaCode)l.declare(attribName, attribTypeName.substring(5), execCtx));
-					} else {
-						JsomUtils.merge(code, (JavaCode)attribType.declare(attribName, execCtx));
-					}
-					execCtx.addVariable(attribName, attribTypeName);
-				} catch(CodeGenerationException e) {
-					throw new JavascribeException("Internal error",e);
-				}
-			}
-			JavaCode result = JavaUtils.callJavaOperation(attribName, ref, op, execCtx, null,false);
-			try {
-				JsomUtils.merge(code, result);
-			} catch(CodeGenerationException e) {
-				throw new JavascribeException("Couldn't invoke method",e);
-			}
-			String c = targetType.getCodeToSetAttribute(targetVarName, attribName, attribName, execCtx).trim();
-			code.append(c+";\n");
-		} catch(JavascribeException e) {
-			return false;
+			ret = JavaUtils.callJavaOperation(resultVar, serviceRef, op, execCtx, null);
+		} catch(Exception e) {
+			return null;
 		}
-		
-		return true;
+		return ret;
 	}
 
 }

@@ -40,7 +40,7 @@ public class PageProcessor {
 		init.append("this.view.page = document.getElementById('"+pageName+"');\n");
 		init.append("this.eventDispatcher = new EventDispatcher();\n");
 		pageType.addAttribute("eventDispatcher", "EventDispatcher");
-		init.append("this.event = function(event,callback,element) {this.eventDispatcher.event(event,callback,element);}.bind("+page.getPageName()+");\n");
+		init.append("this.event = function(event,callback) {return this.eventDispatcher.event(event,callback);}.bind("+page.getPageName()+");\n");
 		//src.getSource().append(page.getPageName()+".controller = new EventDispatcher();\n");
 		//src.getSource().append(page.getPageName()+".event = function(event,callback,element) {this.controller.event(event,callback,element);}.bind("+page.getPageName()+");\n");
 		

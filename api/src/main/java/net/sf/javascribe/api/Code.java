@@ -12,7 +12,7 @@ public interface Code {
 	 * @return Generated code.
 	 * @throws JavascribeException If there is a problem.
 	 */
-	public String getCodeText() throws JavascribeException;
+	public String getCodeText();
 	
 	/**
 	 * Appends the specified string to the end of this code piece.

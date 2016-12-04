@@ -10,6 +10,8 @@ import net.sf.javascribe.api.annotation.Scannable;
 import net.sf.javascribe.api.config.ComponentBase;
 import net.sf.javascribe.patterns.CorePatternConstants;
 
+// TODO: I'm not sure this is working any more.  Developer should use handwritten code instead, anyway.
+@Deprecated
 @Scannable
 @XmlRootElement(name="customLogic")
 @XmlAccessorType(XmlAccessType.FIELD)

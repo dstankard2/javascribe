@@ -13,8 +13,12 @@ import net.sf.jsom.CodeSnippet;
 import net.sf.jsom.java5.Java5CodeSnippet;
 import net.sf.jsom.java5.Java5Type;
 
-public class Java5ListType implements ListType,Java5Type,JavaVariableType {
+public class Java5ListType extends JavaVariableTypeBase implements ListType,Java5Type {
 
+	public Java5ListType() {
+		super("list","java.util","List");
+	}
+	
 	@Override
 	public Code appendToList(String listVarName, String value,
 			CodeExecutionContext execCtx) throws JavascribeException {
@@ -43,7 +47,6 @@ public class Java5ListType implements ListType,Java5Type,JavaVariableType {
 	@Override
 	public String getCodeToSetAttribute(String varName, String attribName,
 			String evaluatedValue,CodeExecutionContext execCtx) throws JavascribeException {
-		// TODO Auto-generated method stub
 		throw new JavascribeException("Java List type does not support set attribute.");
 	}
 
@@ -54,23 +57,8 @@ public class Java5ListType implements ListType,Java5Type,JavaVariableType {
 	}
 
 	@Override
-	public String getClassName() {
-		return "List";
-	}
-
-	@Override
-	public String getImport() {
-		return "java.util.List";
-	}
-
-	@Override
-	public String getName() {
-		return "list";
-	}
-
-	@Override
-	public JavaCode declare(String varName,CodeExecutionContext execCtx) throws JavascribeException {
-		throw new JavascribeException("Java List type must be declared with an element type.");
+	public JavaCode declare(String varName,CodeExecutionContext execCtx) {
+		throw new RuntimeException("Java List type must be declared with an element type.");
 	}
 
 	@Override
@@ -96,7 +84,10 @@ public class Java5ListType implements ListType,Java5Type,JavaVariableType {
 
 		ret.addImport(getImport());
 		ret.addImport(elt.getImport());
-		ret.appendCodeText(varName+" = new java.util.ArrayList<"+elt.getClassName()+">();\n");
+		if (varName!=null) {
+			ret.appendCodeText(varName+" = ");
+		}
+		ret.appendCodeText("new java.util.ArrayList<"+elt.getClassName()+">();\n");
 		
 		return ret;
 	}

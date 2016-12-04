@@ -30,11 +30,7 @@ public class JavascribeVariableType implements Java5Type {
 
 	@Override
 	public CodeSnippet declare(String varName) throws CodeGenerationException {
-		try {
-			return new JavascribeJavaCodeSnippet((JsomJavaCode)type.declare(varName, null));
-		} catch(JavascribeException e) {
-			throw new CodeGenerationException("Couldn't declare",e);
-		}
+		return new JavascribeJavaCodeSnippet((JsomJavaCode)type.declare(varName, null));
 	}
 
 	@Override

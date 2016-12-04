@@ -26,19 +26,35 @@ public class LocatedJavaServiceObjectType extends JavaServiceObjectType {
 		return locatorClass;
 	}
 	
-	public JavaCode locateService(String varName,CodeExecutionContext execCtx) throws JavascribeException {
+	public JavaCode locateService(String varName,CodeExecutionContext execCtx) {
+		return locateService(varName,execCtx,true);
+	}
+	
+	protected JavaCode locateService(String varName,CodeExecutionContext execCtx,boolean completeCodeLine) {
 		JavaCodeImpl ret = new JavaCodeImpl();
 
 		ret.addImport(getImport());
-		ret.appendCodeText(varName+" = new "+locatorClass+"().get"+getName()+"();\n");
+		if (varName!=null) {
+			ret.appendCodeText(varName+" = ");
+		}
+		ret.appendCodeText("new "+locatorClass+"().get"+getName()+"()");
+		if (completeCodeLine) {
+			ret.appendCodeText(";\n");
+		}
 
 		return ret;
 	}
-	
+
+	public String getAnonymousInstance() {
+		JavaCode code = locateService(null,null,false);
+		return code.getCodeText();
+	}
+
 	public JavaCode getInstance(String instanceName,CodeExecutionContext execCtx) throws JavascribeException {
 		JavaCodeImpl ret = new JavaCodeImpl();
 		JavaUtils.append(ret, declare(instanceName));
 		JavaUtils.append(ret, locateService(instanceName,execCtx));
+		ret.appendCodeText(";\n");
 		return ret;
 	}
 	

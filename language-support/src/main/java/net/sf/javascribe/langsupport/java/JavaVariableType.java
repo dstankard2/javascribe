@@ -1,5 +1,6 @@
 package net.sf.javascribe.langsupport.java;
 
+import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.VariableType;
 
 /**
@@ -20,4 +21,6 @@ public interface JavaVariableType extends VariableType {
 	 */
 	public String getClassName();
 
+	public JavaCode declare(String name, CodeExecutionContext execCtx);
+	
 }

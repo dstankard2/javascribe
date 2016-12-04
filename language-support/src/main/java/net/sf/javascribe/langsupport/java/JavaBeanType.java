@@ -16,11 +16,11 @@ import net.sf.javascribe.api.AttributeHolder;
 /**
  * @author DCS
  */
-public abstract class JavaBeanType implements AttributeHolder,JavaVariableType {
-	protected String className = null;
+public abstract class JavaBeanType extends JavaVariableTypeBase implements AttributeHolder {
+	//protected String className = null;
 	protected HashMap<String,String> attributes = new HashMap<String,String>();
-	protected String pkg = null;
-	protected String name = null;
+	//protected String pkg = null;
+	//protected String name = null;
 	
 	public List<String> getAttributeNames() {
 		ArrayList<String> ret = new ArrayList<String>();
@@ -34,9 +34,7 @@ public abstract class JavaBeanType implements AttributeHolder,JavaVariableType {
 	}
 	
 	public JavaBeanType(String name,String pkg,String cl) {
-	    this.name = name;
-	    className = cl;
-	    this.pkg = pkg;
+		super(name,pkg,cl);
 	}
 
 	public String getGetterMethodName(String attrib) {
@@ -57,12 +55,14 @@ public abstract class JavaBeanType implements AttributeHolder,JavaVariableType {
 		return ret;
 	}
 	
+	/*
 	public void setPkg(String s) { pkg = s; }
 	
 	public void setClassName(String cl) { className = cl; }
 
 	public String getImport() { return pkg+'.'+className; }
 	public String getClassName() { return className; }
+	*/
 
 	public void addAttribute(String name,String type) {
 		name = Character.toLowerCase(name.charAt(0))+name.substring(1);
