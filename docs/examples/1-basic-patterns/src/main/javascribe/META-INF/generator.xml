@@ -8,13 +8,13 @@
 			These properties will allow the EntityManager pattern to read the database schema 
 			to read database entities.
 	     -->
-		<property name="net.sf.javascribe.patterns.model.EntityManagerComponent.codegen.catalog">js_example1</property>
-		<property name="net.sf.javascribe.patterns.model.EntityManagerComponent.codegen.jpaUrl">jdbc:mysql://localhost:3306/js_example1?autoReconnect=true</property>
+		<property name="net.sf.javascribe.patterns.model.EntityManagerComponent.codegen.catalog">bookshelf</property>
+		<property name="net.sf.javascribe.patterns.model.EntityManagerComponent.codegen.jpaUrl">jdbc:mysql://localhost:3306/bookshelf?autoReconnect=true</property>
 		<property name="net.sf.javascribe.patterns.model.EntityManagerComponent.codegen.jpaUsername">js_example</property>
 		<property name="net.sf.javascribe.patterns.model.EntityManagerComponent.codegen.jpaPassword">password</property>
 		<property name="net.sf.javascribe.patterns.model.EntityManagerComponent.databaseObjectNameResolver">default</property>
 		<property name="net.sf.javascribe.patterns.model.EntityManagerComponent.runtime.jpaDriver">com.mysql.jdbc.Driver</property>
-		<property name="net.sf.javascribe.patterns.model.EntityManagerComponent.runtime.jpaUrl">jdbc:mysql://localhost:3306/js_example1?autoReconnect=true</property>
+		<property name="net.sf.javascribe.patterns.model.EntityManagerComponent.runtime.jpaUrl">jdbc:mysql://localhost:3306/bookshelf?autoReconnect=true</property>
 		<property name="net.sf.javascribe.patterns.model.EntityManagerComponent.runtime.jpaUsername">js_example</property>
 		<property name="net.sf.javascribe.patterns.model.EntityManagerComponent.runtime.jpaPassword">welcome</property>
 

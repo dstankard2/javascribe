@@ -41,13 +41,8 @@ xmlns="http://javascribe.sf.net/config">
 	The relationships are not enforced in the JPA entities themselves.
 	 -->
 	<model:entityRelationships entityManager="TestDB" jpaDaoFactory="TestDBDaoFactory">
-		<!-- 
-		This relationship is valid only if the User entity has a field companyId.
-		APIs generated: 
-			Company CompanyDao.getCompany(userId);
-			List<User> UserDao.getUserList(companyId);
-		 -->
-		<model:rel>Company has many User</model:rel>
+		<model:rel>Book has a Publisher</model:rel>
+		<model:rel>Book has a Author</model:rel>
 	</model:entityRelationships>
 
 </componentSet>

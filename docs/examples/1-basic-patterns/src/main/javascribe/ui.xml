@@ -5,12 +5,14 @@ xmlns:comps="http://javascribe.sf.net/patterns/data-object"
 xmlns="http://javascribe.sf.net/config">
 
 	<!-- 
-	The Company object will be annotated with Jackson so it can be 
-	de-serialized from JSON.
+	Model objects will be annotated with Jackson so they can be 
+	serialized and de-serialized to and from JSON.
 	This is required to receive an object from a HTTP web service 
 	client.  It is not required to send a JSON object to the web 
 	service client.
 	-->
-	<comps:jsonObject name="Company" />
-	
+	<comps:jsonObject name="Book" />
+	<comps:jsonObject name="Publisher" />
+	<comps:jsonObject name="Author" />
+
 </componentSet>

@@ -1,19 +1,23 @@
 
-drop table User;
-create table User (
-	userId int not null auto_increment primary key,
-	firstName varchar(64) not null,
-	lastName varchar(64) not null,
-	email varchar(128) not null,
-	companyId int not null,
-	userType int,
-	userStatus int not null
+drop table Author;
+create table Author (
+	authorId int not null auto_increment primary key,
+	name varchar(128) not null
 );
 
-drop table Company;
-create table Company (
-	companyId int not null auto_increment primary key,
-	companyName varchar(128) not null,
-	companyType int
+drop table Publisher;
+create table Publisher (
+	publisherId int not null auto_increment primary key,
+	name varchar(128) not null
+);
+
+drop table Book;
+create table Book (
+	bookId int not null auto_increment primary key,
+	title varchar(128) not null,
+	authorId int not null,
+	publisherId int not null,
+	isFavorite int not null,
+	isRead int not null
 );
 
