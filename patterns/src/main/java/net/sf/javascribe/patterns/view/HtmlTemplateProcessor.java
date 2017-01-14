@@ -13,6 +13,8 @@ import net.sf.javascribe.langsupport.javascript.JavascriptObjectType;
 //import net.sf.javascribe.langsupport.javascript.JavascriptSourceFile;
 import net.sf.javascribe.langsupport.javascript.JavascriptSourceFile;
 import net.sf.javascribe.langsupport.javascript.JavascriptUtils;
+import net.sf.javascribe.patterns.xml.view.HtmlTemplate;
+import net.sf.javascribe.patterns.xml.view.TemplateText;
 
 import org.apache.log4j.Logger;
 

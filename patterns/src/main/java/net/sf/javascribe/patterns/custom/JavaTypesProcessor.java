@@ -8,6 +8,8 @@ import net.sf.javascribe.api.annotation.Scannable;
 import net.sf.javascribe.langsupport.java.JavaUtils;
 import net.sf.javascribe.langsupport.java.JavaVariableType;
 import net.sf.javascribe.langsupport.java.JavaVariableTypeImpl;
+import net.sf.javascribe.patterns.xml.custom.JavaType;
+import net.sf.javascribe.patterns.xml.custom.JavaTypes;
 
 @Scannable
 @Processor

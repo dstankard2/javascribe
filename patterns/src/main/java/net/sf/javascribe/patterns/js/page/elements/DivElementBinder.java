@@ -6,7 +6,7 @@ import java.util.Map;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.api.annotation.Scannable;
-import net.sf.javascribe.patterns.js.page.Binding;
+import net.sf.javascribe.patterns.xml.page.Binding;
 
 @Scannable
 @ElementBinder(elementType="div")

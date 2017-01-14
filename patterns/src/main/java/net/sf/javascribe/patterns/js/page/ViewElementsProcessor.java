@@ -12,6 +12,8 @@ import net.sf.javascribe.api.annotation.ProcessorMethod;
 import net.sf.javascribe.api.annotation.Scannable;
 import net.sf.javascribe.langsupport.javascript.JavascriptBaseObjectType;
 import net.sf.javascribe.patterns.js.page.elements.BinderUtils;
+import net.sf.javascribe.patterns.xml.page.Element;
+import net.sf.javascribe.patterns.xml.page.ViewElements;
 
 import org.apache.log4j.Logger;
 

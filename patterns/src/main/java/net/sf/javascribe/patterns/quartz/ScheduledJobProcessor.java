@@ -20,6 +20,7 @@ import net.sf.javascribe.langsupport.java.jsom.JavascribeVariableTypeResolver;
 import net.sf.javascribe.langsupport.java.jsom.JsomUtils;
 import net.sf.javascribe.patterns.CorePatternConstants;
 import net.sf.javascribe.patterns.servlet.WebUtils;
+import net.sf.javascribe.patterns.xml.quartz.ScheduledJob;
 import net.sf.jsom.CodeGenerationException;
 import net.sf.jsom.java5.Java5CodeSnippet;
 import net.sf.jsom.java5.Java5CompatibleCodeSnippet;

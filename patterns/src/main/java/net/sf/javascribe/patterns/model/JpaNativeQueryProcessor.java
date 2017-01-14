@@ -7,6 +7,7 @@ import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.annotation.Processor;
 import net.sf.javascribe.api.annotation.ProcessorMethod;
 import net.sf.javascribe.api.annotation.Scannable;
+import net.sf.javascribe.patterns.xml.model.JpaNativeQuery;
 
 @Scannable
 @Processor

@@ -6,6 +6,8 @@ import java.util.List;
 
 import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
+import net.sf.javascribe.patterns.xml.translator.TranslationOperation;
+import net.sf.javascribe.patterns.xml.translator.TranslationStrategy;
 
 public class DataObjectTranslatorUtils {
 

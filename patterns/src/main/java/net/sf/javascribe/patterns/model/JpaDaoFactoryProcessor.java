@@ -15,6 +15,7 @@ import net.sf.javascribe.langsupport.java.JavaCode;
 import net.sf.javascribe.langsupport.java.jsom.JavascribeJavaCodeSnippet;
 import net.sf.javascribe.langsupport.java.jsom.JavascribeVariableTypeResolver;
 import net.sf.javascribe.langsupport.java.jsom.JsomUtils;
+import net.sf.javascribe.patterns.xml.model.JpaDaoFactory;
 import net.sf.jsom.CodeGenerationException;
 import net.sf.jsom.java5.Java5ClassConstructor;
 import net.sf.jsom.java5.Java5CodeSnippet;

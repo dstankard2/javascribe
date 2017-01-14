@@ -21,15 +21,10 @@ public class LocalModelDirective implements ElementDirective {
 
 	@Override
 	public void generateCode(DirectiveContext ctx) throws JavascribeException {
-		String ref = ctx.getDomAttributes().get("name");
+		String ref = ctx.getDomAttributes().get("ref");
 		String attribs = ctx.getDomAttributes().get("attribs");
 		CodeExecutionContext execCtx = ctx.getExecCtx();
 		
-		/*
-		if ((ref==null) || (ref.trim().length()==0)) {
-			throw new JavascribeException("Directive js-local-model requires a 'ref' attribute");
-		}
-		*/
 		if ((attribs==null) || (attribs.trim().length()==0)) {
 			throw new JavascribeException("Directive js-local-model requires a 'attribs' attribute");
 		}

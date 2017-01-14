@@ -13,6 +13,7 @@ import net.sf.javascribe.api.annotation.Scannable;
 import net.sf.javascribe.langsupport.java.JavaVariableType;
 import net.sf.javascribe.langsupport.java.jsom.JsomUtils;
 import net.sf.javascribe.langsupport.javascript.JavascriptObjectType;
+import net.sf.javascribe.patterns.xml.dataobject.JsonObject;
 import net.sf.jsom.java5.Java5Annotation;
 import net.sf.jsom.java5.Java5MemberDeclaration;
 import net.sf.jsom.java5.Java5SourceFile;

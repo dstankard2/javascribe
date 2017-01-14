@@ -15,6 +15,8 @@ import net.sf.javascribe.langsupport.javascript.JavascriptUtils;
 import net.sf.javascribe.patterns.js.page.PageModelType;
 import net.sf.javascribe.patterns.js.page.PageType;
 import net.sf.javascribe.patterns.js.page.PageUtils;
+import net.sf.javascribe.patterns.xml.navigation.Page;
+import net.sf.javascribe.patterns.xml.navigation.PageNavigation;
 
 import org.apache.log4j.Logger;
 

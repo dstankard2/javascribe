@@ -5,6 +5,7 @@ import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.langsupport.java.jsom.JavascribeJavaCodeSnippet;
 import net.sf.javascribe.patterns.model.EntityManagerLocator;
+import net.sf.javascribe.patterns.xml.service.JpaTxOperation;
 import net.sf.jsom.CodeGenerationException;
 import net.sf.jsom.java5.Java5CodeSnippet;
 

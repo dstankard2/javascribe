@@ -7,6 +7,8 @@ import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.annotation.Processor;
 import net.sf.javascribe.api.annotation.ProcessorMethod;
 import net.sf.javascribe.api.annotation.Scannable;
+import net.sf.javascribe.patterns.xml.page.Attribute;
+import net.sf.javascribe.patterns.xml.page.PageModel;
 
 @Scannable
 @Processor
@@ -23,7 +25,7 @@ public class PageModelProcessor {
 		
 		log.info("Processing model for page '"+model.getPageName()+"'");
 
-		StringBuilder initCode = PageUtils.getInitFunction(ctx, model.getPageName());
+		//StringBuilder initCode = PageUtils.getInitFunction(ctx, model.getPageName());
 		String pageName = model.getPageName();
 		
 		PageType pageType = PageUtils.getPageType(ctx, model.getPageName());
@@ -34,11 +36,13 @@ public class PageModelProcessor {
 			String name = a.getName();
 			String typeName = ctx.getAttributeType(name);
 			if (typeName==null) typeName = "object";
-			addModelAttribute(modelType, name, typeName, initCode, a.getOnChange(), pageName);
+			PageUtils.addModelAttribute(modelType, name, typeName, a.getOnChange(), pageName, ctx);
 		}
 	}
 
-	public static void addModelAttribute(PageModelType modelType,String name,String typeName,StringBuilder code,String onChange,String pageName) throws JavascribeException {
+	/*
+	public static void addModelAttribute(PageModelType modelType,String name,String typeName,String onChange,String pageName, ProcessorContext ctx) throws JavascribeException {
+		StringBuilder code = PageUtils.getInitFunction(ctx, pageName);
 		if ((name==null) || (name.trim().length()==0)) {
 			throw new JavascribeException("Found a model attribute with no name");
 		}
@@ -48,7 +52,8 @@ public class PageModelProcessor {
 		}
 		
 		modelType.addAttribute(name, typeName);
-		String attr = "" + Character.toUpperCase(name.charAt(0)) + name.substring(1);
+		String attr = JavascribeUtils.getUpperCamelName(name);
+		//String attr = "" + Character.toUpperCase(name.charAt(0)) + name.substring(1);
 		code.append("this.model.").append(name).append(" = undefined;\n")
 				.append("this.model.get").append(attr)
 				.append(" = function() {return this.").append(name).append(";}.bind("+pageName+".model);\n");
@@ -67,6 +72,7 @@ public class PageModelProcessor {
 		code.append(pageName+".event(\""+name+"Changed\");\n");
 		code.append("}.bind("+pageName+".model);\n");
 	}
+	*/
 	
 }
 

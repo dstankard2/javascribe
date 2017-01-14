@@ -4,11 +4,11 @@ import java.util.ArrayList;
 
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.annotation.Scannable;
-import net.sf.javascribe.patterns.js.page.Binding;
-import net.sf.javascribe.patterns.js.page.Bindings;
 import net.sf.javascribe.patterns.view.DirectiveContext;
 import net.sf.javascribe.patterns.view.DirectiveUtils;
 import net.sf.javascribe.patterns.view.ElementDirective;
+import net.sf.javascribe.patterns.xml.page.Binding;
+import net.sf.javascribe.patterns.xml.page.Bindings;
 
 @Scannable
 public class GenericBindingDirective implements ElementDirective {

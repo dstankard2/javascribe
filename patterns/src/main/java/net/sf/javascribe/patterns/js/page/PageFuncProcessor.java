@@ -8,6 +8,7 @@ import net.sf.javascribe.api.annotation.Scannable;
 import net.sf.javascribe.langsupport.javascript.JavascriptFunctionType;
 import net.sf.javascribe.langsupport.javascript.JavascriptSourceFile;
 import net.sf.javascribe.langsupport.javascript.JavascriptUtils;
+import net.sf.javascribe.patterns.xml.page.PageFunc;
 
 import org.apache.log4j.Logger;
 

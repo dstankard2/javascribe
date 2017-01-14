@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import net.sf.javascribe.langsupport.java.LocatedJavaServiceObjectType;
+import net.sf.javascribe.patterns.xml.lookups.FieldValue;
 
 public class LookupType extends LocatedJavaServiceObjectType {
 	private HashMap<String,List<FieldValue>> fields = new HashMap<String,List<FieldValue>>();

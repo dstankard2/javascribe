@@ -3,6 +3,7 @@ package net.sf.javascribe.patterns.service;
 import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
+import net.sf.javascribe.patterns.xml.service.InvalidCaseOperation;
 import net.sf.jsom.java5.Java5CodeSnippet;
 
 public class InvalidCaseRenderer implements NestingServiceOperationRenderer {

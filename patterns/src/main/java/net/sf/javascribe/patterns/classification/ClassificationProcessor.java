@@ -17,10 +17,11 @@ import net.sf.javascribe.langsupport.java.JavaBeanType;
 import net.sf.javascribe.langsupport.java.JavaUtils;
 import net.sf.javascribe.langsupport.java.jsom.JsomJavaBeanType;
 import net.sf.javascribe.patterns.CorePatternConstants;
-import net.sf.javascribe.patterns.dataobject.DataObject;
 import net.sf.javascribe.patterns.model.DatabaseTable;
-import net.sf.javascribe.patterns.model.EntityManagerComponent;
 import net.sf.javascribe.patterns.model.EntityManagerUtils;
+import net.sf.javascribe.patterns.xml.classification.Classification;
+import net.sf.javascribe.patterns.xml.dataobject.DataObject;
+import net.sf.javascribe.patterns.xml.model.EntityManagerComponent;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;

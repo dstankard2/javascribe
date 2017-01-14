@@ -8,6 +8,7 @@ import net.sf.javascribe.api.annotation.ProcessorMethod;
 import net.sf.javascribe.api.annotation.Scannable;
 import net.sf.javascribe.langsupport.java.JavaUtils;
 import net.sf.javascribe.langsupport.java.JavaVariableTypeImpl;
+import net.sf.javascribe.patterns.xml.model.ThreadLocalTxLocator;
 
 import org.apache.log4j.Logger;
 

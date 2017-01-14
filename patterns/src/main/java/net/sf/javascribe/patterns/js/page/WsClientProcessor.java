@@ -17,6 +17,7 @@ import net.sf.javascribe.langsupport.javascript.JavascriptUtils;
 import net.sf.javascribe.patterns.js.page.elements.BinderUtils;
 import net.sf.javascribe.patterns.servlet.SingleUrlService;
 import net.sf.javascribe.patterns.servlet.UrlWebServiceType;
+import net.sf.javascribe.patterns.xml.page.WsClient;
 
 import org.apache.log4j.Logger;
 
@@ -62,7 +63,8 @@ public class WsClientProcessor {
 		ctx.setLanguageSupport("Javascript");
 		
 		log.info("Processing WSClient on page '"+pageName+"': "+comp.getModule()+"."+comp.getService());
-		StringBuilder code = PageUtils.getInitFunction(ctx, pageName);
+
+		//StringBuilder code = PageUtils.getInitFunction(ctx, pageName);
 		
 		PageType pageType = PageUtils.getPageType(ctx, pageName);
 		
@@ -82,7 +84,6 @@ public class WsClientProcessor {
 		if (srv==null) {
 			throw new JavascribeException("Couldn't find URL service "+comp.getModule()+'/'+comp.getService());
 		}
-
 		
 		List<JavaBeanType> javaBeansToConvert = new ArrayList<JavaBeanType>();
 		// The service result type doesn't need to be added
@@ -92,7 +93,7 @@ public class WsClientProcessor {
 			String type = ctx.getAttributeType(att);
 			javaBeansToConvert.addAll(addJavaBeanTypes(type,ctx));
 			if (modelType.getAttributeType(att)==null)
-				PageModelProcessor.addModelAttribute(modelType, att, type, code, null, pageName);
+				PageUtils.addModelAttribute(modelType, att, type, null, pageName, ctx);
 		}
 		if (!JavascribeUtils.isEmpty(srv.getRequestBody())) {
 			String typeName = ctx.getAttributeType(srv.getRequestBody());
@@ -103,6 +104,8 @@ public class WsClientProcessor {
 				javaBeansToConvert.add(b);
 			}
 		}
+
+		StringBuilder code = PageUtils.getInitFunction(ctx, pageName);
 
 		ctx.setLanguageSupport("Javascript");
 		for(JavaBeanType t : javaBeansToConvert) {

@@ -16,6 +16,9 @@ import net.sf.javascribe.langsupport.javascript.JavascriptSourceFile;
 import net.sf.javascribe.langsupport.javascript.JavascriptUtils;
 import net.sf.javascribe.patterns.js.page.elements.BinderUtils;
 import net.sf.javascribe.patterns.js.page.elements.ElementBinderContext;
+import net.sf.javascribe.patterns.xml.page.Binding;
+import net.sf.javascribe.patterns.xml.page.Bindings;
+import net.sf.javascribe.patterns.xml.page.Element;
 
 @Scannable
 @Processor

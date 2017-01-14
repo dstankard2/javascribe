@@ -6,6 +6,7 @@ import java.util.List;
 
 import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.JavascribeException;
+import net.sf.javascribe.patterns.xml.model.EntityManagerComponent;
 
 public class EntityManagerUtils {
 

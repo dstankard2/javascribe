@@ -9,6 +9,8 @@ import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.annotation.Processor;
 import net.sf.javascribe.api.annotation.ProcessorMethod;
 import net.sf.javascribe.api.annotation.Scannable;
+import net.sf.javascribe.patterns.xml.domain.RetrieveDataOperation;
+import net.sf.javascribe.patterns.xml.domain.RetrieveDataStrategy;
 
 import org.apache.log4j.Logger;
 

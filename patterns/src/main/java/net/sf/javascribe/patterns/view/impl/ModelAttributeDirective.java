@@ -2,7 +2,6 @@ package net.sf.javascribe.patterns.view.impl;
 
 import net.sf.javascribe.api.JavascribeException;
 import net.sf.javascribe.api.annotation.Scannable;
-import net.sf.javascribe.patterns.js.page.PageModelProcessor;
 import net.sf.javascribe.patterns.js.page.PageModelType;
 import net.sf.javascribe.patterns.js.page.PageType;
 import net.sf.javascribe.patterns.js.page.PageUtils;
@@ -54,9 +53,7 @@ public class ModelAttributeDirective implements ElementDirective {
 		if (pageType.getAttributeType("_isTemplate")==null) {
 			PageUtils.ensureModel(ctx.getProcessorContext(), pageType);
 			PageModelType modelType = DirectiveUtils.getPageModelType(ctx);
-
-			StringBuilder initCode = PageUtils.getInitFunction(ctx.getProcessorContext(), pageName);
-			PageModelProcessor.addModelAttribute(modelType, name, type, initCode, onChange, pageName);
+			PageUtils.addModelAttribute(modelType, name, type, onChange, pageName,ctx.getProcessorContext());
 		} else {
 			String modelTypeName = pageType.getAttributeType("model");
 			PageModelType modelType = (PageModelType)ctx.getProcessorContext().getType(modelTypeName);

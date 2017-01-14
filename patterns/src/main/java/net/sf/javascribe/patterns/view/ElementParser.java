@@ -293,12 +293,6 @@ public class ElementParser implements DirectiveContext {
 		return null;
 	}
 
-	protected boolean isRestriction(Restrictions type,Restrictions[] restrictions) {
-		for(Restrictions r : restrictions) {
-			if (r==type) return true;
-		}
-		return false;
-	}
 	@Override
 	public ProcessorContext getProcessorContext() {
 		return ctx;

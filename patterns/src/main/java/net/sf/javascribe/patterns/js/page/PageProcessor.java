@@ -11,6 +11,7 @@ import net.sf.javascribe.langsupport.javascript.JavascriptObjectType;
 import net.sf.javascribe.langsupport.javascript.JavascriptSourceFile;
 import net.sf.javascribe.langsupport.javascript.JavascriptUtils;
 import net.sf.javascribe.patterns.CorePatternConstants;
+import net.sf.javascribe.patterns.xml.page.Page;
 
 import org.apache.log4j.Logger;
 

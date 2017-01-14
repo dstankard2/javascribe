@@ -16,6 +16,7 @@ import net.sf.javascribe.langsupport.java.JavaBeanType;
 import net.sf.javascribe.langsupport.java.JavaUtils;
 import net.sf.javascribe.langsupport.java.jsom.JavascribeVariableTypeResolver;
 import net.sf.javascribe.langsupport.java.jsom.JsomUtils;
+import net.sf.javascribe.patterns.xml.classification.Classification;
 import net.sf.jsom.CodeGenerationException;
 import net.sf.jsom.java5.Java5DataObjectSourceFile;
 import net.sf.jsom.java5.Java5MethodSignature;
