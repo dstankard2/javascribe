@@ -53,7 +53,7 @@ public class CorePatternConstants {
 
 	// Depends on lookups.
 	public static final int PRIORITY_OPTION_LIST = 17500;
-	
+
 	// Depends on JPA DAO Factory
 	public static final int PRIORITY_JPA_ENTITY_INDEX = 17500;
 	
@@ -62,10 +62,6 @@ public class CorePatternConstants {
 
 	// Depends on entity manager and JPA DAO Factory.  Process after entity indices
 	public static final int PRIORITY_ENTITY_RELATIONSHIPS = 18750;
-	
-	// Depends on code that is required: entity interfaces, JPA entity index, JPA Dao Factory, 
-	// option list, domain data, EJBQL query, lookups, entity manager.
-	public static final int PRIORITY_CUSTOM_LOGIC = 20000;
 	
 	// Depends on Custom Logic and Data Object
 	public static final int PRIORITY_RETRIEVE_DATA_STRATEGY = 21250;
@@ -105,6 +101,9 @@ public class CorePatternConstants {
 
 	/** Client-side (Javascript) patterns **/
 	
+	// Depends on web service
+	public static final int PRIORITY_SERVLET_WEB_SERVICE_CLIENT = 35000;
+
 	// Dependant on server-side components.  It goes with the front end.
 	public static final int PRIORITY_VIEW_TEMPLATE = 40000;
 

@@ -1,0 +1,60 @@
+<html>
+
+<head>
+<title>Listener</title>
+
+<script>
+
+var listener;
+var target;
+
+function addClickTarget() {
+    if (target) return;
+    target = document.createElement('div');
+    document.body.appendChild(target);
+    target.id = 'clickTarget';
+    target.style.border = '1px solid black';
+    target.style.width = '100px';
+    target.style.height = '100px';
+    target._mark = 'testing';
+}
+function removeClickTarget() {
+    if (!target) return;
+    var parent = target.parentElement;
+    parent.removeChild(target);
+    target = null;
+}
+
+
+</script>
+
+</head>
+
+<body>
+
+<button onclick='addClickTarget()'>Add element</button>
+<button onclick='removeClickTarget()'>Remove element</button>
+</body>
+
+</html>
+
+<script>
+
+var obs;
+if (window.MutationObserver) {
+
+    obs = new MutationObserver(function (e) {
+      if ((e[0].removedNodes) && (e[0].removedNodes.length)) {
+        var l = e[0].removedNodes.length;
+        for(var i=0;i<l;i++) {
+          var node = e[0].removedNodes[i];
+          if (node._mark) {
+            console.log('A node was removed with mark as '+node._mark);
+          }
+        }
+      }
+    });
+    obs.observe(document.body, { childList: true });
+}
+
+</script>

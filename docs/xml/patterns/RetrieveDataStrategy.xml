@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<pattern xmlns="http://docs.javascribe.com/pattern"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://docs.javascribe.com/pattern ../../pattern.xsd"
+name="Retrieve Data Strategy" id="RetrieveDataStrategy" priority="17501"
+namespace="http://javascribe.sf.net/patterns/domain"
+xmlElement="retrieveDataStrategy">
+
+	<description>
+<p>
+Placeholder.
+</p>
+	</description>
+
+<!-- 
+	<property required="true" 
+	name="net.sf.javascribe.patterns.domain.RetrieveDataRule.pkg"
+	example="domain">
+		<description>
+<p>
+A sub-package of the java root package, where the generated Java class will reside.
+</p>
+		</description>
+	</property>
+ -->	
+
+</pattern>
+

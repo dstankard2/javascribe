@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<component>
-	<name>Retrieve Data Rule</name>
-	<id>RetrieveDataRule</id>
-	<language>Java</language>
+<pattern xmlns="http://docs.javascribe.com/pattern"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://docs.javascribe.com/pattern ../../pattern.xsd"
+name="Retrieve Data Rule" id="RetrieveDataRule" priority="22500"
+namespace="http://javascribe.sf.net/patterns/domain"
+xmlElement="retrieveDataRule">
+
 	<description>
 <p>
 The retrieve data rule processor generates domain-level logic for a Java application which is 
@@ -20,22 +23,24 @@ local variable called "userId" and then, if that is not available, resort to usi
 </p>
 <p>
 If a rule is found in the dependencies which returns the desired type but for which the parameters 
-are not available, the processor will recursively attempt to resolve for parameter types that are not 
-available.  The processor will perform this recursion up to 5 levels deep before giving up.
+are not available, the processor will recursively attempt to resolve for parameters that are not 
+available.  The processor will perform this logic recursively up to 5 levels deep before giving up and 
+throwing an exception.
 </p>
 <p>
 The processor will throw an exception if it is unable to resolve a rule.
 </p>
 	</description>
-	<property required="true" name="net.sf.javascribe.patterns.domain.RetrieveDataRule.pkg">
+	
+	<property required="true" 
+	name="net.sf.javascribe.patterns.domain.RetrieveDataRule.pkg"
+	example="domain">
 		<description>
-A sub-package location nested in the Java package specification.
+<p>
+A sub-package of the java root package, where the generated Java class will reside.
+</p>
 		</description>
 	</property>
-	<systemAttributes>
-	</systemAttributes>
-	<example>
-	</example>
-	
-</component>
+
+</pattern>
 

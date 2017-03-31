@@ -1,4 +1,4 @@
-package net.sf.javascribe.example1.dataobj;
+package net.sf.javascribe.example1.data;
 
 import net.sf.javascribe.patterns.handwritten.DataObject;
 import net.sf.javascribe.patterns.handwritten.DataObjectAttribute;

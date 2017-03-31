@@ -2,18 +2,22 @@
 <pattern xmlns="http://docs.javascribe.com/pattern"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:schemaLocation="http://docs.javascribe.com/pattern ../../pattern.xsd"
-name="Entity Manager" id="EntityManager" priority="15000"
-namespace=""
-xmlElement="">
+name="Entity Manager" id="EntityManager" priority="10000"
+namespace="http://javascribe.sf.net/patterns/model"
+xmlElement="entityManager">
 
 <description>
-<span>
-<p>An entity manager is a set of JPA-configured entities with annotations.</p>
-<p>This component processor will connect to a database, look at the tables 
+<p>
+An entity manager is a set of JPA-configured entities with annotations.
+</p>
+<p>
+This component processor will connect to a database, look at the tables 
 in that database, and generate JPA entities for the tables in the 
-database.</p>
-<p>A basic persistence.xml is also generated.</p>
-</span>
+database.
+</p>
+<p>
+A basic persistence.xml is also generated.
+</p>
 </description>
 
 <attribute name="name" 

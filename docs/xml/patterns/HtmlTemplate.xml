@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<pattern xmlns="http://docs.javascribe.com/pattern"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://docs.javascribe.com/pattern ../../pattern.xsd"
+name="Web Controller Servlet" id="WebServlet" priority="30000"
+namespace="http://javascribe.sf.net/patterns/servlet"
+xmlElement="webServlet">
+
+	<description>
+		<p>A HTML template is a Javascript function which returns a Javascript DOMElement object.  The 
+		contents of the DOMElement depend on a HTML template defined in a file within the Javascribe 
+		application definition.
+		</p>
+		<p>
+		A HTML Template belongs to a template set, which becomes a Variable Type and System Attribute in the 
+		application.  It can be invoked 
+		</p>
+		<p>
+		The function is generally invoked, and the template rendered, by other HTML Template functions 
+		within pages (of the SPWA).  It may also be invoked manually by a developer who is hand-writing 
+		Javascript code for the application.
+		</p>
+	</description>
+</pattern>

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<pattern xmlns="http://docs.javascribe.com/pattern"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://docs.javascribe.com/pattern ../../pattern.xsd"
+name="EntityRelationships" id="EjbqlQuery" priority="18750"
+namespace="http://javascribe.sf.net/patterns/model"
+xmlElement="entityRelationships">
+
+<description>
+<p>
+Defines relationships between entities in a JPA-enabled data source.  These relationships are not enforced 
+in the entities themselves, but rather in the data access layer of the application.  APIs are added to DAOs 
+for retrieving data based on the relationships defined.
+</p>
+</description>
+
+<!-- 
+<attribute name="dataObject@name" 
+required="yes"
+example="UserDataObject"
+>
+<description>
+<p>
+The name of the data object to define, usually in upper camel format such as 
+"DataObject".  This will become both the name of the data object class and the name of 
+the type as referred to by other component definitions.
+</p>
+</description>
+</attribute>
+ -->
+
+<!-- 
+<attribute name="dataObject@attributes" required="yes"
+example="userId,firstName,lastName,email"
+>
+<description>
+<p>
+A comma-separated list of attributes that this data object will have.  For each attribute,
+the data object class will have a private member, a getter method and a setter method.
+The attributes may be of any type that has already been defined.
+</p>
+<p>
+Each attribute is specified as "&lt;name>:&lt;/type>" where the type is optional if 
+"name" is already a system attribute.
+</p>
+</description>
+</attribute>
+ -->
+
+<!-- 
+<property required="true" 
+name="net.sf.javascribe.patterns.classification.Classification.pkg"
+example="classification">
+	<description>
+<p>The package in which the Java file will be placed, under the package root of the 
+application as defined for Java language support.
+</p>
+	</description>
+</property>
+ -->
+
+<!-- 
+<output language="Java">
+<p>
+A Java interface with getters and setters for the attributes defined in the component definition.  It will 
+extend the interface specified by the "extends" attribute.
+</p>
+<p>
+After all data objects have been processed, classifications are applied to all JPA entities and data objects.
+</p>
+</output>
+ -->
+
+<!-- 
+<longExplanation>
+<p>
+The generated data object is located in a package as specified by the Data Object pkg 
+configuration property as well as the Java root package as defined by Java language support.
+</p>
+</longExplanation>
+-->
+
+<!-- 
+<examples>
+	<example desc="A typical data object with attribute types specified.">
+		<exampleComp>
+		<div>
+(Where generator.xml has build root defined as "c:\build")<br/><br/>
+&lt;dataObject xmlns="http://javascribe.sf.net/patterns/data-object" name="UserInfo" attributes="firstName:string,lastName:string,accountInfo:AccountInfo"&gt;
+<br/>
+&lt;c:property xmlns:c="http://javascribe.sf.net/config" name="net.sf.javascribe.langsupport.java.rootDir"&gt;java&lt;/c:property&gt;
+<br/>
+&lt;c:property name="net.sf.javascribe.langsupport.java.rootPkg"&gt;net.sf.javascribe.example&lt;/c:property&gt;
+<br/>
+&lt;c:property name="net.sf.javascribe.patterns.dataobject.DataObject.pkg"&gt;dataobj&lt;/c:property&gt;
+<br/>
+&lt;/dataObject&gt;
+		</div>
+		</exampleComp>
+		<explanation>
+<p>This data object has three attributes: firstName, lastName and 
+accountInfo.  For this to be valid, AccountInfo must be a valid type in 
+the system (Perhaps a previously defined data object).</p>
+
+		</explanation>
+		<systemAttributes>
+			<systemAttribute type="UserInfo" name="userInfo" desc="A user info object" />
+			<systemAttribute type="list/UserInfo" name="userInfoList" desc="A java.util.List&lt;UserInfo&gt; (with UserInfo as the element type)" />
+		</systemAttributes>
+		<variableTypes>
+			<variableType name="UserInfo" stereotype="AttributeHolder"/>
+		</variableTypes>
+		<generatedFiles>
+			<file name="c:\build\java\net\sf\javascribe\example\dataobj\UserInfo.java">
+<p>
+The Java file for the UserInfo class.  It will have private member variables 
+and "public void setFirstName(String firstName)" along with "public String getFirstName()".
+</p>
+<p>The package is defined by Java Support's root package, along with the 
+property "net.sf.javascribe.patterns.dataobject.DataObject.pkg".  The file 
+is placed in a directory defined by the properties specified in the example.
+</p>
+<p>
+Note: Normally you want to define properties for the root package and Java root directory in generator.xml.
+</p>
+			</file>
+		</generatedFiles>
+	</example>
+</examples>
+ -->
+
+</pattern>
+

@@ -2,27 +2,27 @@
 <pattern xmlns="http://docs.javascribe.com/pattern"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:schemaLocation="http://docs.javascribe.com/pattern ../../pattern.xsd"
-name="Web Controller Servlet" id="WebServlet" priority="15000"
+name="Web Controller Servlet" id="WebServlet" priority="30000"
 namespace="http://javascribe.sf.net/patterns/servlet"
 xmlElement="webServlet">
 
 	<description>
-<p>A web controller servlet represents a HTTP endpoint in a Java web application, 
-which responds to a request by forwarding the response to a new URL.
+<p>A web controller servlet represents a HTTP endpoint in a Java web application.  It receives a request 
+at a URI path, processes the request and forwards it to a URI that can render a response page.
 </p>
 <div>
 The full flow of what the web controller servlet can do is:
 <ul>
-<li>Accept a request at a URL</li>
+<li>Accept a request at a URI</li>
 <li>Be configured to use one or more Servlet HTTP Filters.</li>
-<li>Read HTTP parameters from the request (optional)</li>
-<li>Look for a user session data object in the session (optional)</li>
+<li>Read HTTP parameters from the request</li>
+<li>Look for a user session data object in the Java Servlet HTTPSession</li>
 <li>Invoke a business rule, using HTTP parameters and attributes of the user session data object as parameters (optional)</li>
-<li>Conditionally forward the response to a URL</li>
+<li>Conditionally forward the response to a URI</li>
 </ul>
 </div>
 	</description>
-	
+
 <attribute example="UserLogin" name="webServlet@name" required="yes">
 <description>
 <p>
@@ -42,7 +42,6 @@ the
 <div>TODO: This should be the name of a system attribute.</div>
 </description>
 </attribute>
-
 
 </pattern>
 
