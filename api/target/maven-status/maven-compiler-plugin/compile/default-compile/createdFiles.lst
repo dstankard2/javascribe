@@ -25,7 +25,6 @@ net\sf\javascribe\api\BuildContext.class
 net\sf\javascribe\api\resources\FolderWatcher.class
 net\sf\javascribe\api\BuildProcessorContext.class
 net\sf\javascribe\api\config\BuildComponent.class
-net\sf\javascribe\api\config\package-info.class
 net\sf\javascribe\api\plugin\EnginePlugin.class
 net\sf\javascribe\api\ComponentProcessor.class
 net\sf\javascribe\api\snapshot\ComponentSnapshot$ComponentSnapshotBuilder.class

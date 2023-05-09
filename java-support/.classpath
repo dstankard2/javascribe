@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+  <classpathentry kind="src" path="src/main/java" including="**/*.java"/>
+  <classpathentry kind="output" path="target/classes"/>
+  <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+  <classpathentry kind="var" path="M2_REPO/net/sf/jaspercode/api/0.1.0/api-0.1.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/com/sun/xml/bind/jaxb-impl/2.3.3/jaxb-impl-2.3.3.jar"/>
+  <classpathentry kind="var" path="M2_REPO/jakarta/xml/bind/jakarta.xml.bind-api/2.3.3/jakarta.xml.bind-api-2.3.3.jar"/>
+  <classpathentry kind="var" path="M2_REPO/com/sun/activation/jakarta.activation/1.2.2/jakarta.activation-1.2.2.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/projectlombok/lombok/1.18.22/lombok-1.18.22.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/forge/roaster/roaster-api/2.20.1.Final/roaster-api-2.20.1.Final.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/forge/roaster/roaster-jdt/2.20.1.Final/roaster-jdt-2.20.1.Final.jar"/>
+</classpath>

@@ -16,7 +16,6 @@
 
 	<name>Javascribe Distribution</name>
 
-
 	<build>
 		<finalName>javascribe-${project.version}</finalName>
 		<plugins>

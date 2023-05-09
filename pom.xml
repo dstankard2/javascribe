@@ -13,6 +13,7 @@
 
 	<modules>
 		<module>api</module>
+		<module>engine</module>
 		<module>launcher</module>
 		<module>dist</module>
 	</modules>

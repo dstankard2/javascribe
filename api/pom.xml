@@ -14,7 +14,7 @@
 	<packaging>jar</packaging>
 	<version>0.1.0</version>
 
-	<name>Component Processor API</name>
+	<name>Plugin and Processor API</name>
 
 	<dependencies>
         <dependency>
@@ -23,22 +23,6 @@
             <version>2.3.3</version>
         </dependency>
         
-		<!-- https://mvnrepository.com/artifact/org.springframework/spring-core -->
-		<dependency>
-		    <groupId>org.springframework</groupId>
-		    <artifactId>spring-core</artifactId>
-		    <version>6.0.8</version>
-		</dependency>
-
-<!--
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<version>1.18.22</version>
-			<scope>provided</scope>
-		</dependency>
--->
-
     </dependencies>
 
 	<build>
