@@ -1,6 +1,5 @@
 package net.sf.javascribe.api;
 
-
 /**
  * Represents a snippet of generated code.  The language of the code is not specified.
  * @author DCS
@@ -19,6 +18,9 @@ public interface Code {
 	 * @param s Code to append.
 	 * @throws JavascribeException If there is a problem.
 	 */
-	public void appendCodeText(String s) throws JavascribeException;
+	public void appendCodeText(String s);
+
+	public void append(Code append);
 
 }
+

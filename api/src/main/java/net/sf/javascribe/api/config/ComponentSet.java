@@ -5,13 +5,13 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import net.sf.javascribe.api.annotation.Scannable;
+import net.sf.javascribe.api.annotation.Plugin;
+import net.sf.javascribe.api.config.Property;
 
 /**
  * JAXB-annotated class that represents the root element of a component 
@@ -20,27 +20,18 @@ import net.sf.javascribe.api.annotation.Scannable;
  * @author DCS
  *
  */
-@Scannable
+@Plugin
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name="componentSet",propOrder={ "property", "component" })
 public class ComponentSet {
 
 	@XmlElement
-	private List<Property> property = new ArrayList<Property>();
+	private List<Property> property = new ArrayList<>();
 	
 	@XmlElementRef
-	private List<ComponentBase> component = new ArrayList<ComponentBase>();
+	private List<Component> component = new ArrayList<>();
 
-	@XmlAttribute
-	private int priority = 0;
-	public int getPriority() {
-		return priority;
-	}
-	public void setPriority(int p) {
-		this.priority = p;
-	}
-	
 	public List<Property> getProperty() {
 		return property;
 	}
@@ -49,12 +40,13 @@ public class ComponentSet {
 		this.property = property;
 	}
 
-	public List<ComponentBase> getComponent() {
+	public List<Component> getComponent() {
 		return component;
 	}
 
-	public void setComponent(List<ComponentBase> component) {
+	public void setComponent(List<Component> component) {
 		this.component = component;
 	}
 
 }
+

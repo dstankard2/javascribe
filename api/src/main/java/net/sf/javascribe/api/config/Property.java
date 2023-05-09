@@ -6,9 +6,9 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
 
-import net.sf.javascribe.api.annotation.Scannable;
+import net.sf.javascribe.api.annotation.Plugin;
 
-@Scannable
+//@Plugin
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name="property",propOrder={ })
 public class Property {

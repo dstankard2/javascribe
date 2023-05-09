@@ -4,19 +4,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import net.sf.javascribe.api.expressions.ExpressionUtil;
-import net.sf.javascribe.api.expressions.ValueExpression;
+import net.sf.javascribe.api.exception.JasperException;
+import net.sf.javascribe.api.types.VariableType;
 
-/**
- * Represents the current context while generating a particular code 
- * function.  The context contains the currently declared variables and 
- * types that are available.
- * @author DCS
- *
- */
 public class CodeExecutionContext {
-	private HashMap<String,String> variables = new HashMap<String,String>();
-	private TypeResolver types = null;
+
+	private List<String> dependencyNames = new ArrayList<>();
+	
+	private HashMap<String,String> variables = new HashMap<>();
+	private ProcessorContext ctx = null;
+	
+	public List<String> getDependencyNames() {
+		return dependencyNames;
+	}
 	
 	public List<String> getVariableNames() {
 		List<String> ret = new ArrayList<String>();
@@ -36,17 +36,22 @@ public class CodeExecutionContext {
 	 * @param parent
 	 * @param types
 	 */
-	public CodeExecutionContext(CodeExecutionContext parent,TypeResolver types) {
-		this.types = types;
+	public CodeExecutionContext(CodeExecutionContext parent,ProcessorContext ctx) {
 		if (parent!=null) {
-			this.types = parent.types;
+			this.ctx = parent.ctx;
 			variables.putAll(parent.variables);
-			
+			dependencyNames.addAll(parent.dependencyNames);
+		} else {
+			this.ctx = ctx;
 		}
 	}
 	
 	public CodeExecutionContext(CodeExecutionContext parent) {
-		this(parent,parent.getTypes());
+		this(parent,null);
+	}
+	
+	public CodeExecutionContext(ProcessorContext ctx) {
+		this(null,ctx);
 	}
 	
 	/**
@@ -58,16 +63,8 @@ public class CodeExecutionContext {
 		variables.put(name,type);
 	}
 
-	/**
-	 * Get the currently defined variable types.
-	 * @return Currently available types.
-	 */
-	public TypeResolver getTypes() {
-		return types;
-	}
-	
-	public VariableType getType(String name) {
-		return types.getType(name);
+	public <T extends VariableType> T getType(Class<T> clazz,String name) throws JasperException {
+		return JasperUtils.getType(clazz, name, ctx);
 	}
 	
 	public String getVariableType(String var) {
@@ -79,23 +76,18 @@ public class CodeExecutionContext {
 	 * @param var
 	 * @return Type of the specified variable, or null.
 	 */
-	public VariableType getTypeForVariable(String var) {
+	public VariableType getTypeForVariable(String var) throws JasperException {
 		String type = variables.get(var);
+		VariableType ret = null;
+
 		if (type!=null) {
-			return types.getType(type);
+			ret = ctx.getVariableType(type);
+			if (ret==null) {
+				throw new JasperException("Couldn't find type '"+type+"' for variable '"+var+"'");
+			}
 		}
 
-		return null;
-	}
-	
-	public String evaluateTypeForExpression(String expr) throws JavascribeException {
-		ValueExpression ex = ExpressionUtil.buildValueExpression("${"+expr+"}", null, this);
-		return ex.getType();
-	}
-	public VariableType evaluateVariableTypeForExpression(String expr) throws JavascribeException {
-		ValueExpression ex = ExpressionUtil.buildValueExpression("${"+expr+"}", null, this);
-		String typeName = ex.getType();
-		return getType(typeName);
+		return ret;
 	}
 	
 }

@@ -1,0 +1,52 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>net.sf.javascribe</groupId>
+	<artifactId>parent</artifactId>
+	<version>0.1.0</version>
+	<packaging>pom</packaging>
+	<name>Javascribe SPE</name>
+	<url>http://www.sf.net/projects/javascribe</url>
+
+	<modules>
+		<module>api</module>
+		<module>launcher</module>
+		<module>dist</module>
+	</modules>
+	<properties>
+		<maven.compiler.source>9</maven.compiler.source>
+		<maven.compiler.target>9</maven.compiler.target>
+	</properties>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.22</version>
+			<scope>provided</scope>
+		</dependency>
+
+	</dependencies>
+	
+	<!-- This is here mostly as a placeholder, there is no dist.xml here -->
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<artifactId>maven-assembly-plugin</artifactId>
+					<version>3.5.0</version>
+					<configuration>
+						<descriptors>
+							<descriptor>src/main/assembly/dist.xml</descriptor>
+						</descriptors>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+
+</project>

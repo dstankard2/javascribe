@@ -5,13 +5,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import net.sf.javascribe.api.config.Component;
-
+/**
+ * Marks a class as a JAXB-annotated class that is required for reading 
+ * XML configuration elements.
+ * @author DCS
+ */
 @Target(value=ElementType.TYPE)
 @Retention(value=RetentionPolicy.RUNTIME)
-public @interface Processor {
-
-	Class<? extends Component> componentClass();
+public @interface XmlConfig {
 
 }
-
