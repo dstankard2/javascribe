@@ -14,12 +14,12 @@
 	<packaging>jar</packaging>
 	<version>0.1.0</version>
 
-	<name>Plugin and Processor API</name>
+	<name>Java Language Support</name>
 
 	<dependencies>
         
 		<dependency>
-			<groupId>net.sf.jaspercode</groupId>
+			<groupId>net.sf.javascribe</groupId>
 			<artifactId>api</artifactId>
 			<version>0.1.0</version>
 		</dependency>
@@ -39,7 +39,7 @@
     </dependencies>
 
 	<build>
-		<finalName>api</finalName>
+		<finalName>java-support</finalName>
 	</build>
 
 </project>

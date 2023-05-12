@@ -3,10 +3,10 @@ package net.sf.javascribe.langsupport.java;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.jaspercode.api.SourceFile;
-import net.sf.jaspercode.api.annotation.Plugin;
-import net.sf.jaspercode.api.langsupport.LanguageSupport;
-import net.sf.jaspercode.api.types.VariableType;
+import net.sf.javascribe.api.SourceFile;
+import net.sf.javascribe.api.annotation.Plugin;
+import net.sf.javascribe.api.langsupport.LanguageSupport;
+import net.sf.javascribe.api.types.VariableType;
 import net.sf.javascribe.langsupport.java.types.JavaVariableType;
 import net.sf.javascribe.langsupport.java.types.impl.BooleanJavaType;
 import net.sf.javascribe.langsupport.java.types.impl.DateJavaType;

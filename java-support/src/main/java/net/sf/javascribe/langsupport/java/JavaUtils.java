@@ -8,12 +8,12 @@ import org.jboss.forge.roaster.model.Type;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
 
-import net.sf.jaspercode.api.AttribEntry;
-import net.sf.jaspercode.api.CodeExecutionContext;
-import net.sf.jaspercode.api.JasperUtils;
-import net.sf.jaspercode.api.ProcessorContext;
-import net.sf.jaspercode.api.exception.JasperException;
-import net.sf.jaspercode.api.types.ServiceOperation;
+import net.sf.javascribe.api.AttribEntry;
+import net.sf.javascribe.api.CodeExecutionContext;
+import net.sf.javascribe.api.JasperUtils;
+import net.sf.javascribe.api.ProcessorContext;
+import net.sf.javascribe.api.exception.JasperException;
+import net.sf.javascribe.api.types.ServiceOperation;
 import net.sf.javascribe.langsupport.java.types.JavaVariableType;
 import net.sf.javascribe.langsupport.java.types.ServiceLocator;
 import net.sf.javascribe.langsupport.java.types.impl.JavaDataObjectType;

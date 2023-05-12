@@ -3,9 +3,9 @@ package net.sf.javascribe.langsupport.java;
 import org.jboss.forge.roaster.Roaster;
 import org.jboss.forge.roaster.model.source.JavaInterfaceSource;
 
-import net.sf.jaspercode.api.ProcessorContext;
-import net.sf.jaspercode.api.SourceFile;
-import net.sf.jaspercode.api.exception.JasperException;
+import net.sf.javascribe.api.ProcessorContext;
+import net.sf.javascribe.api.SourceFile;
+import net.sf.javascribe.api.exception.JasperException;
 
 public class JavaInterfaceSourceFile extends JavaSourceFile<JavaInterfaceSource> {
 

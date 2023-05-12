@@ -1,6 +1,6 @@
 package net.sf.javascribe.langsupport.java.types.impl;
 
-import net.sf.jaspercode.api.BuildContext;
+import net.sf.javascribe.api.BuildContext;
 import net.sf.javascribe.langsupport.java.JavaCode;
 
 public class LocatedServiceType extends JavaServiceType {

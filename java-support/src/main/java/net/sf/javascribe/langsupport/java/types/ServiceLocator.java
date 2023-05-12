@@ -2,8 +2,8 @@ package net.sf.javascribe.langsupport.java.types;
 
 import java.util.List;
 
-import net.sf.jaspercode.api.CodeExecutionContext;
-import net.sf.jaspercode.api.exception.JasperException;
+import net.sf.javascribe.api.CodeExecutionContext;
+import net.sf.javascribe.api.exception.JasperException;
 import net.sf.javascribe.langsupport.java.JavaCode;
 
 public interface ServiceLocator extends JavaVariableType {

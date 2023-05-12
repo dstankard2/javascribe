@@ -3,7 +3,7 @@ package net.sf.javascribe.langsupport.java;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.jaspercode.api.Code;
+import net.sf.javascribe.api.Code;
 
 public class JavaCode implements Code {
 	List<String> imports = new ArrayList<>();

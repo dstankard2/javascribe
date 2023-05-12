@@ -3,10 +3,10 @@ package net.sf.javascribe.langsupport.java.types.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.jaspercode.api.BuildContext;
-import net.sf.jaspercode.api.CodeExecutionContext;
-import net.sf.jaspercode.api.JasperUtils;
-import net.sf.jaspercode.api.exception.JasperException;
+import net.sf.javascribe.api.BuildContext;
+import net.sf.javascribe.api.CodeExecutionContext;
+import net.sf.javascribe.api.JasperUtils;
+import net.sf.javascribe.api.exception.JasperException;
 import net.sf.javascribe.langsupport.java.JavaCode;
 import net.sf.javascribe.langsupport.java.types.ServiceLocator;
 

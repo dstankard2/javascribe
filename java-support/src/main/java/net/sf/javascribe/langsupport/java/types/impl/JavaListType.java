@@ -1,10 +1,10 @@
 package net.sf.javascribe.langsupport.java.types.impl;
 
-import net.sf.jaspercode.api.Code;
-import net.sf.jaspercode.api.CodeExecutionContext;
-import net.sf.jaspercode.api.exception.JasperException;
-import net.sf.jaspercode.api.types.ListType;
-import net.sf.jaspercode.api.types.VariableType;
+import net.sf.javascribe.api.Code;
+import net.sf.javascribe.api.CodeExecutionContext;
+import net.sf.javascribe.api.exception.JasperException;
+import net.sf.javascribe.api.types.ListType;
+import net.sf.javascribe.api.types.VariableType;
 import net.sf.javascribe.langsupport.java.JavaCode;
 import net.sf.javascribe.langsupport.java.types.JavaVariableType;
 import net.sf.javascribe.langsupport.java.types.JavaVariableTypeBase;

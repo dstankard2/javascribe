@@ -1,8 +1,8 @@
 package net.sf.javascribe.langsupport.java.types;
 
-import net.sf.jaspercode.api.BuildContext;
-import net.sf.jaspercode.api.CodeExecutionContext;
-import net.sf.jaspercode.api.exception.JasperException;
+import net.sf.javascribe.api.BuildContext;
+import net.sf.javascribe.api.CodeExecutionContext;
+import net.sf.javascribe.api.exception.JasperException;
 import net.sf.javascribe.langsupport.java.JavaCode;
 
 public abstract class JavaVariableTypeBase implements JavaVariableType {

@@ -3,9 +3,9 @@ package net.sf.javascribe.langsupport.java.types.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.jaspercode.api.BuildContext;
-import net.sf.jaspercode.api.types.ServiceOperation;
-import net.sf.jaspercode.api.types.ServiceType;
+import net.sf.javascribe.api.BuildContext;
+import net.sf.javascribe.api.types.ServiceOperation;
+import net.sf.javascribe.api.types.ServiceType;
 import net.sf.javascribe.langsupport.java.JavaCode;
 import net.sf.javascribe.langsupport.java.types.JavaVariableTypeBase;
 
