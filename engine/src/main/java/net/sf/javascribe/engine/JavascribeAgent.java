@@ -1,14 +1,18 @@
 package net.sf.javascribe.engine;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 
+import net.sf.javascribe.engine.data.ApplicationData;
 import net.sf.javascribe.engine.manager.OutputManager;
 import net.sf.javascribe.engine.manager.PluginManager;
 import net.sf.javascribe.engine.manager.ProcessingManager;
 import net.sf.javascribe.engine.manager.WorkspaceManager;
 import net.sf.javascribe.engine.service.ComponentFileService;
 import net.sf.javascribe.engine.service.FolderScannerService;
+import net.sf.javascribe.engine.service.LanguageSupportService;
+import net.sf.javascribe.engine.service.PatternService;
 import net.sf.javascribe.engine.service.PluginService;
 
 /**
@@ -26,15 +30,16 @@ public class JavascribeAgent {
 		this.properties = new EngineProperties(engineProperties);
 		this.libs = libs;
 	}
-
-	public void run() {
-		boolean engineError = false;
+	
+	public void init() {
 		boolean debug = properties.getDebug();
 
 		// Register services with engine container
 		ComponentContainer.get().registerComponent(new FolderScannerService());
 		ComponentContainer.get().registerComponent(new ComponentFileService());
 		ComponentContainer.get().registerComponent(new PluginService());
+		ComponentContainer.get().registerComponent(new LanguageSupportService());
+		ComponentContainer.get().registerComponent(new PatternService());
 
 		// Register manager classes with engine container
 		ComponentContainer.get().registerComponent(new PluginManager());
@@ -47,42 +52,29 @@ public class JavascribeAgent {
 		ComponentContainer.get().setComponent("debug", debug);
 		ComponentContainer.get().setComponent("jarFiles", libs);
 
-		ProcessingManager mgr = null;
-		WorkspaceManager workspaceManager = null;
-		OutputManager outputManager = null;
-		PluginManager pluginManager = null;
+		ProcessingManager mgr = ComponentContainer.get().getComponent("ProcessingManager", ProcessingManager.class);
+		WorkspaceManager workspaceManager = ComponentContainer.get().getComponent("WorkspaceManager", WorkspaceManager.class);
+		OutputManager outputManager = ComponentContainer.get().getComponent("OutputManager", OutputManager.class);
+		PluginManager pluginManager = ComponentContainer.get().getComponent("PluginManager", PluginManager.class);
 		
-		try {
-			mgr = ComponentContainer.get().getComponent("ProcessingManager", ProcessingManager.class);
-			workspaceManager = ComponentContainer.get().getComponent("WorkspaceManager", WorkspaceManager.class);
-			outputManager = ComponentContainer.get().getComponent("OutputManager", OutputManager.class);
-			pluginManager = ComponentContainer.get().getComponent("PluginManager", PluginManager.class);
-		} catch(Exception e) {
-			e.printStackTrace();
-			engineError = true;
-		}
+		String appDir = properties.getApplicationDir();
+		String outputDir = properties.getOutputDir();
+		boolean singleApp = properties.getSingleApp();
+		boolean runOnce = properties.getRunOnce();
 		
-		if (!engineError) {
-			String appDir = properties.getApplicationDir();
-			String outputDir = properties.getOutputDir();
-			boolean singleApp = properties.getSingleApp();
-			boolean runOnce = properties.getRunOnce();
-			
-			ComponentContainer.get().setComponent("debug", debug);
-			
-			// Initialize workspaceManager
-			workspaceManager.setSingleApp(singleApp);
-			workspaceManager.setWorkspaceDir(appDir);
-			
-			boolean firstRun = true;
-			
-			// If we're running in agent mode, initialize plugins
-			if (!runOnce) {
-				pluginManager.initEnginePlugins();
-			}
-			// Initialize patterns and languages
-			pluginManager.initEngineResources();
-			
+		pluginManager.initializeAllPlugins(runOnce);
+		List<ApplicationData> applications = workspaceManager.initializeApplications(appDir, singleApp);
+		
+	}
+
+	public void run() {
+		boolean runOnce = properties.getRunOnce();
+		PluginManager pluginManager = ComponentContainer.get().getComponent("PluginManager", PluginManager.class);
+		boolean firstRun = true;
+		
+		// If we're running in agent mode, initialize plugins
+		if (!runOnce) {
+			pluginManager.initEnginePlugins();
 		}
 	}
 

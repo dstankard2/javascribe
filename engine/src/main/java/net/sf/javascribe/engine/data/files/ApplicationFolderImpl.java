@@ -19,9 +19,9 @@ import net.sf.javascribe.api.BuildContext;
 import net.sf.javascribe.api.config.BuildComponent;
 import net.sf.javascribe.api.config.ComponentSet;
 import net.sf.javascribe.api.resources.ApplicationFolder;
-import net.sf.javascribe.engine.data.AddedFile;
-import net.sf.javascribe.engine.data.FileChange;
-import net.sf.javascribe.engine.data.RemovedFile;
+import net.sf.javascribe.engine.data.changes.AddedFile;
+import net.sf.javascribe.engine.data.changes.FileChange;
+import net.sf.javascribe.engine.data.changes.RemovedFile;
 
 public class ApplicationFolderImpl implements WatchedResource,ApplicationFolder {
 

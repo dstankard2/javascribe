@@ -1,1 +1,0 @@
-this.view.${element}.onclick=${function};

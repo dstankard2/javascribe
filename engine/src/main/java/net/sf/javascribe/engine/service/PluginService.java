@@ -1,8 +1,11 @@
 package net.sf.javascribe.engine.service;
 
 import java.io.File;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import net.sf.javascribe.api.annotation.Plugin;
 import net.sf.javascribe.engine.ComponentDependency;
@@ -10,27 +13,57 @@ import net.sf.javascribe.engine.ComponentDependency;
 public class PluginService {
 
 	private File[] libs = null;
+	private Set<Class<?>> pluginClasses = null;
 	
 	@ComponentDependency(name = "jarFiles")
 	public void setLibs(File[] libs) {
 		this.libs = libs;
 	}
 
-	public List<Class<?>> findAllPlugins() {
-		List<Class<?>> ret = new ArrayList<>();
+	@SuppressWarnings("unchecked")
+	public <T> Set<Class<T>> findClassesThatExtend(Class<T> superclass) {
+		Set<Class<?>> pluginClasses = findAllPlugins();
+		Set<Class<T>> ret = new HashSet<>();
 		
-		for(File lib : libs) {
-			if (lib.isDirectory()) {
-				scanDirectory(lib, ret, "");
-			} else {
-				System.err.println("Can't scan jar files yet");
+		for(Class<?> cl : pluginClasses) {
+			if (superclass.isAssignableFrom(cl)) {
+				ret.add((Class<T>)cl);
 			}
 		}
 		
 		return ret;
 	}
+
+	public List<Class<?>> findClassesWithAnnotation(Class<? extends Annotation> annotation) {
+		Set<Class<?>> pluginClasses = findAllPlugins();
+		List<Class<?>> ret = new ArrayList<>();
+		
+		for(Class<?> cl : pluginClasses) {
+			if (cl.isAnnotationPresent(annotation)) {
+				ret.add(cl);
+			}
+		}
+		
+		return ret;
+	}
+
+	public Set<Class<?>> findAllPlugins() {
+		if (pluginClasses==null) {
+			pluginClasses = new HashSet<>();
+			
+			for(File lib : libs) {
+				if (lib.isDirectory()) {
+					scanDirectory(lib, pluginClasses, "");
+				} else {
+					System.err.println("Can't scan jar files yet");
+				}
+			}
+		}
+		
+		return pluginClasses;
+	}
 	
-	private void scanDirectory(File lib, List<Class<?>> results, String pkg) {
+	private void scanDirectory(File lib, Set<Class<?>> results, String pkg) {
 		File[] contents = lib.listFiles();
 		for(File f : contents) {
 			String name = f.getName();

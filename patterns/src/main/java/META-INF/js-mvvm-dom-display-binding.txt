@@ -1,9 +1,0 @@
-this.event('${event}',
-	function() {
-		if (${function}==true) {
-			this.view.${element}.style.display = '';
-		} else {
-			this.view.${element}.style.display = 'none';
-		}
-	}.bind(${pageName})
-);

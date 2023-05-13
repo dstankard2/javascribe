@@ -1,13 +1,15 @@
 package net.sf.javascribe.engine.manager;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.sf.javascribe.engine.ComponentDependency;
+import net.sf.javascribe.engine.data.ApplicationData;
 import net.sf.javascribe.engine.service.ComponentFileService;
 import net.sf.javascribe.engine.service.FolderScannerService;
 
 public class WorkspaceManager {
 
-	private String workspaceDir = null;
-	private boolean singleApp = false;
 	private ComponentFileService componentFileService = null;
 	private FolderScannerService folderScannerService = null;
 	
@@ -20,12 +22,11 @@ public class WorkspaceManager {
 		this.folderScannerService = s;
 	}
 
-	public void setSingleApp(boolean singleApp) {
-		this.singleApp = singleApp;
+	public List<ApplicationData> initializeApplications(String workspaceDir, boolean singleApp) {
+		List<ApplicationData> ret = new ArrayList<>();
+		
+		
+		return ret;
 	}
-	
-	public void setWorkspaceDir(String workspaceDir) {
-		this.workspaceDir = workspaceDir;
-	}
-	
+
 }

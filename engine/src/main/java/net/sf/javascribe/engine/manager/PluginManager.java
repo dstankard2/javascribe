@@ -1,15 +1,38 @@
 package net.sf.javascribe.engine.manager;
 
-import java.io.File;
 import java.util.List;
 
 import net.sf.javascribe.engine.ComponentDependency;
+import net.sf.javascribe.engine.service.ComponentFileService;
+import net.sf.javascribe.engine.service.LanguageSupportService;
+import net.sf.javascribe.engine.service.PatternService;
 import net.sf.javascribe.engine.service.PluginService;
 
 public class PluginManager {
 
+	private PatternService patternService;
+	
 	private PluginService pluginService;
 	
+	private ComponentFileService componentFileService;
+	
+	private LanguageSupportService languageSupportService;
+	
+	@ComponentDependency
+	public void setLanguageSupportService(LanguageSupportService srv) {
+		this.languageSupportService = srv;
+	}
+
+	@ComponentDependency
+	public void setPatternService(PatternService srv) {
+		this.patternService = srv;
+	}
+
+	@ComponentDependency
+	public void setComponentFileService(ComponentFileService srv) {
+		this.componentFileService = srv;
+	}
+
 	@ComponentDependency
 	public void setPluginService(PluginService srv) {
 		this.pluginService = srv;
@@ -18,15 +41,18 @@ public class PluginManager {
 	public PluginManager() {
 	}
 
-	public void initEnginePlugins() {
-		System.out.println("hi");
+	/**
+	 * Initializes all resources related to classes annotated with @Plugin
+	 */
+	public void initializeAllPlugins(boolean runOnce) {
+		componentFileService.loadPatternDefinitions();
+		languageSupportService.loadLanguageSupport();
+		patternService.initializePatterns();
 	}
 	
-	// Need to load patterns, plugins and language support from classpath
-	public void initEngineResources() {
-		List<Class<?>> classes = pluginService.findAllPlugins();
-		System.out.println("hi");
+	public void initEnginePlugins() {
+		
 	}
-
+	
 }
 

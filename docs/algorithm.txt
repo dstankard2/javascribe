@@ -1,3 +1,30 @@
 
+* JavascribeAgent: init
+	Initialize component container and dependencies
+		Create component container
+		Register dependencies in component container
+	Initialize plugin classes in PluginManager
+		Initialize ComponentFileService
+			Get XmlConfig classes from plugin service.
+			Initialize JAXB context
+		Initialize Language support in LanguageSupportService
+			Get LanguageSupport classes from plugin service
+		Initialize component patterns in PatternService
+			Get classes that extend Component and BuildComponent
+			Get classes that extend ComponentProcessor and BuildComponentProcessor
+			Build ComponentPattern list.
+		Initialize engine plugins (if running in agent mode) in PluginManager
+			Get classes that extend EnginePlugin.
+			Create EnginePlugin instances, check if each plugin is enabled.
+				Initialize enabled engine plugins
+	Initialize application data in WorkspaceManager
+		Invoke workspaceManager to create ApplicationData instances
 
+* JavascribeAgent: run
+		
+	Operation: Run application scans
+
+
+
+JavascribeAgent: run application scans
 

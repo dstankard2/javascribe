@@ -1,6 +1,0 @@
-this.event('${event}',
-	function() {
-		if (${function}==true) this.view.${element}.disabled=null;
-		else this.view.${element}.disabled='disabled';
-	}.bind(${pageName})
-);

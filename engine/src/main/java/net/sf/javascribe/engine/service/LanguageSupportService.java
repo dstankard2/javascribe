@@ -14,6 +14,10 @@ public class LanguageSupportService {
 	public void setLibs(File[] libs) {
 		this.libs = libs;
 	}
+	
+	public void loadLanguageSupport() {
+		
+	}
 
 }
 

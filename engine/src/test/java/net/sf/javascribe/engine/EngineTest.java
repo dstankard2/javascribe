@@ -24,6 +24,7 @@ public class EngineTest {
 		props.put("once", "true");
 		
 		agent = new JavascribeAgent(libs, props);
+		agent.init();
 		agent.run();
 	}
 }

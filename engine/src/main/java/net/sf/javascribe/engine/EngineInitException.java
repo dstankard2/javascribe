@@ -1,6 +1,6 @@
 package net.sf.javascribe.engine;
 
-public class EngineInitException extends Exception {
+public class EngineInitException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 
 	public EngineInitException() {
