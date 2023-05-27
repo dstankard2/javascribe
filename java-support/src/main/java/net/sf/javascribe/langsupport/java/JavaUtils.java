@@ -12,7 +12,7 @@ import net.sf.javascribe.api.AttribEntry;
 import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JasperUtils;
 import net.sf.javascribe.api.ProcessorContext;
-import net.sf.javascribe.api.exception.JasperException;
+import net.sf.javascribe.api.exception.JavascribeException;
 import net.sf.javascribe.api.types.ServiceOperation;
 import net.sf.javascribe.langsupport.java.types.JavaVariableType;
 import net.sf.javascribe.langsupport.java.types.ServiceLocator;
@@ -23,19 +23,19 @@ public class JavaUtils {
 
 	public static final String CONFIG_PROPERTY_JAVA_ROOT_PACKAGE = "java.rootPackage";
 	
-	public static String getRootPackage(ProcessorContext ctx) throws JasperException {
+	public static String getRootPackage(ProcessorContext ctx) throws JavascribeException {
 		String val = ctx.getProperty(CONFIG_PROPERTY_JAVA_ROOT_PACKAGE);
 		if (val==null) {
-			throw new JasperException("Couldn't find root package configuration property '"+CONFIG_PROPERTY_JAVA_ROOT_PACKAGE+"'");
+			throw new JavascribeException("Couldn't find root package configuration property '"+CONFIG_PROPERTY_JAVA_ROOT_PACKAGE+"'");
 		}
 		return val;
 	}
 	
-	public static String getJavaPackage(JavaComponent component,ProcessorContext ctx) throws JasperException {
+	public static String getJavaPackage(JavaComponent component,ProcessorContext ctx) throws JavascribeException {
 		return getRootPackage(ctx)+'.'+component.getPkg();
 	}
 
-	private static String getJavaSourcePath(String cannonicalName,ProcessorContext ctx) throws JasperException {
+	private static String getJavaSourcePath(String cannonicalName,ProcessorContext ctx) throws JavascribeException {
 		String ret = null;
 		
 		ret = ctx.getBuildContext().getOutputRootPath("java") + '/';
@@ -49,7 +49,7 @@ public class JavaUtils {
 	 * @param ctx
 	 * @return
 	 */
-	public static JavaClassSourceFile getClassSourceFile(String cannonicalName,ProcessorContext ctx) throws JasperException {
+	public static JavaClassSourceFile getClassSourceFile(String cannonicalName,ProcessorContext ctx) throws JavascribeException {
 		return getClassSourceFile(cannonicalName,ctx,true);
 	}
 	
@@ -59,7 +59,7 @@ public class JavaUtils {
 	 * @param ctx
 	 * @return
 	 */
-	public static JavaClassSourceFile getClassSourceFile(String cannonicalName,ProcessorContext ctx, boolean create) throws JasperException {
+	public static JavaClassSourceFile getClassSourceFile(String cannonicalName,ProcessorContext ctx, boolean create) throws JavascribeException {
 		JavaClassSourceFile ret = null;
 
 		ret = (JavaClassSourceFile)ctx.getSourceFile(getJavaSourcePath(cannonicalName,ctx));
@@ -93,9 +93,9 @@ public class JavaUtils {
 	 * @param execCtx Current code execution context
 	 * @param ctx Processor Conntext
 	 * @return Code to ensure the service exists.
-	 * @throws JasperException
+	 * @throws JavascribeException
 	 */
-	public static JavaCode serviceInstance(String ref,JavaVariableType type,CodeExecutionContext execCtx,ProcessorContext ctx) throws JasperException {
+	public static JavaCode serviceInstance(String ref,JavaVariableType type,CodeExecutionContext execCtx,ProcessorContext ctx) throws JavascribeException {
 		JavaCode ret = new JavaCode();
 
 		// If the variable is already there, then it is already initialized.
@@ -109,14 +109,14 @@ public class JavaUtils {
 				JavaServiceType s = (JavaServiceType)type;
 				JavaUtils.append(ret, s.instantiate(ref));
 			} else {
-				throw new JasperException("Couldn't create an instance of service type '"+type.getName()+"' because it isn't a service or service locator");
+				throw new JavascribeException("Couldn't create an instance of service type '"+type.getName()+"' because it isn't a service or service locator");
 			}
 		}
 		
 		return ret;
 	}
 
-	public static JavaCode addServiceToExecutionContext(String ref,CodeExecutionContext execCtx,ProcessorContext ctx) throws JasperException {
+	public static JavaCode addServiceToExecutionContext(String ref,CodeExecutionContext execCtx,ProcessorContext ctx) throws JavascribeException {
 		JavaCode ret = null;
 		String typeName = ctx.getSystemAttribute(ref);
 
@@ -125,7 +125,7 @@ public class JavaUtils {
 		}
 		
 		if (typeName==null) {
-			throw new JasperException("Couldn't recognize service reference '"+ref+"'");
+			throw new JavascribeException("Couldn't recognize service reference '"+ref+"'");
 		}
 		JavaServiceType type = JasperUtils.getType(JavaServiceType.class, typeName, ctx);
 		ret = type.declare(ref, execCtx);
@@ -136,11 +136,11 @@ public class JavaUtils {
 		return ret;
 	}
 
-	public static JavaCode callJavaOperation(String resultName,String objName,ServiceOperation op,CodeExecutionContext execCtx,Map<String,String> explicitParams) throws JasperException {
+	public static JavaCode callJavaOperation(String resultName,String objName,ServiceOperation op,CodeExecutionContext execCtx,Map<String,String> explicitParams) throws JavascribeException {
 		return callJavaOperation(resultName,objName,op,execCtx,explicitParams,true);
 	}
 
-	public static void addServiceOperation(ServiceOperation op,JavaCode code,JavaClassSource cl,ProcessorContext ctx) throws JasperException {
+	public static void addServiceOperation(ServiceOperation op,JavaCode code,JavaClassSource cl,ProcessorContext ctx) throws JavascribeException {
 		MethodSource<JavaClassSource> method = cl.addMethod().setName(op.getName()).setBody(code.getCodeText()).setPublic();
 
 		if (code!=null) {
@@ -169,13 +169,13 @@ public class JavaUtils {
 
 	}
 
-	public static void addProperty(JavaClassSourceFile src,String name,String typeName,ProcessorContext ctx) throws JasperException {
+	public static void addProperty(JavaClassSourceFile src,String name,String typeName,ProcessorContext ctx) throws JavascribeException {
 		JavaVariableType type = JasperUtils.getType(JavaVariableType.class, typeName, ctx);
 		src.addImport(type);
 		src.getSrc().addProperty(type.getClassName(), name);
 	}
 
-	public static JavaCode callJavaOperation(String resultName,String objName,ServiceOperation op,CodeExecutionContext execCtx,Map<String,String> explicitParams,boolean addSemicolon) throws JasperException {
+	public static JavaCode callJavaOperation(String resultName,String objName,ServiceOperation op,CodeExecutionContext execCtx,Map<String,String> explicitParams,boolean addSemicolon) throws JavascribeException {
 		JavaCode ret = new JavaCode();
 		JavaCode invoke = new JavaCode();
 		
@@ -195,7 +195,7 @@ public class JavaUtils {
 			} else if (execCtx.getTypeForVariable(p)!=null) {
 				invoke.appendCodeText(p);
 			} else {
-				throw new JasperException("Couldn't find parameter '"+p+"' in current code execution context");
+				throw new JavascribeException("Couldn't find parameter '"+p+"' in current code execution context");
 			}
 
 		}
@@ -271,7 +271,7 @@ public class JavaUtils {
 		return ret;
 	}
 
-	public static ServiceOperation findRule(String rule,List<AttribEntry> params, ProcessorContext ctx, CodeExecutionContext execCtx) throws JasperException {
+	public static ServiceOperation findRule(String rule,List<AttribEntry> params, ProcessorContext ctx, CodeExecutionContext execCtx) throws JavascribeException {
 		ServiceOperation op = null;
 		String obj = JasperUtils.getObjectName(rule);
 		String ruleName = JasperUtils.getRuleName(rule);
@@ -279,7 +279,7 @@ public class JavaUtils {
 		List<ServiceOperation> ops = type.getOperations(ruleName);
 
 		if (ops.size()==0) {
-			throw new JasperException("Couldn't find rule '"+rule+"'");
+			throw new JavascribeException("Couldn't find rule '"+rule+"'");
 		} else if (ops.size()==1) {
 			op = ops.get(0);
 		} else {
@@ -306,12 +306,12 @@ public class JavaUtils {
 			}
 		}
 		if(op==null) {
-			throw new JasperException("Couldn't find rule "+rule+" with params = "+params);
+			throw new JavascribeException("Couldn't find rule "+rule+" with params = "+params);
 		}
 		return op;
 	}
 	
-	public static JavaCode set(String ref, String valueString, CodeExecutionContext execCtx) throws JasperException {
+	public static JavaCode set(String ref, String valueString, CodeExecutionContext execCtx) throws JavascribeException {
 		JavaCode ret = new JavaCode();
 		boolean first = true;
 		String b = "";
@@ -338,7 +338,7 @@ public class JavaUtils {
 					ret.appendCodeText(";");
 				} else {
 					if (t==null) {
-						throw new JasperException("Couldn't set value of reference '"+ref+"'");
+						throw new JavascribeException("Couldn't set value of reference '"+ref+"'");
 					}
 					b = t.getCodeToRetrieveAttribute(b, r, null, execCtx);
 					String attrTypeName = t.getAttributeType(r);
@@ -352,7 +352,7 @@ public class JavaUtils {
 		return ret;
 	}
 	
-	public static String getClassDisplayForList(String listType, ProcessorContext ctx) throws JasperException {
+	public static String getClassDisplayForList(String listType, ProcessorContext ctx) throws JavascribeException {
 		String ret = "java.util.List";
 		
 		int i = listType.indexOf('/');

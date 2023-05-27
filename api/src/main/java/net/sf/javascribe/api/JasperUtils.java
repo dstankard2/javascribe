@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import net.sf.javascribe.api.exception.JasperException;
+import net.sf.javascribe.api.exception.JavascribeException;
 import net.sf.javascribe.api.types.DataObjectType;
 import net.sf.javascribe.api.types.ListType;
 import net.sf.javascribe.api.types.ServiceOperation;
@@ -83,9 +83,9 @@ public class JasperUtils {
 	 * @param paramString
 	 * @param ctx
 	 * @return
-	 * @throws JasperException
+	 * @throws JavascribeException
 	 */
-	public static List<AttribEntry> readParametersAsList(String paramString,ProcessorContext ctx) throws JasperException {
+	public static List<AttribEntry> readParametersAsList(String paramString,ProcessorContext ctx) throws JavascribeException {
 		List<AttribEntry> ret = new ArrayList<>();
 		
 		paramString = paramString.trim();
@@ -101,7 +101,7 @@ public class JasperUtils {
 				String typeName = part.substring(index+1).trim();
 				VariableType type = ctx.getVariableType(typeName);
 				if (type==null) {
-					throw new JasperException("Found no variable type named '"+typeName+"'");
+					throw new JavascribeException("Found no variable type named '"+typeName+"'");
 				}
 				if (typeName.startsWith("list/")) {
 					ListType listType = (ListType)type;
@@ -112,11 +112,11 @@ public class JasperUtils {
 				ctx.addSystemAttribute(name, typeName);
 				ret.add(new AttribEntry(name,type,true));
 			} else if (index==0) {
-				throw new JasperException("Found invalid attribute name '"+part+"'");
+				throw new JavascribeException("Found invalid attribute name '"+part+"'");
 			} else {
 				String typeName = ctx.getSystemAttribute(part.trim());
 				if (typeName==null) {
-					throw new JasperException("Couldn't find type for attribute '"+part+"'");
+					throw new JavascribeException("Couldn't find type for attribute '"+part+"'");
 				}
 				VariableType type = JasperUtils.getType(VariableType.class, typeName, ctx);
 				if ((type instanceof ListType) && (typeName.startsWith("list/"))) {
@@ -133,24 +133,24 @@ public class JasperUtils {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static <T extends VariableType> T getType(Class<T> cl, String name,ProcessorContext ctx) throws JasperException {
+	public static <T extends VariableType> T getType(Class<T> cl, String name,ProcessorContext ctx) throws JavascribeException {
 		T ret = null;
 		VariableType type = null;
 		
 		if (name==null) {
-			throw new JasperException("Couldn't find type with null name");
+			throw new JavascribeException("Couldn't find type with null name");
 		}
 		if (ctx==null) {
-			throw new JasperException("Tried to find type '"+name+"' but got null ProcessorContext");
+			throw new JavascribeException("Tried to find type '"+name+"' but got null ProcessorContext");
 		}
 		type = ctx.getVariableType(name);
 		if (type==null) {
-			throw new JasperException("Could not find type '"+name+"' for current language");
+			throw new JavascribeException("Could not find type '"+name+"' for current language");
 		}
 		if (cl.isAssignableFrom(type.getClass())) {
 			ret = (T)type;
 		} else {
-			throw new JasperException("Variable Type '"+name+"' was not of type '"+cl.getCanonicalName()+"'");
+			throw new JavascribeException("Variable Type '"+name+"' was not of type '"+cl.getCanonicalName()+"'");
 		}
 		if ((ret instanceof ListType) && (name.startsWith("list/"))) {
 			String elementTypeName = name.substring(5);
@@ -163,25 +163,25 @@ public class JasperUtils {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static <T extends VariableType> T getTypeForSystemAttribute(Class<T> cl, String name,ProcessorContext ctx) throws JasperException {
+	public static <T extends VariableType> T getTypeForSystemAttribute(Class<T> cl, String name,ProcessorContext ctx) throws JavascribeException {
 		T ret = null;
 		VariableType type = null;
 		String typeName = ctx.getSystemAttribute(name);
 		
-		if (typeName==null) throw new JasperException("Could not find system attribute '"+name+"'");
+		if (typeName==null) throw new JavascribeException("Could not find system attribute '"+name+"'");
 		
 		type = ctx.getVariableType(typeName);
-		if (type==null) throw new JasperException("Couldn't find type '"+typeName+"'");
+		if (type==null) throw new JavascribeException("Couldn't find type '"+typeName+"'");
 		if (cl.isAssignableFrom(type.getClass())) {
 			ret = (T)type;
 		} else {
-			throw new JasperException("Variable Type '"+name+"' was not of type '"+cl.getCanonicalName()+"'");
+			throw new JavascribeException("Variable Type '"+name+"' was not of type '"+cl.getCanonicalName()+"'");
 		}
 		
 		return ret;
 	}
 	
-	public static HashMap<String,String> readParametersAsMap(String paramString,ProcessorContext ctx) throws JasperException {
+	public static HashMap<String,String> readParametersAsMap(String paramString,ProcessorContext ctx) throws JavascribeException {
 		HashMap<String,String> ret = new HashMap<>();
 		String params[] = paramString.split(",");
 		if (paramString.trim().length()==0) return ret;
@@ -196,27 +196,27 @@ public class JasperUtils {
 		return ret;
 	}
 	
-	public static String getObjectName(String ref) throws JasperException {
+	public static String getObjectName(String ref) throws JavascribeException {
 		String ret = null;
 		int i = ref.indexOf('.');
 		if (i<=0) {
-			throw new JasperException("Couldn't extract object name from reference '"+ref+"'");
+			throw new JavascribeException("Couldn't extract object name from reference '"+ref+"'");
 		}
 		ret = ref.substring(0, i);
 		return ret;
 	}
 
-	public static String getRuleName(String ref) throws JasperException {
+	public static String getRuleName(String ref) throws JavascribeException {
 		String ret = null;
 		int i = ref.indexOf('.');
 		if (i<=0) {
-			throw new JasperException("Couldn't extract rule name from reference '"+ref+"'");
+			throw new JavascribeException("Couldn't extract rule name from reference '"+ref+"'");
 		}
 		ret = ref.substring(i+1);
 		return ret;
 	}
 
-	public static String evaluateReference(String ref,CodeExecutionContext execCtx) throws JasperException {
+	public static String evaluateReference(String ref,CodeExecutionContext execCtx) throws JavascribeException {
 		String ret = null;
 		
 		String parts[] = ref.split("\\.");
@@ -232,7 +232,7 @@ public class JasperUtils {
 					parentType = execCtx.getType(DataObjectType.class, parentTypeName);
 				} else {
 					if (parentType.getAttributeType(part)==null) {
-						throw new JasperException("Couldn't evaluate reference '"+ref+"' - type '"+parentTypeName+"' didn't have an attribute called '"+part+"'");
+						throw new JavascribeException("Couldn't evaluate reference '"+ref+"' - type '"+parentTypeName+"' didn't have an attribute called '"+part+"'");
 					}
 					ret = parentType.getCodeToRetrieveAttribute(ret, part, null, execCtx);
 				}
@@ -242,12 +242,12 @@ public class JasperUtils {
 		return ret;
 	}
 	
-	public static List<ServiceOperation> findRuleFromTypeAndRef(String ruleRef,ProcessorContext ctx) throws JasperException {
+	public static List<ServiceOperation> findRuleFromTypeAndRef(String ruleRef,ProcessorContext ctx) throws JavascribeException {
 		List<ServiceOperation> ret = new ArrayList<>();
 		int i = ruleRef.indexOf('.');
 		
 		if (i<0) {
-			throw new JasperException("Reference '"+ruleRef+"' does not refer to a service and a rule");
+			throw new JavascribeException("Reference '"+ruleRef+"' does not refer to a service and a rule");
 		}
 		String ref = ruleRef.substring(0, i);
 		String ruleName = ruleRef.substring(i+1);
@@ -262,12 +262,12 @@ public class JasperUtils {
 		return ret;
 	}
 	
-	public static List<ServiceOperation> findRuleFromRef(String ruleRef,ProcessorContext ctx) throws JasperException {
+	public static List<ServiceOperation> findRuleFromRef(String ruleRef,ProcessorContext ctx) throws JavascribeException {
 		List<ServiceOperation> ret = new ArrayList<>();
 		int i = ruleRef.indexOf('.');
 		
 		if (i<1) {
-			throw new JasperException("Reference '"+ruleRef+"' does not refer to a service and a rule");
+			throw new JavascribeException("Reference '"+ruleRef+"' does not refer to a service and a rule");
 		}
 		String ref = ruleRef.substring(0, i);
 		String ruleName = ruleRef.substring(i+1);

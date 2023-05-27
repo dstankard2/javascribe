@@ -21,6 +21,7 @@
         <include>net.sf.javascribe:api</include>
         <include>net.sf.javascribe:java-support</include>
         <include>net.sf.javascribe:javascript-support</include>
+        <include>net.sf.javascribe:patterns</include>
         <include>net.sf.javascribe:engine</include>
       </includes>
       <binaries>

@@ -5,7 +5,7 @@ import org.jboss.forge.roaster.model.source.JavaSource;
 
 import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.SourceFile;
-import net.sf.javascribe.api.exception.JasperException;
+import net.sf.javascribe.api.exception.JavascribeException;
 import net.sf.javascribe.langsupport.java.types.JavaVariableType;
 import net.sf.javascribe.langsupport.java.types.impl.JavaListType;
 
@@ -20,7 +20,7 @@ public abstract class JavaSourceFile<T extends JavaSource<?>> implements SourceF
 		return src;
 	}
 
-	public JavaSourceFile(Class<T> cl,ProcessorContext ctx) throws JasperException {
+	public JavaSourceFile(Class<T> cl,ProcessorContext ctx) throws JavascribeException {
 		this.cl = cl;
 		this.ctx = ctx;
 		this.src = Roaster.create(cl);

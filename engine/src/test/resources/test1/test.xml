@@ -1,0 +1,8 @@
+<javascribe:componentSet xmlns="http://jaspercode.sf.net/patterns/test"
+		xmlns:javascribe="http://javascribe.sf.net/config">
+
+	<testPattern name="test1" />
+
+	<testPattern name="test2" />
+
+</javascribe:componentSet>

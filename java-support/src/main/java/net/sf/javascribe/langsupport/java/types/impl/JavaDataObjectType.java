@@ -8,7 +8,7 @@ import java.util.Map;
 import net.sf.javascribe.api.BuildContext;
 import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JasperUtils;
-import net.sf.javascribe.api.exception.JasperException;
+import net.sf.javascribe.api.exception.JavascribeException;
 import net.sf.javascribe.api.types.DataObjectType;
 import net.sf.javascribe.langsupport.java.JavaCode;
 import net.sf.javascribe.langsupport.java.types.JavaVariableTypeBase;
@@ -26,20 +26,20 @@ public class JavaDataObjectType extends JavaVariableTypeBase implements DataObje
 	
 	@Override
 	public String getCodeToRetrieveAttribute(String varName, String attribName, String targetType,
-			CodeExecutionContext execCtx) throws IllegalArgumentException, JasperException {
+			CodeExecutionContext execCtx) throws IllegalArgumentException, JavascribeException {
 		String upperCamel = JasperUtils.getUpperCamelName(attribName);
 		return varName+".get"+upperCamel+"()";
 	}
 
 	@Override
 	public String getCodeToSetAttribute(String varName, String attribName, String evaluatedValue,
-			CodeExecutionContext execCtx) throws JasperException {
+			CodeExecutionContext execCtx) throws JavascribeException {
 		String upperCamel = JasperUtils.getUpperCamelName(attribName);
 		return varName+".set"+upperCamel+"("+evaluatedValue+")";
 	}
 
 	@Override
-	public String getAttributeType(String attrib) throws JasperException {
+	public String getAttributeType(String attrib) throws JavascribeException {
 		return attribMap.get(attrib);
 	}
 

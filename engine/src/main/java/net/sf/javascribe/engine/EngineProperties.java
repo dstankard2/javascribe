@@ -54,8 +54,9 @@ public class EngineProperties {
 		return getValueList("commands");
 	}
 
+	// TODO: Want to change this configuration
 	public boolean getRunOnce() {
-		return userOptions.get("once")!=null;
+		return getBoolean("once", false);
 	}
 
 	public boolean getSingleApp() {

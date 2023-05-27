@@ -1,6 +1,6 @@
 package net.sf.javascribe.api;
 
-import net.sf.javascribe.api.exception.JasperException;
+import net.sf.javascribe.api.exception.JavascribeException;
 import net.sf.javascribe.api.resources.ApplicationResource;
 
 /**
@@ -15,7 +15,7 @@ public interface BuildContext {
 	
 	void addDependency(BuildContext buildCtx);
 
-	String getOutputRootPath(String fileExt) throws JasperException;
+	String getOutputRootPath(String fileExt) throws JavascribeException;
 
 	String getOutputRootPath();
 
@@ -25,7 +25,7 @@ public interface BuildContext {
 
 	RuntimePlatform getRuntimePlatform();
 
-	void setRuntimePlatform(RuntimePlatform platform) throws JasperException;
+	void setRuntimePlatform(RuntimePlatform platform) throws JavascribeException;
 
 	String getName();
 	

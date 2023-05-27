@@ -5,15 +5,15 @@ import org.jboss.forge.roaster.model.source.JavaEnumSource;
 
 import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.SourceFile;
-import net.sf.javascribe.api.exception.JasperException;
+import net.sf.javascribe.api.exception.JavascribeException;
 
 public class JavaEnumSourceFile extends JavaSourceFile<JavaEnumSource> {
 
-	public JavaEnumSourceFile(ProcessorContext ctx) throws JasperException {
+	public JavaEnumSourceFile(ProcessorContext ctx) throws JavascribeException {
 		super(JavaEnumSource.class,ctx);
 	}
 	
-	public JavaEnumSourceFile(ProcessorContext ctx, JavaEnumSource copy) throws JasperException {
+	public JavaEnumSourceFile(ProcessorContext ctx, JavaEnumSource copy) throws JavascribeException {
 		super(JavaEnumSource.class, ctx);
 		this.src = copy;
 	}
@@ -23,7 +23,7 @@ public class JavaEnumSourceFile extends JavaSourceFile<JavaEnumSource> {
 		JavaEnumSource copy = Roaster.parse(JavaEnumSource.class, src.toString());
 		try {
 			return new JavaEnumSourceFile(ctx, copy);
-		} catch(JasperException e) {
+		} catch(JavascribeException e) {
 			// should be impossible
 		}
 		return null;

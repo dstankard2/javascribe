@@ -21,10 +21,31 @@
 		Invoke workspaceManager to create ApplicationData instances
 
 * JavascribeAgent: run
-		
+
 	Operation: Run application scans
 
 
 
 JavascribeAgent: run application scans
+For each application:
+	perform scanApplication in WorkspaceManager
+		Find resources removed/changed in folderScannerService
+		Find resources changed/added in folderScannerService
+		For each removed/changed file:
+			
+		For each changed/added resource:
+			if it's jasper.properties or systemAttributes.properties then ignore
+			If it's a user file:
+				add to addedUserFiles
+			If it's a component file
+				calculate Component Items, add to toProcess in processing data.
+				Add any build components to buildsToInit in processing data
+		For each user file uf:
+			For each folder watcher w:
+				If uf is watched by w:
+					reset originatorId of w
+		For 
 
+
+Add folder watcher in processorContext:
+	

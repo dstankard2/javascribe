@@ -1,7 +1,7 @@
 package net.sf.javascribe.langsupport.java.types;
 
 import net.sf.javascribe.api.CodeExecutionContext;
-import net.sf.javascribe.api.exception.JasperException;
+import net.sf.javascribe.api.exception.JavascribeException;
 import net.sf.javascribe.api.types.VariableType;
 import net.sf.javascribe.langsupport.java.JavaCode;
 
@@ -19,6 +19,6 @@ public interface JavaVariableType extends VariableType {
 	 */
 	public String getClassName();
 
-	public JavaCode declare(String name, CodeExecutionContext execCtx) throws JasperException;
+	public JavaCode declare(String name, CodeExecutionContext execCtx) throws JavascribeException;
 	
 }

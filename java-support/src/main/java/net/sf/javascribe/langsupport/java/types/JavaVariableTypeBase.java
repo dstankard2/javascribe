@@ -2,7 +2,7 @@ package net.sf.javascribe.langsupport.java.types;
 
 import net.sf.javascribe.api.BuildContext;
 import net.sf.javascribe.api.CodeExecutionContext;
-import net.sf.javascribe.api.exception.JasperException;
+import net.sf.javascribe.api.exception.JavascribeException;
 import net.sf.javascribe.langsupport.java.JavaCode;
 
 public abstract class JavaVariableTypeBase implements JavaVariableType {
@@ -33,7 +33,7 @@ public abstract class JavaVariableTypeBase implements JavaVariableType {
 	}
 
 	@Override
-	public JavaCode declare(String name, CodeExecutionContext execCtx) throws JasperException {
+	public JavaCode declare(String name, CodeExecutionContext execCtx) throws JavascribeException {
 		return new JavaCode(getClassName()+" "+name+" = null;\n",getImport());
 	}
 

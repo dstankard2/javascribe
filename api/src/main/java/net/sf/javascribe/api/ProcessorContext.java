@@ -1,7 +1,7 @@
 package net.sf.javascribe.api;
 
 import net.sf.javascribe.api.config.Component;
-import net.sf.javascribe.api.exception.JasperException;
+import net.sf.javascribe.api.exception.JavascribeException;
 import net.sf.javascribe.api.logging.Log;
 import net.sf.javascribe.api.resources.ApplicationResource;
 import net.sf.javascribe.api.resources.FileProcessor;
@@ -10,15 +10,14 @@ import net.sf.javascribe.api.types.VariableType;
 
 public interface ProcessorContext {
 
-	public void setLanguageSupport(String language) throws JasperException;
+	public void setLanguageSupport(String language) throws JavascribeException;
 
-	public void addSystemAttribute(String name,String type) throws JasperException;
+	public void addSystemAttribute(String name,String type) throws JavascribeException;
 	public void originateSystemAttribute(String name);
 	public String getSystemAttribute(String name);
 
 	public void addVariableType(VariableType variableType);
 	public VariableType getVariableType(String name);
-	void modifyVariableType(VariableType type);
 
 	public void setObject(String name,Object obj);
 	public Object getObject(String name);

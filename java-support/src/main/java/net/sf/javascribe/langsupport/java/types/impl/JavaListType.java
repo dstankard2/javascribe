@@ -2,7 +2,7 @@ package net.sf.javascribe.langsupport.java.types.impl;
 
 import net.sf.javascribe.api.Code;
 import net.sf.javascribe.api.CodeExecutionContext;
-import net.sf.javascribe.api.exception.JasperException;
+import net.sf.javascribe.api.exception.JavascribeException;
 import net.sf.javascribe.api.types.ListType;
 import net.sf.javascribe.api.types.VariableType;
 import net.sf.javascribe.langsupport.java.JavaCode;
@@ -26,14 +26,14 @@ public class JavaListType extends JavaVariableTypeBase implements ListType {
 	}
 
 	@Override
-	public JavaCode declare(String varName, String elementType, CodeExecutionContext execCtx) throws JasperException {
+	public JavaCode declare(String varName, String elementType, CodeExecutionContext execCtx) throws JavascribeException {
 		JavaVariableType eltType = execCtx.getType(JavaVariableType.class, elementType);
 		JavaCode ret = new JavaCode("List<"+eltType.getClassName()+"> "+varName+" = new java.util.ArrayList<>();\n",eltType.getImport(),getImport());
 		return ret;
 	}
 
 	@Override
-	public Code appendToList(String listVarName, String value, CodeExecutionContext execCtx) throws JasperException {
+	public Code appendToList(String listVarName, String value, CodeExecutionContext execCtx) throws JavascribeException {
 		return new JavaCode(listVarName+".add("+value+");\n");
 	}
 
@@ -47,8 +47,8 @@ public class JavaListType extends JavaVariableTypeBase implements ListType {
 	}
 
 	@Override
-	public JavaCode instantiate(String name, String value, CodeExecutionContext execCtx) throws JasperException {
-		throw new JasperException("Cannot instantiate a List without an element type");
+	public JavaCode instantiate(String name, String value, CodeExecutionContext execCtx) throws JavascribeException {
+		throw new JavascribeException("Cannot instantiate a List without an element type");
 	}
 
 	@Override
@@ -71,9 +71,9 @@ public class JavaListType extends JavaVariableTypeBase implements ListType {
 	}
 
 	@Override
-	public JavaCode declare(String name, CodeExecutionContext execCtx) throws JasperException {
+	public JavaCode declare(String name, CodeExecutionContext execCtx) throws JavascribeException {
 		if (elementType==null) {
-			throw new JasperException("Cannot declare a list without an element type");
+			throw new JavascribeException("Cannot declare a list without an element type");
 		}
 		return this.declare(name, elementType.getName(), execCtx);
 	}

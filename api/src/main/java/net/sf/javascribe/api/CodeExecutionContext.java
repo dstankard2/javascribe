@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import net.sf.javascribe.api.exception.JasperException;
+import net.sf.javascribe.api.exception.JavascribeException;
 import net.sf.javascribe.api.types.VariableType;
 
 public class CodeExecutionContext {
@@ -63,7 +63,7 @@ public class CodeExecutionContext {
 		variables.put(name,type);
 	}
 
-	public <T extends VariableType> T getType(Class<T> clazz,String name) throws JasperException {
+	public <T extends VariableType> T getType(Class<T> clazz,String name) throws JavascribeException {
 		return JasperUtils.getType(clazz, name, ctx);
 	}
 	
@@ -76,14 +76,14 @@ public class CodeExecutionContext {
 	 * @param var
 	 * @return Type of the specified variable, or null.
 	 */
-	public VariableType getTypeForVariable(String var) throws JasperException {
+	public VariableType getTypeForVariable(String var) throws JavascribeException {
 		String type = variables.get(var);
 		VariableType ret = null;
 
 		if (type!=null) {
 			ret = ctx.getVariableType(type);
 			if (ret==null) {
-				throw new JasperException("Couldn't find type '"+type+"' for variable '"+var+"'");
+				throw new JavascribeException("Couldn't find type '"+type+"' for variable '"+var+"'");
 			}
 		}
 

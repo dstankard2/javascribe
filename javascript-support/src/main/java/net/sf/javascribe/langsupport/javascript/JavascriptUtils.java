@@ -6,7 +6,7 @@ import java.util.Map;
 
 import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.ProcessorContext;
-import net.sf.javascribe.api.exception.JasperException;
+import net.sf.javascribe.api.exception.JavascribeException;
 import net.sf.javascribe.api.types.ServiceOperation;
 import net.sf.javascribe.langsupport.javascript.modules.ModuleFunction;
 import net.sf.javascribe.langsupport.javascript.modules.ModuleSourceFile;
@@ -55,34 +55,34 @@ public class JavascriptUtils {
 		return build.toString();
 	}
 	
-	public static String getModulePath(String srcPath,ProcessorContext ctx) throws JasperException {
+	public static String getModulePath(String srcPath,ProcessorContext ctx) throws JavascribeException {
 		String ret = null;
 		String base = ctx.getProperty("javascript.modules.srcRoot");
 		
 		if (base==null) {
-			throw new JasperException("Javascript modules require config property 'javascript.modules.srcRoot'");
+			throw new JavascribeException("Javascript modules require config property 'javascript.modules.srcRoot'");
 		}
 		if (srcPath.startsWith(base)) {
 			ret = srcPath.substring(base.length());
 		} else {
-			throw new JasperException("Couldn't get web path for file "+srcPath+" based on www root folder "+base);
+			throw new JavascribeException("Couldn't get web path for file "+srcPath+" based on www root folder "+base);
 		}
 		
 		return ret;
 	}
 	
-	public static String getModulePath(ProcessorContext ctx) throws JasperException {
+	public static String getModulePath(ProcessorContext ctx) throws JavascribeException {
 		String srcPath = getModuleSourceFilePath(ctx);
 		return getModulePath(srcPath,ctx);
 	}
 	
-	protected static String getModuleSourceFilePath(ProcessorContext ctx) throws JasperException {
+	protected static String getModuleSourceFilePath(ProcessorContext ctx) throws JavascribeException {
 		String base = ctx.getBuildContext().getOutputRootPath("js");
 		String path = ctx.getProperty("javascript.module.source");
 		String fullPath = null;
 		
 		if (path==null) {
-			throw new JasperException("Couldn't find required property 'javascript.module.source'");
+			throw new JavascribeException("Couldn't find required property 'javascript.module.source'");
 		}
 		if ((base.endsWith("/")) || (path.startsWith("/"))) {
 			fullPath = base+path;
@@ -92,7 +92,7 @@ public class JavascriptUtils {
 		return fullPath;
 	}
 
-	public static ModuleSourceFile getModuleSource(ProcessorContext ctx) throws JasperException {
+	public static ModuleSourceFile getModuleSource(ProcessorContext ctx) throws JavascribeException {
 		ModuleSourceFile ret = null;
 
 		String fullPath = getModuleSourceFilePath(ctx);
@@ -109,7 +109,7 @@ public class JavascriptUtils {
 		return ret;
 	}
 	
-	public static JavascriptCode callJavascriptOperation(String resultName,String objName,ServiceOperation op,CodeExecutionContext execCtx,Map<String,String> explicitParams,boolean addSemicolon, boolean allParamsRequired) throws JasperException {
+	public static JavascriptCode callJavascriptOperation(String resultName,String objName,ServiceOperation op,CodeExecutionContext execCtx,Map<String,String> explicitParams,boolean addSemicolon, boolean allParamsRequired) throws JavascribeException {
 		JavascriptCode ret = new JavascriptCode();
 		JavascriptCode invoke = new JavascriptCode();
 
@@ -131,7 +131,7 @@ public class JavascriptUtils {
 			} else {
 				// Parameter was not found
 				if (allParamsRequired) {
-					throw new JasperException("Couldn't find parameter '"+p+"' in current code execution context");
+					throw new JavascribeException("Couldn't find parameter '"+p+"' in current code execution context");
 				} else {
 					invoke.appendCodeText("undefined");
 				}

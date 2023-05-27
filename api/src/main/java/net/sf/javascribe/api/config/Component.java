@@ -9,6 +9,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 import net.sf.javascribe.api.annotation.Plugin;
+import net.sf.javascribe.api.annotation.XmlConfig;
 import net.sf.javascribe.api.config.Property;
 
 /**
@@ -18,6 +19,7 @@ import net.sf.javascribe.api.config.Property;
  * their due place.
  * @author DCS
  */
+@XmlConfig
 @Plugin
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name="component",propOrder={ "property" })

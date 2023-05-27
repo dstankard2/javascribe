@@ -5,15 +5,15 @@ import org.jboss.forge.roaster.model.source.JavaClassSource;
 
 import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.SourceFile;
-import net.sf.javascribe.api.exception.JasperException;
+import net.sf.javascribe.api.exception.JavascribeException;
 
 public class JavaClassSourceFile extends JavaSourceFile<JavaClassSource> {
 
-	public JavaClassSourceFile(ProcessorContext ctx) throws JasperException {
+	public JavaClassSourceFile(ProcessorContext ctx) throws JavascribeException {
 		super(JavaClassSource.class, ctx);
 	}
 
-	public JavaClassSourceFile(ProcessorContext ctx, JavaClassSource copy) throws JasperException {
+	public JavaClassSourceFile(ProcessorContext ctx, JavaClassSource copy) throws JavascribeException {
 		super(JavaClassSource.class, ctx);
 		this.src = copy;
 	}
@@ -23,7 +23,7 @@ public class JavaClassSourceFile extends JavaSourceFile<JavaClassSource> {
 		JavaClassSource copy = Roaster.parse(JavaClassSource.class, src.toString());
 		try {
 			return new JavaClassSourceFile(ctx, copy);
-		} catch(JasperException e) {
+		} catch(JavascribeException e) {
 			// should be impossible
 		}
 		return null;

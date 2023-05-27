@@ -6,6 +6,11 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
 
+import net.sf.javascribe.api.annotation.Plugin;
+import net.sf.javascribe.api.annotation.XmlConfig;
+
+@Plugin
+@XmlConfig
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name="property",propOrder={ })
 public class Property {

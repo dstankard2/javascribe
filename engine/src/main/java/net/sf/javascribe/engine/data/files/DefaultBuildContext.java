@@ -3,7 +3,7 @@ package net.sf.javascribe.engine.data.files;
 import net.sf.javascribe.api.BuildContext;
 import net.sf.javascribe.api.RuntimePlatform;
 import net.sf.javascribe.api.BuildProcessorContext;
-import net.sf.javascribe.api.exception.JasperException;
+import net.sf.javascribe.api.exception.JavascribeException;
 import net.sf.javascribe.api.resources.ApplicationResource;
 import net.sf.javascribe.engine.data.processing.ProcessorLog;
 
@@ -33,12 +33,12 @@ public class DefaultBuildContext implements BuildContext {
 	}
 
 	@Override
-	public String getOutputRootPath(String fileExt) throws JasperException {
+	public String getOutputRootPath(String fileExt) throws JavascribeException {
 		String cfgName = "outputPath."+fileExt;
 		String value = this.ctx.getProperty(cfgName);
 		if (value==null) {
 			//this.log.error("Default Build Context requires configuration property '"+cfgName+"' to determine output path for file extension '"+fileExt+"'");
-			throw new JasperException("Default Build Context requires configuration property '"+cfgName+"' to determine output path for file extension '"+fileExt+"'");
+			throw new JavascribeException("Default Build Context requires configuration property '"+cfgName+"' to determine output path for file extension '"+fileExt+"'");
 		}
 		return value;
 	}
@@ -64,7 +64,7 @@ public class DefaultBuildContext implements BuildContext {
 	}
 
 	@Override
-	public void setRuntimePlatform(RuntimePlatform platform) throws JasperException {
+	public void setRuntimePlatform(RuntimePlatform platform) throws JavascribeException {
 		log.warn("Setting runtime platform for the default build context is a no-op");
 		this.platform = platform;
 	}

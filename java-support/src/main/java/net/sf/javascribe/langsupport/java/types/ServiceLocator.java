@@ -3,7 +3,7 @@ package net.sf.javascribe.langsupport.java.types;
 import java.util.List;
 
 import net.sf.javascribe.api.CodeExecutionContext;
-import net.sf.javascribe.api.exception.JasperException;
+import net.sf.javascribe.api.exception.JavascribeException;
 import net.sf.javascribe.langsupport.java.JavaCode;
 
 public interface ServiceLocator extends JavaVariableType {
@@ -24,7 +24,7 @@ public interface ServiceLocator extends JavaVariableType {
 	 * @return
 	 * @throws JavascribeException
 	 */
-	public String getService(String factoryInstanceRef,String serviceName,CodeExecutionContext execCtx) throws JasperException;
+	public String getService(String factoryInstanceRef,String serviceName,CodeExecutionContext execCtx) throws JavascribeException;
 
 	public JavaCode instantiate(String varName);
 

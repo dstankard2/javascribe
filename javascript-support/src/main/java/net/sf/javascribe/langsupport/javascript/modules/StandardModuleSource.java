@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import net.sf.javascribe.api.exception.JasperException;
+import net.sf.javascribe.api.exception.JavascribeException;
 import net.sf.javascribe.langsupport.javascript.JavascriptUtils;
 import net.sf.javascribe.langsupport.javascript.types.ExportedModuleType;
 
@@ -41,9 +41,9 @@ public class StandardModuleSource implements ModuleSource {
 		return properties.get(name);
 	}
 
-	public void addInternalFunction(ModuleFunction fn) throws JasperException {
+	public void addInternalFunction(ModuleFunction fn) throws JavascribeException {
 		if (getExportType()==ExportedModuleType.CONST) {
-			throw new JasperException("A constant cannot have an internal function.  You should add the module function to the module source file.");
+			throw new JavascribeException("A constant cannot have an internal function.  You should add the module function to the module source file.");
 		}
 		internalFunctions.put(fn.getName(), fn);
 	}

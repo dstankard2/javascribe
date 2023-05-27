@@ -2,7 +2,7 @@ package net.sf.javascribe.langsupport.javascript.types;
 
 import net.sf.javascribe.api.Code;
 import net.sf.javascribe.api.CodeExecutionContext;
-import net.sf.javascribe.api.exception.JasperException;
+import net.sf.javascribe.api.exception.JavascribeException;
 import net.sf.javascribe.langsupport.javascript.JavascriptCode;
 
 public class ModuleType extends JavascriptServiceType {
@@ -51,7 +51,7 @@ public class ModuleType extends JavascriptServiceType {
 		this.sourceFile = sourceFile;
 	}
 
-	public Code declare(String name, CodeExecutionContext execCtx) throws JasperException {
+	public Code declare(String name, CodeExecutionContext execCtx) throws JavascribeException {
 		JavascriptCode ret = new JavascriptCode();
 		ret.appendCodeText("import {"+moduleName+"} from '"+sourceFile+"';\n");
 		ret.appendCodeText("var "+name+";\n");

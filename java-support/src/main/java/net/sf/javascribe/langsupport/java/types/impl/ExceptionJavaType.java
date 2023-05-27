@@ -2,7 +2,7 @@ package net.sf.javascribe.langsupport.java.types.impl;
 
 import net.sf.javascribe.api.BuildContext;
 import net.sf.javascribe.api.CodeExecutionContext;
-import net.sf.javascribe.api.exception.JasperException;
+import net.sf.javascribe.api.exception.JavascribeException;
 import net.sf.javascribe.langsupport.java.JavaCode;
 import net.sf.javascribe.langsupport.java.types.JavaVariableType;
 
@@ -38,7 +38,7 @@ public class ExceptionJavaType implements JavaVariableType {
 	}
 
 	@Override
-	public JavaCode declare(String name, CodeExecutionContext execCtx) throws JasperException {
+	public JavaCode declare(String name, CodeExecutionContext execCtx) throws JavascribeException {
 		JavaCode code = new JavaCode(className+" = "+name+" = null;\n");
 		if (getImport()!=null) code.addImport(getImport());
 		return code;

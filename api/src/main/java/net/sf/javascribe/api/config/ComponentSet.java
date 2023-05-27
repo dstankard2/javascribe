@@ -11,6 +11,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 import net.sf.javascribe.api.annotation.Plugin;
+import net.sf.javascribe.api.annotation.XmlConfig;
 import net.sf.javascribe.api.config.Property;
 
 /**
@@ -21,6 +22,7 @@ import net.sf.javascribe.api.config.Property;
  *
  */
 @Plugin
+@XmlConfig
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name="componentSet",propOrder={ "property", "component" })

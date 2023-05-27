@@ -8,14 +8,11 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
-import org.springframework.stereotype.Service;
-
 import net.sf.javascribe.api.annotation.XmlConfig;
 import net.sf.javascribe.api.config.ComponentSet;
 import net.sf.javascribe.engine.ComponentDependency;
 import net.sf.javascribe.engine.EngineInitException;
 
-@Service
 public class ComponentFileService {
 
 	private PluginService pluginService;
@@ -48,7 +45,7 @@ public class ComponentFileService {
 			reader = new FileReader(file);
 			ret = (ComponentSet)um.unmarshal(reader);
 		} catch(Exception e) {
-			//e.printStackTrace();
+			e.printStackTrace();
 			// no-op
 		} finally {
 			if (reader!=null) {

@@ -2,7 +2,7 @@ package net.sf.javascribe.langsupport.javascript.types;
 
 import net.sf.javascribe.api.Code;
 import net.sf.javascribe.api.CodeExecutionContext;
-import net.sf.javascribe.api.exception.JasperException;
+import net.sf.javascribe.api.exception.JavascribeException;
 import net.sf.javascribe.api.types.ListType;
 import net.sf.javascribe.api.types.VariableType;
 import net.sf.javascribe.langsupport.javascript.JavascriptCode;
@@ -37,17 +37,17 @@ public class ArrayType extends JavascriptType implements ListType {
 	}
 
 	@Override
-	public Code declare(String varName, String elementType, CodeExecutionContext execCtx) throws JasperException {
+	public Code declare(String varName, String elementType, CodeExecutionContext execCtx) throws JavascribeException {
 		return declare(varName,execCtx);
 	}
 
 	@Override
-	public Code instantiate(String varName, String elementType, CodeExecutionContext execCtx) throws JasperException {
+	public Code instantiate(String varName, String elementType, CodeExecutionContext execCtx) throws JavascribeException {
 		return instantiate(varName);
 	}
 
 	@Override
-	public Code appendToList(String listVarName, String value, CodeExecutionContext execCtx) throws JasperException {
+	public Code appendToList(String listVarName, String value, CodeExecutionContext execCtx) throws JavascribeException {
 		return new JavascriptCode(listVarName+".push("+value+");\n");
 	}
 

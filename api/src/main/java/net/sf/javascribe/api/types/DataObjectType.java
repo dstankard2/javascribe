@@ -4,7 +4,7 @@ import java.util.List;
 
 import net.sf.javascribe.api.Code;
 import net.sf.javascribe.api.CodeExecutionContext;
-import net.sf.javascribe.api.exception.JasperException;
+import net.sf.javascribe.api.exception.JavascribeException;
 
 public interface DataObjectType extends VariableType {
 
@@ -21,7 +21,7 @@ public interface DataObjectType extends VariableType {
      * @throws IllegalArgumentException If the attribute cannot be interpreted as being of the targetType.
      * @throws ProcessingException If there is another issue.
      */
-	public String getCodeToRetrieveAttribute(String varName,String attribName,String targetType,CodeExecutionContext execCtx) throws IllegalArgumentException,JasperException;
+	public String getCodeToRetrieveAttribute(String varName,String attribName,String targetType,CodeExecutionContext execCtx) throws IllegalArgumentException,JavascribeException;
 
 	/**
 	 * 
@@ -31,14 +31,14 @@ public interface DataObjectType extends VariableType {
 	 * @param execCtx Current code execution context.
 	 * @return Code to set the specified attribute to the given value.
 	 */
-	public String getCodeToSetAttribute(String varName,String attribName,String valueString,CodeExecutionContext execCtx) throws JasperException;
+	public String getCodeToSetAttribute(String varName,String attribName,String valueString,CodeExecutionContext execCtx) throws JavascribeException;
 	
 	/**
 	 * Returns the type of the specified attribute.
 	 * @param attrib The attribute to retrieve the type for.
 	 * @return Type of the specified attribute.
 	 */
-	public String getAttributeType(String attrib) throws JasperException;
+	public String getAttributeType(String attrib) throws JavascribeException;
 
 	public List<String> getAttributeNames();
 	

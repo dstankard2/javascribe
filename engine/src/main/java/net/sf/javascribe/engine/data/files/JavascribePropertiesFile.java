@@ -11,16 +11,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-public class JasperPropertiesFile implements WatchedResource {
+public class JavascribePropertiesFile implements WatchedResource {
 
-	public static final String JASPER_PROPERTIES_FILE = "jasper.properties";
+	public static final String JAVASCRIBE_PROPERTIES_FILE = "javascribe.properties";
 	
 	private Map<String,String> properties = null;
 	private long lastModified = 0L;
 	private ApplicationFolderImpl folder = null;
 	List<String> ignoreList = new ArrayList<>();
 	
-	public JasperPropertiesFile(File file, ApplicationFolderImpl folder) {
+	public JavascribePropertiesFile(File file, ApplicationFolderImpl folder) {
 		this.properties = readProperties(file);
 		this.folder = folder;
 		if (properties.containsKey("ignore")) {
@@ -53,12 +53,12 @@ public class JasperPropertiesFile implements WatchedResource {
 
 	@Override
 	public String getName() {
-		return JASPER_PROPERTIES_FILE;
+		return JAVASCRIBE_PROPERTIES_FILE;
 	}
 
 	@Override
 	public String getPath() {
-		return getFolder().getPath()+JASPER_PROPERTIES_FILE;
+		return getFolder().getPath()+JAVASCRIBE_PROPERTIES_FILE;
 	}
 
 	@Override

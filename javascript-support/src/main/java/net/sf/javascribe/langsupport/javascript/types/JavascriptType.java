@@ -9,7 +9,7 @@ import net.sf.javascribe.api.BuildContext;
 import net.sf.javascribe.api.Code;
 import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.ProcessorContext;
-import net.sf.javascribe.api.exception.JasperException;
+import net.sf.javascribe.api.exception.JavascribeException;
 import net.sf.javascribe.api.types.DataObjectType;
 import net.sf.javascribe.api.types.VariableType;
 import net.sf.javascribe.langsupport.javascript.JavascriptCode;
@@ -39,7 +39,7 @@ public abstract class JavascriptType implements VariableType,DataObjectType {
 	}
 
 	@Override
-	public Code declare(String name, CodeExecutionContext execCtx) throws JasperException {
+	public Code declare(String name, CodeExecutionContext execCtx) throws JavascribeException {
 		return new JavascriptCode("var "+name+";\n");
 	}
 
@@ -50,18 +50,18 @@ public abstract class JavascriptType implements VariableType,DataObjectType {
 
 	@Override
 	public String getCodeToRetrieveAttribute(String varName, String attribName, String targetType,
-			CodeExecutionContext execCtx) throws IllegalArgumentException, JasperException {
+			CodeExecutionContext execCtx) throws IllegalArgumentException, JavascribeException {
 		return varName+'.'+attribName;
 	}
 
 	@Override
 	public String getCodeToSetAttribute(String varName, String attribName, String valueString,
-			CodeExecutionContext execCtx) throws JasperException {
+			CodeExecutionContext execCtx) throws JavascribeException {
 		return varName+"."+attribName+" = "+valueString;
 	}
 
 	@Override
-	public String getAttributeType(String attrib) throws JasperException {
+	public String getAttributeType(String attrib) throws JavascribeException {
 		return properties.get(attrib);
 	}
 

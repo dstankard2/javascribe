@@ -1,7 +1,7 @@
 package net.sf.javascribe.api;
 
 import net.sf.javascribe.api.config.Component;
-import net.sf.javascribe.api.exception.JasperException;
+import net.sf.javascribe.api.exception.JavascribeException;
 
 public interface ComponentProcessor<T extends Component> {
 
@@ -14,8 +14,8 @@ public interface ComponentProcessor<T extends Component> {
 
 	/**
 	 * Processes the component using engine-level capabilities.
-	 * @throws JasperException If there is a problem.
+	 * @throws JavascribeException If there is a problem.
 	 */
-	void process(T component, ProcessorContext ctx) throws JasperException;
+	void process(T component, ProcessorContext ctx) throws JavascribeException;
 
 }
