@@ -54,6 +54,8 @@ public class PluginService {
 			for(File lib : libs) {
 				if (lib.isDirectory()) {
 					scanDirectory(lib, pluginClasses, "");
+				} else if (!lib.exists()) {
+					System.err.println("Couldn't find lib location "+lib.getAbsolutePath());
 				} else {
 					System.err.println("Can't scan jar files yet");
 				}

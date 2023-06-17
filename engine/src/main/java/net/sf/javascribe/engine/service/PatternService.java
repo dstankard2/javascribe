@@ -18,6 +18,7 @@ import net.sf.javascribe.engine.data.files.ComponentFile;
 import net.sf.javascribe.engine.data.processing.BuildComponentItem;
 import net.sf.javascribe.engine.data.processing.ComponentItem;
 
+// TODO: Fix circular dependency between pattern service and processing util
 public class PatternService {
 
 	private PluginService pluginService;
@@ -26,14 +27,8 @@ public class PatternService {
 		this.pluginService = pluginService;
 	}
 
-	private EngineResources engineResources;
-	@ComponentDependency
-	public void setEngineResources(EngineResources engineResources) {
-		this.engineResources = engineResources;
-	}
-	
 	private Map<String,RegisteredComponentPattern> componentPatterns = new HashMap<>();
-	//private Map<String,RegisteredBuildComponentPattern> buildComponentPatterns = new HashMap<>();
+	private Map<String,RegisteredBuildComponentPattern> buildComponentPatterns = new HashMap<>();
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public void initializePatterns() {
@@ -52,37 +47,72 @@ public class PatternService {
 				addComponentPattern(name, (Class<Component>)pattern, processors);
 			}
 		}
+		
 	}
 	
+	public RegisteredComponentPattern getPattern(Component component) {
+		String name = component.getClass().getSimpleName();
+		RegisteredComponentPattern pattern = componentPatterns.get(name);
+		return pattern;
+	}
+
 	public ComponentItem createComponentItem(int originatorId, Component component, 
 			ComponentFile file, ApplicationData application) {
 		ComponentItem ret = null;
 		int id = application.getProcessingData().nextId();
 		ApplicationFolderImpl folder = file.getFolder();
 		Map<String,String> configs = createConfigs(component, file);
-		String patternName = component.getClass().getSimpleName();
+		String patternName = component.getClass().getName();
 		RegisteredComponentPattern pattern = componentPatterns.get(patternName);
-		
-		ret = new ComponentItem(id, component, configs, pattern, engineResources, originatorId, folder);
+
+		ret = new ComponentItem(id, component, configs, pattern, 
+				originatorId, folder, application);
 		
 		return ret;
 	}
-	
+
+	// TODO: Return null if pattern has no processor.  Handle appropriately.
 	public BuildComponentItem createBuildComponentItem(BuildComponent buildComp, 
 			ComponentFile compFile, ApplicationData application) {
 		BuildComponentItem ret = null;
 		int id = application.getProcessingData().nextId();
+		Map<String,String> configs = createConfigs(buildComp, compFile);
+		String patternName = buildComp.getClass().getName();
+		RegisteredBuildComponentPattern pattern = buildComponentPatterns.get(patternName);
 		
-		
+		ret = new BuildComponentItem(id, buildComp, compFile.getFolder(), pattern, configs, application);
 		
 		return ret;
 	}
 	
 	@SuppressWarnings("rawtypes")
 	private void addBuildComponentPattern(String name, Class<BuildComponent> comp, Set<Class<BuildComponentProcessor>> buildProcessors) {
-		System.out.println("build component pattern");
+		RegisteredBuildComponentPattern pattern = RegisteredBuildComponentPattern.builder()
+				.componentClass(comp).build();
+		for(Class<BuildComponentProcessor> cl : buildProcessors) {
+			ParameterizedType processorType = findBuildProcessorType(cl);
+
+			if (processorType.getActualTypeArguments().length!=1) {
+				continue;
+			}
+			if (processorType.getActualTypeArguments()[0]==comp) {
+				pattern.setProcessorClass(cl);
+			}
+		}
+		this.buildComponentPatterns.put(name, pattern);
 	}
 
+	@SuppressWarnings("rawtypes")
+	private ParameterizedType findBuildProcessorType(Class<BuildComponentProcessor> cl) {
+		for(Type type : cl.getGenericInterfaces()) {
+			if (type.getTypeName().contains("BuildComponentProcessor")) {
+				return (ParameterizedType)type;
+			}
+		}
+		
+		return null;
+	}
+	
 	@SuppressWarnings("rawtypes")
 	private void addComponentPattern(String name, Class<Component> comp, Set<Class<ComponentProcessor>> processorClasses) {
 		RegisteredComponentPattern pattern = RegisteredComponentPattern.builder()

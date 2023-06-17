@@ -18,6 +18,7 @@
 		<module>engine</module>
 		<module>launcher</module>
 		<module>dist</module>
+		<module>test-patterns</module>
 	</modules>
 	<properties>
 		<maven.compiler.source>9</maven.compiler.source>

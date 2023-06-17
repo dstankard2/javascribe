@@ -19,6 +19,7 @@ import net.sf.javascribe.engine.data.processing.BuildComponentItem;
 import net.sf.javascribe.engine.data.processing.ComponentItem;
 import net.sf.javascribe.engine.data.processing.ProcessorLog;
 import net.sf.javascribe.engine.service.FolderScannerService;
+import net.sf.javascribe.engine.service.OutputService;
 import net.sf.javascribe.engine.service.PatternService;
 import net.sf.javascribe.engine.service.ProcessingService;
 
@@ -45,6 +46,13 @@ public class WorkspaceManager {
 		this.patternService = patternService;
 	}
 	
+	private OutputService outputService = null;
+	
+	@ComponentDependency
+	public void setOutputService(OutputService outputService) {
+		this.outputService = outputService;
+	}
+	
 	public List<ApplicationData> initializeApplications(String workspaceDir, boolean singleApp) {
 		List<ApplicationData> ret = new ArrayList<>();
 		
@@ -63,28 +71,54 @@ public class WorkspaceManager {
 	}
 
 	private ApplicationData initializeApplication(File appDir) {
-		ApplicationFolderImpl folder = new ApplicationFolderImpl(appDir, null);
 		String appName = appDir.getName();
-		ProcessorLog log = new ProcessorLog(appName);
+		// Circular dependency between ApplicationData and ApplicationFolderImpl
 		ApplicationData applicationData = ApplicationData.builder()
 				.applicationDirectory(appDir)
-				.applicationLog(log)
-				.rootFolder(folder)
 				.name(appName)
 				.build();
-		
+		ProcessorLog log = new ProcessorLog(appName, applicationData);
+		ApplicationFolderImpl folder = new ApplicationFolderImpl(appDir, applicationData);
+		applicationData.setRootFolder(folder);
+		applicationData.setApplicationLog(log);
+		folderScannerService.initFolder(folder);
 		return applicationData;
 	}
 
 	public void scanApplicationDir(ApplicationData application) {
-		//List<WatchedResource> removedFiles = new ArrayList<>();
+		List<WatchedResource> removedFiles = folderScannerService.findFilesRemoved(application);
+		List<UserFile> removedUserFiles = new ArrayList<>();
+		boolean filesChanged = false;
+		
+		// Remove user files
+		for(WatchedResource res : removedFiles) {
+			if (res instanceof UserFile) {
+				removedUserFiles.add((UserFile)res);
+			}
+		}
+		
+		if ((removedFiles.size()>0) ) {
+			filesChanged = true;
+			// evaluate workspace files that have been removed.
+			processingService.filesRemoved(removedFiles, application);
+
+			// Application's removedSourceFiles should be populated.
+			outputService.deleteRemovedFiles(removedUserFiles, application);
+		}
 		
 		List<WatchedResource> addedFiles = folderScannerService.findFilesAdded(application);
+
+		// Track user files that are being added so that they can be written to output.
 		List<UserFile> addedUserFiles = new ArrayList<>();
+		
+		if (addedFiles.size()>0) {
+			filesChanged = true;
+		}
+		
 		for(WatchedResource f : addedFiles) {
 			if (f instanceof UserFile) {
 				addedUserFiles.add((UserFile)f);
-				continue;
+				application.getUserFiles().put(f.getPath(), (UserFile)f);
 			}
 			else if (f instanceof SystemAttributesFile) {
 				SystemAttributesFile a = (SystemAttributesFile)f;
@@ -95,19 +129,28 @@ public class WorkspaceManager {
 				ComponentSet set = compFile.getComponentSet();
 				for(Component comp : set.getComponent()) {
 					if (comp instanceof BuildComponent) {
+						// TODO: Check if there is more than one build in the folder.  Do something
 						BuildComponent buildComp = (BuildComponent)comp;
 						BuildComponentItem buildItem = patternService.createBuildComponentItem(buildComp, compFile, application);
-						application.getProcessingData().getBuildsToInit().add(buildItem);
+						processingService.addItem(application, buildItem);
 					} else {
 						ComponentItem item = patternService.createComponentItem(0, comp, compFile, application);
-						application.getProcessingData().getItemsToProcess().add(item);
+						processingService.addItem(application, item);
 					}
 				}
 			}
 		}
 		
-		processingService.resetFolderWatchersForFiles(application, addedUserFiles);
-		processingService.runProcessing(application);
+		if (addedUserFiles.size()>0) {
+			processingService.resetFolderWatchersForFiles(application, addedUserFiles);
+		}
+		if (filesChanged) {
+			processingService.runProcessing(application);
+		}
+		if ((addedUserFiles.size()>0) || (application.getAddedSourceFiles().size()>0)) {
+			outputService.writeUserFiles(application, addedUserFiles);
+			outputService.writeSourceFiles(application);
+		}
 	}
 
 }

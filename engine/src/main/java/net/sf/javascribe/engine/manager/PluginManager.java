@@ -1,6 +1,5 @@
 package net.sf.javascribe.engine.manager;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -88,7 +87,7 @@ public class PluginManager {
 	}
 	
 	public void startPlugins() {
-		System.out.println("hi");
+		System.out.println("Start plugins");
 	}
 	
 }

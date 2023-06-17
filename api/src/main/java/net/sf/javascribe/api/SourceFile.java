@@ -15,13 +15,5 @@ public interface SourceFile {
 	 */
 	public String getPath();
 	
-	/**
-	 * FOR ENGINE'S INTERNAL USE ONLY.<br/>
-	 * Create a copy of this source file for a component processor to make uncommited changes.
-	 * @return
-	 */
-	@Deprecated
-	public SourceFile copy();
-
 }
 

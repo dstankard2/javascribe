@@ -14,45 +14,45 @@
 
 	<includeBaseDirectory>false</includeBaseDirectory>
 
-<moduleSets>
-    <moduleSet>
-      <useAllReactorProjects>true</useAllReactorProjects>
-      <includes>
-        <include>net.sf.javascribe:api</include>
-        <include>net.sf.javascribe:java-support</include>
-        <include>net.sf.javascribe:javascript-support</include>
-        <include>net.sf.javascribe:patterns</include>
-        <include>net.sf.javascribe:engine</include>
-      </includes>
-      <binaries>
-        <outputDirectory>lib</outputDirectory>
-        <unpack>false</unpack>
-      </binaries>
-    </moduleSet>
+	<moduleSets>
+		<moduleSet>
+			<useAllReactorProjects>true</useAllReactorProjects>
+			<includes>
+				<include>net.sf.javascribe:api</include>
+				<include>net.sf.javascribe:java-support</include>
+				<include>net.sf.javascribe:javascript-support</include>
+				<include>net.sf.javascribe:patterns</include>
+				<include>net.sf.javascribe:engine</include>
+			</includes>
+			<binaries>
+				<outputDirectory>lib</outputDirectory>
+				<unpack>false</unpack>
+			</binaries>
+		</moduleSet>
 
-    <moduleSet>
-      <useAllReactorProjects>true</useAllReactorProjects>
-      <includes>
-        <include>net.sf.javascribe:launcher</include>
-      </includes>
-      <binaries>
-        <outputDirectory></outputDirectory>
-        <unpack>false</unpack>
-      </binaries>
-    </moduleSet>
+		<moduleSet>
+			<useAllReactorProjects>true</useAllReactorProjects>
+			<includes>
+				<include>net.sf.javascribe:launcher</include>
+			</includes>
+			<binaries>
+				<outputDirectory></outputDirectory>
+				<unpack>false</unpack>
+			</binaries>
+		</moduleSet>
 
-  </moduleSets>
-  
-  <fileSets>
-  	<fileSet>
-  		<directory>../docs/included</directory>
-  		<outputDirectory>docs</outputDirectory>
-  	</fileSet>
-  	<fileSet>
-  		<directory>src/main/bin</directory>
-  		<outputDirectory>bin</outputDirectory>
-  	</fileSet>
-  </fileSets>
+	</moduleSets>
+
+	<fileSets>
+		<fileSet>
+			<directory>../docs/included</directory>
+			<outputDirectory>docs</outputDirectory>
+		</fileSet>
+		<fileSet>
+			<directory>src/main/bin</directory>
+			<outputDirectory>bin</outputDirectory>
+		</fileSet>
+	</fileSets>
 
 </assembly>
 

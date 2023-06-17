@@ -26,6 +26,10 @@ public class EngineResources implements ApplicationContext {
 	public String getEngineProperty(String name) {
 		return engineProperties.getProperty(name, null);
 	}
+	
+	public EngineProperties getEngineProperties() {
+		return engineProperties;
+	}
 
 	@Override
 	public <T> Set<Class<T>> getPlugins(Class<T> superClass) {

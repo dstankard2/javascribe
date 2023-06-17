@@ -1,12 +1,14 @@
 package net.sf.javascribe.engine.data.processing;
 
-import java.util.List;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
+import java.util.Set;
 
+import net.sf.javascribe.api.ComponentProcessor;
 import net.sf.javascribe.api.config.Component;
-import net.sf.javascribe.api.plugin.ProcessorLogMessage;
+import net.sf.javascribe.api.exception.JavascribeException;
+import net.sf.javascribe.engine.data.ApplicationData;
 import net.sf.javascribe.engine.data.files.ApplicationFolderImpl;
-import net.sf.javascribe.engine.service.EngineResources;
 import net.sf.javascribe.engine.service.RegisteredComponentPattern;
 
 public class ComponentItem extends ProcessableBase implements Item {
@@ -14,25 +16,30 @@ public class ComponentItem extends ProcessableBase implements Item {
 	Component component;
 	Map<String,String> configs;
 	RegisteredComponentPattern pattern;
-	EngineResources engineResources;
+	//EngineResources engineResources;
 	int originatorId;
 	ApplicationFolderImpl folder;
 	ProcessorLog log = null;
 	private String name;
 	ProcessingState state = ProcessingState.CREATED;
-	
+	private ApplicationData application;
+
 	public ComponentItem(int id, Component component, Map<String,String> configs, 
-			RegisteredComponentPattern pattern,EngineResources engineResources, 
-			int originatorId, ApplicationFolderImpl folder) {
+			RegisteredComponentPattern pattern,
+			int originatorId, ApplicationFolderImpl folder, ApplicationData application) {
 		this.id = id;
 		this.component = component;
 		this.configs = configs;
 		this.pattern = pattern;
-		this.engineResources = engineResources;
 		this.originatorId = originatorId;
 		this.folder = folder;
 		this.name = component.getComponentName();
-		log = new ProcessorLog(name);
+		this.application = application;
+		log = new ProcessorLog(name, application);
+	}
+
+	public Component getComponent() {
+		return component;
 	}
 
 	@Override
@@ -60,20 +67,37 @@ public class ComponentItem extends ProcessableBase implements Item {
 		return component.getPriority();
 	}
 
-	@Override
-	public List<ProcessorLogMessage> getMessages() {
-		return log.getMessages(false);
-	}
-
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Override
 	public boolean process() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public void clearLogMessages() {
-		log.getMessages(true);
+		boolean success = true;
+		try {
+			Set<Class<ComponentProcessor>> compClasses = pattern.getProcessorClasses();
+			for(Class<ComponentProcessor> procClass : compClasses) {
+				ProcessorContextImpl ctx = new ProcessorContextImpl(
+					application, id, configs, folder, log
+				);
+				ComponentProcessor proc = procClass.getConstructor().newInstance();
+				proc.process(component,  ctx);
+			}
+		} catch(JavascribeException e) {
+			this.log.error("Exception while processing component", e);
+			success = false;
+		} catch(InstantiationException e) {
+			this.log.error("Couldn't invoke component processor", e);
+			success = false;
+		} catch(IllegalAccessException e) {
+			this.log.error("Couldn't invoke component processor", e);
+			success = false;
+		} catch(NoSuchMethodException e) {
+			this.log.error("Couldn't invoke component processor", e);
+			success = false;
+		} catch(InvocationTargetException e) {
+			this.log.error("Couldn't invoke component processor", e);
+			success = false;
+		}
+		
+		return success;
 	}
 
 	@Override

@@ -43,9 +43,6 @@ public abstract class JavaSourceFile<T extends JavaSource<?>> implements SourceF
 		return base + '/' + dir.replace('.', '/')+'/'+filename;
 	}
 
-	@Override
-	public abstract SourceFile copy();
-
 	public void addImport(JavaVariableType type) {
 		if (type.getImport()!=null) {
 			this.src.addImport(type.getImport());

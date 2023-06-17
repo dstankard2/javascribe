@@ -9,27 +9,34 @@ import net.sf.javascribe.api.SourceFile;
 import net.sf.javascribe.api.config.Component;
 import net.sf.javascribe.api.logging.Log;
 import net.sf.javascribe.api.resources.ApplicationFolder;
+import net.sf.javascribe.api.resources.FolderWatcher;
+import net.sf.javascribe.engine.ComponentContainer;
+import net.sf.javascribe.engine.data.ApplicationData;
 import net.sf.javascribe.engine.data.files.ApplicationFolderImpl;
-import net.sf.javascribe.engine.service.EngineResources;
+import net.sf.javascribe.engine.service.ProcessingContextOperations;
 
 public class BuildProcessorContextImpl implements BuildProcessorContext {
 	private ApplicationFolderImpl folder;
 	private Map<String,String> configs;
-	private EngineResources engineResources;
 	private ProcessorLog log;
+	private ProcessingContextOperations ops;
+	private ApplicationData application;
+	private int itemId;
 	
-	public BuildProcessorContextImpl(ApplicationFolderImpl folder, Map<String,String> configs,
-			EngineResources engineResources, ProcessorLog log) {
+	public BuildProcessorContextImpl(int itemId, ApplicationFolderImpl folder, Map<String,String> configs,
+			ProcessorLog log, ApplicationData application) {
 		this.folder = folder;
 		this.configs = configs;
-		this.engineResources = engineResources;
 		this.log = log;
+		this.application = application;
+		this.itemId = itemId;
+		this.ops = ComponentContainer.get().getComponent(ProcessingContextOperations.class);
 	}
 
 	@Override
 	public String getProperty(String name) {
 		// TODO Auto-generated method stub
-		return null;
+		return configs.get(name);
 	}
 
 	@Override
@@ -58,25 +65,24 @@ public class BuildProcessorContextImpl implements BuildProcessorContext {
 
 	@Override
 	public ApplicationFolder getFolder() {
-		// TODO Auto-generated method stub
-		return null;
+		return folder;
 	}
 
 	@Override
 	public Log getLog() {
-		// TODO Auto-generated method stub
-		return null;
+		return log;
 	}
 
 	@Override
 	public void addComponent(Component component) {
-		// TODO Auto-generated method stub
-		
+		ops.addComponent(itemId, component, configs, folder, application);
 	}
 
 	@Override
 	public BuildContext getParentBuildContext() {
-		// TODO Auto-generated method stub
+		if (folder.getParent()!=null) {
+			return folder.getParent().getBuildContext();
+		}
 		return null;
 	}
 
@@ -84,6 +90,11 @@ public class BuildProcessorContextImpl implements BuildProcessorContext {
 	public ApplicationContext getApplicationContext() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void addFolderWatcher(String path, FolderWatcher folderWatcher) {
+		ops.addFolderWatcher(itemId, path, folderWatcher, configs, folder, application);
 	}
 
 }

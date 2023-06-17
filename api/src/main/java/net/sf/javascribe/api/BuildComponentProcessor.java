@@ -7,13 +7,10 @@ import net.sf.javascribe.api.exception.JavascribeException;
 
 public interface BuildComponentProcessor<T extends BuildComponent> {
 
-	//void setBuildProcessorContext(BuildProcessorContext ctx) throws JasperException;
-	//void setBuildComponent(BuildComponent buildComponent) throws JasperException;
 	void initialize(T buildComponent, BuildProcessorContext ctx) throws JavascribeException;
 	BuildContext createBuildContext();
 	void generateBuild() throws JavascribeException;
 	List<Command> build();
 	List<Command> clean();
-	Class<? extends BuildComponent> getComponentClass();
 
 }

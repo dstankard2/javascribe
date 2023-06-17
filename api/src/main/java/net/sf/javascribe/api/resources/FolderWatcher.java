@@ -28,5 +28,11 @@ public interface FolderWatcher {
 	 */
 	String getName();
 
+	/**
+	 * When a file changes, this is the priority at which it should be processed by the folder watcher.
+	 * @return
+	 */
+	int getPriority();
+
 }
 

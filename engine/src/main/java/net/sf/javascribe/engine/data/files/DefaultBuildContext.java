@@ -4,8 +4,8 @@ import net.sf.javascribe.api.BuildContext;
 import net.sf.javascribe.api.RuntimePlatform;
 import net.sf.javascribe.api.BuildProcessorContext;
 import net.sf.javascribe.api.exception.JavascribeException;
+import net.sf.javascribe.api.logging.Log;
 import net.sf.javascribe.api.resources.ApplicationResource;
-import net.sf.javascribe.engine.data.processing.ProcessorLog;
 
 /**
  * A build context that will be used when there is no build component.
@@ -13,12 +13,12 @@ import net.sf.javascribe.engine.data.processing.ProcessorLog;
  */
 public class DefaultBuildContext implements BuildContext {
 
-	private ProcessorLog log = null;
+	private Log log = null;
 	private BuildProcessorContext ctx = null;
 	private RuntimePlatform platform = null;
 	
-	public DefaultBuildContext(ProcessorLog log, BuildProcessorContext ctx) {
-		this.log = log;
+	public DefaultBuildContext(BuildProcessorContext ctx) {
+		this.log = ctx.getLog();
 		this.ctx = ctx;
 	}
 

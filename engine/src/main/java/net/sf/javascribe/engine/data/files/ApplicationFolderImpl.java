@@ -9,7 +9,10 @@ import java.util.Map;
 
 import net.sf.javascribe.api.BuildContext;
 import net.sf.javascribe.api.config.BuildComponent;
+import net.sf.javascribe.api.logging.ProcessorLogLevel;
 import net.sf.javascribe.api.resources.ApplicationFolder;
+import net.sf.javascribe.engine.EngineException;
+import net.sf.javascribe.engine.data.ApplicationData;
 import net.sf.javascribe.engine.data.processing.BuildComponentItem;
 
 public class ApplicationFolderImpl implements WatchedResource,ApplicationFolder {
@@ -19,7 +22,7 @@ public class ApplicationFolderImpl implements WatchedResource,ApplicationFolder 
 	
 	private List<String> ignoreFiles = new ArrayList<>();
 	private String name;
-	private String logLevel = null;
+	private ProcessorLogLevel logLevel = null;
 	private File folder = null;
 	private ApplicationFolderImpl parent = null;
 	private BuildComponentItem buildComponent = null;
@@ -28,12 +31,29 @@ public class ApplicationFolderImpl implements WatchedResource,ApplicationFolder 
 	private Map<String,ComponentFile> componentFiles = new HashMap<>();
 	private Map<String,UserFile> userFiles = new HashMap<>();
 	private JavascribePropertiesFile jasperProperties = null;
+	private ApplicationData application;
+
+	public ApplicationFolderImpl(File file,ApplicationData application) {
+		this.folder = file;
+		this.name = file.getName();
+		this.parent = null;
+		this.lastModified = file.lastModified();
+		this.application = application;
+	}
 
 	public ApplicationFolderImpl(File file,ApplicationFolderImpl parent) {
+		if (parent==null) {
+			throw new EngineException("Invalid use of application folder constructor");
+		}
 		this.folder = file;
 		this.name = file.getName();
 		this.parent = parent;
 		this.lastModified = file.lastModified();
+		this.application = parent.getApplication();
+	}
+
+	public ApplicationData getApplication() {
+		return application;
 	}
 
 	public boolean isIgnore(String filename) {
@@ -48,11 +68,11 @@ public class ApplicationFolderImpl implements WatchedResource,ApplicationFolder 
 		// This folder needs to be processed again.  Mark it as modified
 		lastModified = System.currentTimeMillis() - 1;
 		String logLevel = this.getProperties().get("logLevel");
-		if (logLevel==null) this.setLogLevel("WARN");
-		else if (logLevel.equalsIgnoreCase("ERROR")) this.setLogLevel("ERROR");
-		else if (logLevel.equalsIgnoreCase("INFO")) this.setLogLevel("INFO");
-		else if (logLevel.equalsIgnoreCase("DEBUG")) this.setLogLevel("DEBUG");
-		else if (logLevel.equalsIgnoreCase("WARN")) this.setLogLevel("WARN");
+		if (logLevel==null) this.logLevel = null;
+		else if (logLevel.equalsIgnoreCase("ERROR")) this.logLevel = ProcessorLogLevel.ERROR;
+		else if (logLevel.equalsIgnoreCase("INFO")) this.logLevel = ProcessorLogLevel.INFO;
+		else if (logLevel.equalsIgnoreCase("DEBUG")) this.logLevel = ProcessorLogLevel.DEBUG;
+		else if (logLevel.equalsIgnoreCase("WARN")) this.logLevel = ProcessorLogLevel.WARN;
 		
 		if (jasperProperties!=null) {
 			String ig = jasperProperties.getProperties().get("ignore");
@@ -66,11 +86,14 @@ public class ApplicationFolderImpl implements WatchedResource,ApplicationFolder 
 		}
 	}
 
-	private void setLogLevel(String logLevel) {
-		this.logLevel = logLevel;
-	}
-	public String getLogLevel() {
-		return logLevel;
+	public ProcessorLogLevel getLogLevel() {
+		if (logLevel!=null) {
+			return logLevel;
+		} else if (parent==null) {
+			return ProcessorLogLevel.INFO;
+		} else {
+			return parent.getLogLevel();
+		}
 	}
 
 	public List<String> getIgnoreFiles() {
@@ -250,8 +273,10 @@ public class ApplicationFolderImpl implements WatchedResource,ApplicationFolder 
 				ret = parent.getCurrentBuildComponent();
 			} else {
 				BuildComponent buildComp = new DefaultBuildComponent();
-				ret = new BuildComponentItem(-1, buildComp, this);
-				ret.init();
+				ret = new BuildComponentItem(-1, buildComp, this, null, getProperties(), application);
+				try {
+					ret.init();
+				} catch(Exception e) { }
 			}
 		}
 		

@@ -1,22 +1,27 @@
 package net.sf.javascribe.engine.data.processing;
 
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.javascribe.api.logging.Log;
 import net.sf.javascribe.api.logging.ProcessorLogLevel;
 import net.sf.javascribe.api.plugin.ProcessorLogMessage;
+import net.sf.javascribe.engine.data.ApplicationData;
 
 public class ProcessorLog implements Log {
 
 	protected List<ProcessorLogMessage> messages = new ArrayList<>();
 	private String name = null;
+	private ApplicationData application;
+	private ProcessorLogLevel targetLevel;
 
-	public ProcessorLog(String name) {
+	public ProcessorLog(String name, ApplicationData application, ProcessorLogLevel targetLevel) {
 		this.name = name;
+		this.application = application;
+		this.targetLevel = targetLevel;
 	}
 
+	/*
 	public void outputToSystem() {
 		List<ProcessorLogMessage> msgs = getMessages(true);
 		for(ProcessorLogMessage msg : msgs) {
@@ -34,7 +39,9 @@ public class ProcessorLog implements Log {
 			}
 		}
 	}
-	
+	*/
+
+	/*
 	public List<ProcessorLogMessage> getMessages(boolean clear) {
 		List<ProcessorLogMessage> ret = null;
 		
@@ -48,6 +55,7 @@ public class ProcessorLog implements Log {
 		
 		return ret;
 	}
+	*/
 
 	@Override
 	public boolean isVerbose() {
@@ -56,32 +64,32 @@ public class ProcessorLog implements Log {
 
 	@Override
 	public void info(String message) {
-		this.messages.add(new ProcessorLogMessage(ProcessorLogLevel.INFO, message, null));
+		application.getMessages().add(new ProcessorLogMessage(name, ProcessorLogLevel.INFO, targetLevel, message, null));
 	}
 
 	@Override
 	public void debug(String message) {
-		this.messages.add(new ProcessorLogMessage(ProcessorLogLevel.DEBUG, message, null));
+		application.getMessages().add(new ProcessorLogMessage(name, ProcessorLogLevel.DEBUG, targetLevel, message, null));
 	}
 
 	@Override
 	public void warn(String message) {
-		this.messages.add(new ProcessorLogMessage(ProcessorLogLevel.WARN, message, null));
+		application.getMessages().add(new ProcessorLogMessage(name, ProcessorLogLevel.WARN, targetLevel, message, null));
 	}
 
 	@Override
 	public void error(String message) {
-		this.messages.add(new ProcessorLogMessage(ProcessorLogLevel.ERROR, message, null));
+		application.getMessages().add(new ProcessorLogMessage(name, ProcessorLogLevel.ERROR, targetLevel, message, null));
 	}
 
 	@Override
 	public void warn(String message, Throwable e) {
-		this.messages.add(new ProcessorLogMessage(ProcessorLogLevel.WARN, message, e));
+		application.getMessages().add(new ProcessorLogMessage(name, ProcessorLogLevel.WARN, targetLevel, message, e));
 	}
 
 	@Override
 	public void error(String message, Throwable e) {
-		this.messages.add(new ProcessorLogMessage(ProcessorLogLevel.ERROR, message, e));
+		application.getMessages().add(new ProcessorLogMessage(name, ProcessorLogLevel.ERROR, targetLevel, message, e));
 	}
 
 }

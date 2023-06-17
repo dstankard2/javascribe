@@ -42,14 +42,5 @@ public class JavascriptSourceFile implements SourceFile {
 		importedModules.add(Pair.of(type.getName(), type.getWebPath()));
 	}
 
-	@Override
-	public SourceFile copy() {
-		JavascriptSourceFile ret = new JavascriptSourceFile();
-		ret.importedModules.addAll(importedModules);
-		ret.setPath(getPath());
-		ret.source = new StringBuilder(getSource().toString());
-		return ret;
-	}
-
 }
 

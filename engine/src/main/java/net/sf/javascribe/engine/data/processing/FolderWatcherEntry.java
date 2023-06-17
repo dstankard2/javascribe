@@ -1,30 +1,38 @@
 package net.sf.javascribe.engine.data.processing;
 
-import java.util.List;
 import java.util.Map;
 
-import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.resources.FolderWatcher;
+import net.sf.javascribe.engine.data.ApplicationData;
+import net.sf.javascribe.engine.data.files.ApplicationFolderImpl;
 import net.sf.javascribe.engine.data.files.UserFile;
-import net.sf.javascribe.engine.service.EngineResources;
 
-public class FolderWatcherEntry {
+// TODO: When applied to a file, create a processable at the appropriate priority
+public class FolderWatcherEntry implements Item {
 	
 	private FolderWatcher folderWatcher;
 	private String path;
 	private int originatorId;
 	private Map<String,String> configs;
-	private EngineResources engineResources;
+	private ProcessorLog log = null;
+	private ApplicationData application;
+	private ApplicationFolderImpl folder;
+	private int id;
+	private ProcessingState state = ProcessingState.CREATED;
 	
-	public FolderWatcherEntry(FolderWatcher folderWatcher, String path, int originatorId, 
-			Map<String,String> configs, EngineResources engineResources) {
+	public FolderWatcherEntry(int id, FolderWatcher folderWatcher, String path, int originatorId, 
+			Map<String,String> configs, ApplicationData application, 
+			ApplicationFolderImpl folder) {
+		this.id = id;
 		this.folderWatcher = folderWatcher;
 		this.path = path;
 		this.originatorId = originatorId;
 		this.configs = configs;
-		this.engineResources = engineResources;
+		this.application = application;
+		this.folder = folder;
+		this.log = new ProcessorLog(folderWatcher.getName(), application);
 	}
-	
+
 	public int getOriginatorId() {
 		return this.originatorId;
 	}
@@ -33,8 +41,44 @@ public class FolderWatcherEntry {
 		return path;
 	}
 
-	public void run(List<UserFile> userFiles) {
-		//ProcessorContext ctx
+	public void applyToUserFile(UserFile file) {
+		//boolean ret = true;
+		
+		//try {
+			FolderWatcherProcessable proc = new FolderWatcherProcessable(
+				id, folderWatcher, file, application, log, configs, folder
+			);
+			application.getProcessingData().getToProcess().add(proc);
+			//ProcessorContextImpl ctx = new ProcessorContextImpl(application, id, configs, folder, log);
+			//folderWatcher.process(ctx, file);
+			/*
+		} catch(JavascribeException e) {
+			this.state = ProcessingState.ERROR;
+			this.log.error("Error when applying file '"+file.getPath()+"'", e);
+			ret = false;
+		}
+		*/
+		//return ret;
+	}
+
+	@Override
+	public int getItemId() {
+		return id;
+	}
+
+	@Override
+	public String getName() {
+		return folderWatcher.getName();
+	}
+
+	@Override
+	public void setState(ProcessingState state) {
+		this.state = state;
+	}
+
+	@Override
+	public ProcessingState getState() {
+		return state;
 	}
 
 }

@@ -9,13 +9,16 @@ import lombok.Setter;
 import net.sf.javascribe.engine.data.processing.BuildComponentItem;
 import net.sf.javascribe.engine.data.processing.FolderWatcherEntry;
 import net.sf.javascribe.engine.data.processing.Item;
+import net.sf.javascribe.engine.data.processing.Processable;
 
 @Getter
 public class ProcessingData {
 
-	private List<Item> itemsToProcess = new ArrayList<>();
+	private List<Item> allItems = new ArrayList<>();
 	
-	private List<Item> itemsProcessed = new ArrayList<>();
+	private List<Processable> toProcess = new ArrayList<>();
+	
+	private List<Processable> processed = new ArrayList<>();
 
 	private List<BuildComponentItem> buildsToInit = new ArrayList<>();
 
@@ -23,7 +26,11 @@ public class ProcessingData {
 
 	private List<BuildComponentItem> buildsProcessed = new ArrayList<>();
 
-	private List<FolderWatcherEntry> folderWatchers = new ArrayList<>();
+	//private List<FolderWatcherEntry> folderWatchers = new ArrayList<>();
+	
+	public List<FolderWatcherEntry> getFolderWatchers() {
+		return allItems.stream().filter(i -> i instanceof FolderWatcherEntry).map(FolderWatcherEntry.class::cast).toList();
+	}
 
 	@Getter(AccessLevel.NONE)
 	@Setter(AccessLevel.NONE)
@@ -36,19 +43,7 @@ public class ProcessingData {
 	public Item getItem(int id) {
 		Item ret = null;
 		
-		ret = itemsProcessed.stream().filter(i -> i.getItemId()==id).findFirst().orElse(null);
-		if (ret==null) {
-			ret = itemsToProcess.stream().filter(i -> i.getItemId()==id).findFirst().orElse(null);
-		}
-		if (ret==null) {
-			ret = buildsToInit.stream().filter(i -> i.getItemId()==id).findFirst().orElse(null);
-		}
-		if (ret==null) {
-			ret = buildsToProcess.stream().filter(i -> i.getItemId()==id).findFirst().orElse(null);
-		}
-		if (ret==null) {
-			ret = buildsProcessed.stream().filter(i -> i.getItemId()==id).findFirst().orElse(null);
-		}
+		ret = allItems.stream().filter(i -> i.getItemId()==id).findFirst().orElse(null);
 
 		return ret;
 	}

@@ -1,46 +1,34 @@
 package net.sf.javascribe.api.plugin;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import net.sf.javascribe.api.logging.ProcessorLogLevel;
 
+@AllArgsConstructor
+@Getter
+@Setter
 public class ProcessorLogMessage {
 
+	private String logName = null;
 	private ProcessorLogLevel level = null;
+	private ProcessorLogLevel targetLevel = null;
 	private String message = null;
 	private Throwable e = null;
 	
 	public ProcessorLogMessage() {
 	}
-	
-	public ProcessorLogMessage(ProcessorLogLevel level, String message, Throwable e) {
+
+	/*
+	public ProcessorLogMessage(String logName, ProcessorLogLevel level, String message, Throwable e) {
 		super();
+		this.logName = logName;
 		this.level = level;
 		this.message = message;
 		this.e = e;
 	}
-
-	public ProcessorLogLevel getLevel() {
-		return level;
-	}
-
-	public void setLevel(ProcessorLogLevel level) {
-		this.level = level;
-	}
-
-	public String getMessage() {
-		return message;
-	}
-
-	public void setMessage(String message) {
-		this.message = message;
-	}
-
-	public Throwable getThrowable() {
-		return e;
-	}
-
-	public void setE(Throwable e) {
-		this.e = e;
-	}
+	*/
 
 }
 

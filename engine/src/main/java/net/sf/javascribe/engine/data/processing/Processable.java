@@ -10,20 +10,17 @@ public interface Processable extends Comparable<Processable> {
 	// The item that this processable came from
 	int getItemId();
 	
+	// The item that originated this processable
+	int getOriginatorId();
+	
 	// Processing priority.  Lower numbers are handled first
 	int getPriority();
 	
-	// Log messages for this processable
-	List<ProcessorLogMessage> getMessages();
-
 	// Name of this processable
 	String getName();
 	
 	// Run processing.  If failed, return false.  Otherwise return true
 	boolean process();
-	
-	// Clear existing log messages
-	void clearLogMessages();
 	
 	// Get the logger for this processable
 	ProcessorLog getLog();
@@ -31,5 +28,7 @@ public interface Processable extends Comparable<Processable> {
 	Map<String,String> getConfigs();
 
 	ProcessingState getState();
+	
+	void setState(ProcessingState state);
 	
 }

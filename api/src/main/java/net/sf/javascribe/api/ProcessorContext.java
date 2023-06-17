@@ -14,10 +14,11 @@ public interface ProcessorContext {
 
 	public void addSystemAttribute(String name,String type) throws JavascribeException;
 	public void originateSystemAttribute(String name);
-	public String getSystemAttribute(String name);
+	public String getSystemAttribute(String name) throws JavascribeException;
 
-	public void addVariableType(VariableType variableType);
-	public VariableType getVariableType(String name);
+	public void addVariableType(VariableType variableType) throws JavascribeException;
+	public VariableType getVariableType(String name) throws JavascribeException;
+	public void modifyVariableType(VariableType variableType) throws JavascribeException;
 
 	public void setObject(String name,Object obj);
 	public Object getObject(String name);
@@ -35,7 +36,7 @@ public interface ProcessorContext {
 
 	Log getLog();
 
-	void addFolderWatcher(String folderPath,FolderWatcher folderWatcher);
+	void addFolderWatcher(String folderPath,FolderWatcher folderWatcher) throws JavascribeException;
 	
 	void addFileProcessor(String filePath,FileProcessor fileProcessor);
 	

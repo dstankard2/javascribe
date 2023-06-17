@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.apache.commons.lang3.tuple.Pair;
 
-import net.sf.javascribe.api.SourceFile;
 import net.sf.javascribe.langsupport.javascript.JavascriptSourceFile;
 import net.sf.javascribe.langsupport.javascript.JavascriptUtils;
 
@@ -73,24 +72,6 @@ public class ModuleSourceFile extends JavascriptSourceFile {
 			}
 		}
 		return null;
-	}
-
-	@Override
-	public SourceFile copy() {
-		ModuleSourceFile ret = new ModuleSourceFile(webPath);
-		
-		ret.setPath(getPath());
-		this.importedModules.stream().forEach(pair-> {
-			ret.importedModules.add(pair);
-		});
-		modules.stream().forEach(mod-> {
-			ret.addModule(mod.copy());
-		});
-		this.globalFunctions.entrySet().stream().forEach(entry-> {
-			ret.addFunction(entry.getValue());
-		});
-
-		return ret;
 	}
 
 	public String getWebPath() {

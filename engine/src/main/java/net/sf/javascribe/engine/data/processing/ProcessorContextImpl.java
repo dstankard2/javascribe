@@ -1,5 +1,6 @@
 package net.sf.javascribe.engine.data.processing;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,39 +16,36 @@ import net.sf.javascribe.api.resources.ApplicationResource;
 import net.sf.javascribe.api.resources.FileProcessor;
 import net.sf.javascribe.api.resources.FolderWatcher;
 import net.sf.javascribe.api.types.VariableType;
+import net.sf.javascribe.engine.ComponentContainer;
 import net.sf.javascribe.engine.data.ApplicationData;
 import net.sf.javascribe.engine.data.DependencyData;
 import net.sf.javascribe.engine.data.files.ApplicationFolderImpl;
+import net.sf.javascribe.engine.data.files.UserFile;
+import net.sf.javascribe.engine.data.files.WatchedResource;
 import net.sf.javascribe.engine.service.EngineResources;
 import net.sf.javascribe.engine.service.ProcessingContextOperations;
 
 public class ProcessorContextImpl implements ProcessorContext {
 	private ApplicationData application;
-	private String name;
 	private ProcessorLog log;
 	private String lang = null;
 	private int id;
 	private Map<String,String> configs;
-	private BuildContext buildCtx;
 	private ApplicationFolderImpl folder;
 	private EngineResources engineResources;
 	private ProcessingContextOperations ops;
 	private DependencyData dependencyData;
 	
-	public ProcessorContextImpl(String name, ApplicationData application, int id,
-			Map<String,String> configs, BuildContext buildCtx, 
-			ApplicationFolderImpl folder, EngineResources engineResources,
-			ProcessingContextOperations ops, ProcessorLog log) {
-		this.name = name;
+	public ProcessorContextImpl(ApplicationData application, int id,
+			Map<String,String> configs, ApplicationFolderImpl folder, 
+			ProcessorLog log) {
 		this.application = application;
 		this.id = id;
 		this.configs = configs;
-		this.buildCtx = buildCtx;
 		this.folder = folder;
-		this.engineResources = engineResources;
-		this.ops = ops;
 		this.log = log;
 		this.dependencyData = application.getDependencyData();
+		this.engineResources = ComponentContainer.get().getComponent("EngineResources", EngineResources.class);
 	}
 
 	@Override
@@ -67,14 +65,20 @@ public class ProcessorContextImpl implements ProcessorContext {
 	}
 
 	@Override
-	public String getSystemAttribute(String name) {
+	public String getSystemAttribute(String name) throws JavascribeException {
+		if (application.getSystemAttribute(name)==null) {
+			throw new JavascribeException("There is no system attribute '"+name+"'");
+		}
 		dependOnAttribute(name);
-		return application.getSystemAttributes().get(name);
+		return application.getSystemAttribute(name);
 	}
 
 	
 	@Override
-	public void addVariableType(VariableType variableType) {
+	public void addVariableType(VariableType variableType) throws JavascribeException {
+		if (lang==null) {
+			throw new JavascribeException("No language support selected");
+		}
 		Map<String,VariableType> langTypes = application.getTypes().get(lang);
 		if (langTypes==null) {
 			langTypes = new HashMap<>();
@@ -85,7 +89,10 @@ public class ProcessorContextImpl implements ProcessorContext {
 	}
 
 	@Override
-	public VariableType getVariableType(String name) {
+	public VariableType getVariableType(String name) throws JavascribeException {
+		if (lang==null) {
+			throw new JavascribeException("No language support selected");
+		}
 		typeDependency(lang, name);
 		Map<String,VariableType> langTypes = application.getTypes().get(lang);
 		if (langTypes==null) {
@@ -93,6 +100,15 @@ public class ProcessorContextImpl implements ProcessorContext {
 			application.getTypes().put(lang, langTypes);
 		}
 		return langTypes.get(name);
+	}
+	
+	@Override
+	public void modifyVariableType(VariableType variableType) throws JavascribeException {
+		if (lang==null) {
+			throw new JavascribeException("No language support selected");
+		}
+		String name = variableType.getName();
+		ops.checkVariableTypeStale(lang, name, application);
 	}
 
 	@Override
@@ -109,7 +125,7 @@ public class ProcessorContextImpl implements ProcessorContext {
 
 	@Override
 	public void addSourceFile(SourceFile file) {
-		application.getSourceFiles().put(file.getPath(), file);
+		application.getAddedSourceFiles().put(file.getPath(), file);
 		originateSourceFile(file);
 	}
 
@@ -129,7 +145,7 @@ public class ProcessorContextImpl implements ProcessorContext {
 
 	@Override
 	public BuildContext getBuildContext() {
-		return buildCtx;
+		return folder.getBuildContext();
 	}
 
 	@Override
@@ -148,13 +164,17 @@ public class ProcessorContextImpl implements ProcessorContext {
 	}
 
 	@Override
-	public void addFolderWatcher(String folderPath, FolderWatcher folderWatcher) {
+	public void addFolderWatcher(String folderPath, FolderWatcher folderWatcher) throws JavascribeException {
 		originateFolderWatcher(folderPath, folderWatcher);
 	}
 
 	@Override
 	public void addFileProcessor(String filePath, FileProcessor fileProcessor) {
-		originateFileProcessor(filePath, fileProcessor);
+		WatchedResource resource = folder.getResource(filePath);
+		if ((resource!=null) && (resource instanceof UserFile)) {
+			UserFile userFile = (UserFile)resource;
+			originateFileProcessor(userFile, fileProcessor);
+		}
 	}
 
 	@Override
@@ -164,36 +184,85 @@ public class ProcessorContextImpl implements ProcessorContext {
 
 	private void objectDependency(String name) {
 		List<Integer> ids = dependencyData.getObjectDependencies().get(name);
+		if (ids==null) {
+			ids = new ArrayList<>();
+			dependencyData.getObjectDependencies().put(name, ids);
+		}
 		if (!ids.contains(id)) {
 			ids.add(id);
 		}
 	}
 	
 	private void typeDependency(String lang, String name) {
-		
+		Map<String,List<Integer>> langTypes = dependencyData.getTypeDependencies().get(lang);
+		if (langTypes==null) {
+			langTypes = new HashMap<>();
+			dependencyData.getTypeDependencies().put(lang, langTypes);
+		}
+		List<Integer> ids = langTypes.get(name);
+		if (ids==null) {
+			ids = new ArrayList<>();
+			langTypes.put(name, ids);
+		}
+		if (!ids.contains(id)) {
+			ids.add(id);
+		}
 	}
 	
 	private void dependOnAttribute(String name) {
+		List<Integer> ids = dependencyData.getAttributeDependencies().get(name);
+		if (ids==null) {
+			ids = new ArrayList<>();
+			dependencyData.getAttributeDependencies().put(name, ids);
+		}
+		if (!ids.contains(id)) {
+			ids.add(id);
+		}
 	}
 	
 	private void originateAttribute(String name) {
-
+		List<Integer> ids = dependencyData.getAttributeOriginators().get(name);
+		if (ids==null) {
+			ids = new ArrayList<>();
+			dependencyData.getAttributeOriginators().put(name, ids);
+		}
+		if (!ids.contains(id)) {
+			ids.add(id);
+		}
+		
+		// This should also depend on the system attribute, or there will be an exception when removing the item
+		ids = dependencyData.getAttributeDependencies().get(name);
+		if (ids==null) {
+			ids = new ArrayList<>();
+			dependencyData.getAttributeDependencies().put(name, ids);
+		}
+		if (!ids.contains(id)) {
+			ids.add(id);
+		}
 	}
 	
 	private void originateComponent(Component component) {
-		ops.addComponent(id, component);
+		ops.addComponent(id,  component, configs, folder, application);
 	}
 
-	private void originateFolderWatcher(String folderPath, FolderWatcher folderWatcher) {
-		ops.addFolderWatcher(id, folderPath, folderWatcher);
+	private void originateFolderWatcher(String folderPath, FolderWatcher folderWatcher) throws JavascribeException {
+		ops.addFolderWatcher(id, folderPath, folderWatcher, configs, folder, application);
 	}
 	
-	private void originateFileProcessor(String filePath, FileProcessor fileProcessor) {
-		
+	private void originateFileProcessor(UserFile file, FileProcessor fileProcessor) {
+		ops.addFileProcessor(id, file, fileProcessor, configs, folder, application);
 	}
 	
 	private void originateSourceFile(SourceFile sourceFile) {
-		
+		String path = sourceFile.getPath();
+		List<Integer> ids = application.getDependencyData().getSrcDependencies().get(path);
+		if (ids==null) {
+			ids = new ArrayList<>();
+			application.getDependencyData().getSrcDependencies().put(path, ids);
+		}
+		if (!ids.contains(id)) {
+			ids.add(id);
+		}
 	}
 
 }

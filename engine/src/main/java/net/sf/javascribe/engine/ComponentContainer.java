@@ -44,6 +44,10 @@ public class ComponentContainer {
 		initialized.clear();
 	}
 
+	public <T extends Object> T getComponent(Class<T> clazz) throws EngineInitException {
+		return getComponent(clazz.getSimpleName(), clazz);
+	}
+
 	public <T extends Object> T getComponent(String identifier, Class<T> clazz) throws EngineInitException {
 		Object obj = components.get(identifier);
 		

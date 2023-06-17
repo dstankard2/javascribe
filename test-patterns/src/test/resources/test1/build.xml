@@ -1,0 +1,12 @@
+
+<javascribe:componentSet xmlns="http://javascribe.sf.net/patterns/test-build"
+		xmlns:javascribe="http://javascribe.sf.net/config">
+
+	<testBuild name="ClassA" />
+
+
+<!--
+	<testBuild name="ClassB" />
+-->
+
+</javascribe:componentSet>

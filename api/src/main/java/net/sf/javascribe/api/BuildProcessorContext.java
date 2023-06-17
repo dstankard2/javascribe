@@ -3,6 +3,7 @@ package net.sf.javascribe.api;
 import net.sf.javascribe.api.config.Component;
 import net.sf.javascribe.api.logging.Log;
 import net.sf.javascribe.api.resources.ApplicationFolder;
+import net.sf.javascribe.api.resources.FolderWatcher;
 
 public interface BuildProcessorContext {
 
@@ -31,5 +32,7 @@ public interface BuildProcessorContext {
 
 	ApplicationContext getApplicationContext();
 
+	void addFolderWatcher(String path, FolderWatcher folderWatcher);
+	
 }
 

@@ -1,4 +1,4 @@
-package net.sf.javascribe.engine.plugins;
+package net.sf.javasccribe.test.plugin;
 
 import net.sf.javascribe.api.annotation.Plugin;
 import net.sf.javascribe.api.plugin.EnginePlugin;

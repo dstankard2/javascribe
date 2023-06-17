@@ -18,6 +18,7 @@ public class RegisteredComponentPattern {
 
 	private Class<? extends Component> componentClass;
 	
+	@SuppressWarnings("rawtypes")
 	@Builder.Default
 	private Set<Class<ComponentProcessor>> processorClasses = new HashSet<>();
 	

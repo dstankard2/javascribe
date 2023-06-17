@@ -10,7 +10,6 @@ import javax.xml.bind.annotation.XmlType;
 
 import net.sf.javascribe.api.annotation.Plugin;
 import net.sf.javascribe.api.annotation.XmlConfig;
-import net.sf.javascribe.api.config.Property;
 
 /**
  * Base class for any component pattern.  The implementation class 
