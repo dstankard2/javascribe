@@ -7,9 +7,11 @@ import java.util.Set;
 import net.sf.javascribe.api.ComponentProcessor;
 import net.sf.javascribe.api.config.Component;
 import net.sf.javascribe.api.exception.JavascribeException;
+import net.sf.javascribe.engine.ComponentContainer;
 import net.sf.javascribe.engine.data.ApplicationData;
 import net.sf.javascribe.engine.data.files.ApplicationFolderImpl;
 import net.sf.javascribe.engine.service.RegisteredComponentPattern;
+import net.sf.javascribe.engine.util.ConfigUtil;
 
 public class ComponentItem extends ProcessableBase implements Item {
 	int id;
@@ -35,7 +37,7 @@ public class ComponentItem extends ProcessableBase implements Item {
 		this.folder = folder;
 		this.name = component.getComponentName();
 		this.application = application;
-		log = new ProcessorLog(name, application);
+		log = new ProcessorLog(name, application, folder.getLogLevel());
 	}
 
 	public Component getComponent() {
@@ -71,30 +73,36 @@ public class ComponentItem extends ProcessableBase implements Item {
 	@Override
 	public boolean process() {
 		boolean success = true;
-		try {
-			Set<Class<ComponentProcessor>> compClasses = pattern.getProcessorClasses();
-			for(Class<ComponentProcessor> procClass : compClasses) {
-				ProcessorContextImpl ctx = new ProcessorContextImpl(
-					application, id, configs, folder, log
-				);
-				ComponentProcessor proc = procClass.getConstructor().newInstance();
-				proc.process(component,  ctx);
+		ConfigUtil configUtil = ComponentContainer.get().getComponent(ConfigUtil.class);
+
+		success = configUtil.populateConfigurations(component, log, configs);
+
+		if (success) {
+			try {
+				Set<Class<ComponentProcessor>> compClasses = pattern.getProcessorClasses();
+				for(Class<ComponentProcessor> procClass : compClasses) {
+					ProcessorContextImpl ctx = new ProcessorContextImpl(
+						application, id, configs, folder, log
+					);
+					ComponentProcessor proc = procClass.getConstructor().newInstance();
+					proc.process(component,  ctx);
+				}
+			} catch(JavascribeException e) {
+				this.log.error(e.getMessage(), e);
+				success = false;
+			} catch(InstantiationException e) {
+				this.log.error("Couldn't invoke component processor - "+e.getMessage(), e);
+				success = false;
+			} catch(IllegalAccessException e) {
+				this.log.error("Couldn't invoke component processor - "+e.getMessage(), e);
+				success = false;
+			} catch(NoSuchMethodException e) {
+				this.log.error("Couldn't invoke component processor - "+e.getMessage(), e);
+				success = false;
+			} catch(InvocationTargetException e) {
+				this.log.error("Couldn't invoke component processor - "+e.getMessage(), e);
+				success = false;
 			}
-		} catch(JavascribeException e) {
-			this.log.error("Exception while processing component", e);
-			success = false;
-		} catch(InstantiationException e) {
-			this.log.error("Couldn't invoke component processor", e);
-			success = false;
-		} catch(IllegalAccessException e) {
-			this.log.error("Couldn't invoke component processor", e);
-			success = false;
-		} catch(NoSuchMethodException e) {
-			this.log.error("Couldn't invoke component processor", e);
-			success = false;
-		} catch(InvocationTargetException e) {
-			this.log.error("Couldn't invoke component processor", e);
-			success = false;
 		}
 		
 		return success;

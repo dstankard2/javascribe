@@ -2,7 +2,7 @@ package net.sf.javascribe.engine.service;
 
 import java.io.File;
 import java.io.FileReader;
-import java.util.List;
+import java.util.Set;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -25,7 +25,8 @@ public class ComponentFileService {
 	}
 
 	public void loadPatternDefinitions() {
-		List<Class<?>> xmlConfigClasses = pluginService.findClassesWithAnnotation(XmlConfig.class);
+		Set<Class<?>> xmlConfigClasses = pluginService.findClassesWithAnnotation(XmlConfig.class);
+		
 		Class<?>[] classes = new Class<?>[xmlConfigClasses.size()];
 		xmlConfigClasses.toArray(classes);
 		

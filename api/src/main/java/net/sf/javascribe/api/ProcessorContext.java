@@ -14,7 +14,7 @@ public interface ProcessorContext {
 
 	public void addSystemAttribute(String name,String type) throws JavascribeException;
 	public void originateSystemAttribute(String name);
-	public String getSystemAttribute(String name) throws JavascribeException;
+	public String getSystemAttribute(String name);
 
 	public void addVariableType(VariableType variableType) throws JavascribeException;
 	public VariableType getVariableType(String name) throws JavascribeException;

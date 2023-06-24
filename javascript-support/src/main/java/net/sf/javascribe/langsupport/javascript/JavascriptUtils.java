@@ -97,13 +97,13 @@ public class JavascriptUtils {
 
 		String fullPath = getModuleSourceFilePath(ctx);
 
-		ctx.getLog().info("Found Javascript module sourcefile as '"+fullPath+"'");
+		ctx.getLog().debug("Found Javascript module sourcefile as '"+fullPath+"'");
 		ret = (ModuleSourceFile)ctx.getSourceFile(fullPath);
 		if (ret==null) {
 			ret = new ModuleSourceFile(getModulePath(ctx));
 			ret.setPath(fullPath);
 			ctx.addSourceFile(ret);
-			ctx.getLog().info("Creating module source file.");
+			ctx.getLog().debug("Creating module source file.");
 		}
 
 		return ret;

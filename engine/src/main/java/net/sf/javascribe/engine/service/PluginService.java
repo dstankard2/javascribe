@@ -34,9 +34,9 @@ public class PluginService {
 		return ret;
 	}
 
-	public List<Class<?>> findClassesWithAnnotation(Class<? extends Annotation> annotation) {
+	public Set<Class<?>> findClassesWithAnnotation(Class<? extends Annotation> annotation) {
 		Set<Class<?>> pluginClasses = findAllPlugins();
-		List<Class<?>> ret = new ArrayList<>();
+		Set<Class<?>> ret = new HashSet<>();
 		
 		for(Class<?> cl : pluginClasses) {
 			if (cl.isAnnotationPresent(annotation)) {
@@ -81,6 +81,7 @@ public class PluginService {
 						results.add(cl);
 					}
 				} catch(ClassNotFoundException e) {
+					e.printStackTrace();
 					// no-op
 				}
 			}

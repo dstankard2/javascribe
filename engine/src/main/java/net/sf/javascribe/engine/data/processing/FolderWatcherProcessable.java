@@ -60,7 +60,8 @@ public class FolderWatcherProcessable extends ProcessableBase {
 			watcher.process(ctx, userFile);
 		} catch(JavascribeException e) {
 			this.state = ProcessingState.ERROR;
-			this.log.error("Error when applying file '"+userFile.getPath()+"'", e);
+			this.log.error("Error when applying file '"+userFile.getPath()+"' - ", e);
+			this.log.error(e.getMessage());
 			ret = false;
 		}
 		

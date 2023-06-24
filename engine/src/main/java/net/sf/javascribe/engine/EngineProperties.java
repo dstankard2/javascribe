@@ -7,6 +7,8 @@ import java.util.Map;
 
 public class EngineProperties {
 
+	public static final String ENGINE_DEBUG = "debug";
+	
 	private Map<String,String> userOptions = null;
 
 	protected List<String> getValueList(String option) {
@@ -72,7 +74,7 @@ public class EngineProperties {
 	}
 	
 	public boolean getDebug() {
-		return getBoolean("engineDebug", false);
+		return getBoolean(ENGINE_DEBUG, false);
 	}
 
 }

@@ -17,6 +17,7 @@ import net.sf.javascribe.engine.data.files.UserFile;
 import net.sf.javascribe.engine.data.files.WatchedResource;
 import net.sf.javascribe.engine.data.processing.BuildComponentItem;
 import net.sf.javascribe.engine.data.processing.ComponentItem;
+import net.sf.javascribe.engine.data.processing.ProcessingState;
 import net.sf.javascribe.engine.data.processing.ProcessorLog;
 import net.sf.javascribe.engine.service.FolderScannerService;
 import net.sf.javascribe.engine.service.OutputService;
@@ -55,7 +56,7 @@ public class WorkspaceManager {
 	
 	public List<ApplicationData> initializeApplications(String workspaceDir, boolean singleApp) {
 		List<ApplicationData> ret = new ArrayList<>();
-		
+
 		File workspace = new File(workspaceDir);
 		if ((!workspace.exists()) || (!workspace.isDirectory())) {
 			throw new EngineInitException("Workspace directory "+workspaceDir+" isn't a directory");
@@ -77,15 +78,15 @@ public class WorkspaceManager {
 				.applicationDirectory(appDir)
 				.name(appName)
 				.build();
-		ProcessorLog log = new ProcessorLog(appName, applicationData);
 		ApplicationFolderImpl folder = new ApplicationFolderImpl(appDir, applicationData);
 		applicationData.setRootFolder(folder);
+		ProcessorLog log = new ProcessorLog(appName, applicationData, folder.getLogLevel());
 		applicationData.setApplicationLog(log);
 		folderScannerService.initFolder(folder);
 		return applicationData;
 	}
 
-	public void scanApplicationDir(ApplicationData application) {
+	public void scanApplicationDir(ApplicationData application, boolean firstRun, boolean onlyRun) {
 		List<WatchedResource> removedFiles = folderScannerService.findFilesRemoved(application);
 		List<UserFile> removedUserFiles = new ArrayList<>();
 		boolean filesChanged = false;
@@ -113,6 +114,12 @@ public class WorkspaceManager {
 		
 		if (addedFiles.size()>0) {
 			filesChanged = true;
+		}
+		
+		if (filesChanged) {
+			if ((!firstRun) && (!onlyRun)) {
+				application.getApplicationLog().info("*** Scanned application '"+application.getName()+"' and found changes ***");
+			}
 		}
 		
 		for(WatchedResource f : addedFiles) {
@@ -148,8 +155,23 @@ public class WorkspaceManager {
 			processingService.runProcessing(application);
 		}
 		if ((addedUserFiles.size()>0) || (application.getAddedSourceFiles().size()>0)) {
+			//application.getApplicationLog().info("Writing output files");
 			outputService.writeUserFiles(application, addedUserFiles);
 			outputService.writeSourceFiles(application);
+		}
+
+		// Output to log
+		processingService.outputPendingLogMessages(application);
+
+		if (filesChanged) {
+			// Output a success message
+			processingService.outputMessageToLog("\n*********************************");
+			if (application.getState()==ProcessingState.SUCCESS) {
+				processingService.outputMessageToLog("***   PROCESSING SUCCESSFUL   ***");
+			} else if (application.getState()==ProcessingState.ERROR) {
+				processingService.outputMessageToLog("***     PROCESSING ERROR      ***");
+			}
+			processingService.outputMessageToLog("*********************************\n");
 		}
 	}
 

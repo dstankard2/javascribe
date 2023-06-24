@@ -1,8 +1,10 @@
 package net.sf.javascribe.engine.util;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -14,8 +16,10 @@ import net.sf.javascribe.api.exception.JavascribeException;
 import net.sf.javascribe.engine.ComponentDependency;
 import net.sf.javascribe.engine.data.ApplicationData;
 import net.sf.javascribe.engine.data.ProcessingData;
+import net.sf.javascribe.engine.data.files.UserFile;
 import net.sf.javascribe.engine.data.processing.BuildComponentItem;
 import net.sf.javascribe.engine.data.processing.ComponentItem;
+import net.sf.javascribe.engine.data.processing.FolderWatcherEntry;
 import net.sf.javascribe.engine.data.processing.Item;
 import net.sf.javascribe.engine.data.processing.Processable;
 import net.sf.javascribe.engine.data.processing.ProcessingState;
@@ -62,16 +66,36 @@ public class ProcessingUtil {
 		}
 		else if (item instanceof BuildComponentItem) {
 			pd.getBuildsToInit().add((BuildComponentItem)item);
+		} else if (item instanceof FolderWatcherEntry) {
+			checkFolderWatcherAgainstFiles((FolderWatcherEntry)item, application);
 		}
 
 		item.setState(ProcessingState.CREATED);
 	}
 	
+	public void checkFolderWatcherAgainstFiles(FolderWatcherEntry watcher, ApplicationData application) {
+		// Check user files against folder watcher.
+		// If there is a JavascribeException, set item state and application state, 
+		// and record the JavascribeException
+		String path = watcher.getPath();
+
+		for (Entry<String, UserFile> e : application.getUserFiles().entrySet()) {
+			String p = e.getKey();
+			UserFile f = e.getValue();
+			if (p.startsWith(path)) {
+				application.getApplicationLog().debug("Applying folder watcher '"+watcher.getName()+"' to file "+f.getPath());
+				watcher.applyToUserFile(f);
+			}
+		}
+		handleAddedItems(application);
+		
+	}
+
 	// TODO: When a folder watcher is reset, we need to apply user files to it.
 	public void resetItem(ApplicationData application, int id) {
 		ProcessingData pd = application.getProcessingData();
 		Item item = pd.getItem(id);
-		
+
 		if (item==null) return;
 
 		removeItem(application, id);
@@ -125,7 +149,7 @@ public class ProcessingUtil {
 		// Delete these source files, reset items that originate the same file, delete the source file dependency data
 		filesToRemove.forEach(sf -> {
 			itemsToReset.addAll(application.getDependencyData().getSrcDependencies().get(sf.getPath()));
-			if (!application.getSourceFiles().values().contains(sf)) {
+			if (application.getSourceFiles().values().contains(sf)) {
 				outputUtil.deleteSourceFile(sf, application);
 			}
 			application.getDependencyData().getSrcDependencies().remove(sf.getPath());
@@ -168,7 +192,7 @@ public class ProcessingUtil {
 			
 			// For each type: reset items that depend on it, remove the type and remove its dependency data
 			itemsToReset.addAll(application.getDependencyData().getTypeDependencies().get(lang).get(name));
-			application.getTypes().get(lang).remove(name);
+			application.getApplicationTypes().get(lang).remove(name);
 			application.getDependencyData().getTypeDependencies().get(lang).remove(name);
 		});
 		
@@ -192,6 +216,32 @@ public class ProcessingUtil {
 		
 	}
 	
+	// After a processable has been processed or a folder watcher has been handled, 
+	// Look at the application for added items and add them.
+	public boolean handleAddedItems(ApplicationData application) {
+		ProcessingData pd = application.getProcessingData();
+		boolean ret = true;
+		
+		application.getAddedComponents().forEach(i -> {
+			addItem(i, application);
+		});
+		application.getAddedComponents().clear();
+		//pd.getToProcess().addAll(application.getAddedComponents());
+
+		pd.getToProcess().addAll(application.getAddedFileProcessors());
+		application.getAddedFileProcessors().clear();
+		
+		List<FolderWatcherEntry> watchers = new ArrayList<>();
+		watchers.addAll(application.getAddedFolderWatchers());
+		application.getAddedFolderWatchers().clear();
+		
+		for(FolderWatcherEntry e : watchers) {
+			addItem(e, application);
+		}
+
+		return ret;
+	}
+	
 	public boolean processItem(Processable processable, ApplicationData application) throws JavascribeException {
 		return processable.process();
 	}
@@ -200,8 +250,8 @@ public class ProcessingUtil {
 		return buildItem.init();
 	}
 	
-	public void processBuild(BuildComponentItem buildItem, ApplicationData application) {
-		
+	public boolean processBuild(BuildComponentItem buildItem, ApplicationData application) {
+		return buildItem.process();
 	}
 	
 }

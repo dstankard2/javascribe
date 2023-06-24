@@ -17,6 +17,7 @@ import net.sf.javascribe.api.resources.FileProcessor;
 import net.sf.javascribe.api.resources.FolderWatcher;
 import net.sf.javascribe.api.types.VariableType;
 import net.sf.javascribe.engine.ComponentContainer;
+import net.sf.javascribe.engine.StaleDependencyException;
 import net.sf.javascribe.engine.data.ApplicationData;
 import net.sf.javascribe.engine.data.DependencyData;
 import net.sf.javascribe.engine.data.files.ApplicationFolderImpl;
@@ -45,7 +46,8 @@ public class ProcessorContextImpl implements ProcessorContext {
 		this.folder = folder;
 		this.log = log;
 		this.dependencyData = application.getDependencyData();
-		this.engineResources = ComponentContainer.get().getComponent("EngineResources", EngineResources.class);
+		this.engineResources = ComponentContainer.get().getComponent(EngineResources.class);
+		this.ops = ComponentContainer.get().getComponent(ProcessingContextOperations.class);
 	}
 
 	@Override
@@ -65,10 +67,7 @@ public class ProcessorContextImpl implements ProcessorContext {
 	}
 
 	@Override
-	public String getSystemAttribute(String name) throws JavascribeException {
-		if (application.getSystemAttribute(name)==null) {
-			throw new JavascribeException("There is no system attribute '"+name+"'");
-		}
+	public String getSystemAttribute(String name) {
 		dependOnAttribute(name);
 		return application.getSystemAttribute(name);
 	}
@@ -79,10 +78,10 @@ public class ProcessorContextImpl implements ProcessorContext {
 		if (lang==null) {
 			throw new JavascribeException("No language support selected");
 		}
-		Map<String,VariableType> langTypes = application.getTypes().get(lang);
+		Map<String,VariableType> langTypes = application.getApplicationTypes().get(lang);
 		if (langTypes==null) {
 			langTypes = new HashMap<>();
-			application.getTypes().put(lang, langTypes);
+			application.getApplicationTypes().put(lang, langTypes);
 		}
 		langTypes.put(variableType.getName(), variableType);
 		typeDependency(lang, variableType.getName());
@@ -94,12 +93,7 @@ public class ProcessorContextImpl implements ProcessorContext {
 			throw new JavascribeException("No language support selected");
 		}
 		typeDependency(lang, name);
-		Map<String,VariableType> langTypes = application.getTypes().get(lang);
-		if (langTypes==null) {
-			langTypes = new HashMap<>();
-			application.getTypes().put(lang, langTypes);
-		}
-		return langTypes.get(name);
+		return application.getType(lang, name);
 	}
 	
 	@Override
@@ -132,6 +126,12 @@ public class ProcessorContextImpl implements ProcessorContext {
 	@Override
 	public SourceFile getSourceFile(String path) {
 		SourceFile ret = application.getSourceFiles().get(path);
+		if (ret==null) {
+			ret = application.getAddedSourceFiles().get(path);
+		} else {
+			this.originateSourceFile(ret);
+			throw new StaleDependencyException(id);
+		}
 		if (ret!=null) {
 			originateSourceFile(ret);
 		}

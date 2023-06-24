@@ -87,7 +87,10 @@ public class PluginManager {
 	}
 	
 	public void startPlugins() {
-		System.out.println("Start plugins");
+		//System.out.println("Start plugins");
+		this.plugins.forEach(plugin -> {
+			plugin.engineStart();
+		});
 	}
 	
 }

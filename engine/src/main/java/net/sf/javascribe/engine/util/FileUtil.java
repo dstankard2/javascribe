@@ -119,10 +119,12 @@ public class FileUtil {
 			String name = f.getName();
 			// When jasper.properties changes, we need to re-process this folder
 			if (name.equals("javascribe.properties")) {
+				folder.getApplication().getApplicationLog().debug("javascribe.properties updated for folder '"+folder.getPath()+"' - reloading folder");
 				clearFolder.set(true);
 			}
 			if ((name.equals("systemAttributes.properties")) && (folder.getParent()==null)) {
 				// When systemAttributes.properties changes, we need to re-process this folder
+				folder.getApplication().getApplicationLog().info("Global system attributes file updated - reloading application");
 				clearFolder.set(true);
 			}
 			if (folder.getSubFolders().containsKey(name)) {
@@ -183,12 +185,14 @@ public class FileUtil {
 
 		List<File> subdirs = new ArrayList<>();
 		for(File f : addedFiles) {
-			if (f.isDirectory()) {
-				subdirs.add(f);
-			} else {
-				WatchedResource addition = readFile(f, folder);
-				if (addition != null) {
-					ret.add(addition);
+			if (!folder.isIgnore(f.getName())) {
+				if (f.isDirectory()) {
+					subdirs.add(f);
+				} else {
+					WatchedResource addition = readFile(f, folder);
+					if (addition != null) {
+						ret.add(addition);
+					}
 				}
 			}
 		}
@@ -251,9 +255,6 @@ public class FileUtil {
 		else if ((name.equals("systemAttributes.properties")) && (folder.getParent()==null)) {
 			SystemAttributesFile attrs = new SystemAttributesFile(f, folder);
 			return attrs;
-		}
-		else if (folder.isIgnore(name)) {
-			return null;
 		}
 		else if (name.endsWith(".xml")) {
 			ComponentSet set = componentFileService.readFile(f);

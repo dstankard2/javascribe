@@ -30,7 +30,7 @@ public class FolderWatcherEntry implements Item {
 		this.configs = configs;
 		this.application = application;
 		this.folder = folder;
-		this.log = new ProcessorLog(folderWatcher.getName(), application);
+		this.log = new ProcessorLog(folderWatcher.getName(), application, folder.getLogLevel());
 	}
 
 	public int getOriginatorId() {

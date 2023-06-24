@@ -73,6 +73,11 @@ public class ProcessorLog implements Log {
 	}
 
 	@Override
+	public void debug(String message, Throwable e) {
+		application.getMessages().add(new ProcessorLogMessage(name, ProcessorLogLevel.DEBUG, targetLevel, message, e));
+	}
+
+	@Override
 	public void warn(String message) {
 		application.getMessages().add(new ProcessorLogMessage(name, ProcessorLogLevel.WARN, targetLevel, message, null));
 	}

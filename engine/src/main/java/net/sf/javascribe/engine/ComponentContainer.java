@@ -7,6 +7,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.javascribe.engine.manager.OutputManager;
+import net.sf.javascribe.engine.manager.PluginManager;
+import net.sf.javascribe.engine.manager.WorkspaceManager;
+import net.sf.javascribe.engine.service.ComponentFileService;
+import net.sf.javascribe.engine.service.FolderScannerService;
+import net.sf.javascribe.engine.service.LanguageSupportService;
+import net.sf.javascribe.engine.service.OutputService;
+import net.sf.javascribe.engine.service.PatternService;
+import net.sf.javascribe.engine.service.PluginService;
+import net.sf.javascribe.engine.service.ProcessingService;
+import net.sf.javascribe.engine.util.ConfigUtil;
+import net.sf.javascribe.engine.util.DependencyUtil;
+import net.sf.javascribe.engine.util.FileUtil;
+import net.sf.javascribe.engine.util.LogUtil;
+import net.sf.javascribe.engine.util.OutputUtil;
+import net.sf.javascribe.engine.util.ProcessingUtil;
+
 public class ComponentContainer {
 
 	// Instance variables
@@ -19,6 +36,35 @@ public class ComponentContainer {
 	}
 	public static ComponentContainer get() {
 		return instance;
+	}
+
+	public void registerServices() {
+		ProcessingService processingService = new ProcessingService();
+
+		// Register utility classes with engine container
+		ComponentContainer.get().registerComponent(new FileUtil());
+		ComponentContainer.get().registerComponent(new ProcessingUtil());
+		ComponentContainer.get().registerComponent(new DependencyUtil());
+		ComponentContainer.get().registerComponent(new OutputUtil());
+		ComponentContainer.get().registerComponent(new LogUtil());
+		ComponentContainer.get().registerComponent(new ConfigUtil());
+		
+		// Register services with engine container
+		ComponentContainer.get().registerComponent(new FolderScannerService());
+		ComponentContainer.get().registerComponent(new ComponentFileService());
+		ComponentContainer.get().registerComponent(new PluginService());
+		ComponentContainer.get().registerComponent(new LanguageSupportService());
+		ComponentContainer.get().registerComponent(new PatternService());
+		ComponentContainer.get().registerComponent(processingService);
+		ComponentContainer.get().registerComponent(new OutputService());
+		ComponentContainer.get().registerComponent(new FolderScannerService());
+	
+		// Register manager classes with engine container
+		ComponentContainer.get().registerComponent(new PluginManager());
+		ComponentContainer.get().registerComponent(new WorkspaceManager());
+		ComponentContainer.get().registerComponent(new OutputManager());
+
+		ComponentContainer.get().setComponent("ProcessingContextOperations", processingService);
 	}
 
 	public void registerComponent(String identifier, Object obj) {
@@ -50,7 +96,7 @@ public class ComponentContainer {
 
 	public <T extends Object> T getComponent(String identifier, Class<T> clazz) throws EngineInitException {
 		Object obj = components.get(identifier);
-		
+
 		if (obj==null) {
 			throw new EngineInitException("Couldn't find dependency "+identifier);
 		}

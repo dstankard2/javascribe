@@ -24,7 +24,9 @@ public class DependencyUtil {
 
 		paths.forEach(path -> {
 			SourceFile sf = application.getSourceFile(path);
-			ret.add(sf);
+			if (sf!=null) {
+				ret.add(sf);
+			}
 		});
 		
 		return ret;

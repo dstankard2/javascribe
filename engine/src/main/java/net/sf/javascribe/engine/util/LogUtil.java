@@ -1,5 +1,6 @@
 package net.sf.javascribe.engine.util;
 
+import net.sf.javascribe.api.logging.ProcessorLogLevel;
 import net.sf.javascribe.engine.ComponentDependency;
 import net.sf.javascribe.engine.data.ApplicationData;
 import net.sf.javascribe.engine.service.EngineResources;
@@ -13,17 +14,23 @@ public class LogUtil {
 	}
 
 	public void outputPendingLogMessages(ApplicationData application, boolean consume) {
-		boolean debug = engineResources.getEngineProperties().getDebug();
+		boolean engineDebug = engineResources.getEngineProperties().getDebug();
 		
 		application.getMessages().forEach(m -> {
-			StringBuilder output = new StringBuilder();
-			output.append('[').append(m.getLogName()).append("] ")
-			.append(""+m.getLevel().name()+" ")
-			.append(m.getMessage());
-
-			System.out.println(output.toString());
-			if (m.getE()!=null) {
-				m.getE().printStackTrace();
+			int target = engineDebug ? 0 : m.getTargetLevel().ordinal();
+			if (m.getLevel().ordinal() >= target) {
+				StringBuilder output = new StringBuilder();
+				output.append('[').append(m.getLogName()).append("] ")
+					.append(""+m.getLevel().name()+" ")
+					.append(m.getMessage());
+				if (m.getLevel()==ProcessorLogLevel.ERROR) {
+					System.err.println(output.toString());
+				} else {
+					System.out.println(output.toString());
+				}
+				if ((m.getE()!=null) && (target==0)) {
+					m.getE().printStackTrace();
+				}
 			}
 		});
 		
@@ -32,4 +39,9 @@ public class LogUtil {
 		}
 	}
 
+	public void outputMessageToLog(String message) {
+		System.out.println(message);
+	}
+
 }
+

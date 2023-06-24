@@ -1,17 +1,12 @@
-package net.sf.javascribe.api.annotation;
+package net.sf.javascribe.engine.integration;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import net.sf.javascribe.api.config.Component;
-
-@Target(value=ElementType.TYPE)
+@Target(value=ElementType.FIELD)
 @Retention(value=RetentionPolicy.RUNTIME)
-public @interface Processor {
-
-	Class<? extends Component> componentClass();
+public @interface Inject {
 
 }
-

@@ -27,7 +27,7 @@ public class FileProcessorEntry extends ProcessableBase {
 		this.application = application;
 		this.configs = configs;
 		this.state = ProcessingState.CREATED;
-		this.log = new ProcessorLog(name, application);
+		this.log = new ProcessorLog(name, application, folder.getLogLevel());
 		this.folder = folder;
 		procCtx = new ProcessorContextImpl(application, originatorId, configs, folder, 
 				log);

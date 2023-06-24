@@ -84,8 +84,19 @@ public class BuildComponentItem implements Item {
 		return success;
 	}
 
-	public void process() {
+	public boolean process() {
+		boolean success = true;
 		
+		if (processor!=null) {
+			try {
+				processor.generateBuild();
+			} catch(JavascribeException e) {
+				success = false;
+				this.log.error("Exception in build initialization", e);
+			}
+		}
+
+		return success;
 	}
 
 	public BuildContext getBuildContext() {

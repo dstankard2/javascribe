@@ -18,7 +18,6 @@ import net.sf.javascribe.engine.data.files.ComponentFile;
 import net.sf.javascribe.engine.data.processing.BuildComponentItem;
 import net.sf.javascribe.engine.data.processing.ComponentItem;
 
-// TODO: Fix circular dependency between pattern service and processing util
 public class PatternService {
 
 	private PluginService pluginService;
@@ -51,8 +50,8 @@ public class PatternService {
 	}
 	
 	public RegisteredComponentPattern getPattern(Component component) {
-		String name = component.getClass().getSimpleName();
-		RegisteredComponentPattern pattern = componentPatterns.get(name);
+		String patternName = component.getClass().getName();
+		RegisteredComponentPattern pattern = componentPatterns.get(patternName);
 		return pattern;
 	}
 

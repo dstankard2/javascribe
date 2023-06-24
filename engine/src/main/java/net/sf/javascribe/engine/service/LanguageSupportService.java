@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 
 import net.sf.javascribe.api.langsupport.LanguageSupport;
+import net.sf.javascribe.api.types.VariableType;
 import net.sf.javascribe.engine.ComponentDependency;
 
 public class LanguageSupportService {
@@ -27,6 +28,18 @@ public class LanguageSupportService {
 				languages.put(name, supp);
 			} catch(Exception e) { }
 		});
+	}
+	
+	public Map<String,VariableType> getBaseTypes(String lang) {
+		LanguageSupport supp = languages.get(lang);
+		if (supp!=null) {
+			Map<String,VariableType> ret = new HashMap<>();
+			supp.getBaseVariableTypes().forEach(type -> {
+				ret.put(type.getName(), type);
+			});
+			return ret;
+		}
+		return null;
 	}
 
 }

@@ -8,19 +8,7 @@ import net.sf.javascribe.engine.data.ApplicationData;
 import net.sf.javascribe.engine.manager.OutputManager;
 import net.sf.javascribe.engine.manager.PluginManager;
 import net.sf.javascribe.engine.manager.WorkspaceManager;
-import net.sf.javascribe.engine.service.ComponentFileService;
 import net.sf.javascribe.engine.service.EngineResources;
-import net.sf.javascribe.engine.service.FolderScannerService;
-import net.sf.javascribe.engine.service.LanguageSupportService;
-import net.sf.javascribe.engine.service.OutputService;
-import net.sf.javascribe.engine.service.PatternService;
-import net.sf.javascribe.engine.service.PluginService;
-import net.sf.javascribe.engine.service.ProcessingService;
-import net.sf.javascribe.engine.util.DependencyUtil;
-import net.sf.javascribe.engine.util.FileUtil;
-import net.sf.javascribe.engine.util.LogUtil;
-import net.sf.javascribe.engine.util.OutputUtil;
-import net.sf.javascribe.engine.util.ProcessingUtil;
 
 /**
  * Acts as a component container for the Javascribe engine.  Initializes service objects and other 
@@ -33,7 +21,7 @@ public class JavascribeAgent {
 	private EngineProperties properties;
 	private File[] libs = null;
 	private List<ApplicationData> applications;
-	
+
 	public JavascribeAgent(File[] libs, Map<String,String> engineProperties) {
 		this.properties = new EngineProperties(engineProperties);
 		this.libs = libs;
@@ -41,36 +29,15 @@ public class JavascribeAgent {
 	
 	public void init() {
 		boolean debug = properties.getDebug();
-		ProcessingService processingService = new ProcessingService();
-
-		// Register utility classes with engine container
-		ComponentContainer.get().registerComponent(new FileUtil());
-		ComponentContainer.get().registerComponent(new ProcessingUtil());
-		ComponentContainer.get().registerComponent(new DependencyUtil());
-		ComponentContainer.get().registerComponent(new OutputUtil());
-		ComponentContainer.get().registerComponent(new LogUtil());
 		
-		// Register services with engine container
-		ComponentContainer.get().registerComponent(new FolderScannerService());
-		ComponentContainer.get().registerComponent(new ComponentFileService());
-		ComponentContainer.get().registerComponent(new PluginService());
-		ComponentContainer.get().registerComponent(new LanguageSupportService());
-		ComponentContainer.get().registerComponent(new PatternService());
-		ComponentContainer.get().registerComponent(processingService);
-		ComponentContainer.get().registerComponent(new OutputService());
-		ComponentContainer.get().registerComponent(new FolderScannerService());
-
-		// Register manager classes with engine container
-		ComponentContainer.get().registerComponent(new PluginManager());
-		ComponentContainer.get().registerComponent(new WorkspaceManager());
-		ComponentContainer.get().registerComponent(new OutputManager());
+		ComponentContainer.get().registerServices();
 
 		// Register engine data and resources with engine container
 		ComponentContainer.get().setComponent("debug", debug);
 		ComponentContainer.get().setComponent("jarFiles", libs);
 		ComponentContainer.get().setComponent("EngineProperties", properties);
 		ComponentContainer.get().registerComponent(new EngineResources());
-		ComponentContainer.get().setComponent("ProcessingContextOperations", processingService);
+		//ComponentContainer.get().setComponent("ProcessingContextOperations", processingService);
 
 		WorkspaceManager workspaceManager = ComponentContainer.get().getComponent("WorkspaceManager", WorkspaceManager.class);
 		PluginManager pluginManager = ComponentContainer.get().getComponent("PluginManager", PluginManager.class);
@@ -86,7 +53,7 @@ public class JavascribeAgent {
 		
 		// Initialize output folder(s)
 		outputManager.initOutputDirectory(outputDir, applications, singleApp);
-		
+
 	}
 
 	public void run() {
@@ -101,7 +68,8 @@ public class JavascribeAgent {
 		}
 		
 		while(!done) {
-			scanApplications();
+			scanApplications(firstRun, runOnce);
+			firstRun = false;
 			if (runOnce) {
 				done = true;
 			} else {
@@ -112,10 +80,13 @@ public class JavascribeAgent {
 		}
 	}
 
-	private void scanApplications() {
+	private void scanApplications(boolean firstRun, boolean onlyRun) {
 		WorkspaceManager workspaceManager = ComponentContainer.get().getComponent("WorkspaceManager", WorkspaceManager.class);
-		for(ApplicationData app : this.applications) {
-			workspaceManager.scanApplicationDir(app);
+		for(ApplicationData application : this.applications) {
+			if (firstRun) {
+				application.getApplicationLog().info("*** Scanned application '"+application.getName()+"' and found changes ***");
+			}
+			workspaceManager.scanApplicationDir(application, firstRun, onlyRun);
 		}
 	}
 

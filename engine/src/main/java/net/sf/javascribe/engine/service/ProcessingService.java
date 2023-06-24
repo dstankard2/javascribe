@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import net.sf.javascribe.api.SourceFile;
 import net.sf.javascribe.api.config.BuildComponent;
@@ -113,7 +112,7 @@ public class ProcessingService implements ProcessingContextOperations {
 				i.setState(ProcessingState.ERROR);
 				clearAddedItems(application);
 				processingUtil.resetItem(application, i.getItemId());
-				//pd.getBuildsToInit().add(i);
+				pd.getBuildsToInit().add(i);
 				application.setState(ProcessingState.ERROR);
 			}
 		}
@@ -134,20 +133,58 @@ public class ProcessingService implements ProcessingContextOperations {
 					handleAddedItems(application);
 				} else {
 					proc.setState(ProcessingState.ERROR);
+					application.setState(ProcessingState.ERROR);
 					processingUtil.resetItem(application, proc.getItemId());
-					//pd.getToProcess().add(proc);
 					clearAddedItems(application);
 				}
-
+			} catch(StaleDependencyException e) {
+				int id = e.getItemId();
+				processingUtil.resetItem(application, id);
+				clearAddedItems(application);
 			} catch (Throwable e) {
+				// This is an internal engine error.
+				application.getApplicationLog().error("Internal engine error - turn on engine debugging to see the cause");
+				application.getApplicationLog().debug(e.getMessage(), e);
 				error = true;
 			}
 		}
 
 		// Process builds
+		while ((pd.getBuildsToProcess().size() > 0) && (!error)) {
+			BuildComponentItem i = pd.getBuildsToProcess().get(0);
+			pd.getBuildsToProcess().remove(0);
 
+			application.getApplicationLog().info("Processing Build - "+i.getName());
+			error = !processingUtil.processBuild(i, application);
+
+			if (error) {
+				i.setState(ProcessingState.ERROR);
+				clearAddedItems(application);
+				processingUtil.resetItem(application, i.getItemId());
+				pd.getBuildsToInit().add(i);
+				application.setState(ProcessingState.ERROR);
+			} else {
+				i.setState(ProcessingState.INITIALIZED);
+				pd.getBuildsProcessed().add(i);
+				error = !handleAddedItems(application);
+			}
+		}
+
+		// Everything is successful, mark the application state
+		if (application.getState() == ProcessingState.PROCESSING) {
+			application.setState(ProcessingState.SUCCESS);
+		}
+	}
+	
+	public void outputPendingLogMessages(ApplicationData application) {
 		// Output to log
-		logUtil.outputPendingLogMessages(application, true);
+		if (application.getMessages().size()>0) {
+			logUtil.outputPendingLogMessages(application, true);
+		}
+	}
+	
+	public void outputMessageToLog(String message) {
+		logUtil.outputMessageToLog(message);
 	}
 
 	protected void clearAddedItems(ApplicationData application) {
@@ -157,49 +194,12 @@ public class ProcessingService implements ProcessingContextOperations {
 		application.getAddedSourceFiles().clear();
 	}
 
-	// TODO: Push this down to processingUtil
-	// After a processable has been processed or a folder watcher has been handled, 
-	// Look at the application for added items and add them.
 	public boolean handleAddedItems(ApplicationData application) {
-		ProcessingData pd = application.getProcessingData();
-		boolean ret = true;
-		
-		application.getAddedComponents().forEach(i -> {
-			addItem(application ,i);
-		});
-		application.getAddedComponents().clear();
-		//pd.getToProcess().addAll(application.getAddedComponents());
-
-		pd.getToProcess().addAll(application.getAddedFileProcessors());
-		application.getAddedFileProcessors().clear();
-		
-		List<FolderWatcherEntry> watchers = new ArrayList<>();
-		watchers.addAll(application.getAddedFolderWatchers());
-		application.getAddedFolderWatchers().clear();
-		
-		for(FolderWatcherEntry e : watchers) {
-			addFolderWatcher(e, application);
-		}
-
-		return ret;
+		return processingUtil.handleAddedItems(application);
 	}
 
-	// TODO: Push this down to processingUtil and call it on processingUtil.addItem
 	public void addFolderWatcher(FolderWatcherEntry watcher, ApplicationData application) {
 		processingUtil.addItem(watcher, application);
-		// Check user files against folder watcher.
-		// If there is a JavascribeException, set item state and application state, 
-		// and record the JavascribeException
-		String path = watcher.getPath();
-
-		for (Entry<String, UserFile> e : application.getUserFiles().entrySet()) {
-			String p = e.getKey();
-			UserFile f = e.getValue();
-			if (p.startsWith(path)) {
-				watcher.applyToUserFile(f);
-			}
-		}
-		handleAddedItems(application);
 	}
 
 	public void addItem(ApplicationData application, Item item) {
@@ -207,7 +207,7 @@ public class ProcessingService implements ProcessingContextOperations {
 	}
 
 	// Implementation of ProcessingContextOperations
-	// TODO: Determine if this is necessary
+	// TODO: Determine if this is necessary.  ItemId will have to be a parameter if so.
 	@Override
 	public void checkVariableTypeStale(String lang, String name, ApplicationData application) throws StaleDependencyException {
 		// TODO Auto-generated method stub
