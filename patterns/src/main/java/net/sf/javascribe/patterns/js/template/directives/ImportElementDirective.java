@@ -1,6 +1,6 @@
 package net.sf.javascribe.patterns.js.template.directives;
 
-import net.sf.javascribe.api.JasperUtils;
+import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.api.annotation.Plugin;
 import net.sf.javascribe.api.exception.JavascribeException;
 import net.sf.javascribe.langsupport.javascript.types.ExportedModuleType;
@@ -41,7 +41,7 @@ public class ImportElementDirective implements ElementDirective {
 			throw new JavascribeException("Import element directive must have a 'ref' or a 'type'");
 		}
 
-		type = JasperUtils.getType(ModuleType.class, typeName, ctx.getProcessorContext());
+		type = JavascribeUtils.getType(ModuleType.class, typeName, ctx.getProcessorContext());
 
 		ctx.importModule(typeName, type.getWebPath());
 		if (type.getExportType()==ExportedModuleType.CONSTRUCTOR) {

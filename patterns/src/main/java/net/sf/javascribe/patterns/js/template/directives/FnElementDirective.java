@@ -4,7 +4,7 @@ import java.util.List;
 
 import net.sf.javascribe.api.AttribEntry;
 import net.sf.javascribe.api.CodeExecutionContext;
-import net.sf.javascribe.api.JasperUtils;
+import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.api.annotation.Plugin;
 import net.sf.javascribe.api.exception.JavascribeException;
 import net.sf.javascribe.patterns.js.parsing.JavascriptParser;
@@ -50,7 +50,7 @@ public class FnElementDirective implements ElementDirective {
 			code.append("function "+name+"(");
 			if (params.trim().length()>0) {
 				boolean first = true;
-				List<AttribEntry> atts = JasperUtils.readParametersAsList(params,ctx.getProcessorContext());
+				List<AttribEntry> atts = JavascribeUtils.readParametersAsList(params,ctx.getProcessorContext());
 				for(AttribEntry att : atts) {
 					if (first) first = false;
 					else code.append(',');

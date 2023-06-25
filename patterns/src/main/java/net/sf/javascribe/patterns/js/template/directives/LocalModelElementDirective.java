@@ -4,7 +4,7 @@ import java.util.List;
 
 import net.sf.javascribe.api.AttribEntry;
 import net.sf.javascribe.api.CodeExecutionContext;
-import net.sf.javascribe.api.JasperUtils;
+import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.api.annotation.Plugin;
 import net.sf.javascribe.api.exception.JavascribeException;
 import net.sf.javascribe.patterns.js.template.parsing.DirectiveContext;
@@ -42,7 +42,7 @@ public class LocalModelElementDirective implements ElementDirective {
 			}
 		}
 
-		List<AttribEntry> attrs = JasperUtils.readParametersAsList(attribs, ctx.getProcessorContext());
+		List<AttribEntry> attrs = JavascribeUtils.readParametersAsList(attribs, ctx.getProcessorContext());
 		boolean hasDispatcher = false;
 		if (ctx.getExecCtx().getVariableType(DirectiveUtils.EVENT_DISPATCHER_FN_VAR)!=null) {
 			hasDispatcher = true;

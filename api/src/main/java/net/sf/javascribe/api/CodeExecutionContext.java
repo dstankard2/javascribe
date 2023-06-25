@@ -64,7 +64,7 @@ public class CodeExecutionContext {
 	}
 
 	public <T extends VariableType> T getType(Class<T> clazz,String name) throws JavascribeException {
-		return JasperUtils.getType(clazz, name, ctx);
+		return JavascribeUtils.getType(clazz, name, ctx);
 	}
 	
 	public String getVariableType(String var) {

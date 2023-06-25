@@ -1,6 +1,6 @@
 package net.sf.javascribe.patterns.js.page;
 
-import net.sf.javascribe.api.JasperUtils;
+import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.exception.JavascribeException;
 import net.sf.javascribe.api.types.ServiceOperation;
@@ -47,7 +47,7 @@ public class PageUtils {
 
 	public static PageModelType getPageModelType(String pageName,ProcessorContext ctx) throws JavascribeException {
 		String name = getPageModelTypeName(pageName);
-		return JasperUtils.getType(PageModelType.class, name, ctx);
+		return JavascribeUtils.getType(PageModelType.class, name, ctx);
 	}
 
 	public static void addModelAttribute(String pageName,String attrib,String type,ProcessorContext ctx) throws JavascribeException {

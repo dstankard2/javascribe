@@ -12,7 +12,7 @@ import org.jsoup.nodes.Attribute;
 import org.jsoup.nodes.Element;
 
 import net.sf.javascribe.api.CodeExecutionContext;
-import net.sf.javascribe.api.JasperUtils;
+import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.exception.JavascribeException;
 import net.sf.javascribe.api.types.ServiceOperation;
@@ -232,7 +232,7 @@ public class ElementParser implements DirectiveContext {
 			throw new JavascribeException("Couldn't invoke template '"+elementName+"' as there was no service '"+objRef+"' in the code execution context");
 		}
 		//String typeName = JasperUtils.getTypeForRef(objRef, dctx.getProcessorContext());
-		List<ServiceOperation> fns = JasperUtils.findRuleFromTypeAndRef(typeName+'.'+ruleName, ctx);
+		List<ServiceOperation> fns = JavascribeUtils.findRuleFromTypeAndRef(typeName+'.'+ruleName, ctx);
 		if ((fns==null) || (fns.size()==0)) {
 			throw new JavascribeException("Couldn't find template '"+elementName+"'");
 		} else if (fns.size()>1) {

@@ -5,7 +5,7 @@ import java.util.List;
 
 import net.sf.javascribe.api.BuildContext;
 import net.sf.javascribe.api.CodeExecutionContext;
-import net.sf.javascribe.api.JasperUtils;
+import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.api.exception.JavascribeException;
 import net.sf.javascribe.langsupport.java.JavaCode;
 import net.sf.javascribe.langsupport.java.types.ServiceLocator;
@@ -71,7 +71,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
 	@Override
 	public String getService(String locatorRef, String serviceName, CodeExecutionContext execCtx)
 			throws JavascribeException {
-		String typeName = JasperUtils.getUpperCamelName(serviceName);
+		String typeName = JavascribeUtils.getUpperCamelName(serviceName);
 		return locatorRef+".get"+typeName+"()";
 	}
 

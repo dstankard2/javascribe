@@ -10,7 +10,7 @@ import org.jboss.forge.roaster.model.source.MethodSource;
 
 import net.sf.javascribe.api.AttribEntry;
 import net.sf.javascribe.api.CodeExecutionContext;
-import net.sf.javascribe.api.JasperUtils;
+import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.exception.JavascribeException;
 import net.sf.javascribe.api.types.ServiceOperation;
@@ -127,7 +127,7 @@ public class JavaUtils {
 		if (typeName==null) {
 			throw new JavascribeException("Couldn't recognize service reference '"+ref+"'");
 		}
-		JavaServiceType type = JasperUtils.getType(JavaServiceType.class, typeName, ctx);
+		JavaServiceType type = JavascribeUtils.getType(JavaServiceType.class, typeName, ctx);
 		ret = type.declare(ref, execCtx);
 		execCtx.addVariable(ref, typeName);
 
@@ -151,10 +151,10 @@ public class JavaUtils {
 
 		if (op.getReturnType()!=null) {
 			String t = op.getReturnType();
-			JavaVariableType type = JasperUtils.getType(JavaVariableType.class, t, ctx);
+			JavaVariableType type = JavascribeUtils.getType(JavaVariableType.class, t, ctx);
 			if (type.getImport()!=null) cl.addImport(type.getImport());
 			if (t.indexOf("list/")==0) {
-				JavaVariableType eltType = JasperUtils.getType(JavaVariableType.class, t.substring(5), ctx);
+				JavaVariableType eltType = JavascribeUtils.getType(JavaVariableType.class, t.substring(5), ctx);
 				method.setReturnType("List<"+eltType.getClassName()+">");
 			} else {
 				method.setReturnType(type.getClassName());
@@ -162,7 +162,7 @@ public class JavaUtils {
 		}
 		for(String p : op.getParamNames()) {
 			String t = op.getParamType(p);
-			JavaVariableType type = JasperUtils.getType(JavaVariableType.class, t, ctx);
+			JavaVariableType type = JavascribeUtils.getType(JavaVariableType.class, t, ctx);
 			if (type.getImport()!=null) cl.addImport(type.getImport());
 			method.addParameter(type.getClassName(), p);
 		}
@@ -170,7 +170,7 @@ public class JavaUtils {
 	}
 
 	public static void addProperty(JavaClassSourceFile src,String name,String typeName,ProcessorContext ctx) throws JavascribeException {
-		JavaVariableType type = JasperUtils.getType(JavaVariableType.class, typeName, ctx);
+		JavaVariableType type = JavascribeUtils.getType(JavaVariableType.class, typeName, ctx);
 		src.addImport(type);
 		src.getSrc().addProperty(type.getClassName(), name);
 	}
@@ -273,9 +273,9 @@ public class JavaUtils {
 
 	public static ServiceOperation findRule(String rule,List<AttribEntry> params, ProcessorContext ctx, CodeExecutionContext execCtx) throws JavascribeException {
 		ServiceOperation op = null;
-		String obj = JasperUtils.getObjectName(rule);
-		String ruleName = JasperUtils.getRuleName(rule);
-		JavaServiceType type = JasperUtils.getTypeForSystemAttribute(JavaServiceType.class, obj, ctx);
+		String obj = JavascribeUtils.getObjectName(rule);
+		String ruleName = JavascribeUtils.getRuleName(rule);
+		JavaServiceType type = JavascribeUtils.getTypeForSystemAttribute(JavaServiceType.class, obj, ctx);
 		List<ServiceOperation> ops = type.getOperations(ruleName);
 
 		if (ops.size()==0) {
@@ -358,7 +358,7 @@ public class JavaUtils {
 		int i = listType.indexOf('/');
 		if (i>0) {
 			String eltTypeName = listType.substring(i+1);
-			JavaVariableType eltType = JasperUtils.getType(JavaVariableType.class, eltTypeName, ctx);
+			JavaVariableType eltType = JavascribeUtils.getType(JavaVariableType.class, eltTypeName, ctx);
 			ret = ret + "<";
 			if (eltType.getImport()!=null) {
 				ret = ret + eltType.getImport();

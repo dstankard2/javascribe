@@ -102,7 +102,8 @@ public class ProcessingUtil {
 		application.getApplicationLog().debug("Re-adding item "+id);
 		addItem(item, application);
 	}
-	
+
+	// Should this return a list of items that need to be reset?
 	public void removeItem(ApplicationData application, int id) {
 		ProcessingData pd = application.getProcessingData();
 		Item item = pd.getItem(id);

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.javascribe.api.ComponentProcessor;
-import net.sf.javascribe.api.JasperUtils;
+import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.annotation.Plugin;
 import net.sf.javascribe.api.exception.JavascribeException;
@@ -48,7 +48,7 @@ public class PageBuilderProcessor implements ComponentProcessor<PageBuilderCompo
 		if ((renderObj!=null) && (renderOp!=null)) {
 			String templatesTypeName = ctx.getSystemAttribute(renderObj);
 			
-			ModuleType templatesType = JasperUtils.getType(ModuleType.class, templatesTypeName, ctx);
+			ModuleType templatesType = JavascribeUtils.getType(ModuleType.class, templatesTypeName, ctx);
 			//f.importModule(Pair.of(templatesTypeName, templatesType.getWebPath()));
 			f.importModule(templatesType);
 			// Page function should take one and only one argument - the page.  It should also return a DOM element

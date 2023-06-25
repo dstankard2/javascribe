@@ -5,7 +5,7 @@ import java.io.InputStreamReader;
 import org.apache.commons.lang3.tuple.Pair;
 
 import net.sf.javascribe.api.CodeExecutionContext;
-import net.sf.javascribe.api.JasperUtils;
+import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.exception.JavascribeException;
 import net.sf.javascribe.api.resources.ApplicationFile;
@@ -54,10 +54,9 @@ public class TemplateFolderWatcher implements FolderWatcher {
 		ModuleSourceFile src = JavascriptUtils.getModuleSource(ctx);
 
 		ctx.addSystemAttribute(serviceRef, serviceName);
-		try {
-			folderType = JasperUtils.getType(ModuleType.class, serviceName, ctx);
+		folderType = JavascribeUtils.getType(ModuleType.class, serviceName, ctx);
+		if (folderType!=null) {
 			ctx.modifyVariableType(folderType);
-		} catch(JavascribeException e) {
 		}
 		
 		if (folderType==null) {

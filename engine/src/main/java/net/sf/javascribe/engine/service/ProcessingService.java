@@ -56,6 +56,7 @@ public class ProcessingService implements ProcessingContextOperations {
 		removedFiles.forEach(r -> {
 			if (r instanceof UserFile) {
 				userFilesRemoved.add((UserFile)r);
+				application.getUserFiles().remove(r.getPath());
 			} else if (r instanceof ComponentFile) {
 				ComponentFile c = (ComponentFile)r;
 				c.getComponentSet().getComponent().forEach(comp -> {

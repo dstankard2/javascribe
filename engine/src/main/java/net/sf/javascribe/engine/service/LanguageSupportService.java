@@ -11,15 +11,15 @@ import net.sf.javascribe.engine.ComponentDependency;
 public class LanguageSupportService {
 	
 	private Map<String,LanguageSupport> languages = new HashMap<>();
-	
-	private EngineResources engineResources;
+
+	private PluginService pluginService;
 	@ComponentDependency
-	public void setEngineResources(EngineResources r) {
-		this.engineResources = r;
+	public void setPluginService(PluginService s) {
+		this.pluginService = s;
 	}
-	
+
 	public void loadLanguageSupport() {
-		Set<Class<LanguageSupport>> langs = engineResources.getPlugins(LanguageSupport.class);
+		Set<Class<LanguageSupport>> langs = pluginService.findClassesThatExtend(LanguageSupport.class);
 		
 		langs.forEach(lang -> {
 			try {

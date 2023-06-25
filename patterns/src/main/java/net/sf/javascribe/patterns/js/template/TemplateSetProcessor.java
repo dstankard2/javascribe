@@ -3,7 +3,6 @@ package net.sf.javascribe.patterns.js.template;
 import net.sf.javascribe.api.ComponentProcessor;
 import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.annotation.Plugin;
-import net.sf.javascribe.api.config.Component;
 import net.sf.javascribe.api.exception.JavascribeException;
 import net.sf.javascribe.api.resources.ApplicationFolder;
 import net.sf.javascribe.api.resources.ApplicationResource;

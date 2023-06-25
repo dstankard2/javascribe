@@ -4,7 +4,7 @@ import java.util.List;
 
 import net.sf.javascribe.api.AttribEntry;
 import net.sf.javascribe.api.ComponentProcessor;
-import net.sf.javascribe.api.JasperUtils;
+import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.annotation.Plugin;
 import net.sf.javascribe.api.exception.JavascribeException;
@@ -27,10 +27,10 @@ public class PageModelProcessor implements ComponentProcessor<PageModel> {
 		}
 
 		String modelTypeName = info.getModelTypeName();
-		PageModelType modelType = JasperUtils.getType(PageModelType.class, modelTypeName, ctx);
+		PageModelType modelType = JavascribeUtils.getType(PageModelType.class, modelTypeName, ctx);
 
 		String attrs = comp.getProperties();
-		List<AttribEntry> entries = JasperUtils.readParametersAsList(attrs, ctx);
+		List<AttribEntry> entries = JavascribeUtils.readParametersAsList(attrs, ctx);
 		for(AttribEntry entry : entries) {
 			String name = entry.getName();
 			if (modelType.getAttributeType(name)!=null) {
