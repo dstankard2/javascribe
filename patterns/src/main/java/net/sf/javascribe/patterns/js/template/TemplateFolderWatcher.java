@@ -57,20 +57,6 @@ public class TemplateFolderWatcher implements FolderWatcher {
 		folderType = JavascribeUtils.getType(ModuleType.class, serviceName, ctx);
 		if (folderType!=null) {
 			ctx.modifyVariableType(folderType);
-		}
-		
-		if (folderType==null) {
-			String webPath = JavascriptUtils.getModulePath(ctx);
-			folderType = new ModuleType(serviceName,webPath, ExportedModuleType.CONST);
-			//folderType = new JavascriptServiceType(serviceName,true,ctx);
-			module = new StandardModuleSource(serviceName);
-			module.setExportType(ExportedModuleType.CONST);
-			src.addModule(module);
-			ctx.addVariableType(folderType);
-			DirectiveUtils.ensureIns(src);
-			DirectiveUtils.ensureRem(src);
-			DirectiveUtils.ensureInvokeRem(src);
-		} else {
 			module = (StandardModuleSource)src.getModule(serviceName);
 			if (module==null) {
 				module = new StandardModuleSource(serviceName);
@@ -81,6 +67,17 @@ public class TemplateFolderWatcher implements FolderWatcher {
 				DirectiveUtils.ensureRem(src);
 				DirectiveUtils.ensureInvokeRem(src);
 			}
+		} else {
+			String webPath = JavascriptUtils.getModulePath(ctx);
+			folderType = new ModuleType(serviceName,webPath, ExportedModuleType.CONST);
+			//folderType = new JavascriptServiceType(serviceName,true,ctx);
+			module = new StandardModuleSource(serviceName);
+			module.setExportType(ExportedModuleType.CONST);
+			src.addModule(module);
+			ctx.addVariableType(folderType);
+			DirectiveUtils.ensureIns(src);
+			DirectiveUtils.ensureRem(src);
+			DirectiveUtils.ensureInvokeRem(src);
 		}
 		
 		return Pair.of(folderType,module);

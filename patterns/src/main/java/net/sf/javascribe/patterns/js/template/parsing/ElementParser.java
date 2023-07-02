@@ -246,11 +246,15 @@ public class ElementParser implements DirectiveContext {
 			String htmlAttr = names.next();
 			String n = findLowerCamelFromHtml(htmlAttr);
 			String val = atts.get(htmlAttr);
-			JavascriptParser eval = new JavascriptParser(val,execCtx);
-			DirectiveUtils.populateImpliedVariables(eval);
-			JavascriptParsingResult result = eval.evalExpression();
-			String p = "(function() {try {return "+result.getCode()+";}catch(err) { return undefined; } })()";
-			params.put(n, p);
+			if (val!=null) {
+				JavascriptParser eval = new JavascriptParser(val,execCtx);
+				DirectiveUtils.populateImpliedVariables(eval);
+				JavascriptParsingResult result = eval.evalExpression();
+				String p = "(function() {try {return "+result.getCode()+";}catch(err) { return undefined; } })()";
+				params.put(n, p);
+//			} else {
+//				params.put(n, val)
+			}
 		}
 		JavascriptCode code = JavascriptUtils.callJavascriptOperation(dctx.getElementVarName(), objRef, fn, execCtx, params, true, false);
 		return code.getCodeText();

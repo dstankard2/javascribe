@@ -2,7 +2,7 @@ package net.sf.javascribe.patterns.js.template.directives;
 
 import java.util.List;
 
-import net.sf.javascribe.api.AttribEntry;
+import net.sf.javascribe.api.PropertyEntry;
 import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.api.annotation.Plugin;
@@ -23,11 +23,11 @@ public class LocalModelElementDirective implements ElementDirective {
 	@Override
 	public void generateCode(DirectiveContext ctx) throws JavascribeException {
 		String ref = ctx.getDomAttribute("ref");
-		String attribs = ctx.getDomAttribute("attribs");
+		String properties = ctx.getDomAttribute("properties");
 		CodeExecutionContext execCtx = ctx.getExecCtx();
 		
-		if ((attribs==null) || (attribs.trim().length()==0)) {
-			throw new JavascribeException("Directive js-local-model requires a 'attribs' attribute");
+		if ((properties==null) || (properties.trim().length()==0)) {
+			throw new JavascribeException("Directive js-local-model requires a 'properties' attribute");
 		}
 		if (DirectiveUtils.getPageName(ctx)!=null) {
 			throw new JavascribeException("You can't use a local model on a page template or page-aware template");
@@ -42,7 +42,7 @@ public class LocalModelElementDirective implements ElementDirective {
 			}
 		}
 
-		List<AttribEntry> attrs = JavascribeUtils.readParametersAsList(attribs, ctx.getProcessorContext());
+		List<PropertyEntry> attrs = JavascribeUtils.readParametersAsList(properties, ctx.getProcessorContext());
 		boolean hasDispatcher = false;
 		if (ctx.getExecCtx().getVariableType(DirectiveUtils.EVENT_DISPATCHER_FN_VAR)!=null) {
 			hasDispatcher = true;
@@ -58,7 +58,7 @@ public class LocalModelElementDirective implements ElementDirective {
 		objCode.append("var _obj = {\n");
 
 		boolean first = true;
-		for(AttribEntry att : attrs) {
+		for(PropertyEntry att : attrs) {
 			String name = att.getName();
 			if (first) first = false;
 			else objCode.append(',');

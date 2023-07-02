@@ -72,7 +72,6 @@ public class ProcessorContextImpl implements ProcessorContext {
 		return application.getSystemAttribute(name);
 	}
 
-	
 	@Override
 	public void addVariableType(VariableType variableType) throws JavascribeException {
 		if (lang==null) {
@@ -164,7 +163,7 @@ public class ProcessorContextImpl implements ProcessorContext {
 	}
 
 	@Override
-	public void addFolderWatcher(String folderPath, FolderWatcher folderWatcher) throws JavascribeException {
+	public void addFolderWatcher(String folderPath, FolderWatcher folderWatcher) {
 		originateFolderWatcher(folderPath, folderWatcher);
 	}
 
@@ -245,7 +244,7 @@ public class ProcessorContextImpl implements ProcessorContext {
 		ops.addComponent(id,  component, configs, folder, application);
 	}
 
-	private void originateFolderWatcher(String folderPath, FolderWatcher folderWatcher) throws JavascribeException {
+	private void originateFolderWatcher(String folderPath, FolderWatcher folderWatcher) {
 		ops.addFolderWatcher(id, folderPath, folderWatcher, configs, folder, application);
 	}
 	

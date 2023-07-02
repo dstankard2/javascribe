@@ -6,11 +6,13 @@ import net.sf.javascribe.api.BuildComponentProcessor;
 import net.sf.javascribe.api.BuildContext;
 import net.sf.javascribe.api.config.BuildComponent;
 import net.sf.javascribe.api.exception.JavascribeException;
+import net.sf.javascribe.engine.ComponentContainer;
 import net.sf.javascribe.engine.EngineException;
 import net.sf.javascribe.engine.data.ApplicationData;
 import net.sf.javascribe.engine.data.files.ApplicationFolderImpl;
 import net.sf.javascribe.engine.data.files.DefaultBuildContext;
 import net.sf.javascribe.engine.service.RegisteredBuildComponentPattern;
+import net.sf.javascribe.engine.util.ConfigUtil;
 
 public class BuildComponentItem implements Item {
 
@@ -62,7 +64,7 @@ public class BuildComponentItem implements Item {
 		this.buildProcessorCtx = new BuildProcessorContextImpl(
 			itemId, folder, configs, log, application
 		);
-		
+
 		if (pattern==null) {
 			this.buildContext = new DefaultBuildContext(buildProcessorCtx);
 		} else {
@@ -76,10 +78,16 @@ public class BuildComponentItem implements Item {
 				processor.initialize(buildComp, buildProcessorCtx);
 			} catch(JavascribeException e) {
 				success = false;
-				this.log.error("Exception in build initialization", e);
+				this.log.error(e.getMessage(), e);
 			}
+			if (success) {
+				ConfigUtil configUtil = ComponentContainer.get().getComponent(ConfigUtil.class);
+				success = configUtil.populateConfigurations(buildComp, log, configs);
+			}
+
 			this.buildContext = processor.createBuildContext();
 		}
+		folder.setBuildComponent(this);
 
 		return success;
 	}
@@ -92,7 +100,7 @@ public class BuildComponentItem implements Item {
 				processor.generateBuild();
 			} catch(JavascribeException e) {
 				success = false;
-				this.log.error("Exception in build initialization", e);
+				this.log.error(e.getMessage(), e);
 			}
 		}
 

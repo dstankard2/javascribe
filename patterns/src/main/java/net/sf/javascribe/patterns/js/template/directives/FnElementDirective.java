@@ -2,7 +2,7 @@ package net.sf.javascribe.patterns.js.template.directives;
 
 import java.util.List;
 
-import net.sf.javascribe.api.AttribEntry;
+import net.sf.javascribe.api.PropertyEntry;
 import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.api.annotation.Plugin;
@@ -50,8 +50,8 @@ public class FnElementDirective implements ElementDirective {
 			code.append("function "+name+"(");
 			if (params.trim().length()>0) {
 				boolean first = true;
-				List<AttribEntry> atts = JavascribeUtils.readParametersAsList(params,ctx.getProcessorContext());
-				for(AttribEntry att : atts) {
+				List<PropertyEntry> atts = JavascribeUtils.readParametersAsList(params,ctx.getProcessorContext());
+				for(PropertyEntry att : atts) {
 					if (first) first = false;
 					else code.append(',');
 					code.append(att.getName());

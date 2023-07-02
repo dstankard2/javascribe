@@ -2,6 +2,7 @@ package net.sf.javascribe.engine.data.processing;
 
 import java.util.Map;
 
+import net.sf.javascribe.api.exception.JavascribeException;
 import net.sf.javascribe.api.resources.FileProcessor;
 import net.sf.javascribe.engine.data.ApplicationData;
 import net.sf.javascribe.engine.data.files.ApplicationFolderImpl;
@@ -23,6 +24,7 @@ public class FileProcessorEntry extends ProcessableBase {
 			ApplicationData application, Map<String,String> configs, 
 			ProcessingContextOperations ops, ApplicationFolderImpl folder) {
 		this.name = fileProcessor.getName();
+		this.fileProcessor = fileProcessor;
 		this.originatorId = originatorId;
 		this.application = application;
 		this.configs = configs;
@@ -52,7 +54,14 @@ public class FileProcessorEntry extends ProcessableBase {
 
 	@Override
 	public boolean process() {
-		return false;
+		boolean success = true;
+		try {
+			fileProcessor.process();
+		} catch(JavascribeException e) {
+			success = false;
+			this.log.error(e.getMessage(), e);
+		}
+		return success;
 	}
 
 	@Override

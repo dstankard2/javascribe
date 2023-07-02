@@ -44,6 +44,8 @@ public class PatternPriority {
 
 	public static final int SERVLET_MODULE = 38750;
 
+	public static final int SCHEDULED_JOB = 40000;
+
 	public static final int SERVLET_ENDPOINT = 40000;
 
 	public static final int SERVLET_ENDPOINT_BUILDER = 50000;

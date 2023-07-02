@@ -89,24 +89,35 @@ public class WorkspaceManager {
 	public void scanApplicationDir(ApplicationData application, boolean firstRun, boolean onlyRun) {
 		List<WatchedResource> removedFiles = folderScannerService.findFilesRemoved(application);
 		List<UserFile> removedUserFiles = new ArrayList<>();
+		List<ComponentFile> removedComponentFiles = new ArrayList<>();
 		boolean filesChanged = false;
-		
+		long start = System.currentTimeMillis();
+
+		if (removedFiles.size()>0) {
+			filesChanged = true;
+			if ((!firstRun) && (!onlyRun)) {
+				application.getApplicationLog().info("*** Scanned application '"+application.getName()+"' and found changes ***");
+			}
+		}
+
 		// Remove user files
 		for(WatchedResource res : removedFiles) {
 			if (res instanceof UserFile) {
 				removedUserFiles.add((UserFile)res);
 			}
+			else if (res instanceof ComponentFile) {
+				removedComponentFiles.add((ComponentFile)res);
+			}
 		}
 		
-		if ((removedFiles.size()>0) ) {
-			filesChanged = true;
-			// evaluate workspace files that have been removed.
-			processingService.filesRemoved(removedFiles, application);
+		if (removedComponentFiles.size() > 0) {
+			processingService.removeComponentFiles(removedComponentFiles, application);
+		}
+		if (removedUserFiles.size() > 0) {
+			outputService.deleteRemovedUserFiles(removedUserFiles, application);
+			processingService.removeUserFiles(removedUserFiles, application);
+		}
 
-			// Application's removedSourceFiles should be populated.
-			outputService.deleteRemovedFiles(removedUserFiles, application);
-		}
-		
 		List<WatchedResource> addedFiles = folderScannerService.findFilesAdded(application);
 
 		// Track user files that are being added so that they can be written to output.
@@ -114,12 +125,6 @@ public class WorkspaceManager {
 		
 		if (addedFiles.size()>0) {
 			filesChanged = true;
-		}
-		
-		if (filesChanged) {
-			if ((!firstRun) && (!onlyRun)) {
-				application.getApplicationLog().info("*** Scanned application '"+application.getName()+"' and found changes ***");
-			}
 		}
 		
 		for(WatchedResource f : addedFiles) {
@@ -160,6 +165,9 @@ public class WorkspaceManager {
 			outputService.writeSourceFiles(application);
 		}
 
+		if (filesChanged) {
+			application.getApplicationLog().info("Application scan took "+(System.currentTimeMillis() - start)+" milliseconds");
+		}
 		// Output to log
 		processingService.outputPendingLogMessages(application);
 

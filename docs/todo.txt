@@ -5,4 +5,9 @@ When a component modifies a type that wasn't added this run, mark it stale and r
 	Is this necessary?
 
 HTML Template Parser returns a syntax error when template is empty.
+Task: Create ContextBase for ProcessorContextImpl and BuildProcessorContextImpl
+Bug: When a processed build is modified by a component, the build must be re-generated.
+Bug: There is an extra scan (added files still found?) when a workspace directory is renamed.
+Bug: When a component modifies a build that is already processed, the build needs to be reset
+	Most likely items in the build's folder should be reset too.
 

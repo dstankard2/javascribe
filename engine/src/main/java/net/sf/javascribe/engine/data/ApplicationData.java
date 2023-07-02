@@ -15,6 +15,7 @@ import lombok.Setter;
 import net.sf.javascribe.api.SourceFile;
 import net.sf.javascribe.api.exception.JavascribeException;
 import net.sf.javascribe.api.plugin.ProcessorLogMessage;
+import net.sf.javascribe.api.types.ListType;
 import net.sf.javascribe.api.types.VariableType;
 import net.sf.javascribe.engine.ComponentContainer;
 import net.sf.javascribe.engine.data.files.ApplicationFolderImpl;
@@ -73,6 +74,18 @@ public class ApplicationData {
 				throw new JavascribeException("The programming language '"+lang+"' is not supported");
 			}
 			this.baseTypes.put(lang, baseTypes);
+		}
+		if (name.startsWith("list/")) {
+			ListType listType = (ListType)baseTypes.get("list");
+			if (listType==null) {
+				throw new JavascribeException("Couldn't find a list type for language "+lang);
+			}
+			String eltTypeName = name.substring(5);
+			VariableType eltType = getType(lang, eltTypeName);
+			if (eltType==null) {
+				throw new JavascribeException("Couldn't find list element type "+eltTypeName);
+			}
+			return listType.getListTypeWithElementTypName(eltType);
 		}
 		ret = baseTypes.get(name);
 		if (ret==null) {

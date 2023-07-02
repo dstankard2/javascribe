@@ -21,7 +21,7 @@ public class EngineRun {
 		JavascribeAgent agent = null;
 		
 		HashMap<String,String> props = new HashMap<>();
-		props.put("debug", "true");
+		props.put("debug", "false");
 		props.put("applicationDir", "C:\\workspaces\\appDefs\\NewsList");
 		props.put("singleAppMode", "true");
 		props.put("outputDir", "c:\\build\\NewsList");

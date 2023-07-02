@@ -13,6 +13,7 @@
 
 	<modules>
 		<module>api</module>
+		<module>patterns-user-api</module>
 		<module>javascript-support</module>
 		<module>java-support</module>
 		<module>engine</module>

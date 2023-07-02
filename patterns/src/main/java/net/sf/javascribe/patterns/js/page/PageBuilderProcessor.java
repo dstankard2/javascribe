@@ -72,11 +72,11 @@ public class PageBuilderProcessor implements ComponentProcessor<PageBuilderCompo
 		for(PageFnDef def : pageInfo.getFunctions()) {
 			String name = def.getName();
 			if ((def.getEvent()!=null) && (def.getParams().size()>0)) {
-				throw new JasperException("A page function with an event may not have parameters");
+				throw new JavascribeException("A page function with an event may not have parameters");
 			}
 			if (name!=null) {
 				if (fnNames.contains(name)) {
-					throw new JasperException("Found duplicate page functions called '"+name+"'");
+					throw new JavascribeException("Found duplicate page functions called '"+name+"'");
 				}
 				fnNames.add(name);
 				code.append("function _"+name+"(");

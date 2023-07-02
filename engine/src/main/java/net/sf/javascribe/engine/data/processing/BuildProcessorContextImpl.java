@@ -1,5 +1,7 @@
 package net.sf.javascribe.engine.data.processing;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import net.sf.javascribe.api.ApplicationContext;
@@ -11,6 +13,7 @@ import net.sf.javascribe.api.logging.Log;
 import net.sf.javascribe.api.resources.ApplicationFolder;
 import net.sf.javascribe.api.resources.FolderWatcher;
 import net.sf.javascribe.engine.ComponentContainer;
+import net.sf.javascribe.engine.StaleDependencyException;
 import net.sf.javascribe.engine.data.ApplicationData;
 import net.sf.javascribe.engine.data.files.ApplicationFolderImpl;
 import net.sf.javascribe.engine.service.ProcessingContextOperations;
@@ -41,14 +44,23 @@ public class BuildProcessorContextImpl implements BuildProcessorContext {
 
 	@Override
 	public void addSourceFile(SourceFile file) {
-		// TODO Auto-generated method stub
-		
+		application.getAddedSourceFiles().put(file.getPath(), file);
+		originateSourceFile(file);
 	}
 
 	@Override
 	public SourceFile getSourceFile(String path) {
-		// TODO Auto-generated method stub
-		return null;
+		SourceFile ret = application.getSourceFiles().get(path);
+		if (ret==null) {
+			ret = application.getAddedSourceFiles().get(path);
+		} else {
+			this.originateSourceFile(ret);
+			throw new StaleDependencyException(itemId);
+		}
+		if (ret!=null) {
+			originateSourceFile(ret);
+		}
+		return ret;
 	}
 
 	@Override
@@ -95,6 +107,18 @@ public class BuildProcessorContextImpl implements BuildProcessorContext {
 	@Override
 	public void addFolderWatcher(String path, FolderWatcher folderWatcher) {
 		ops.addFolderWatcher(itemId, path, folderWatcher, configs, folder, application);
+	}
+
+	private void originateSourceFile(SourceFile sourceFile) {
+		String path = sourceFile.getPath();
+		List<Integer> ids = application.getDependencyData().getSrcDependencies().get(path);
+		if (ids==null) {
+			ids = new ArrayList<>();
+			application.getDependencyData().getSrcDependencies().put(path, ids);
+		}
+		if (!ids.contains(itemId)) {
+			ids.add(itemId);
+		}
 	}
 
 }

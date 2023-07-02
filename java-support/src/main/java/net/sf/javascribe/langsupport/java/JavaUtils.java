@@ -8,7 +8,7 @@ import org.jboss.forge.roaster.model.Type;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
 
-import net.sf.javascribe.api.AttribEntry;
+import net.sf.javascribe.api.PropertyEntry;
 import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.api.ProcessorContext;
@@ -271,7 +271,7 @@ public class JavaUtils {
 		return ret;
 	}
 
-	public static ServiceOperation findRule(String rule,List<AttribEntry> params, ProcessorContext ctx, CodeExecutionContext execCtx) throws JavascribeException {
+	public static ServiceOperation findRule(String rule,List<PropertyEntry> params, ProcessorContext ctx, CodeExecutionContext execCtx) throws JavascribeException {
 		ServiceOperation op = null;
 		String obj = JavascribeUtils.getObjectName(rule);
 		String ruleName = JavascribeUtils.getRuleName(rule);
@@ -288,7 +288,7 @@ public class JavaUtils {
 				for(String param : o.getParamNames()) {
 					if (execCtx.getVariableType(param)!=null) continue;
 					boolean found = false;
-					for(AttribEntry ex : params) {
+					for(PropertyEntry ex : params) {
 						if (ex.getName().equals(param)) {
 							found = true;
 							break;

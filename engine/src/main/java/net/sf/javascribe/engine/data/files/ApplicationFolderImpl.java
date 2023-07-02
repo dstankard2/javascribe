@@ -263,6 +263,10 @@ public class ApplicationFolderImpl implements WatchedResource,ApplicationFolder 
 		return buildComponent;
 	}
 	
+	public void setBuildComponent(BuildComponentItem item) {
+		buildComponent = item;
+	}
+	
 	public BuildComponentItem getCurrentBuildComponent() {
 		BuildComponentItem ret = null;
 		

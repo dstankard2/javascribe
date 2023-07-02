@@ -46,11 +46,12 @@ public abstract class ManagerTest extends ContainerTest {
 		return application;
 	}
 	
-	protected UserFile createUserFile(String path, String content) throws IOException {
+	protected UserFile createUserFile(String name, String path, String content) throws IOException {
 		StringBufferInputStream in = new StringBufferInputStream(content);
 		UserFile uf = Mockito.mock(UserFile.class);
 		Mockito.when(uf.getPath()).thenReturn(path);
 		Mockito.when(uf.getInputStream()).thenReturn(in);
+		Mockito.when(uf.getName()).thenReturn(name);
 		return uf;
 	}
 

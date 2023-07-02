@@ -15,13 +15,27 @@ import net.sf.javascribe.engine.data.files.UserFile;
 
 public class OutputService {
 
-	public void deleteRemovedFiles(List<UserFile> removedUserFiles, ApplicationData application) {
+	private void checkDirectoryForDelete(File rootDirectory, File dir) {
+		if (dir==rootDirectory) return;
+		for(File file : dir.listFiles()) {
+			if (file.isDirectory()) {
+				checkDirectoryForDelete(rootDirectory, file);
+			}
+		}
+		if ((dir.listFiles()==null) || (dir.listFiles().length==0)) {
+			dir.delete();
+			// We won't delete the empty parent directory yet, 
+			// because I don't want to accidentally delete my whole hard drive
+		}
+	}
+	public void deleteRemovedUserFiles(List<UserFile> removedUserFiles, ApplicationData application) {
 		File dir = application.getOutputDirectory();
 		
 		removedUserFiles.forEach(uf -> {
 			File f = new File(dir, uf.getPath());
 			if (f.exists()) {
 				f.delete();
+				checkDirectoryForDelete(dir, f.getParentFile());
 			}
 			application.getUserFiles().remove(uf.getPath());
 		});

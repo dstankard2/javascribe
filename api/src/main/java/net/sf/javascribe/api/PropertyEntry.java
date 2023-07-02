@@ -2,13 +2,13 @@ package net.sf.javascribe.api;
 
 import net.sf.javascribe.api.types.VariableType;
 
-public class AttribEntry {
+public class PropertyEntry {
 
 	private String name;
 	private VariableType type;
 	private boolean originator = false;
 
-	public AttribEntry(String name,VariableType type,boolean originator) {
+	public PropertyEntry(String name,VariableType type,boolean originator) {
 		super();
 		this.name = name;
 		this.type = type;

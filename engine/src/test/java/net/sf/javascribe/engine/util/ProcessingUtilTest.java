@@ -6,12 +6,14 @@ import org.testng.annotations.Test;
 
 import net.sf.javascribe.engine.ApplicationBuilder;
 import net.sf.javascribe.engine.FolderUtil;
+import net.sf.javascribe.engine.ItemUtil;
 import net.sf.javascribe.engine.TestBuildComponent;
 import net.sf.javascribe.engine.TestComponent;
 import net.sf.javascribe.engine.data.ApplicationData;
 import net.sf.javascribe.engine.data.files.ApplicationFolderImpl;
 import net.sf.javascribe.engine.data.processing.BuildComponentItem;
 import net.sf.javascribe.engine.data.processing.ComponentItem;
+import net.sf.javascribe.engine.data.processing.Item;
 import net.sf.javascribe.engine.data.processing.ProcessingState;
 
 public class ProcessingUtilTest {
@@ -64,7 +66,17 @@ public class ProcessingUtilTest {
 	
 	@Test
 	public void addItem() {
+		ApplicationFolderImpl folder = FolderUtil.createMockFolder("/");
+		TestComponent testComp = new TestComponent();
+
+		ApplicationData application = ApplicationBuilder.create()
+				.rootFolder(folder)
+				.addComponentItem(testComp, true)
+				.build();
 		
+		Item item = ItemUtil.createComponentItem(testComp, application);
+		processingUtil.addItem(item, application);
+		System.out.println("hi");
 	}
 
 }

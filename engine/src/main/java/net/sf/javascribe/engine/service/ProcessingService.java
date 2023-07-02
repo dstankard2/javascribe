@@ -1,6 +1,5 @@
 package net.sf.javascribe.engine.service;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +16,6 @@ import net.sf.javascribe.engine.data.ProcessingData;
 import net.sf.javascribe.engine.data.files.ApplicationFolderImpl;
 import net.sf.javascribe.engine.data.files.ComponentFile;
 import net.sf.javascribe.engine.data.files.UserFile;
-import net.sf.javascribe.engine.data.files.WatchedResource;
 import net.sf.javascribe.engine.data.processing.BuildComponentItem;
 import net.sf.javascribe.engine.data.processing.ComponentItem;
 import net.sf.javascribe.engine.data.processing.FileProcessorEntry;
@@ -48,32 +46,25 @@ public class ProcessingService implements ProcessingContextOperations {
 		this.logUtil = u;
 	}
 
-	// Modify processing data for files that have been removed.
-	// When source files are removed, add them to the application's removed source files.
-	public void filesRemoved(List<WatchedResource> removedFiles, ApplicationData application) {
-		List<UserFile> userFilesRemoved = new ArrayList<>();
-		
-		removedFiles.forEach(r -> {
-			if (r instanceof UserFile) {
-				userFilesRemoved.add((UserFile)r);
-				application.getUserFiles().remove(r.getPath());
-			} else if (r instanceof ComponentFile) {
-				ComponentFile c = (ComponentFile)r;
-				c.getComponentSet().getComponent().forEach(comp -> {
-					if (comp instanceof BuildComponent) {
-						BuildComponentItem item = processingUtil.findItemForBuildComponent(application, (BuildComponent)comp);
-						processingUtil.removeItem(application, item.getItemId());
-					} else {
-						ComponentItem item = processingUtil.findItemForComponent(application, comp);
-						processingUtil.removeItem(application, item.getItemId());
-					}
-				});
-			} else {
-				// nothing to do for javascribe.properties or systemAttributes.properties
-			}
+	public void removeComponentFiles(List<ComponentFile> componentFiles, ApplicationData application) {
+		componentFiles.forEach(cf -> {
+			cf.getComponentSet().getComponent().forEach(comp -> {
+				if (comp instanceof BuildComponent) {
+					BuildComponentItem item = processingUtil.findItemForBuildComponent(application, (BuildComponent)comp);
+					processingUtil.removeItem(application, item.getItemId());
+				} else {
+					ComponentItem item = processingUtil.findItemForComponent(application, comp);
+					processingUtil.removeItem(application, item.getItemId());
+				}
+			});
 		});
-		
-		resetFolderWatchersForFiles(application, userFilesRemoved);
+	}
+
+	public void removeUserFiles(List<UserFile> userFiles, ApplicationData application) {
+		userFiles.forEach(uf -> {
+			application.getUserFiles().remove(uf.getPath());
+		});
+		resetFolderWatchersForFiles(application, userFiles);
 	}
 
 	// For added/removed user files, check folder watchers to see if user files apply to
@@ -85,8 +76,7 @@ public class ProcessingService implements ProcessingContextOperations {
 		for(FolderWatcherEntry w : watchers) {
 			for (UserFile file : userFiles) {
 				if (file.getPath().startsWith(w.getPath())) {
-					processingUtil.removeItem(application, w.getItemId());
-					this.addFolderWatcher(w, application);
+					processingUtil.resetItem(application, w.getItemId());
 				}
 			}
 		}
@@ -165,7 +155,7 @@ public class ProcessingService implements ProcessingContextOperations {
 				pd.getBuildsToInit().add(i);
 				application.setState(ProcessingState.ERROR);
 			} else {
-				i.setState(ProcessingState.INITIALIZED);
+				i.setState(ProcessingState.SUCCESS);
 				pd.getBuildsProcessed().add(i);
 				error = !handleAddedItems(application);
 			}
@@ -197,10 +187,6 @@ public class ProcessingService implements ProcessingContextOperations {
 
 	public boolean handleAddedItems(ApplicationData application) {
 		return processingUtil.handleAddedItems(application);
-	}
-
-	public void addFolderWatcher(FolderWatcherEntry watcher, ApplicationData application) {
-		processingUtil.addItem(watcher, application);
 	}
 
 	public void addItem(ApplicationData application, Item item) {

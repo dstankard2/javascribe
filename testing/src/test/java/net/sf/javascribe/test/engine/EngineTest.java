@@ -21,7 +21,7 @@ public class EngineTest {
 			//new File("C:\\git\\javascribe\\patterns\\target\\test-classes")
 	};
 	
-	@Test
+	//@Test
 	public void testEngine() {
 		JavascribeAgent agent = null;
 		

@@ -9,7 +9,8 @@ public class FolderWatchingProcessor implements ComponentProcessor<FolderWatchin
 	@Override
 	public void process(FolderWatchingPattern component, ProcessorContext ctx) throws JavascribeException {
 		String path = component.getPath();
-		FirstFolderWatcher watcher = new FirstFolderWatcher();
+		String name = component.getName();
+		FirstFolderWatcher watcher = new FirstFolderWatcher(name);
 		ctx.addFolderWatcher(path, watcher);
 	}
 

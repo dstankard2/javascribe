@@ -8,22 +8,45 @@ import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.exception.JavascribeException;
 import net.sf.javascribe.api.resources.ApplicationFile;
 import net.sf.javascribe.api.resources.FolderWatcher;
-import net.sf.javascribe.langsupport.java.types.JavaVariableType;
-import net.sf.javascribe.langsupport.java.types.impl.JavaDataObjectType;
+import net.sf.javascribe.api.types.ServiceOperation;
+import net.sf.javascribe.langsupport.java.types.impl.JavaServiceType;
 
 public class FirstFolderWatcher implements FolderWatcher {
+	String typeName = null;
+	public FirstFolderWatcher(String name) {
+		this.typeName = name;
+	}
 
 	@Override
 	public void process(ProcessorContext ctx, ApplicationFile changedFile) throws JavascribeException {
+		JavaServiceType type = null;
+		String filename = changedFile.getName();
+		int index = filename.indexOf('.');
+		String rulename = filename.substring(0, index);
+		String im = "pkg."+typeName;
+
 		ctx.setLanguageSupport("Java8");
-		JavaDataObjectType type = null;
-		
-		type = JavascribeUtils.getType(JavaDataObjectType.class, "TestDataObject", ctx);
+
+		type = JavascribeUtils.getType(JavaServiceType.class, typeName, ctx);
+		if (type==null) {
+			type = new JavaServiceType(typeName, im, ctx.getBuildContext());
+			String attrib = JavascribeUtils.getLowerCamelName(typeName);
+			ctx.addSystemAttribute(attrib, typeName);
+			ctx.addVariableType(type);
+		}
+
+		ServiceOperation op = new ServiceOperation(rulename);
+		type.addOperation(op);
+		ctx.modifyVariableType(type);
+
+		/*
+		type = JavascribeUtils.getType(JavaDataObjectType.class, name, ctx);
 		if (type == null) {
-			type = new JavaDataObjectType("TestDataObject", "import", ctx.getBuildContext());
+			type = new JavaDataObjectType(name, "import", ctx.getBuildContext());
 			type.addProperty("name", "string");
 			ctx.addVariableType(type);
 		}
+		*/
 
 		StringBuilder contents = new StringBuilder();
 
@@ -50,3 +73,4 @@ public class FirstFolderWatcher implements FolderWatcher {
 	}
 
 }
+

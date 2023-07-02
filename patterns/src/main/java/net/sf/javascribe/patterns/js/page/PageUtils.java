@@ -50,7 +50,7 @@ public class PageUtils {
 		return JavascribeUtils.getType(PageModelType.class, name, ctx);
 	}
 
-	public static void addModelAttribute(String pageName,String attrib,String type,ProcessorContext ctx) throws JavascribeException {
+	public static void addModelProperty(String pageName,String attrib,String type,ProcessorContext ctx) throws JavascribeException {
 		PageModelType t = getPageModelType(pageName,ctx);
 		t.addAttribute(attrib, type);
 	}

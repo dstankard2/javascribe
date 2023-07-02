@@ -98,18 +98,27 @@ public class ProcessingUtil {
 
 		if (item==null) return;
 
-		removeItem(application, id);
-		application.getApplicationLog().debug("Re-adding item "+id);
-		addItem(item, application);
+		boolean reAdd = removeItem(application, id);
+		if (reAdd) {
+			application.getApplicationLog().debug("Re-adding item "+id);
+			addItem(item, application);
+		}
 	}
 
+	// Returns: should this item be re-added (in the case of reset)?
 	// Should this return a list of items that need to be reset?
-	public void removeItem(ApplicationData application, int id) {
+	public boolean removeItem(ApplicationData application, int id) {
 		ProcessingData pd = application.getProcessingData();
+		boolean ret = true;
 		Item item = pd.getItem(id);
-		if (item==null) return;
+		if (item==null) {
+			return false;
+		}
 		Set<Integer> itemsToReset = new HashSet<>();
 		Set<Integer> itemsToRemove = new HashSet<>();
+		if (item instanceof FolderWatcherEntry) {
+			application.getApplicationLog().debug("Removing a folder watcher");
+		}
 		
 		BuildComponentItem buildItem = (item instanceof BuildComponentItem) 
 				? (BuildComponentItem)item : null;
@@ -119,15 +128,15 @@ public class ProcessingUtil {
 		// Remove this item from the application's item list
 		application.getProcessingData().getAllItems().remove(item);
 
-		// Remove from toProcess and processed with that itemId
+		// Remove from toProcess and processed with that itemId or originatorId
 		List<Processable> processables = application.getProcessingData().getToProcess().stream()
 				.filter(proc -> {
-					return proc.getItemId()==id;
+					return proc.getItemId()==id || proc.getOriginatorId()==id;
 				}).toList();
 		application.getProcessingData().getToProcess().removeAll(processables);
 		processables = application.getProcessingData().getProcessed().stream()
 				.filter(proc -> {
-					return proc.getItemId()==id;
+					return proc.getItemId()==id || proc.getOriginatorId()==id;
 				}).toList();
 		application.getProcessingData().getProcessed().removeAll(processables);
 
@@ -210,11 +219,17 @@ public class ProcessingUtil {
 		itemsToRemove.forEach(i -> {
 			removeItem(application, i);
 		});
+		
+		// If we're resetting the originator, we don't re-add this one
+		if (itemsToReset.contains(item.getOriginatorId())) {
+			ret = false;
+		}
+		
 		// Reset all items in itemsToReset
 		itemsToReset.forEach(i -> {
 			resetItem(application, i);
 		});
-		
+		return ret;
 	}
 	
 	// After a processable has been processed or a folder watcher has been handled, 
@@ -233,8 +248,10 @@ public class ProcessingUtil {
 		application.getAddedFileProcessors().clear();
 		
 		List<FolderWatcherEntry> watchers = new ArrayList<>();
-		watchers.addAll(application.getAddedFolderWatchers());
-		application.getAddedFolderWatchers().clear();
+		if (application.getAddedFolderWatchers().size()>0) {
+			watchers.addAll(application.getAddedFolderWatchers());
+			application.getAddedFolderWatchers().clear();
+		}
 		
 		for(FolderWatcherEntry e : watchers) {
 			addItem(e, application);

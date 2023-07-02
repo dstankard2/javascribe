@@ -66,5 +66,10 @@ public class HandwrittenModule extends Component {
 		this.exportType = exportType;
 	}
 
+	@Override
+	public String getComponentName() {
+		return "JavascriptModule[name=\""+name+"\"]";
+	}
+	
 }
 

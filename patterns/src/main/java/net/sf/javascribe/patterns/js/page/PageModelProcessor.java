@@ -2,7 +2,7 @@ package net.sf.javascribe.patterns.js.page;
 
 import java.util.List;
 
-import net.sf.javascribe.api.AttribEntry;
+import net.sf.javascribe.api.PropertyEntry;
 import net.sf.javascribe.api.ComponentProcessor;
 import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.api.ProcessorContext;
@@ -29,16 +29,19 @@ public class PageModelProcessor implements ComponentProcessor<PageModel> {
 		String modelTypeName = info.getModelTypeName();
 		PageModelType modelType = JavascribeUtils.getType(PageModelType.class, modelTypeName, ctx);
 
-		String attrs = comp.getProperties();
-		List<AttribEntry> entries = JavascribeUtils.readParametersAsList(attrs, ctx);
-		for(AttribEntry entry : entries) {
+		String properties = comp.getProperties();
+		List<PropertyEntry> entries = JavascribeUtils.readParametersAsList(properties, ctx);
+		for(PropertyEntry entry : entries) {
 			String name = entry.getName();
+			if (entry.getType()==null) {
+				throw new JavascribeException("Couldn't find type for property "+name);
+			}
 			if (modelType.getAttributeType(name)!=null) {
 				if (!modelType.getAttributeType(name).equals(entry.getType().getName())) {
 					throw new JavascribeException("Found inconsistent types for model attribute ");
 				}
 			} else {
-				PageUtils.addModelAttribute(pageName, name, entry.getType().getName(), ctx);
+				PageUtils.addModelProperty(pageName, name, entry.getType().getName(), ctx);
 			}
 		}
 	}

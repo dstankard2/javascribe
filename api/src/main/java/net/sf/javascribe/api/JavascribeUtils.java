@@ -85,8 +85,8 @@ public class JavascribeUtils {
 	 * @return
 	 * @throws JavascribeException
 	 */
-	public static List<AttribEntry> readParametersAsList(String paramString,ProcessorContext ctx) throws JavascribeException {
-		List<AttribEntry> ret = new ArrayList<>();
+	public static List<PropertyEntry> readParametersAsList(String paramString,ProcessorContext ctx) throws JavascribeException {
+		List<PropertyEntry> ret = new ArrayList<>();
 		
 		paramString = paramString.trim();
 		if (paramString.length()==0) return ret;
@@ -110,7 +110,7 @@ public class JavascribeUtils {
 					type = listType.getListTypeWithElementTypName(elementType);
 				}
 				ctx.addSystemAttribute(name, typeName);
-				ret.add(new AttribEntry(name,type,true));
+				ret.add(new PropertyEntry(name,type,true));
 			} else if (index==0) {
 				throw new JavascribeException("Found invalid attribute name '"+part+"'");
 			} else {
@@ -125,7 +125,7 @@ public class JavascribeUtils {
 					ListType listType = (ListType)type;
 					type = listType.getListTypeWithElementTypName(elementType);
 				}
-				ret.add(new AttribEntry(part,type,false));
+				ret.add(new PropertyEntry(part,type,false));
 			}
 		}
 		
@@ -289,7 +289,7 @@ public class JavascribeUtils {
 	
 	/* TODO: Fix this file.  Determine what to do about type dependencies vs originators
 
-	public static String getTypeForRef(String ref,ProcessorContext ctx) throws JasperException {
+	public static String getTypeForRef(String ref,ProcessorContext ctx) throws JavascribeException {
 		String ret = null;
 		String parts[] = ref.split("\\.");
 		
@@ -306,7 +306,7 @@ public class JavascribeUtils {
 					//parentType = execCtx.getType(DataObjectType.class, parentTypeName);
 				} else {
 					if (parentType.getAttributeType(part)==null) {
-						throw new JasperException("Couldn't evaluate reference '"+ref+"' - type '"+parentTypeName+"' didn't have an attribute called '"+part+"'");
+						throw new JavascribeException("Couldn't evaluate reference '"+ref+"' - type '"+parentTypeName+"' didn't have an attribute called '"+part+"'");
 					}
 					ret = parentType.getAttributeType(part);
 				}
@@ -322,9 +322,9 @@ public class JavascribeUtils {
 	 * @param superTypeName
 	 * @param ctx
 	 * @return
-	 * @throws JasperException
+	 * @throws JavascribeException
 	 //
-	public static boolean isSubclass(DataObjectType type,String superTypeName,ProcessorContext ctx) throws JasperException {
+	public static boolean isSubclass(DataObjectType type,String superTypeName,ProcessorContext ctx) throws JavascribeException {
 		boolean ret = false;
 		
 		while(type.getSuperTypes().size()>0) {
@@ -344,20 +344,20 @@ public class JavascribeUtils {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static <T extends SourceFile> T getSourceFile(Class<T> sourceFileClass, String path,ProcessorContext ctx) throws JasperException {
+	public static <T extends SourceFile> T getSourceFile(Class<T> sourceFileClass, String path,ProcessorContext ctx) throws JavascribeException {
 		T ret = null;
 		
 		if (ctx==null) {
-			throw new JasperException("Tried to find source file '"+path+"' but got null ProcessorContext");
+			throw new JavascribeException("Tried to find source file '"+path+"' but got null ProcessorContext");
 		}
 		SourceFile src = ctx.getSourceFile(path);
 		if (src==null) {
-			throw new JasperException("Couldn't find source file at path '"+path+"'");
+			throw new JavascribeException("Couldn't find source file at path '"+path+"'");
 		}
 		if (sourceFileClass.isAssignableFrom(src.getClass())) {
 			ret = (T)src;
 		} else {
-			throw new JasperException("Source File '"+path+"' was not of type '"+sourceFileClass.getCanonicalName()+"'");
+			throw new JavascribeException("Source File '"+path+"' was not of type '"+sourceFileClass.getCanonicalName()+"'");
 		}
 		
 		return ret;

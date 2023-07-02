@@ -62,7 +62,10 @@ public class FileUtil {
 				} else if (event.kind().equals(StandardWatchEventKinds.ENTRY_CREATE)) {
 					added.add(file);
 				} else if (event.kind().equals(StandardWatchEventKinds.ENTRY_DELETE)) {
+					// When a folder is moved, it's a modify first and then a delete.
+					// Ensure the file is not in added.
 					removed.add(file);
+					added.remove(file);
 				} else if (event.kind().equals(StandardWatchEventKinds.ENTRY_MODIFY)) {
 					added.add(file);
 					removed.add(file);
@@ -100,7 +103,10 @@ public class FileUtil {
 
 		filesRemoved.get(pathKey).clear();
 		filesAdded.get(pathKey).clear();
-		filesAdded.get(pathKey).addAll(Arrays.asList(f.listFiles()));
+		if (f.listFiles()!=null) {
+			// The folder is still there
+			filesAdded.get(pathKey).addAll(Arrays.asList(f.listFiles()));
+		}
 	}
 
 	public List<WatchedResource> findFilesRemoved(ApplicationFolderImpl folder) {
@@ -129,6 +135,8 @@ public class FileUtil {
 			}
 			if (folder.getSubFolders().containsKey(name)) {
 				clearFolder(folder.getSubFolders().get(name), ret);
+				//folder.getSubFolders().get(name).getFolderFile().delete();
+				folder.getSubFolders().remove(name);
 			}
 			if (folder.getUserFiles().get(name)!=null) {
 				ret.add(folder.getUserFiles().get(name));

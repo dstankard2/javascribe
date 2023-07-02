@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.jboss.forge.roaster.model.source.MethodSource;
 
-import net.sf.javascribe.api.AttribEntry;
+import net.sf.javascribe.api.PropertyEntry;
 import net.sf.javascribe.api.ComponentProcessor;
 import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.api.ProcessorContext;
@@ -38,7 +38,7 @@ public class DataObjectProcessor implements ComponentProcessor<DataObject> {
 		ctx.addSystemAttribute(lowerCamel+"List", "list/"+name);
 		ctx.addSystemAttribute(multiple, "list/"+name);
 
-		List<AttribEntry> attribs = JavascribeUtils.readParametersAsList(props, ctx);
+		List<PropertyEntry> attribs = JavascribeUtils.readParametersAsList(props, ctx);
 
 		if (name.equals(lowerCamel)) {
 			throw new JavascribeException("Type name '"+name+"' is not a valid name for a data object");
@@ -56,7 +56,7 @@ public class DataObjectProcessor implements ComponentProcessor<DataObject> {
 		MethodSource<?> constructor = src.getSrc().addMethod().setConstructor(true).setPublic();
 		JavaCode constructorCode = new JavaCode();
 
-		for(AttribEntry a : attribs) {
+		for(PropertyEntry a : attribs) {
 			String n = a.getName();
 			JavaVariableType type = (JavaVariableType)a.getType();
 			src.addImport(type);

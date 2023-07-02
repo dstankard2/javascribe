@@ -36,7 +36,7 @@ public interface ProcessorContext {
 
 	Log getLog();
 
-	void addFolderWatcher(String folderPath,FolderWatcher folderWatcher) throws JavascribeException;
+	void addFolderWatcher(String folderPath,FolderWatcher folderWatcher);
 	
 	void addFileProcessor(String filePath,FileProcessor fileProcessor);
 	

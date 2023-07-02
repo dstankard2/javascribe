@@ -39,6 +39,7 @@ public class DOMElementType extends JavascriptType {
 		properties.put("type", "string");
 		properties.put("cols", "integer");
 		properties.put("rows", "integer");
+		properties.put("href", "string");
 	}
 
 }
