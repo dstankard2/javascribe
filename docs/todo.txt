@@ -1,13 +1,35 @@
 
 To Do for Javascribe: 
 
-When a component modifies a type that wasn't added this run, mark it stale and reprocess.
-	Is this necessary?
+Processing bugs/tasks
+	When a component modifies a type that wasn't added this run, mark it stale and reprocess.
+		Is this necessary?
+	Bug: When a processed build is modified by a component, the build must be re-generated.
+	Bug: There is an extra scan (added files still found?) when a workspace directory is renamed.
+	Bug: When a component modifies a build that is already processed, the build needs to be reset
+		Most likely items in the build's folder should be reset too.
+	Bug: After editing javascribe.properties file, handwritten code file processor is not removed.
+		Ensure that file processors are removed from processing records when originator is removed.
 
-HTML Template Parser returns a syntax error when template is empty.
-Task: Create ContextBase for ProcessorContextImpl and BuildProcessorContextImpl
-Bug: When a processed build is modified by a component, the build must be re-generated.
-Bug: There is an extra scan (added files still found?) when a workspace directory is renamed.
-Bug: When a component modifies a build that is already processed, the build needs to be reset
-	Most likely items in the build's folder should be reset too.
+Engine/Processing enhancements:
+	Task: Create ContextBase for ProcessorContextImpl and BuildProcessorContextImpl
+	There should be an association between a build and its components.
+	Add defaultVersion to BuildContext.addDependency(String)
+	Task: Support for commands.txt in folders that have build components.
+		Support a standing command that runs every time a build in that folder changes.
+		Determine other commands to run
+
+Pattern bugs/tasks
+	Task: Evaluate web service module and web service client patterns to see if there's a better way to associate them.
+		Maybe add optional "id" or "functionName" to endpoint and reference that in the client WS module.
+		Add "functionName" to endpoint object data.
+	HTML Template Parser returns a syntax error when template is empty.
+	Task: Build more defaults into processors, especially for dependency versions and Maven's Java version.
+		Have MavenBuildProcessor default Java to version 17 or 19.
+		Output WARN or INFO when using a default.
+	Bug?  HTTP Endpoint should read requestParameters as propertyList.
+	Task: TableSet should take jdbc parameters as environment variable references.
+	Task: Tomcat JNDI Datasource should take JDBC username, password, URL as environment variables.
+	Task/Bug: HTTP Endpoint should understand return value properly and understand that the value makes sense in the code execution context.
+		Maybe create a code execution context for the endpoint code section in the servlet.
 

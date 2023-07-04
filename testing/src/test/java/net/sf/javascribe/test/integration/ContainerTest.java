@@ -41,6 +41,7 @@ public abstract class ContainerTest {
 
 	protected PluginService pluginService = null;
 
+	@SuppressWarnings("unchecked")
 	protected void includePattern(Class<? extends Component> cl) {
 		componentClasses.add((Class<Component>)cl);
 	}
@@ -49,10 +50,12 @@ public abstract class ContainerTest {
 		buildComponentProcessorClasses.add(cl);
 	}
 
+	@SuppressWarnings("unchecked")
 	protected void includeProcessor(Class<? extends ComponentProcessor> cl) {
 		componentProcessorClasses.add((Class<ComponentProcessor>)cl);
 	}
 
+	@SuppressWarnings("unchecked")
 	protected void includeLanguageSupport(Class<? extends LanguageSupport> cl) {
 		languageSupportClasses.add((Class<LanguageSupport>)cl);
 	}

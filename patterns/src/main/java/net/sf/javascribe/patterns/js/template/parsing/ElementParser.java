@@ -231,7 +231,7 @@ public class ElementParser implements DirectiveContext {
 		if (typeName==null) {
 			throw new JavascribeException("Couldn't invoke template '"+elementName+"' as there was no service '"+objRef+"' in the code execution context");
 		}
-		//String typeName = JasperUtils.getTypeForRef(objRef, dctx.getProcessorContext());
+		//String typeName = JavascribeUtils.getTypeForRef(objRef, dctx.getProcessorContext());
 		List<ServiceOperation> fns = JavascribeUtils.findRuleFromTypeAndRef(typeName+'.'+ruleName, ctx);
 		if ((fns==null) || (fns.size()==0)) {
 			throw new JavascribeException("Couldn't find template '"+elementName+"'");

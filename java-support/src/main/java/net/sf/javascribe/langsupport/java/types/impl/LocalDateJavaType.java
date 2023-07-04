@@ -2,10 +2,10 @@ package net.sf.javascribe.langsupport.java.types.impl;
 
 import net.sf.javascribe.langsupport.java.types.JavaVariableTypeBase;
 
-public class DateJavaType extends JavaVariableTypeBase {
+public class LocalDateJavaType extends JavaVariableTypeBase {
 
-	public DateJavaType() {
-		super("Date","java.sql.Date",null);
+	public LocalDateJavaType() {
+		super("LocalDate","java.time.LocalDate",null);
 	}
 
 	@Override

@@ -3,6 +3,7 @@ package net.sf.javascribe.patterns.js.parsing;
 import java.util.Arrays;
 import java.util.List;
 
+// TODO: Determine if this might be unnecessary.
 public class ParsingInput {
 
 	private String input = null;

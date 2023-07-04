@@ -74,6 +74,8 @@ public class ProcessorContextImpl implements ProcessorContext {
 
 	@Override
 	public void addVariableType(VariableType variableType) throws JavascribeException {
+		String name = variableType.getName();
+
 		if (lang==null) {
 			throw new JavascribeException("No language support selected");
 		}
@@ -82,8 +84,11 @@ public class ProcessorContextImpl implements ProcessorContext {
 			langTypes = new HashMap<>();
 			application.getApplicationTypes().put(lang, langTypes);
 		}
-		langTypes.put(variableType.getName(), variableType);
-		typeDependency(lang, variableType.getName());
+		if (langTypes.get(name)!=null) {
+			throw new JavascribeException("Already found a variable type called '"+name+"' for language '"+lang+"'");
+		}
+		langTypes.put(name, variableType);
+		typeDependency(lang, name);
 	}
 
 	@Override
@@ -106,14 +111,28 @@ public class ProcessorContextImpl implements ProcessorContext {
 
 	@Override
 	public void setObject(String name, Object obj) {
-		application.getObjects().put(name, obj);
 		objectDependency(name);
+		if (application.getObjects().get(name)!=null) {
+			throw new StaleDependencyException(id);
+		}
+		application.getAddedObjects().put(name, obj);
 	}
 
 	@Override
 	public Object getObject(String name) {
-		objectDependency(name);
-		return application.getObjects().get(name);
+		Object ret = application.getAddedObjects().get(name);
+		if (ret==null) {
+			ret = application.getObjects().get(name);
+			objectDependency(name);
+			if (ret!=null) {
+				// The object is in the application but was not added this run.
+				// In this case the item should go stale and be removed.
+				throw new StaleDependencyException(id);
+			}
+		} else {
+			objectDependency(name);
+		}
+		return ret;
 	}
 
 	@Override

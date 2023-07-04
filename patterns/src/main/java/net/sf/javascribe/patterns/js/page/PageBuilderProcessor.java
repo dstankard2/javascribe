@@ -32,7 +32,6 @@ public class PageBuilderProcessor implements ComponentProcessor<PageBuilderCompo
 		code.append("var _eventDispatcher = EventDispatcher();\n");
 
 		PageModelType pageModelType = PageUtils.getPageModelType(pageInfo.getName(), ctx);
-		//ctx.addVariableType(pageModelType);
 		modelCode.append(buildModel(pageInfo.getName(),pageModelType));
 		
 		// Create init function
@@ -65,7 +64,6 @@ public class PageBuilderProcessor implements ComponentProcessor<PageBuilderCompo
 		}
 		code.append("return _obj;\n}\n");
 		
-		/* Removed page functions
 		// Create page functions
 		List<PageFnDef> anonEventFunctions = new ArrayList<>();
 		List<PageFnDef> eventFunctions = new ArrayList<>();
@@ -95,7 +93,6 @@ public class PageBuilderProcessor implements ComponentProcessor<PageBuilderCompo
 				anonEventFunctions.add(def);
 			}
 		}
-		*/
 
 		// Add event function
 		code.append("var _obj = {\nevent: function(event,callback) { return _eventDispatcher.event(event,callback); }\n");

@@ -25,8 +25,10 @@ public class LogUtil {
 					.append(m.getMessage());
 				if (m.getLevel()==ProcessorLogLevel.ERROR) {
 					System.err.println(output.toString());
+					System.err.flush();
 				} else {
 					System.out.println(output.toString());
+					System.out.flush();
 				}
 				if ((m.getE()!=null) && (target==0)) {
 					m.getE().printStackTrace();

@@ -9,13 +9,13 @@ import net.sf.javascribe.api.langsupport.LanguageSupport;
 import net.sf.javascribe.api.types.VariableType;
 import net.sf.javascribe.langsupport.java.types.JavaVariableType;
 import net.sf.javascribe.langsupport.java.types.impl.BooleanJavaType;
-import net.sf.javascribe.langsupport.java.types.impl.DateJavaType;
+import net.sf.javascribe.langsupport.java.types.impl.LocalDateJavaType;
 import net.sf.javascribe.langsupport.java.types.impl.IntegerJavaType;
 import net.sf.javascribe.langsupport.java.types.impl.JavaListType;
 import net.sf.javascribe.langsupport.java.types.impl.LongJavaType;
 import net.sf.javascribe.langsupport.java.types.impl.ObjectJavaType;
 import net.sf.javascribe.langsupport.java.types.impl.StringJavaType;
-import net.sf.javascribe.langsupport.java.types.impl.TimestampJavaType;
+import net.sf.javascribe.langsupport.java.types.impl.LocalDateTimeJavaType;
 
 @Plugin
 public class JavaLanguageSupport implements LanguageSupport {
@@ -31,8 +31,8 @@ public class JavaLanguageSupport implements LanguageSupport {
 		ret.add(new IntegerJavaType());
 		ret.add(new LongJavaType());
 		ret.add(new StringJavaType());
-		ret.add(new TimestampJavaType());
-		ret.add(new DateJavaType());
+		ret.add(new LocalDateTimeJavaType());
+		ret.add(new LocalDateJavaType());
 		ret.add(new JavaListType());
 		ret.add(new BooleanJavaType());
 		ret.add(new ObjectJavaType());

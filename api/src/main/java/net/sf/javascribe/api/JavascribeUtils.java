@@ -119,6 +119,9 @@ public class JavascribeUtils {
 					throw new JavascribeException("Couldn't find type for attribute '"+part+"'");
 				}
 				VariableType type = JavascribeUtils.getType(VariableType.class, typeName, ctx);
+				if (type==null) {
+					throw new JavascribeException("Found no variable type named '"+typeName+"'");
+				}
 				if ((type instanceof ListType) && (typeName.startsWith("list/"))) {
 					String elementTypeName = typeName.substring(5);
 					VariableType elementType = getType(VariableType.class, elementTypeName, ctx);
@@ -302,7 +305,7 @@ public class JavascribeUtils {
 				if (ret==null) {
 					ret = part;
 					parentTypeName = ctx.getSystemAttribute(part);
-					parentType = JasperUtils.getType(DataObjectType.class, parentTypeName, ctx);
+					parentType = JavascribeUtils.getType(DataObjectType.class, parentTypeName, ctx);
 					//parentType = execCtx.getType(DataObjectType.class, parentTypeName);
 				} else {
 					if (parentType.getAttributeType(part)==null) {
@@ -333,7 +336,7 @@ public class JavascribeUtils {
 				return true;
 			}
 			for(String typeName : typeNames) {
-				DataObjectType s = JasperUtils.getType(DataObjectType.class, typeName, ctx, true);
+				DataObjectType s = JavascribeUtils.getType(DataObjectType.class, typeName, ctx, true);
 				if (isSubclass(s, superTypeName,ctx)) {
 					return true;
 				}

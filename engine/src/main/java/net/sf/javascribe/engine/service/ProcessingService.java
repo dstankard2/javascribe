@@ -183,6 +183,7 @@ public class ProcessingService implements ProcessingContextOperations {
 		application.getAddedFileProcessors().clear();
 		application.getAddedFolderWatchers().clear();
 		application.getAddedSourceFiles().clear();
+		application.getAddedObjects().clear();
 	}
 
 	public boolean handleAddedItems(ApplicationData application) {

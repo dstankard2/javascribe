@@ -94,6 +94,7 @@ public class ComponentContainer {
 		return getComponent(clazz.getSimpleName(), clazz);
 	}
 
+	@SuppressWarnings("unchecked")
 	public <T extends Object> T getComponent(String identifier, Class<T> clazz) throws EngineInitException {
 		Object obj = components.get(identifier);
 

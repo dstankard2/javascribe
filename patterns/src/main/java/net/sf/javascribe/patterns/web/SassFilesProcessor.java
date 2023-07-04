@@ -3,7 +3,6 @@ package net.sf.javascribe.patterns.web;
 import net.sf.javascribe.api.ComponentProcessor;
 import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.annotation.Plugin;
-import net.sf.javascribe.api.config.Component;
 import net.sf.javascribe.api.exception.JavascribeException;
 import net.sf.javascribe.patterns.maven.ExecutionConfig;
 import net.sf.javascribe.patterns.maven.MavenBuildContext;

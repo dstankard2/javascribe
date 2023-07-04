@@ -14,6 +14,7 @@ import net.sf.javascribe.api.config.Component;
 @NoArgsConstructor
 public class RequireTypePattern extends Component {
 
+	@Builder.Default
 	private String lang = "";
 
 	private String requiredType;

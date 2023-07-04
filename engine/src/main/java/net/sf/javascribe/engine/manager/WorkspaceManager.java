@@ -159,12 +159,25 @@ public class WorkspaceManager {
 		if (filesChanged) {
 			processingService.runProcessing(application);
 		}
-		if ((addedUserFiles.size()>0) || (application.getAddedSourceFiles().size()>0)) {
-			//application.getApplicationLog().info("Writing output files");
+		
+		// After processing, move data for this run into a final state
+		
+		// Write added user files.
+		if (addedUserFiles.size()>0) {
 			outputService.writeUserFiles(application, addedUserFiles);
+		}
+		// Write added source files, add them to the pre-existing code base
+		if (application.getAddedSourceFiles().size()>0) {
 			outputService.writeSourceFiles(application);
 		}
+		// Put added objects into the application object cache
+		application.getAddedObjects().forEach((name, obj) -> {
+			application.getObjects().put(name, obj);
+		});
+		application.getAddedObjects().clear();
 
+		// All done with this application scan.
+		
 		if (filesChanged) {
 			application.getApplicationLog().info("Application scan took "+(System.currentTimeMillis() - start)+" milliseconds");
 		}

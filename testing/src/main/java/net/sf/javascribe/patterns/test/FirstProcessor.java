@@ -1,14 +1,9 @@
 package net.sf.javascribe.patterns.test;
 
-import org.jboss.forge.roaster.model.source.JavaClassSource;
-
 import net.sf.javascribe.api.ComponentProcessor;
 import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.annotation.Plugin;
 import net.sf.javascribe.api.exception.JavascribeException;
-import net.sf.javascribe.langsupport.java.JavaClassSourceFile;
-import net.sf.javascribe.langsupport.java.types.JavaVariableType;
-import net.sf.javascribe.langsupport.java.types.impl.JavaVariableTypeImpl;
 
 @Plugin
 public class FirstProcessor implements ComponentProcessor<FirstPattern> {

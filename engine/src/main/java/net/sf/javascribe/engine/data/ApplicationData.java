@@ -140,6 +140,9 @@ public class ApplicationData {
 	}
 
 	@Builder.Default
+	private Map<String,Object> addedObjects = new HashMap<>();
+	
+	@Builder.Default
 	private Map<String,SourceFile> addedSourceFiles = new HashMap<>();
 	
 	@Builder.Default

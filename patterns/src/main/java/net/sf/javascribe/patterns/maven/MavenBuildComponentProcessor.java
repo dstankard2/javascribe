@@ -11,7 +11,6 @@ import net.sf.javascribe.api.BuildContext;
 import net.sf.javascribe.api.BuildProcessorContext;
 import net.sf.javascribe.api.Command;
 import net.sf.javascribe.api.annotation.Plugin;
-import net.sf.javascribe.api.config.BuildComponent;
 import net.sf.javascribe.api.exception.JavascribeException;
 import net.sf.javascribe.api.resources.ApplicationFile;
 import net.sf.javascribe.api.resources.ApplicationResource;

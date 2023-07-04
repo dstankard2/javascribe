@@ -31,6 +31,7 @@ public class HandwrittenCodeFileProcessor implements FileProcessor {
 	@Override
 	public void setFile(ApplicationFile changedFile) {
 		try {
+			ctx.getLog().info("Creating file handler for "+changedFile.getPath());
 			handler = new FileHandler(changedFile,ctx);
 		} catch(Exception e) {
 			errorMessage = e.getMessage();

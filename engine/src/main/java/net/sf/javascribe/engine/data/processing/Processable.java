@@ -1,9 +1,6 @@
 package net.sf.javascribe.engine.data.processing;
 
-import java.util.List;
 import java.util.Map;
-
-import net.sf.javascribe.api.plugin.ProcessorLogMessage;
 
 public interface Processable extends Comparable<Processable> {
 

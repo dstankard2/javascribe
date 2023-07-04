@@ -85,7 +85,7 @@ public class LocalModelElementDirective implements ElementDirective {
 
 		/*
 		for(AttribEntry att : attrs) {
-			String upper = JasperUtils.getUpperCamelName(att.getName());
+			String upper = JavascribeUtils.getUpperCamelName(att.getName());
 			code.append(var+"._"+att.getName()+" = undefined;\n");
 			code.append(var+".get"+upper+" = function() { return this._"+att.getName()+";}.bind("+var+");\n");
 			code.append(var+".set"+upper+" = function(value) {\n");

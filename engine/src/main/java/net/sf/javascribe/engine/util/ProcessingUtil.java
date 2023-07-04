@@ -169,6 +169,8 @@ public class ProcessingUtil {
 		// Remove items that originate from this item
 		itemsToRemove.addAll(dependencyUtil.getItemsThatOriginateFrom(id, application).stream().map(Item::getItemId).collect(Collectors.toList()));
 
+		// TODO: Remove processables from toProcess and processed that originate from this item
+		
 		// Find attributes that this item depends on.
 		Set<String> attributeDeps = dependencyUtil.getSystemAttributeDependencies(id, application);
 		attributeDeps.forEach(name -> {

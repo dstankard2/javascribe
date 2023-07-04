@@ -5,17 +5,16 @@ import java.util.List;
 
 import net.sf.javascribe.api.CodeExecutionContext;
 
+// TODO: Should there be more to this or is it not necessary?
 public class JavascriptParser {
 
-	private ParsingInput input = null;
 	private String code = null;
-	private CodeExecutionContext execCtx;
 	private List<String> impliedVariables = new ArrayList<>();
 	
 	public JavascriptParser(String code,CodeExecutionContext execCtx) {
-		this.input = new ParsingInput(code);
+		//this.input = new ParsingInput(code);
 		this.code = code;
-		this.execCtx = execCtx;
+		//this.execCtx = execCtx;
 	}
 	
 	public JavascriptParser addImpliedVariable(String name) {

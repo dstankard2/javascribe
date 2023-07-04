@@ -2,9 +2,7 @@ package net.sf.javascribe.engine.service;
 
 import java.io.File;
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import net.sf.javascribe.api.annotation.Plugin;

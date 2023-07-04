@@ -2,6 +2,7 @@ package net.sf.javascribe.patterns.js.parsing;
 
 import net.sf.javascribe.api.exception.JavascribeException;
 
+// TODO: Determine if this might be unnecessary
 public class JavascriptParsingException extends JavascribeException {
 	private static final long serialVersionUID = 1L;
 	private ParsingInput in = null;
