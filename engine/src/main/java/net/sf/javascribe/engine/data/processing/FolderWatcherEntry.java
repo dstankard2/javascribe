@@ -7,7 +7,6 @@ import net.sf.javascribe.engine.data.ApplicationData;
 import net.sf.javascribe.engine.data.files.ApplicationFolderImpl;
 import net.sf.javascribe.engine.data.files.UserFile;
 
-// TODO: When applied to a file, create a processable at the appropriate priority
 public class FolderWatcherEntry implements Item {
 	
 	private FolderWatcher folderWatcher;

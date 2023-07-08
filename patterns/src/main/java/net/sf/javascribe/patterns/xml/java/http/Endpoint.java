@@ -11,6 +11,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+import lombok.Getter;
+import lombok.Setter;
 import net.sf.javascribe.api.annotation.ConfigProperty;
 import net.sf.javascribe.api.annotation.Plugin;
 import net.sf.javascribe.api.annotation.XmlConfig;
@@ -18,6 +20,8 @@ import net.sf.javascribe.langsupport.java.JavaComponent;
 import net.sf.javascribe.patterns.PatternPriority;
 import net.sf.javascribe.patterns.http.HttpMethod;
 
+@Getter
+@Setter
 @XmlConfig
 @Plugin
 @XmlRootElement(name="endpoint")
@@ -25,6 +29,9 @@ import net.sf.javascribe.patterns.http.HttpMethod;
 @XmlType(name="endpoint",propOrder={ "response" })
 public class Endpoint extends JavaComponent {
 
+	@XmlAttribute
+	private String functionName = "";
+	
 	@XmlAttribute
 	private String module = "";
 

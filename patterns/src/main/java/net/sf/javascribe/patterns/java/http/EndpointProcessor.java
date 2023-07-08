@@ -269,10 +269,14 @@ public class EndpointProcessor implements ComponentProcessor<Endpoint> {
 		execCtx.addVariable(ruleParts[0], serviceType.getName());
 		JavaUtils.append(invokeCode,serviceType.instantiate(ruleParts[0]));
 		JavaUtils.append(invokeCode, JavaUtils.callJavaOperation(operationResult, ruleParts[0], serviceOp, execCtx, null));
-		op.setOperationName(ruleParts[1]);
+		//op.setOperationName(ruleParts[1]);
 		code.append(invokeCode.getCodeText());
 		src.addImports(invokeCode);
 
+		if (comp.getFunctionName().trim().length()>0) {
+			op.setOperationName(comp.getFunctionName());
+		}
+		
 		// Handle responses
 		List<Response> responses = comp.getResponse();
 		if (responses.size()>0) {
