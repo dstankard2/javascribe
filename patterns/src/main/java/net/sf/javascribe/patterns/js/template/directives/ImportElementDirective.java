@@ -3,7 +3,7 @@ package net.sf.javascribe.patterns.js.template.directives;
 import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.api.annotation.Plugin;
 import net.sf.javascribe.api.exception.JavascribeException;
-import net.sf.javascribe.langsupport.javascript.types.ExportedModuleType;
+import net.sf.javascribe.langsupport.javascript.types.ModuleExportType;
 import net.sf.javascribe.langsupport.javascript.types.ModuleType;
 import net.sf.javascribe.patterns.js.template.parsing.DirectiveContext;
 import net.sf.javascribe.patterns.js.template.parsing.ElementDirective;
@@ -44,11 +44,11 @@ public class ImportElementDirective implements ElementDirective {
 		type = JavascribeUtils.getType(ModuleType.class, typeName, ctx.getProcessorContext());
 
 		ctx.importModule(typeName, type.getWebPath());
-		if (type.getExportType()==ExportedModuleType.CONSTRUCTOR) {
+		if (type.getExportType()==ModuleExportType.CONSTRUCTOR) {
 			if (ref!=null) {
 				code.append("let "+ref+" = "+typeName+"();\n");
 			}
-		} else if (type.getExportType()==ExportedModuleType.CONST) {
+		} else if (type.getExportType()==ModuleExportType.CONST) {
 			if (ref!=null) {
 				code.append("let "+ref+" = "+typeName+";\n");
 			}

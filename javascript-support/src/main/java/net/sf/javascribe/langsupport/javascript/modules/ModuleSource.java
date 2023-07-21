@@ -1,14 +1,12 @@
 package net.sf.javascribe.langsupport.javascript.modules;
 
-import net.sf.javascribe.langsupport.javascript.types.ExportedModuleType;
+import net.sf.javascribe.langsupport.javascript.types.ModuleExportType;
 
 public interface ModuleSource {
 
 	public String getName();
 	public String getSource();
-	// For use by the engine when managing source files.
-	// The returned ModuleSource should be a copy of this one.
-	public ExportedModuleType getExportType();
+	public ModuleExportType getExportType();
 
 }
 

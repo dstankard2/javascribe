@@ -17,7 +17,7 @@ import net.sf.javascribe.langsupport.javascript.JavascriptUtils;
 import net.sf.javascribe.langsupport.javascript.modules.ModuleFunction;
 import net.sf.javascribe.langsupport.javascript.modules.ModuleSourceFile;
 import net.sf.javascribe.langsupport.javascript.modules.StandardModuleSource;
-import net.sf.javascribe.langsupport.javascript.types.ExportedModuleType;
+import net.sf.javascribe.langsupport.javascript.types.ModuleExportType;
 import net.sf.javascribe.langsupport.javascript.types.ModuleType;
 import net.sf.javascribe.patterns.js.template.parsing.DirectiveUtils;
 import net.sf.javascribe.patterns.js.template.parsing.TemplateParser;
@@ -60,7 +60,7 @@ public class TemplateFolderWatcher implements FolderWatcher {
 			module = (StandardModuleSource)src.getModule(serviceName);
 			if (module==null) {
 				module = new StandardModuleSource(serviceName);
-				module.setExportType(ExportedModuleType.CONST);
+				module.setExportType(ModuleExportType.CONST);
 				src.addModule(module);
 				ctx.addVariableType(folderType);
 				DirectiveUtils.ensureIns(src);
@@ -69,10 +69,10 @@ public class TemplateFolderWatcher implements FolderWatcher {
 			}
 		} else {
 			String webPath = JavascriptUtils.getModulePath(ctx);
-			folderType = new ModuleType(serviceName,webPath, ExportedModuleType.CONST);
+			folderType = new ModuleType(serviceName,webPath, ModuleExportType.CONST);
 			//folderType = new JavascriptServiceType(serviceName,true,ctx);
 			module = new StandardModuleSource(serviceName);
-			module.setExportType(ExportedModuleType.CONST);
+			module.setExportType(ModuleExportType.CONST);
 			src.addModule(module);
 			ctx.addVariableType(folderType);
 			DirectiveUtils.ensureIns(src);

@@ -1,6 +1,6 @@
 package net.sf.javascribe.langsupport.javascript.types;
 
-public enum ExportedModuleType {
+public enum ModuleExportType {
 
 	CONST,
 	CONSTRUCTOR

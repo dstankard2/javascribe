@@ -68,9 +68,11 @@ public abstract class ManagerTest extends ContainerTest {
 		return f;
 	}
 
-	protected UserFile createUserFile(String filename, ApplicationData application) {
+	protected UserFile createUserFile(String filename, ApplicationData application, String content) {
 		UserFile ret = null;
-		
+		File dir = application.getApplicationDirectory();
+		File f = new File(dir, filename);
+		//UserFile userFile = new UserFile()
 		
 		return ret;
 	}

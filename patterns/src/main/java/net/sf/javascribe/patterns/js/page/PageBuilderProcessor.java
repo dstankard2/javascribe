@@ -12,6 +12,8 @@ import net.sf.javascribe.api.types.ServiceOperation;
 import net.sf.javascribe.langsupport.javascript.JavascriptUtils;
 import net.sf.javascribe.langsupport.javascript.modules.HandwrittenModuleSource;
 import net.sf.javascribe.langsupport.javascript.modules.ModuleSourceFile;
+import net.sf.javascribe.langsupport.javascript.types.JavascriptType;
+import net.sf.javascribe.langsupport.javascript.types.ModuleExportType;
 import net.sf.javascribe.langsupport.javascript.types.ModuleType;
 
 @Plugin
@@ -28,6 +30,19 @@ public class PageBuilderProcessor implements ComponentProcessor<PageBuilderCompo
 		StringBuilder code = mod.getCodeBuild();
 		StringBuilder modelCode = new StringBuilder();
 		List<String> fnNames = new ArrayList<>();
+
+		for(String ref : pageInfo.getImportedRefs()) {
+			JavascriptType type = JavascribeUtils.getTypeForSystemAttribute(JavascriptType.class, ref, ctx);
+			if (type instanceof ModuleType) {
+				ModuleType moduleType = (ModuleType)type;
+				f.importModule(moduleType);
+				if (moduleType.getExportType()==ModuleExportType.CONST) {
+					f.getInternalCode().appendCodeText("const "+ref+" = "+moduleType.getModuleName()+";\n");
+				} else {
+					f.getInternalCode().appendCodeText("const "+ref+" = "+moduleType.getName()+"();\n");
+				}
+			}
+		}
 		
 		code.append("var _eventDispatcher = EventDispatcher();\n");
 

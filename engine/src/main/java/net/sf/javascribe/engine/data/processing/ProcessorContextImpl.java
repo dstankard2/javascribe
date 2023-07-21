@@ -1,9 +1,9 @@
 package net.sf.javascribe.engine.data.processing;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import net.sf.javascribe.api.ApplicationContext;
 import net.sf.javascribe.api.BuildContext;
@@ -201,25 +201,23 @@ public class ProcessorContextImpl implements ProcessorContext {
 	}
 
 	private void objectDependency(String name) {
-		List<Integer> ids = dependencyData.getObjectDependencies().get(name);
+		Set<Integer> ids = dependencyData.getObjectDependencies().get(name);
 		if (ids==null) {
-			ids = new ArrayList<>();
+			ids = new HashSet<>();
 			dependencyData.getObjectDependencies().put(name, ids);
 		}
-		if (!ids.contains(id)) {
-			ids.add(id);
-		}
+		ids.add(id);
 	}
 	
 	private void typeDependency(String lang, String name) {
-		Map<String,List<Integer>> langTypes = dependencyData.getTypeDependencies().get(lang);
+		Map<String,Set<Integer>> langTypes = dependencyData.getTypeDependencies().get(lang);
 		if (langTypes==null) {
 			langTypes = new HashMap<>();
 			dependencyData.getTypeDependencies().put(lang, langTypes);
 		}
-		List<Integer> ids = langTypes.get(name);
+		Set<Integer> ids = langTypes.get(name);
 		if (ids==null) {
-			ids = new ArrayList<>();
+			ids = new HashSet<>();
 			langTypes.put(name, ids);
 		}
 		if (!ids.contains(id)) {
@@ -228,35 +226,29 @@ public class ProcessorContextImpl implements ProcessorContext {
 	}
 	
 	private void dependOnAttribute(String name) {
-		List<Integer> ids = dependencyData.getAttributeDependencies().get(name);
+		Set<Integer> ids = dependencyData.getAttributeDependencies().get(name);
 		if (ids==null) {
-			ids = new ArrayList<>();
+			ids = new HashSet<>();
 			dependencyData.getAttributeDependencies().put(name, ids);
 		}
-		if (!ids.contains(id)) {
-			ids.add(id);
-		}
+		ids.add(id);
 	}
 	
 	private void originateAttribute(String name) {
-		List<Integer> ids = dependencyData.getAttributeOriginators().get(name);
+		Set<Integer> ids = dependencyData.getAttributeOriginators().get(name);
 		if (ids==null) {
-			ids = new ArrayList<>();
+			ids = new HashSet<>();
 			dependencyData.getAttributeOriginators().put(name, ids);
 		}
-		if (!ids.contains(id)) {
-			ids.add(id);
-		}
+		ids.add(id);
 		
 		// This should also depend on the system attribute, or there will be an exception when removing the item
 		ids = dependencyData.getAttributeDependencies().get(name);
 		if (ids==null) {
-			ids = new ArrayList<>();
+			ids = new HashSet<>();
 			dependencyData.getAttributeDependencies().put(name, ids);
 		}
-		if (!ids.contains(id)) {
-			ids.add(id);
-		}
+		ids.add(id);
 	}
 	
 	private void originateComponent(Component component) {
@@ -273,14 +265,12 @@ public class ProcessorContextImpl implements ProcessorContext {
 	
 	private void originateSourceFile(SourceFile sourceFile) {
 		String path = sourceFile.getPath();
-		List<Integer> ids = application.getDependencyData().getSrcDependencies().get(path);
+		Set<Integer> ids = application.getDependencyData().getSrcDependencies().get(path);
 		if (ids==null) {
-			ids = new ArrayList<>();
+			ids = new HashSet<>();
 			application.getDependencyData().getSrcDependencies().put(path, ids);
 		}
-		if (!ids.contains(id)) {
-			ids.add(id);
-		}
+		ids.add(id);
 	}
 
 }

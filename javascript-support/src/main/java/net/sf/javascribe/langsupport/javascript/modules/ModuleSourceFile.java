@@ -7,14 +7,20 @@ import java.util.Map;
 
 import org.apache.commons.lang3.tuple.Pair;
 
+import lombok.Getter;
+import lombok.Setter;
+import net.sf.javascribe.langsupport.javascript.JavascriptCode;
 import net.sf.javascribe.langsupport.javascript.JavascriptSourceFile;
 import net.sf.javascribe.langsupport.javascript.JavascriptUtils;
 
+@Getter
+@Setter
 public class ModuleSourceFile extends JavascriptSourceFile {
 
 	private List<ModuleSource> modules = new ArrayList<>();
 	private String webPath = null;
 	private Map<String,ModuleFunction> globalFunctions = new HashMap<>();
+	private JavascriptCode internalCode = new JavascriptCode();
 
 	public void addFunction(ModuleFunction fn) {
 		globalFunctions.put(fn.getName(), fn);
@@ -49,6 +55,9 @@ public class ModuleSourceFile extends JavascriptSourceFile {
 		StringBuilder build = new StringBuilder();
 
 		build.append(getImportSource());
+
+		// Internal code should not include any module imports
+		build.append(internalCode.getCodeText());
 
 		globalFunctions.entrySet().stream().forEach(entry-> {
 			ModuleFunction fn = entry.getValue();

@@ -6,23 +6,24 @@ public class WebUtils {
 
 	private static final String WEBSERVICE_DEFINITIONS = "PATTERNS_HTTP_ENDPOINTS";
 
-	public static WebServiceContext getWebServiceDefinition(String name,ProcessorContext ctx,boolean force) {
-		WebServiceContext ret = null;
-		
-		if ((name==null) || (name.trim().length()==0)) name = ctx.getBuildContext().getName();
-		ret = (WebServiceContext)ctx.getObject(WEBSERVICE_DEFINITIONS+"_" + name);
+	public static WebServiceModule getWebServiceDefinition(String buildId, String module,ProcessorContext ctx,boolean force) {
+		WebServiceModule ret = null;
+
+		String objectName = WEBSERVICE_DEFINITIONS+"_" + buildId+"_"+module;
+		ret = (WebServiceModule)ctx.getObject(objectName);
 		if ((ret==null) && (force)) {
-			ret = new WebServiceContext();
-			ret.setContextRoot(name);
-			ctx.setObject(WEBSERVICE_DEFINITIONS+"_"+name, ret);
+			ret = new WebServiceModule();
+			ctx.setObject(objectName, ret);
 		}
 
 		return ret;
 	}
 
-	public static WebServiceContext getWebServiceDefinition(ProcessorContext ctx) {
+	/*
+	public static WebServiceContext getWebServiceDefinition(String buildId, String module, ProcessorContext ctx) {
 		String name = ctx.getBuildContext().getName();
 		return getWebServiceDefinition(name,ctx,true);
 	}
+	*/
 }
 

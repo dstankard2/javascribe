@@ -5,11 +5,13 @@ import java.util.Map;
 
 import net.sf.javascribe.api.config.BuildComponent;
 import net.sf.javascribe.api.config.Component;
+import net.sf.javascribe.api.logging.ProcessorLogLevel;
 import net.sf.javascribe.engine.data.ApplicationData;
 import net.sf.javascribe.engine.data.files.ApplicationFolderImpl;
 import net.sf.javascribe.engine.data.processing.BuildComponentItem;
 import net.sf.javascribe.engine.data.processing.ComponentItem;
 import net.sf.javascribe.engine.data.processing.ProcessingState;
+import net.sf.javascribe.engine.data.processing.ProcessorLog;
 import net.sf.javascribe.engine.service.RegisteredBuildComponentPattern;
 import net.sf.javascribe.engine.service.RegisteredComponentPattern;
 
@@ -23,6 +25,11 @@ public class ApplicationBuilder {
 
 	public ApplicationBuilder rootFolder(ApplicationFolderImpl folder) {
 		app.setRootFolder(folder);
+		return this;
+	}
+
+	public ApplicationBuilder createLog() {
+		app.setApplicationLog(new ProcessorLog("APP", app, ProcessorLogLevel.DEBUG));
 		return this;
 	}
 

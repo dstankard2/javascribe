@@ -18,6 +18,9 @@ Engine/Processing enhancements:
 	Task: Support for commands.txt in folders that have build components.
 		Support a standing command that runs every time a build in that folder changes.
 		Determine other commands to run
+	Types should be available on a per-build-context basis instead of on a language basis.
+		Maybe they should be available from build context instead of processor context.
+		ProcessorContext would then have an API to retrieve another build context.
 
 Pattern bugs/tasks
 	Task: Evaluate web service module and web service client patterns to see if there's a better way to associate them.
@@ -33,4 +36,5 @@ Pattern bugs/tasks
 		Maybe create a code execution context for the endpoint code section in the servlet.
 	Task: Convert pattern XML files to use Lombok instead of explicit getters/setters
 	Task: Evaluate organization and structure of wsClients XML.  See if it makes sense.
+	Task: Analyze Liquibase usage, implement component pattern for it.  Integrate into Maven build.
 

@@ -23,6 +23,11 @@ public class DefaultBuildContext implements BuildContext {
 	}
 
 	@Override
+	public String getId() {
+		return "root";
+	}
+	
+	@Override
 	public void addDependency(String name) {
 		log.info("Dependency '"+name+"' is added to the build context");
 	}

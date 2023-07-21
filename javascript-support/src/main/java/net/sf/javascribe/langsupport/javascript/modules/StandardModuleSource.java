@@ -6,12 +6,12 @@ import java.util.Map.Entry;
 
 import net.sf.javascribe.api.exception.JavascribeException;
 import net.sf.javascribe.langsupport.javascript.JavascriptUtils;
-import net.sf.javascribe.langsupport.javascript.types.ExportedModuleType;
+import net.sf.javascribe.langsupport.javascript.types.ModuleExportType;
 
 public class StandardModuleSource implements ModuleSource {
 
 	private String name = null;
-	private ExportedModuleType exportType = null;
+	private ModuleExportType exportType = null;
 	
 	public StandardModuleSource(String name) {
 		this.name = name;
@@ -25,11 +25,11 @@ public class StandardModuleSource implements ModuleSource {
 
 	private StringBuilder initCode = new StringBuilder();
 	
-	public ExportedModuleType getExportType() {
+	public ModuleExportType getExportType() {
 		return exportType;
 	}
 
-	public void setExportType(ExportedModuleType exportType) {
+	public void setExportType(ModuleExportType exportType) {
 		this.exportType = exportType;
 	}
 
@@ -42,7 +42,7 @@ public class StandardModuleSource implements ModuleSource {
 	}
 
 	public void addInternalFunction(ModuleFunction fn) throws JavascribeException {
-		if (getExportType()==ExportedModuleType.CONST) {
+		if (getExportType()==ModuleExportType.CONST) {
 			throw new JavascribeException("A constant cannot have an internal function.  You should add the module function to the module source file.");
 		}
 		internalFunctions.put(fn.getName(), fn);
@@ -85,12 +85,12 @@ public class StandardModuleSource implements ModuleSource {
 			objSource.append(fn.getName()+" : "+getName()+"_"+fn.getName());
 		}
 
-		if (getExportType()==ExportedModuleType.CONST) {
+		if (getExportType()==ModuleExportType.CONST) {
 			ret.append(initCode);
 			ret.append("export const "+getName()+" = {\n");
 			ret.append(objSource.toString());
 			ret.append("\n};\n");
-		} else if (getExportType()==ExportedModuleType.CONSTRUCTOR) {
+		} else if (getExportType()==ModuleExportType.CONSTRUCTOR) {
 			ret.append("export function "+getName()+"() {\n");
 			ret.append(initCode);
 			ret.append("\n};\n");
@@ -98,26 +98,5 @@ public class StandardModuleSource implements ModuleSource {
 		return ret.toString();
 	}
 	
-	public StandardModuleSource copy() {
-		StandardModuleSource ret = new StandardModuleSource(name);
-		
-		ret.initCode = new StringBuilder(initCode.toString());
-		ret.properties = copy(properties);
-		ret.functions = copy(functions);
-		ret.internalFunctions = copy(internalFunctions);
-		ret.exportType = exportType;
-		
-		return ret;
-	}
-
-	private <Y extends Object> Map<String,Y> copy(Map<String,Y> orig) {
-		Map<String,Y> ret = new HashMap<>();
-		
-		for(Entry<String,Y> entry : orig.entrySet()) {
-			ret.put(entry.getKey(), entry.getValue());
-		}
-		
-		return ret;
-	}
 }
 

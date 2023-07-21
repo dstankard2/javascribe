@@ -10,6 +10,7 @@ import net.sf.javascribe.api.annotation.Plugin;
 import net.sf.javascribe.api.exception.JavascribeException;
 import net.sf.javascribe.api.types.ServiceOperation;
 import net.sf.javascribe.langsupport.javascript.types.JavascriptType;
+import net.sf.javascribe.langsupport.javascript.types.ModuleType;
 import net.sf.javascribe.langsupport.javascript.types.PromiseType;
 import net.sf.javascribe.patterns.xml.js.page.PageFn;
 
@@ -86,11 +87,20 @@ public class PageFnProcessor implements ComponentProcessor<PageFn> {
 		if (!(returnType instanceof PromiseType)) {
 			throw new JavascribeException("PageFn only supports services that return a promise");
 		}
-
+		
 		PageFnDef def = new PageFnDef();
 		info.getFunctions().add(def);
 		def.setName(name);
 
+		int i = operationRef.indexOf('.');
+		String serviceAttributeName = operationRef.substring(0, i);
+		JavascriptType serviceType = JavascribeUtils.getTypeForSystemAttribute(JavascriptType.class, serviceAttributeName, ctx);
+		if (serviceType!=null) {
+			if (serviceType instanceof ModuleType) {
+				info.getImportedRefs().add(serviceAttributeName);
+			}
+		}
+		
 		StringBuilder code = new StringBuilder();
 		CodeExecutionContext execCtx = new CodeExecutionContext(ctx);
 		String modelTypeName = info.getModelTypeName();

@@ -1,8 +1,8 @@
 package net.sf.javascribe.engine.data.processing;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import net.sf.javascribe.api.ApplicationContext;
 import net.sf.javascribe.api.BuildContext;
@@ -111,9 +111,9 @@ public class BuildProcessorContextImpl implements BuildProcessorContext {
 
 	private void originateSourceFile(SourceFile sourceFile) {
 		String path = sourceFile.getPath();
-		List<Integer> ids = application.getDependencyData().getSrcDependencies().get(path);
+		Set<Integer> ids = application.getDependencyData().getSrcDependencies().get(path);
 		if (ids==null) {
-			ids = new ArrayList<>();
+			ids = new HashSet<>();
 			application.getDependencyData().getSrcDependencies().put(path, ids);
 		}
 		if (!ids.contains(itemId)) {

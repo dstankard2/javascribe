@@ -104,7 +104,7 @@ public class MavenBuildComponentProcessor implements BuildComponentProcessor<Mav
 	@Override
 	public BuildContext createBuildContext() {
 		ctx.getLog().debug("Create new Maven build context at path '"+ctx.getFolder().getPath()+"'");
-		return new MavenBuildContext(ctx,this);
+		return new MavenBuildContext(ctx,this,component.getId());
 	}
 	
 	public String getArtifact() {
@@ -118,13 +118,15 @@ public class MavenBuildComponentProcessor implements BuildComponentProcessor<Mav
 	
 	public void addBuildPhase(String phase) {
 		BuildContext parentBuildContext = ctx.getParentBuildContext();
-		MavenBuildContext mctx = (MavenBuildContext)parentBuildContext;
-		
-		if (mctx!=null) {
-			mctx.addBuildPhase(phase);
+		if (parentBuildContext instanceof MavenBuildContext) {
+			MavenBuildContext mctx = (MavenBuildContext)parentBuildContext;
+			
+			if (mctx!=null) {
+				mctx.addBuildPhase(phase);
+			}
+			MavenCommand cmd = (MavenCommand)build.get(0);
+			cmd.addPhase(phase);
 		}
-		MavenCommand cmd = (MavenCommand)build.get(0);
-		cmd.addPhase(phase);
 	}
 
 	@Override

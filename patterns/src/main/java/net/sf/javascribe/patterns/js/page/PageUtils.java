@@ -5,7 +5,7 @@ import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.exception.JavascribeException;
 import net.sf.javascribe.api.types.ServiceOperation;
 import net.sf.javascribe.langsupport.javascript.JavascriptUtils;
-import net.sf.javascribe.langsupport.javascript.types.ExportedModuleType;
+import net.sf.javascribe.langsupport.javascript.types.ModuleExportType;
 import net.sf.javascribe.langsupport.javascript.types.ModuleType;
 
 public class PageUtils {
@@ -27,7 +27,7 @@ public class PageUtils {
 		// Create model type for this page
 		PageModelType modelType = new PageModelType(pageName,false,ctx);
 		ctx.addVariableType(modelType);
-		ModuleType pageType = new ModuleType(pageName,JavascriptUtils.getModulePath(ctx), ExportedModuleType.CONSTRUCTOR);
+		ModuleType pageType = new ModuleType(pageName,JavascriptUtils.getModulePath(ctx), ModuleExportType.CONSTRUCTOR);
 		//JavascriptServiceType pageType = new JavascriptServiceType(pageName);
 		ctx.addVariableType(pageType);
 		pageInfo.setModelTypeName(modelType.getName());

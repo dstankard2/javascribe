@@ -11,6 +11,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+import lombok.Getter;
+import lombok.Setter;
 import net.sf.javascribe.api.annotation.ConfigProperty;
 import net.sf.javascribe.api.annotation.Plugin;
 import net.sf.javascribe.api.annotation.XmlConfig;
@@ -21,36 +23,26 @@ import net.sf.javascribe.patterns.PatternPriority;
 @Plugin
 @XmlRootElement(name="wsClients")
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name="wsClients",propOrder={ "webService" })
+@XmlType(name="wsClients",propOrder={ "moduleClient" })
+@Getter
+@Setter
 public class WsClients extends Component {
 
 	@XmlElement
-	private List<WebService> webService = new ArrayList<>();
+	private List<ModuleClient> moduleClient = new ArrayList<>();
+	
 	@XmlAttribute
-	private String buildContextName = "";
+	private String buildId = "";
+
 	@XmlTransient
 	private String preprocessing = "";
+
 	@XmlTransient
 	private String ajaxProvider = "";
+
 	@XmlAttribute
 	private String urlPrefix = "";
 	
-	public List<WebService> getWebService() {
-		return webService;
-	}
-
-	public void setWebService(List<WebService> webService) {
-		this.webService = webService;
-	}
-
-	public String getBuildContextName() {
-		return buildContextName;
-	}
-
-	public void setBuildContextName(String buildContextName) {
-		this.buildContextName = buildContextName;
-	}
-
 	public int getPriority() {
 		return PatternPriority.WS_CLIENT;
 	}
@@ -73,14 +65,6 @@ public class WsClients extends Component {
 	
 	public String getAjaxProvider() {
 		return this.ajaxProvider;
-	}
-
-	public String getUrlPrefix() {
-		return urlPrefix;
-	}
-
-	public void setUrlPrefix(String urlPrefix) {
-		this.urlPrefix = urlPrefix;
 	}
 
 	@Override

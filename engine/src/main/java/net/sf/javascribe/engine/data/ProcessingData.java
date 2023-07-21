@@ -1,11 +1,14 @@
 package net.sf.javascribe.engine.data;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import net.sf.javascribe.api.BuildContext;
 import net.sf.javascribe.engine.data.processing.BuildComponentItem;
 import net.sf.javascribe.engine.data.processing.FolderWatcherEntry;
 import net.sf.javascribe.engine.data.processing.Item;
@@ -21,6 +24,8 @@ public class ProcessingData {
 	private List<Processable> processed = new ArrayList<>();
 
 	private List<BuildComponentItem> buildsToInit = new ArrayList<>();
+
+	private Map<String,BuildContext> availableBuildContexts = new HashMap<>();
 
 	private List<BuildComponentItem> buildsToProcess = new ArrayList<>();
 

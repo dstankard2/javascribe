@@ -3,6 +3,7 @@ package net.sf.javascribe.patterns.java.http;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
 
@@ -20,10 +21,9 @@ import net.sf.javascribe.langsupport.java.types.JavaVariableType;
 import net.sf.javascribe.langsupport.java.types.impl.JavaDataObjectType;
 import net.sf.javascribe.langsupport.java.types.impl.JavaEnumType;
 import net.sf.javascribe.langsupport.java.types.impl.JavaServiceType;
+import net.sf.javascribe.patterns.http.EndpointOperation;
 import net.sf.javascribe.patterns.http.HttpMethod;
-import net.sf.javascribe.patterns.http.WebServiceContext;
-import net.sf.javascribe.patterns.http.WebServiceDefinition;
-import net.sf.javascribe.patterns.http.WebServiceOperation;
+import net.sf.javascribe.patterns.http.WebServiceModule;
 import net.sf.javascribe.patterns.http.WebUtils;
 import net.sf.javascribe.patterns.xml.java.http.Endpoint;
 import net.sf.javascribe.patterns.xml.java.http.Response;
@@ -50,17 +50,20 @@ public class EndpointProcessor implements ComponentProcessor<Endpoint> {
 			throw new JavascribeException("Java HTTP Endpoint doesn't have a path specified");
 		}
 
-		WebServiceContext webCtx = WebUtils.getWebServiceDefinition(ctx);
-		WebServiceDefinition srvDef = webCtx.getWebServiceDefinition(comp.getModule());
-		
-		if (srvDef==null) {
-			throw new JavascribeException("Couldn't find web service module '"+comp.getModule()+"'");
+		String module = comp.getModule();
+		if (StringUtils.isEmpty(module)) {
+			throw new JavascribeException("A Java server HTTP endpoint must exist in a module - found no module name");
 		}
+		String buildId = ctx.getBuildContext().getId();
 
+		WebServiceModule moduleDef = WebUtils.getWebServiceDefinition(buildId, module, ctx, true);
+
+		//String contextRoot = moduleDef.getModuleUri();
+		
 		String operationResult = comp.getOperationResult();
 		String requestBody = null;
-		WebServiceOperation op = new WebServiceOperation();
-		srvDef.getOperations().add(op);
+		EndpointOperation op = new EndpointOperation(module);
+		moduleDef.getOperations().add(op);
 
 		HttpMethod httpMethod = comp.getMethod();
 		if ((httpMethod==HttpMethod.POST) || (httpMethod==HttpMethod.PUT)) {
@@ -269,7 +272,6 @@ public class EndpointProcessor implements ComponentProcessor<Endpoint> {
 		execCtx.addVariable(ruleParts[0], serviceType.getName());
 		JavaUtils.append(invokeCode,serviceType.instantiate(ruleParts[0]));
 		JavaUtils.append(invokeCode, JavaUtils.callJavaOperation(operationResult, ruleParts[0], serviceOp, execCtx, null));
-		//op.setOperationName(ruleParts[1]);
 		code.append(invokeCode.getCodeText());
 		src.addImports(invokeCode);
 

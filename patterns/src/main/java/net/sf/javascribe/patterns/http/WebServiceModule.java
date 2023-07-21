@@ -3,6 +3,9 @@ package net.sf.javascribe.patterns.http;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * Represents a web service API that is available to a HTTP client at a particular path.
  * The contextRoot is the root path on the server host to the web service endpoints 
@@ -13,31 +16,34 @@ import java.util.List;
  * @author DCS
  *
  */
-public class WebServiceContext {
+@Getter
+@Setter
+public class WebServiceModule {
 
-	private String contextRoot = null;
-
-	private List<WebServiceDefinition> webServices = new ArrayList<>();
-
-	public WebServiceContext() {
-	}
-
-	public String getContextRoot() {
-		return contextRoot;
-	}
-
-	public void setContextRoot(String contextRoot) {
-		this.contextRoot = contextRoot;
-	}
-
-	public List<WebServiceDefinition> getWebServices() {
-		return webServices;
-	}
-
-	public void setWebServices(List<WebServiceDefinition> webServices) {
-		this.webServices = webServices;
-	}
+	private String moduleName = "";
 	
+	private String moduleUri = "";
+
+	private List<EndpointOperation> operations = new ArrayList<>();
+
+	//private List<WebServiceDefinition> webServices = new ArrayList<>();
+
+	public WebServiceModule() {
+	}
+
+	/*
+	public Map<String,EndpointOperation> getModuleOperations() {
+		Map<String,EndpointOperation> ret = new HashMap<>();
+		
+		operations.forEach(op -> {
+			ret.put(contextRoot, null)
+		});
+		
+		return ret;
+	}
+	*/
+	
+	/*
 	public WebServiceDefinition getWebServiceDefinition(String name) {
 		for(WebServiceDefinition def : webServices) {
 			if (def.getName().equals(name)) {
@@ -46,5 +52,6 @@ public class WebServiceContext {
 		}
 		return null;
 	}
+*/
 	
 }

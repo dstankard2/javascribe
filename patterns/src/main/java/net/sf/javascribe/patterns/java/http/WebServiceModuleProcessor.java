@@ -17,23 +17,22 @@ import net.sf.javascribe.langsupport.java.JavaClassSourceFile;
 import net.sf.javascribe.langsupport.java.JavaUtils;
 import net.sf.javascribe.langsupport.java.types.JavaVariableType;
 import net.sf.javascribe.langsupport.java.types.impl.JavaServiceType;
-import net.sf.javascribe.patterns.http.WebServiceContext;
-import net.sf.javascribe.patterns.http.WebServiceDefinition;
+import net.sf.javascribe.patterns.http.WebServiceModule;
 import net.sf.javascribe.patterns.http.WebUtils;
 import net.sf.javascribe.patterns.web.JavaWebappRuntimePlatform;
 import net.sf.javascribe.patterns.xml.java.http.Preprocessing;
-import net.sf.javascribe.patterns.xml.java.http.WebServiceModule;
+import net.sf.javascribe.patterns.xml.java.http.WebServiceModuleComponent;
 
 @Plugin
-public class WebServiceModuleProcessor implements ComponentProcessor<WebServiceModule> {
+public class WebServiceModuleProcessor implements ComponentProcessor<WebServiceModuleComponent> {
 
 	@Override
-	public void process(WebServiceModule comp, ProcessorContext ctx) throws JavascribeException {
+	public void process(WebServiceModuleComponent comp, ProcessorContext ctx) throws JavascribeException {
 		ctx.setLanguageSupport("Java8");
 		JavaClassSourceFile src = new JavaClassSourceFile(ctx);
 		JavaClassSource cl = src.getSrc();
-		String name = comp.getName();
-		String servletName = name+"Servlet";
+		String moduleName = comp.getName();
+		String servletName = moduleName+"Servlet";
 		String pkg = JavaUtils.getJavaPackage(comp, ctx);
 		StringBuilder bodyCode = new StringBuilder();
 		CodeExecutionContext execCtx = JavaUtils.getCodeExecutionContext(servletName, "service", ctx, true);
@@ -90,7 +89,7 @@ public class WebServiceModuleProcessor implements ComponentProcessor<WebServiceM
 				continue;
 			}
 			if (execCtx.getVariableType(ref)!=null) {
-				throw new JavascribeException("Variable ref '"+ref+"' in module '"+name+"' already exists in the current code execution context");
+				throw new JavascribeException("Variable ref '"+ref+"' in module '"+moduleName+"' already exists in the current code execution context");
 			}
 			JavaVariableType refType = JavascribeUtils.getTypeForSystemAttribute(JavaVariableType.class, ref, ctx);
 			JavaUtils.append(preprocessingCode, refType.declare(ref, execCtx));
@@ -131,13 +130,11 @@ public class WebServiceModuleProcessor implements ComponentProcessor<WebServiceM
 
 		service.setBody(bodyCode.toString());
 		ctx.addSourceFile(src);
-		
-		WebServiceContext webCtx = WebUtils.getWebServiceDefinition(ctx);
-		WebServiceDefinition def = new WebServiceDefinition(webCtx);
-		def.setUri(uri);
-		def.setName(name);
-		webCtx.getWebServices().add(def);
 
+		String buildId = ctx.getBuildContext().getId();
+		WebServiceModule webCtx = WebUtils.getWebServiceDefinition(buildId, moduleName, ctx, true);
+
+		webCtx.setModuleUri(comp.getUri());
 		src.getSrc().addImport("java.util.Map");
 		src.getSrc().addImport("java.util.HashMap");
 		MethodSource<JavaClassSource> retrieveParameters = src.getSrc().addMethod().setName("retrieveParameters").setPrivate().setBody(RETRIEVE_PARAMETER_CODE).setReturnType("Map<String,String>");

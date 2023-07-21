@@ -30,6 +30,8 @@ public interface BuildContext {
 	String getName();
 	
 	void addBuildCommand(String cmd);
-	
+
+	String getId();
+
 }
 

@@ -1,21 +1,21 @@
 package net.sf.javascribe.langsupport.javascript.modules;
 
-import net.sf.javascribe.langsupport.javascript.types.ExportedModuleType;
+import net.sf.javascribe.langsupport.javascript.types.ModuleExportType;
 
 public class HandwrittenModuleSource implements ModuleSource {
 	private StringBuilder codeBuild = new StringBuilder();
 	private String name = null;
-	private ExportedModuleType exportType = null;
+	private ModuleExportType exportType = null;
 
 	public HandwrittenModuleSource(String name) {
 		this.name = name;
 	}
 
-	public ExportedModuleType getExportType() {
+	public ModuleExportType getExportType() {
 		return exportType;
 	}
 
-	public void setExportType(ExportedModuleType exportType) {
+	public void setExportType(ModuleExportType exportType) {
 		this.exportType = exportType;
 	}
 
@@ -24,7 +24,7 @@ public class HandwrittenModuleSource implements ModuleSource {
 	}
 	public String getSource() {
 		StringBuilder b = new StringBuilder();
-		if (this.getExportType()==ExportedModuleType.CONST) {
+		if (this.getExportType()==ModuleExportType.CONST) {
 			b.append("export const "+getName()+" {\n");
 			b.append(codeBuild.toString());
 			b.append("\n};\n");

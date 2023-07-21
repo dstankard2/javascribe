@@ -1,6 +1,7 @@
 package net.sf.javascribe.engine.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -15,6 +16,7 @@ import net.sf.javascribe.api.config.Component;
 import net.sf.javascribe.api.exception.JavascribeException;
 import net.sf.javascribe.engine.ComponentDependency;
 import net.sf.javascribe.engine.data.ApplicationData;
+import net.sf.javascribe.engine.data.DependencyData;
 import net.sf.javascribe.engine.data.ProcessingData;
 import net.sf.javascribe.engine.data.files.UserFile;
 import net.sf.javascribe.engine.data.processing.BuildComponentItem;
@@ -109,6 +111,7 @@ public class ProcessingUtil {
 	// Should this return a list of items that need to be reset?
 	public boolean removeItem(ApplicationData application, int id) {
 		ProcessingData pd = application.getProcessingData();
+		DependencyData depData = application.getDependencyData();
 		boolean ret = true;
 		Item item = pd.getItem(id);
 		if (item==null) {
@@ -149,9 +152,10 @@ public class ProcessingUtil {
 		
 		// For a build, remove from buildsToInit, buildsToProcess and buildsProcessed
 		if (buildItem!=null) {
-			application.getProcessingData().getBuildsToInit().remove(buildItem);
-			application.getProcessingData().getBuildsToProcess().remove(buildItem);
-			application.getProcessingData().getBuildsProcessed().remove(buildItem);
+			pd.getBuildsToInit().remove(buildItem);
+			pd.getBuildsToProcess().remove(buildItem);
+			pd.getBuildsProcessed().remove(buildItem);
+			pd.getAvailableBuildContexts().remove(buildItem.getBuildComponent().getId());
 		}
 
 		// Find source files that originate from this item
@@ -174,26 +178,29 @@ public class ProcessingUtil {
 		// Find attributes that this item depends on.
 		Set<String> attributeDeps = dependencyUtil.getSystemAttributeDependencies(id, application);
 		attributeDeps.forEach(name -> {
-			// If this item originates the attribute then we need to remove it.
-			// We don't need to do this for dependency only
-			if (application.getDependencyData().getAttributeOriginators().get(name)!=null) {
-				if (application.getDependencyData().getAttributeOriginators().get(name).contains(id)) {
+			// Remove this item from the attribute dependencies if it's there
+			depData.getAttributeDependencies().get(name).removeAll(Arrays.asList(id));
+			// If this item originates the attribute then we need to remove it and items that originate it.
+			// The attribute might not have any originators if it came from systemAttributes.properties
+			if (depData.getAttributeOriginators().get(name)!=null) {
+				if (depData.getAttributeOriginators().get(name).contains(id)) {
 					// For originated attribute: reset its dependencies, remove it, remove its dependency data
-					itemsToReset.addAll(application.getDependencyData().getAttributeDependencies().get(name));
-					itemsToReset.addAll(application.getDependencyData().getAttributeOriginators().get(name));
+					itemsToReset.addAll(depData.getAttributeDependencies().get(name));
+					itemsToReset.addAll(depData.getAttributeOriginators().get(name));
 					application.getSystemAttributes().remove(name);
-					application.getDependencyData().getAttributeDependencies().remove(name);
-					application.getDependencyData().getAttributeOriginators().remove(name);
-				} else {
-					// Remove the dependency on this attribute for this item
-					int i = application.getDependencyData().getAttributeDependencies().get(name).indexOf(id);
-					application.getDependencyData().getAttributeDependencies().get(name).remove(i);
+					depData.getAttributeDependencies().get(name).clear();
+					depData.getAttributeOriginators().get(name).clear();
 				}
-			} else {
-				// Remove the dependency on this attribute for this item
-				int i = application.getDependencyData().getAttributeDependencies().get(name).indexOf(id);
-				application.getDependencyData().getAttributeDependencies().get(name).remove(i);
 			}
+			if (depData.getAttributeDependencies().get(name).size()==0) {
+				depData.getAttributeDependencies().remove(name);
+			}
+			if (depData.getAttributeOriginators().get(name)!=null) {
+				if (depData.getAttributeOriginators().get(name).size()==0) {
+					depData.getAttributeOriginators().remove(name);
+				}
+			}
+
 		});
 		
 		// Find types that this item originates.  Mark their dependencies for reset.
@@ -205,7 +212,7 @@ public class ProcessingUtil {
 			// For each type: reset items that depend on it, remove the type and remove its dependency data
 			itemsToReset.addAll(application.getDependencyData().getTypeDependencies().get(lang).get(name));
 			application.getApplicationTypes().get(lang).remove(name);
-			application.getDependencyData().getTypeDependencies().get(lang).remove(name);
+			depData.getTypeDependencies().get(lang).remove(name);
 		});
 		
 		// Find objects that this item depends on.
@@ -267,7 +274,11 @@ public class ProcessingUtil {
 	}
 	
 	public boolean initBuild(BuildComponentItem buildItem, ApplicationData application) {
-		return buildItem.init();
+		boolean ret = buildItem.init();
+		if (ret) {
+			application.getProcessingData().getAvailableBuildContexts().put(buildItem.getBuildComponent().getId(), buildItem.getBuildContext());
+		}
+		return ret;
 	}
 	
 	public boolean processBuild(BuildComponentItem buildItem, ApplicationData application) {

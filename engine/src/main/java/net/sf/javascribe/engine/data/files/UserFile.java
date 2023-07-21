@@ -9,18 +9,20 @@ import net.sf.javascribe.api.resources.ApplicationFile;
 
 /**
  * Implements watched resource because it is watched by the engine.
- * Implements ApplicationFile for the sake of client API.
+ * Implements ApplicationFile for client API.
  * @author DCS
  */
 public class UserFile implements WatchedResource,ApplicationFile {
 	private File file = null;
 	private ApplicationFolderImpl folder = null;
 	private long lastModified = 0;
+	private String path;
 
 	public UserFile(File file,ApplicationFolderImpl folder) {
 		this.file = file;
 		this.folder = folder;
 		this.lastModified = file.lastModified();
+		this.path = folder.getPath()+getName();
 	}
 
 	@Override
@@ -35,7 +37,7 @@ public class UserFile implements WatchedResource,ApplicationFile {
 
 	@Override
 	public String getPath() {
-		return folder.getPath()+getName();
+		return path;
 	}
 
 	@Override

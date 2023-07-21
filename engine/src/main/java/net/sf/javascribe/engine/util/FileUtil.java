@@ -13,7 +13,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 import lombok.SneakyThrows;
 import net.sf.javascribe.api.config.BuildComponent;
@@ -53,7 +55,7 @@ public class FileUtil {
 		if (events.size()>0) {
 			List<File> added = filesAdded.get(pathStr);
 			List<File> removed = filesRemoved.get(pathStr);
-			
+
 			events.forEach(event -> {
 				Path p = (Path)event.context();
 				File file = new File(folder.getFolderFile(), p.toString());
@@ -67,8 +69,11 @@ public class FileUtil {
 					removed.add(file);
 					added.remove(file);
 				} else if (event.kind().equals(StandardWatchEventKinds.ENTRY_MODIFY)) {
-					added.add(file);
-					removed.add(file);
+					// TODO: Is there any case where we need to do something when a folder changes?
+					if (!file.isDirectory()) {
+						added.add(file);
+						removed.add(file);
+					}
 				}
 				
 			});
@@ -163,6 +168,19 @@ public class FileUtil {
 		// can files can be re-added.
 		if (clearFolder.get()) {
 			this.clearFolder(folder, ret);
+		} else {
+			// If we didn't clear this folder completely
+			// Go through subfolders and remove any that are now empty
+			List<String> names = folder.getSubFolders().entrySet().stream().filter(e -> {
+				if (e.getValue().getComponentFiles().size()>0) return false;
+				if (e.getValue().getUserFiles().size()>0) return false;
+				if (e.getValue().getSubFolders().size()>0) return false;
+				if (e.getValue().getJasperPropertiesFile()!=null) return false;
+				return true;
+			}).map(Entry::getKey).collect(Collectors.toList());
+			names.forEach(name -> {
+				folder.getSubFolders().remove(name);
+			});
 		}
 		
 		removed.clear();

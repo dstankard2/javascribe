@@ -22,7 +22,17 @@ import net.sf.javascribe.patterns.PatternPriority;
 @XmlRootElement(name="webServiceModule")
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name="webServiceModule",propOrder={ "preprocessing" })
-public class WebServiceModule extends JavaComponent {
+public class WebServiceModuleComponent extends JavaComponent {
+
+	@XmlTransient
+	private String uriPrefix = "";
+
+	@ConfigProperty(required = false, name = "java.http.uriPrefix",
+			description = "URL prefix for invoking a HTTP module, from the HTTP client's perspective.  For instance, if a reverse proxy will forward requests at a path to the HTTP server.", 
+			example = "/rest")
+	public void setUriPrefix(String uriPrefix) {
+		this.uriPrefix = uriPrefix;
+	}
 
 	@XmlTransient
 	private String requestRef = "";

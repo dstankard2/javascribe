@@ -14,7 +14,6 @@ public class JavascriptSourceFile implements SourceFile {
 
 	@Getter
 	private StringBuilder source = new StringBuilder();
-	
 
 	@Getter
 	@Setter

@@ -3,6 +3,8 @@ package net.sf.javascribe.patterns.js;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 import net.sf.javascribe.api.ComponentProcessor;
 import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.api.ProcessorContext;
@@ -21,13 +23,14 @@ import net.sf.javascribe.langsupport.javascript.types.JavascriptDataObjectType;
 import net.sf.javascribe.langsupport.javascript.types.JavascriptEnumType;
 import net.sf.javascribe.langsupport.javascript.types.JavascriptServiceType;
 import net.sf.javascribe.langsupport.javascript.types.JavascriptType;
+import net.sf.javascribe.langsupport.javascript.types.ModuleExportType;
+import net.sf.javascribe.langsupport.javascript.types.ModuleType;
 import net.sf.javascribe.langsupport.javascript.types.PromiseType;
+import net.sf.javascribe.patterns.http.EndpointOperation;
 import net.sf.javascribe.patterns.http.HttpMethod;
-import net.sf.javascribe.patterns.http.WebServiceContext;
-import net.sf.javascribe.patterns.http.WebServiceDefinition;
-import net.sf.javascribe.patterns.http.WebServiceOperation;
+import net.sf.javascribe.patterns.http.WebServiceModule;
 import net.sf.javascribe.patterns.http.WebUtils;
-import net.sf.javascribe.patterns.xml.js.WebService;
+import net.sf.javascribe.patterns.xml.js.ModuleClient;
 import net.sf.javascribe.patterns.xml.js.WsClients;
 
 @Plugin
@@ -37,81 +40,79 @@ public class WsClientsProcessor implements ComponentProcessor<WsClients> {
 	public void process(WsClients comp, ProcessorContext ctx) throws JavascribeException {
 		ctx.setLanguageSupport("Javascript");
 		ModuleSourceFile file = JavascriptUtils.getModuleSource(ctx);
-		String ctxName = comp.getBuildContextName();
 		String urlPrefix = comp.getUrlPrefix();
-		WebServiceContext webCtx = WebUtils.getWebServiceDefinition(ctxName, ctx, false);
+
+		String buildId = comp.getBuildId();
 		
-		List<WebService> services = comp.getWebService();
-
-		if (webCtx == null) {
-			throw new JavascribeException("Found no web services for build context '" + ctxName + "'");
+		if (StringUtils.isEmpty(buildId)) {
+			buildId = ctx.getBuildContext().getId();
 		}
+		
+		for(ModuleClient moduleClient : comp.getModuleClient()) {
+			String moduleName = moduleClient.getModule().trim();
+			if (StringUtils.isEmpty(moduleName)) {
+				throw new JavascribeException("Found a module client element with no 'module' attribute");
+			}
+			
+			String name = moduleClient.getName().trim();
+			if (StringUtils.isEmpty(name)) {
+				throw new JavascribeException("Found a module client element with no 'name' attribute");
+			}
 
-		for (WebService service : services) {
-			String name = service.getName();
-			String ref = service.getRef();
-			String module = service.getModule();
+			String ref = moduleClient.getRef().trim();
+			if (StringUtils.isEmpty(name)) {
+				throw new JavascribeException("Found a module client element with no 'ref' attribute");
+			}
+			
+			WebServiceModule webModule = WebUtils.getWebServiceDefinition(buildId,  moduleName, ctx, false);
+			if (webModule==null) {
+				throw new JavascribeException("Could not find a module called "+moduleName+" in build with ID "+buildId);
+			}
 
-			JavascriptServiceType type = new JavascriptServiceType(name);
-
-			ctx.addSystemAttribute(ref, name);
+			String webPath = file.getWebPath();
+			ModuleType type = new ModuleType(name, webPath, ModuleExportType.CONSTRUCTOR);
 			ctx.addVariableType(type);
-
-			if (module.trim().equals("")) {
-				throw new JavascribeException("Web Service client module did not specify a module to be a client for");
-			}
-			if (name.trim().equals("")) {
-				throw new JavascribeException("Web Service client module did not specify a name");
-			}
-			if (ref.trim().isEmpty()) {
-				throw new JavascribeException("Web Service client module did not specify a ref");
-			}
-
-			WebServiceDefinition def = webCtx.getWebServiceDefinition(module);
-			if (def == null) {
-				throw new JavascribeException("Couldn't find web service module '" + module + "'");
-			}
-			HandwrittenModuleSource src = new HandwrittenModuleSource(module);
+			HandwrittenModuleSource src = new HandwrittenModuleSource(name);
 			file.addModule(src);
-			List<WebServiceOperation> ops = def.getOperations();
-			for (WebServiceOperation op : ops) {
-				appendOperation(comp, ctx, op, src, type, urlPrefix, def.getUri());
+			for(EndpointOperation op : webModule.getOperations()) {
+				String rootUri = webModule.getModuleUri();
+				appendOperation(comp, ctx, op, src, type, urlPrefix, rootUri);
+				
 			}
-			src.setName(name);
+
 			src.getCodeBuild().append("return {\n");
 			boolean first = true;
-			for (WebServiceOperation op : ops) {
+			for (EndpointOperation op : webModule.getOperations()) {
 				if (first)
 					first = false;
 				else
 					src.getCodeBuild().append(",\n");
-				String n = getOperationName(op);
+				String n = op.getOperationName();
 				src.getCodeBuild().append(n + ": _" + n);
 			}
 			src.getCodeBuild().append("\n};\n");
+			ctx.addSystemAttribute(ref, name);
 		}
-
-	}
-
-	// TODO: Figure out something else here
-	protected String getOperationName(WebServiceOperation op) {
-		return op.getOperationName();
 	}
 
 	// The operation will be valid - there's no need to check
-	protected void appendOperation(WsClients comp, ProcessorContext ctx, WebServiceOperation op, HandwrittenModuleSource src, JavascriptServiceType type,
-			String urlPrefix, String rootUri) throws JavascribeException {
+	protected void appendOperation(WsClients comp, ProcessorContext ctx, EndpointOperation op, 
+			HandwrittenModuleSource src, JavascriptServiceType type, String urlPrefix, 
+			String rootUri) throws JavascribeException {
 		StringBuilder fnDec = new StringBuilder();
 		StringBuilder fnBody = new StringBuilder();
-		String name = getOperationName(op);
+		String name = op.getOperationName();
 		String path = rootUri + op.getPath();
 		HttpMethod method = op.getMethod();
 		List<String> pathParams = op.getPathVariables();
 		boolean firstArg = true;
 		String ajaxProvider = comp.getAjaxProvider();
 		ServiceOperation serviceOp = new ServiceOperation(name);
-		//boolean sendRequestBody = false;
 
+		if (StringUtils.isEmpty(name)) {
+			throw new JavascribeException("If an endpoint is going to have a client, then it must have a functionName.  Endpoint "+op.getMethod().toString()+" "+op.getPath()+" has no functionName");
+		}
+		
 		if (urlPrefix.trim().length() > 0) {
 			path = urlPrefix + path;
 		}
@@ -224,7 +225,7 @@ public class WsClientsProcessor implements ComponentProcessor<WsClients> {
 		src.getCodeBuild().append("}\n");
 	}
 
-	private void processReturnType(ServiceOperation op, WebServiceOperation webOp, ProcessorContext ctx) throws JavascribeException {
+	private void processReturnType(ServiceOperation op, EndpointOperation webOp, ProcessorContext ctx) throws JavascribeException {
 		String body = webOp.getResponseBody();
 
 		if ((body == null) || (body.trim().length() == 0)) {

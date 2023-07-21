@@ -16,10 +16,16 @@ public class MavenBuildContext implements BuildContext {
 	private BuildProcessorContext ctx = null;
 	private MavenBuildComponentProcessor proc = null;
 	private RuntimePlatform runtimePlatform = null;
+	private String id;
 
-	public MavenBuildContext(BuildProcessorContext ctx,MavenBuildComponentProcessor proc) {
+	public MavenBuildContext(BuildProcessorContext ctx,MavenBuildComponentProcessor proc, String id) {
 		this.ctx = ctx;
 		this.proc = proc;
+		this.id = id;
+	}
+
+	public String getId() {
+		return id;
 	}
 
 	public PluginConfig getPlugin(String artifact) {

@@ -5,7 +5,7 @@ import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.annotation.Plugin;
 import net.sf.javascribe.api.exception.JavascribeException;
 import net.sf.javascribe.langsupport.javascript.JavascriptUtils;
-import net.sf.javascribe.langsupport.javascript.types.ExportedModuleType;
+import net.sf.javascribe.langsupport.javascript.types.ModuleExportType;
 import net.sf.javascribe.langsupport.javascript.types.ModuleType;
 import net.sf.javascribe.patterns.xml.js.HandwrittenModule;
 
@@ -20,15 +20,15 @@ public class HandwrittenModuleProcessor implements ComponentProcessor<Handwritte
 		String exportTypeName = comp.getExportType();
 		String ref = comp.getRef();
 		String path = comp.getWebPath();
-		ExportedModuleType exportType = null;
+		ModuleExportType exportType = null;
 		String typeName = null;
 		
 		ctx.setLanguageSupport("Javascript");
 		
 		if (exportTypeName.equalsIgnoreCase("const")) {
-			exportType = ExportedModuleType.CONST;
+			exportType = ModuleExportType.CONST;
 		} else if (exportTypeName.equalsIgnoreCase("function")) {
-			exportType = ExportedModuleType.CONSTRUCTOR;
+			exportType = ModuleExportType.CONSTRUCTOR;
 		} else {
 			throw new JavascribeException("A handwritten Javascript module must have export type of either 'const' or 'function'");
 		}

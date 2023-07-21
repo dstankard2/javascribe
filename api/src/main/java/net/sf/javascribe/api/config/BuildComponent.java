@@ -6,6 +6,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+import lombok.Getter;
+import lombok.Setter;
 import net.sf.javascribe.api.annotation.Plugin;
 import net.sf.javascribe.api.annotation.XmlConfig;
 
@@ -16,6 +18,11 @@ import net.sf.javascribe.api.annotation.XmlConfig;
 @XmlRootElement(name="buildComponent")
 public abstract class BuildComponent extends Component {
 
+	@Getter
+	@Setter
+	@XmlAttribute
+	private String id;
+	
 	@XmlAttribute
 	private String buildCommand;
 
