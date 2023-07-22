@@ -19,7 +19,7 @@ public class SystemAttributesFile implements WatchedResource {
 	public SystemAttributesFile(File systemAttributesFile, ApplicationFolderImpl folder) {
 		super();
 		systemAttributes = readAttributes(systemAttributesFile);
-		//this.lastModified = lastModified;
+		this.lastModified = systemAttributesFile.lastModified();
 		this.folder = folder;
 	}
 

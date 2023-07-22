@@ -5,9 +5,15 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
 
 import org.mockito.Mockito;
 
+import net.sf.javascribe.api.config.Component;
+import net.sf.javascribe.api.config.ComponentSet;
 import net.sf.javascribe.api.logging.ProcessorLogLevel;
 import net.sf.javascribe.engine.data.ApplicationData;
 import net.sf.javascribe.engine.data.files.ApplicationFolderImpl;
@@ -95,5 +101,25 @@ public class FolderUtil {
 		}
 	}
 
+	private static Class<?>[] classes = new Class<?>[] {
+		TestComponent.class, TestBuildComponent.class
+	};
+	private static JAXBContext ctx = null;
+	private static Marshaller m = null;
+
+	public static void createComponentFile(File dir, String name, Component... components) throws Exception {
+		ComponentSet comps = new ComponentSet();
+		File output = new File(dir, name);
+		
+		comps.setComponent(Arrays.asList(components));
+		
+		if (ctx==null) {
+			ctx = JAXBContext.newInstance(classes);
+			m = ctx.createMarshaller();
+		}
+		
+		m.marshal(comps, output);
+	}
+	
 }
 

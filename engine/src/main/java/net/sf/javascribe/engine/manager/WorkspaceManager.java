@@ -12,7 +12,6 @@ import net.sf.javascribe.engine.EngineInitException;
 import net.sf.javascribe.engine.data.ApplicationData;
 import net.sf.javascribe.engine.data.files.ApplicationFolderImpl;
 import net.sf.javascribe.engine.data.files.ComponentFile;
-import net.sf.javascribe.engine.data.files.SystemAttributesFile;
 import net.sf.javascribe.engine.data.files.UserFile;
 import net.sf.javascribe.engine.data.files.WatchedResource;
 import net.sf.javascribe.engine.data.processing.BuildComponentItem;
@@ -82,7 +81,6 @@ public class WorkspaceManager {
 		applicationData.setRootFolder(folder);
 		ProcessorLog log = new ProcessorLog(appName, applicationData, folder.getLogLevel());
 		applicationData.setApplicationLog(log);
-		folderScannerService.initFolder(folder);
 		return applicationData;
 	}
 
@@ -118,7 +116,11 @@ public class WorkspaceManager {
 			processingService.removeUserFiles(removedUserFiles, application);
 		}
 
+		// Find files that have been added
 		List<WatchedResource> addedFiles = folderScannerService.findFilesAdded(application);
+		
+		// Trim empty folders from application data
+		folderScannerService.trimFolders(application);
 
 		// Track user files that are being added so that they can be written to output.
 		List<UserFile> addedUserFiles = new ArrayList<>();
@@ -131,10 +133,6 @@ public class WorkspaceManager {
 			if (f instanceof UserFile) {
 				addedUserFiles.add((UserFile)f);
 				application.getUserFiles().put(f.getPath(), (UserFile)f);
-			}
-			else if (f instanceof SystemAttributesFile) {
-				SystemAttributesFile a = (SystemAttributesFile)f;
-				application.setGlobalSystemAttributes(a.getSystemAttributes());
 			}
 			else if (f instanceof ComponentFile) {
 				ComponentFile compFile = (ComponentFile)f;

@@ -27,6 +27,7 @@ public class JavascribePropertiesFile implements WatchedResource {
 			String ignoreString = properties.get("ignore");
 			ignoreList = Arrays.asList(ignoreString.split(","));
 		}
+		this.lastModified = file.lastModified();
 	}
 
 	private Map<String,String> readProperties(File f) {

@@ -44,8 +44,7 @@ public class FileUtilTest {
   
 		application.setRootFolder(root);
 		FolderUtil.createFile(root, "a.txt", "abc123");
-		fileUtil.initFolder(root);
-		List<WatchedResource> resources = fileUtil.findFilesAdded(root);
+		List<WatchedResource> resources = fileUtil.findFilesAdded(application, root);
 		assertThat(resources.size()).isEqualTo(1);
 		assertThat(resources.get(0).getClass()).isEqualTo(UserFile.class);
 		UserFile uf = (UserFile)resources.get(0);
@@ -59,11 +58,11 @@ public class FileUtilTest {
 		FolderUtil.createFile(folderFile, "moved.txt", content);
 
 		// There should be no files removed
-		resources = fileUtil.findFilesRemoved(root);
+		resources = fileUtil.findFilesRemoved(application, root);
 		assertThat(resources.size()).isEqualTo(0);
 
 		// There should be a file added
-		resources = fileUtil.findFilesAdded(root);
+		resources = fileUtil.findFilesAdded(application, root);
 		assertThat(resources.size()).isEqualTo(1);
 		assertThat(resources.get(0).getClass()).isEqualTo(UserFile.class);
 		uf = (UserFile)resources.get(0);
@@ -78,30 +77,29 @@ public class FileUtilTest {
 		FolderUtil.deleteFile(folderFile, "moved.txt");
 
 		// There should be one user file removed
-		resources = fileUtil.findFilesRemoved(root);
+		resources = fileUtil.findFilesRemoved(application, root);
 		assertThat(resources.size()).isEqualTo(1);
 		assertThat(resources.get(0).getClass()).isEqualTo(UserFile.class);
 		uf = (UserFile)resources.get(0);
 		assertThat(uf.getName()).isEqualTo("moved.txt");
-		// The now-empty subfolder should be removed.  Root should have no subfolders
-		assertThat(root.getSubFolders().size()).isEqualTo(0);
 
 		// There should be one user file added.
-		resources = fileUtil.findFilesAdded(root);
+		resources = fileUtil.findFilesAdded(application, root);
+		fileUtil.trimFolders(application, root);
 		assertThat(resources.size()).isEqualTo(1);
 		assertThat(resources.get(0).getClass()).isEqualTo(UserFile.class);
 		uf = (UserFile)resources.get(0);
 		assertThat(uf.getName().equals("moved.txt"));
+		// There should be one subfolder under root
 		assertThat(root.getSubFolders().size()).isEqualTo(1);
+		// The user file is in folder2 under root
 		assertThat(root.getSubFolders().get("folder2")).isEqualTo(uf.getFolder());
 	}
-	
-	// Test: init with systemAttributes.properties
-	// Test: removing of a folder
-	// Test: moving of a folder (and its files)
-	// Test: read file (different types)
-	// Test: adding javascribe.properties
-	// Test: resetting of systemAttributes.properties and/or javascribe.properties
+
+	// Test: read component file
+	// Test: include a javascribe.properties file
+	// Test: modify systemAttrobutes.properties file
+	// Test: modify javascribe.properties file
 	@Test
 	public void testMoreCases() throws Exception {
 		ApplicationData application = ApplicationBuilder.create().createLog()
@@ -113,14 +111,14 @@ public class FileUtilTest {
 		File compFolder = FolderUtil.createFolder(root, "components");
 		File fromDir = FolderUtil.createFolder(compFolder, "from");
 		FolderUtil.createFile(fromDir, "test1.txt", "abc123");
-		fileUtil.initFolder(root);
 		
 		// First attempt to find removed files should return none.
-		List<WatchedResource> resources = fileUtil.findFilesRemoved(root);
+		List<WatchedResource> resources = fileUtil.findFilesRemoved(application, root);
 		assertThat(resources.size()).isEqualTo(0);
 
 		// Find added files, should find one user file and systemAttributes.
-		resources = fileUtil.findFilesAdded(root);
+		resources = fileUtil.findFilesAdded(application, root);
+		fileUtil.trimFolders(application, root);
 		assertThat(resources.size()).isEqualTo(2);
 		assertThat(resources.get(0).getClass()).isEqualTo(SystemAttributesFile.class);
 		assertThat(resources.get(1).getClass()).isEqualTo(UserFile.class);
@@ -135,20 +133,22 @@ public class FileUtilTest {
 		FolderUtil.deleteFile(compFolder, "from");
 		
 		// Check for removed files
-		resources = fileUtil.findFilesRemoved(root);
+		resources = fileUtil.findFilesRemoved(application, root);
 		assertThat(resources.size()).isEqualTo(1);
 		assertThat(resources.get(0).getName()).isEqualTo("test1.txt");
 		assertThat(resources.get(0).getFolder().getFolderFile()).isEqualTo(fromDir);
 		
 		// Check for added files
-		resources = fileUtil.findFilesAdded(root);
+		resources = fileUtil.findFilesAdded(application, root);
+		fileUtil.trimFolders(application, root);
 		assertThat(resources.size()).isEqualTo(1);
 		assertThat(resources.get(0).getName()).isEqualTo("test1.txt");
 		
 		// Check for removed/added again. There should be no new results
-		resources = fileUtil.findFilesRemoved(root);
+		resources = fileUtil.findFilesRemoved(application, root);
 		assertThat(resources.size()).isEqualTo(0);
-		resources = fileUtil.findFilesAdded(root);
+		resources = fileUtil.findFilesAdded(application, root);
+		fileUtil.trimFolders(application, root);
 		assertThat(resources.size()).isEqualTo(0);
 		
 		// Rename the "to" folder as "to-again"
@@ -157,12 +157,13 @@ public class FileUtilTest {
 		toFolder.renameTo(toAgainFolder);
 
 		// Check for removed files.  there should be one
-		resources = fileUtil.findFilesRemoved(root);
+		resources = fileUtil.findFilesRemoved(application, root);
 		assertThat(resources.size()).isEqualTo(1);
 		assertThat(resources.get(0).getName()).isEqualTo("test1.txt");
 		
 		// Check for added files
-		resources = fileUtil.findFilesAdded(root);
+		resources = fileUtil.findFilesAdded(application, root);
+		fileUtil.trimFolders(application, root);
 		assertThat(resources.size()).isEqualTo(1);
 		assertThat(resources.get(0).getName()).isEqualTo("test1.txt");
 	}

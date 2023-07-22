@@ -19,6 +19,7 @@ import net.sf.javascribe.api.types.ListType;
 import net.sf.javascribe.api.types.VariableType;
 import net.sf.javascribe.engine.ComponentContainer;
 import net.sf.javascribe.engine.data.files.ApplicationFolderImpl;
+import net.sf.javascribe.engine.data.files.SystemAttributesFile;
 import net.sf.javascribe.engine.data.files.UserFile;
 import net.sf.javascribe.engine.data.processing.ComponentItem;
 import net.sf.javascribe.engine.data.processing.FileProcessorEntry;
@@ -49,7 +50,11 @@ public class ApplicationData {
 	private ProcessingState state = ProcessingState.CREATED;
 
 	@Builder.Default
-	private Map<String,String> globalSystemAttributes = new HashMap<>();
+	private SystemAttributesFile systemAttributesFile = null;
+	
+	public Map<String,String> getGlobalSystemAttributes() {
+		return systemAttributesFile.getSystemAttributes();
+	}
 
 	@Builder.Default
 	private Map<String,String> systemAttributes = new HashMap<>();
@@ -117,7 +122,7 @@ public class ApplicationData {
 	private DependencyData dependencyData = new DependencyData();
 	
 	public String getSystemAttribute(String name) {
-		String ret = globalSystemAttributes.get(name);
+		String ret = getGlobalSystemAttributes().get(name);
 		if (ret==null) {
 			ret = systemAttributes.get(name);
 		}
