@@ -97,9 +97,13 @@ public class FileUtilTest {
 	}
 
 	// Test: read component file
-	// Test: include a javascribe.properties file
-	// Test: modify systemAttrobutes.properties file
+	// Test: add a javascribe.properties file
+	// Test: modify systemAttributes.properties file
+	// Test: remove systemAttributes.properties file
 	// Test: modify javascribe.properties file
+	// Test: remove javascribe.properties file
+	// Test: modify component file
+	// Test: remove component file
 	@Test
 	public void testMoreCases() throws Exception {
 		ApplicationData application = ApplicationBuilder.create().createLog()
@@ -166,6 +170,19 @@ public class FileUtilTest {
 		fileUtil.trimFolders(application, root);
 		assertThat(resources.size()).isEqualTo(1);
 		assertThat(resources.get(0).getName()).isEqualTo("test1.txt");
+		
+		// Add a javascribe.properties file in component directory. 
+
+		// All files should be removed.
+		
+		// All files should be re-added.
+		
+		// Update systemAttributes.properties.  
+
+		// All files should be removed.
+		
+		// All files should be re-added.
+		
 	}
 
 }
