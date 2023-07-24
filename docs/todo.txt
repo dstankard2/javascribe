@@ -17,9 +17,10 @@ Engine/Processing enhancements:
 		Determine other commands to run
 	Types should be available on a per-build-context basis instead of on a language basis.
 		Maybe they should be available from build context instead of processor context.
-		ProcessorContext would then have an API to retrieve another build context.
+		ProcessorContext would then have an API to retrieve another build context, to get types from another build context.
 
 Pattern bugs/tasks
+	Bug: When adding a web context listener via handwritten code, the Java web platform should be stale.
 	Task: Evaluate web service module and web service client patterns to see if there's a better way to associate them.
 		Add functionName to endpoint.  Use it to set operationName in WebServiceOperation object
 	HTML Template Parser returns a syntax error when template is empty.
