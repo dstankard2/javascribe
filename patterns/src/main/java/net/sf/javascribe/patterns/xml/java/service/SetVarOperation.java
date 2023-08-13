@@ -6,12 +6,15 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import net.sf.javascribe.api.ProcessorContext;
+import lombok.Getter;
+import lombok.Setter;
 import net.sf.javascribe.api.annotation.Plugin;
 import net.sf.javascribe.api.annotation.XmlConfig;
 import net.sf.javascribe.patterns.java.service.OperationRenderer;
 import net.sf.javascribe.patterns.java.service.SetVarRenderer;
 
+@Getter
+@Setter
 @Plugin
 @XmlConfig
 @XmlRootElement(name="setVar")
@@ -28,33 +31,10 @@ public class SetVarOperation extends Operation {
 	@XmlAttribute
 	private String value;
 	
-	public OperationRenderer getRenderer(ProcessorContext ctx) { 
-		return new SetVarRenderer(ctx, this); 
+	@Override
+	public OperationRenderer getRenderer() { 
+		return new SetVarRenderer(this); 
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
-	}
-
-	public String getValue() {
-		return value;
-	}
-
-	public void setValue(String value) {
-		this.value = value;
-	}
-	
 }
 

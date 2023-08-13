@@ -60,7 +60,9 @@ public abstract class JavaSourceFile<T extends JavaSource<?>> implements SourceF
 	
 	public void addImports(JavaCode code) {
 		for(String s : code.getImports()) {
-			src.addImport(s);
+			if (s!=null) {
+				src.addImport(s);
+			}
 		}
 	}
 

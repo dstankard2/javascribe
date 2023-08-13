@@ -9,6 +9,7 @@ Processing bugs/tasks
 		Most likely items in the build's folder should be reset too.
 
 Engine/Processing enhancements:
+	Show 'scanning' message when there are items to process after remove/add.  Show 'found changed files' if it's userfile changes only.
 	Task: Create ContextBase for ProcessorContextImpl and BuildProcessorContextImpl
 	There should be an association between a build and its components.
 	Add defaultVersion to BuildContext.addDependency(String)

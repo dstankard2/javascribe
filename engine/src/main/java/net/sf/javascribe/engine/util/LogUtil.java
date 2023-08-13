@@ -1,5 +1,7 @@
 package net.sf.javascribe.engine.util;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import net.sf.javascribe.api.logging.ProcessorLogLevel;
 import net.sf.javascribe.engine.ComponentDependency;
 import net.sf.javascribe.engine.data.ApplicationData;
@@ -17,6 +19,10 @@ public class LogUtil {
 		boolean engineDebug = engineResources.getEngineProperties().getDebug();
 		
 		application.getMessages().forEach(m -> {
+			try {
+				// Make sure that the last message got to output already
+				Thread.sleep(5);
+			} catch(Exception e) { }
 			int target = engineDebug ? 0 : m.getTargetLevel().ordinal();
 			if (m.getLevel().ordinal() >= target) {
 				StringBuilder output = new StringBuilder();

@@ -145,7 +145,9 @@ public class JavaUtils {
 
 		if (code!=null) {
 			for(String im : code.getImports()) {
-				cl.addImport(im);
+				if (im!=null) {
+					cl.addImport(im);
+				}
 			}
 		}
 

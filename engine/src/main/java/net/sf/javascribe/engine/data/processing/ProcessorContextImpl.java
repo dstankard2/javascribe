@@ -57,7 +57,13 @@ public class ProcessorContextImpl implements ProcessorContext {
 
 	@Override
 	public void addSystemAttribute(String name, String type) throws JavascribeException {
-		application.getSystemAttributes().put(name, type);
+		if (application.getSystemAttribute(name)!=null) {
+			if (!application.getSystemAttribute(name).equals(type)) {
+				throw new JavascribeException("System attribute '"+name+"' is already defined with a different type");
+			}
+		} else {
+			application.getSystemAttributes().put(name, type);
+		}
 		originateSystemAttribute(name);
 	}
 

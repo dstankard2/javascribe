@@ -5,7 +5,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.annotation.Plugin;
 import net.sf.javascribe.api.annotation.XmlConfig;
 import net.sf.javascribe.patterns.java.service.OperationRenderer;
@@ -18,7 +17,7 @@ import net.sf.javascribe.patterns.java.service.OperationRenderer;
 public class Operation {
 
 	public Operation() { }
-	public OperationRenderer getRenderer(ProcessorContext ctx) { return null; }
-	
+	public OperationRenderer getRenderer() { return null; }
+
 }
 

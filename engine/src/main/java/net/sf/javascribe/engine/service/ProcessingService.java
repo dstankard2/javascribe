@@ -107,6 +107,11 @@ public class ProcessingService implements ProcessingContextOperations {
 				application.setState(ProcessingState.ERROR);
 			}
 		}
+		
+		// TODO: If there is no build in the root directory, add a default build
+		if (application.getRootFolder().getBuildComponent()==null) {
+			
+		}
 
 		// Process items
 		while ((pd.getToProcess().size() > 0) && (!error)) {

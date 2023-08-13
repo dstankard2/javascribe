@@ -5,7 +5,6 @@ import java.util.List;
 
 import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JavascribeUtils;
-import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.exception.JavascribeException;
 import net.sf.javascribe.api.types.ServiceOperation;
 import net.sf.javascribe.langsupport.java.JavaCode;
@@ -13,29 +12,30 @@ import net.sf.javascribe.langsupport.java.JavaUtils;
 import net.sf.javascribe.langsupport.java.types.impl.JavaServiceType;
 import net.sf.javascribe.patterns.xml.java.service.CallValidationRuleOperation;
 
-public class CallValidationRuleRenderer extends NestingOperationRenderer {
+public class CallValidationRuleRenderer extends OperationRenderer {
 	CallValidationRuleOperation op = null;
-	ProcessorContext ctx = null;
 
-	public CallValidationRuleRenderer(ProcessorContext ctx,CallValidationRuleOperation op) {
-		super(ctx);
+	public CallValidationRuleRenderer(CallValidationRuleOperation op) {
 		this.op = op;
-		this.ctx = ctx;
 	}
 
 	@Override
-	public JavaCode getCode(CodeExecutionContext execCtx) throws JavascribeException {
-		JavaCode ret = null;
+	public void render(RendererContext ctx) throws JavascribeException {
+		JavaCode code = ctx.getCode();
+		String resultVar = ctx.getResultVar();
+		
 		JavaServiceType type = null;
 		String service = op.getRule();
 		
 		String objName = JavascribeUtils.getObjectName(service);
 		String ruleName = JavascribeUtils.getRuleName(service);
 
-		ret = JavaUtils.addServiceToExecutionContext(objName, execCtx, ctx);
+		code.append(JavaUtils.addServiceToExecutionContext(objName, ctx.execCtx(), ctx.ctx()));
+
+		ctx.addResultProperty("validationError", "string");
 		
-		String typeName = ctx.getSystemAttribute(objName);
-		type = JavascribeUtils.getType(JavaServiceType.class, typeName, ctx);
+		String typeName = ctx.ctx().getSystemAttribute(objName);
+		type = JavascribeUtils.getType(JavaServiceType.class, typeName, ctx.ctx());
 		
 		List<ServiceOperation> ops = type.getOperations(ruleName);
 		if (ops.size()==0) {
@@ -46,24 +46,21 @@ public class CallValidationRuleRenderer extends NestingOperationRenderer {
 		ServiceOperation operation = ops.get(0);
 		HashMap<String,String> explicitParams = new HashMap<String,String>();
 		if (op.getParams().trim().length()>0) {
-			explicitParams = JavascribeUtils.readParametersAsMap(op.getParams(), ctx);
+			explicitParams = JavascribeUtils.readParametersAsMap(op.getParams(), ctx.ctx());
 		}
 		if ((operation.getReturnType()==null) || (!operation.getReturnType().equals("string"))) {
 			throw new JavascribeException("A validation rule must return a String");
 		}
 
-		JavaUtils.append(ret, JavaUtils.callJavaOperation("returnValue.validationError"
-				+ "", objName, operation, execCtx, explicitParams));
+		JavaUtils.append(code, JavaUtils.callJavaOperation(resultVar+".validationError", objName, 
+				operation, ctx.execCtx(), explicitParams));
 
-		ret.appendCodeText("if (returnValue.getValidationError()==null) {\n");
-
-		return ret;
-	}
-
-	@Override
-	public JavaCode endingCode(CodeExecutionContext execCtx) throws JavascribeException {
-		JavaCode ret = new JavaCode("}\n");
-		return ret;
+		code.appendCodeText("if ("+resultVar+".getValidationError()==null) {\n");
+		
+		CodeExecutionContext newExecCtx = new CodeExecutionContext(ctx.execCtx());
+		ctx.handleNesting(newExecCtx);
+		code.appendCodeText("}\n");
 	}
 
 }
+

@@ -12,7 +12,6 @@ import javax.xml.bind.annotation.XmlType;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.annotation.Plugin;
 import net.sf.javascribe.api.annotation.XmlConfig;
 import net.sf.javascribe.patterns.java.service.LoopRenderer;
@@ -28,7 +27,7 @@ import net.sf.javascribe.patterns.java.service.OperationRenderer;
 public class LoopOperation extends Operation implements NestingOperation {
 
 	@Override
-	public OperationRenderer getRenderer(ProcessorContext ctx) { return new LoopRenderer(ctx,this); }
+	public OperationRenderer getRenderer() { return new LoopRenderer(this); }
 
 	@XmlElementRef
 	private List<Operation> operation = new ArrayList<Operation>();

@@ -2,11 +2,11 @@ package net.sf.javascribe.patterns.java.service;
 
 import java.util.List;
 
-import net.sf.javascribe.api.PropertyEntry;
 import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.ComponentProcessor;
 import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.api.ProcessorContext;
+import net.sf.javascribe.api.PropertyEntry;
 import net.sf.javascribe.api.annotation.Plugin;
 import net.sf.javascribe.api.exception.JavascribeException;
 import net.sf.javascribe.api.types.ServiceOperation;
@@ -17,14 +17,150 @@ import net.sf.javascribe.langsupport.java.types.impl.JavaDataObjectType;
 import net.sf.javascribe.langsupport.java.types.impl.JavaServiceType;
 import net.sf.javascribe.patterns.xml.java.service.NestingOperation;
 import net.sf.javascribe.patterns.xml.java.service.Operation;
-import net.sf.javascribe.patterns.xml.java.service.ResultOperation;
 import net.sf.javascribe.patterns.xml.java.service.Service;
 
 @Plugin
-public class ServiceProcessor implements ComponentProcessor<Service> {
+public class ServiceProcessor implements ComponentProcessor<Service>,RendererContext {
+
+	private JavaCode serviceCode = null;
+	private CodeExecutionContext currentExecCtx = null;
+	private String resultVar = "returnValue";
+	private JavaDataObjectType resultType = null;
+	private JavaClassSourceFile resultSrc = null;
+	private Operation currentOperation = null;
+	private ProcessorContext ctx = null;
+
+	@Override
+	public JavaCode getCode() {
+		return serviceCode;
+	}
+
+	@Override
+	public CodeExecutionContext execCtx() {
+		return currentExecCtx;
+	}
+
+	@Override
+	public void handleNesting(CodeExecutionContext execCtx) throws JavascribeException {
+		CodeExecutionContext stored = currentExecCtx;
+		Operation storedOp = currentOperation;
+
+		currentExecCtx = execCtx;
+
+		if (currentOperation instanceof NestingOperation) {
+			NestingOperation nop = (NestingOperation)currentOperation;
+			this.readOperations(nop.getOperation());
+		}
+
+		currentExecCtx = stored;
+		currentOperation = storedOp;
+	}
+
+	@Override
+	public void addResultProperty(String name, String type) throws JavascribeException {
+		if (resultType.getAttributeType(name)!=null) {
+			if (!resultType.getAttributeType(name).equals(type)) {
+				throw new JavascribeException("Cannot add property '"+name+"' to service result type because that property is already on the result as a different type");
+			}
+		} else {
+			resultType.addProperty(name, type);
+			JavaUtils.addProperty(resultSrc, name, type, ctx);
+		}
+	}
+
+	@Override
+	public ProcessorContext ctx() {
+		return ctx;
+	}
+
+	@Override
+	public String getResultVar() {
+		return resultVar;
+	}
 
 	@Override
 	public void process(Service comp, ProcessorContext ctx) throws JavascribeException {
+		ctx.setLanguageSupport("Java8");
+		this.ctx = ctx;
+		String pkg = null;
+		String className = comp.getModule()+"Service";
+		pkg = JavaUtils.getJavaPackage(comp, ctx);
+		String resultName = getResultTypeName(comp, ctx);
+		String paramString = comp.getParams();
+		
+		JavaClassSourceFile src = JavaUtils.getClassSourceFile(pkg+'.'+className, ctx);
+		JavaServiceType type = null;
+		
+		if (ctx.getVariableType(className)!=null) {
+			type = JavascribeUtils.getType(JavaServiceType.class, className, ctx);
+			ctx.modifyVariableType(type);
+		} else {
+			type = new JavaServiceType(className,pkg+'.'+className,ctx.getBuildContext());
+			ctx.addVariableType(type);
+			String lowerCamel = JavascribeUtils.getLowerCamelName(type.getName());
+			ctx.addSystemAttribute(lowerCamel, type.getName());
+		}
+
+		resultSrc = new JavaClassSourceFile(ctx);
+		resultType = new JavaDataObjectType(resultName,pkg+'.'+resultName,ctx.getBuildContext());
+
+		ctx.getLog().info("Creating service result type '"+resultName+"'");
+		ctx.addVariableType(resultType);
+
+		resultSrc.getSrc().setPackage(pkg);
+		resultSrc.getSrc().setName(resultName);
+		
+		currentExecCtx = new CodeExecutionContext(ctx);
+		serviceCode = new JavaCode();
+		JavaUtils.append(serviceCode, resultType.declare("returnValue", currentExecCtx));
+		//JavaCode code = resultType.declare("returnValue", execCtx);
+		JavaUtils.append(serviceCode, resultType.instantiate("returnValue"));
+		currentExecCtx.addVariable("returnValue", resultName);
+		
+		List<Operation> ops = comp.getServiceOperation();
+
+		List<PropertyEntry> params = JavascribeUtils.readParametersAsList(paramString, ctx);
+		ServiceOperation op = new ServiceOperation(comp.getName());
+		type.addOperation(op);
+		op.returnType(resultName);
+		for(PropertyEntry param : params) {
+			String n = param.getName();
+			String t = param.getType().getName();
+			op.addParam(n, t);
+			currentExecCtx.addVariable(n, t);
+		}
+
+		readOperations(ops);
+		
+		this.serviceCode.appendCodeText("return "+this.resultVar+";\n");
+
+		JavaUtils.addServiceOperation(op, serviceCode, src.getSrc(), ctx);
+
+		ctx.addSourceFile(resultSrc);
+	}
+	
+	protected void readOperations(List<Operation> operations) throws JavascribeException {
+		for(Operation op : operations) {
+			currentOperation = op;
+			OperationRenderer renderer = op.getRenderer();
+			renderer.render(this);
+		}
+	}
+
+	private String getResultTypeName(Service comp, ProcessorContext ctx) throws JavascribeException {
+		String resultName = null;
+
+		resultName = comp.getName();
+		resultName = Character.toUpperCase(comp.getName().charAt(0))+comp.getName().substring(1);
+		resultName = resultName + "ServiceResult";
+		if (ctx.getVariableType(resultName)!=null) {
+			throw new JavascribeException("Couldn't create service result class as a type named '"+resultName+"' already exists - please override the default");
+		}
+		return resultName;
+	}
+
+	/*
+	public void _process(Service comp, ProcessorContext ctx) throws JavascribeException {
 		ctx.setLanguageSupport("Java8");
 		String pkg = null;
 		String className = comp.getModule()+"Service";
@@ -45,7 +181,9 @@ public class ServiceProcessor implements ComponentProcessor<Service> {
 
 		handleServiceAndResult(comp, ctx, type,src, pkg);
 	}
+	*/
 
+	/*
 	private void handleServiceAndResult(Service comp, ProcessorContext ctx, JavaServiceType type, JavaClassSourceFile src, String pkg) throws JavascribeException {
 		ServiceOperation op = new ServiceOperation(comp.getName());
 		String paramString = comp.getParams();
@@ -84,7 +222,9 @@ public class ServiceProcessor implements ComponentProcessor<Service> {
 		JavaUtils.addServiceOperation(op, code, src.getSrc(), ctx);
 		ctx.addSourceFile(resultSrc);
 	}
-	
+*/
+
+	/*
 	private void processOperations(List<Operation> ops,JavaCode currentCode,
 			CodeExecutionContext execCtx, JavaDataObjectType resultType, 
 			JavaClassSourceFile resultSrc, ProcessorContext ctx) throws JavascribeException {
@@ -125,19 +265,8 @@ public class ServiceProcessor implements ComponentProcessor<Service> {
 			}
 		}
 	}
-
-	private String getResultTypeName(Service comp, ProcessorContext ctx) throws JavascribeException {
-		String resultName = null;
-
-		resultName = comp.getName();
-		resultName = Character.toUpperCase(comp.getName().charAt(0))+comp.getName().substring(1);
-		resultName = resultName + "ServiceResult";
-		if (ctx.getVariableType(resultName)!=null) {
-			throw new JavascribeException("Couldn't create service result class as a type named '"+resultName+"' already exists - please override the default");
-		}
-		return resultName;
-	}
-
+*/
+	
 	/*
 	private JavaDataObjectType handleResult(String servicePkg, CodeExecutionContext execCtx) throws JavascribeException {
 		JavaDataObjectType objType = null;

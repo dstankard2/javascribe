@@ -1,12 +1,14 @@
 package net.sf.javascribe.langsupport.java;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import net.sf.javascribe.api.Code;
 
 public class JavaCode implements Code {
-	List<String> imports = new ArrayList<>();
+	Set<String> imports = new HashSet<>();
 	StringBuilder code = new StringBuilder();
 	
 	public JavaCode() {
@@ -19,7 +21,7 @@ public class JavaCode implements Code {
 		}
 	}
 
-	public List<String> getImports() {
+	public Set<String> getImports() {
 		return imports;
 	}
 	public void addImport(String s) {
@@ -46,7 +48,9 @@ public class JavaCode implements Code {
 		JavaCode other = (JavaCode)append;
 		this.appendCodeText(other.getCodeText());
 		for(String im : other.getImports()) {
-			addImport(im);
+			if (im!=null) {
+				addImport(im);
+			}
 		}
 	}
 	

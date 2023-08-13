@@ -28,7 +28,7 @@ public class JavaListType extends JavaVariableTypeBase implements ListType {
 	@Override
 	public JavaCode declare(String varName, String elementType, CodeExecutionContext execCtx) throws JavascribeException {
 		JavaVariableType eltType = execCtx.getType(JavaVariableType.class, elementType);
-		JavaCode ret = new JavaCode("List<"+eltType.getClassName()+"> "+varName+" = new java.util.ArrayList<>();\n",eltType.getImport(),getImport());
+		JavaCode ret = new JavaCode("List<"+eltType.getClassName()+"> "+varName+" = null;\n",eltType.getImport(),getImport());
 		return ret;
 	}
 

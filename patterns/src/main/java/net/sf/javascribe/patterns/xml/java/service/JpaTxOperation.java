@@ -10,12 +10,16 @@ import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+import lombok.Getter;
+import lombok.Setter;
 import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.annotation.Plugin;
 import net.sf.javascribe.api.annotation.XmlConfig;
 import net.sf.javascribe.patterns.java.service.JpaTxRenderer;
 import net.sf.javascribe.patterns.java.service.OperationRenderer;
 
+@Getter
+@Setter
 @Plugin
 @XmlConfig
 @XmlRootElement(name="jpaTx")
@@ -24,7 +28,7 @@ import net.sf.javascribe.patterns.java.service.OperationRenderer;
 public class JpaTxOperation extends Operation implements NestingOperation {
 
 	@Override
-	public OperationRenderer getRenderer(ProcessorContext ctx) { return new JpaTxRenderer(ctx,this); }
+	public OperationRenderer getRenderer() { return new JpaTxRenderer(this); }
 
 	@XmlElementRef
 	private List<Operation> operation = new ArrayList<Operation>();
@@ -38,37 +42,5 @@ public class JpaTxOperation extends Operation implements NestingOperation {
 	@XmlAttribute
 	private String ref = "";
 	
-	public List<Operation> getOperation() {
-		return operation;
-	}
-
-	public void setOperation(List<Operation> operation) {
-		this.operation = operation;
-	}
-
-	public String getLocator() {
-		return locator;
-	}
-
-	public void setLocator(String locator) {
-		this.locator = locator;
-	}
-
-	public Boolean getCommit() {
-		return commit;
-	}
-
-	public void setCommit(Boolean commit) {
-		this.commit = commit;
-	}
-
-	public String getRef() {
-		return ref;
-	}
-
-	public void setRef(String ref) {
-		this.ref = ref;
-	}
-
 }
 

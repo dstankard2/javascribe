@@ -188,7 +188,7 @@ public class WsClientsProcessor implements ComponentProcessor<WsClients> {
 				fnBody.append("_options.path += '&';\n");
 			}
 			fnDec.append(param);
-			fnBody.append("if (" + param + ") _options.path += '" + param + "='+" + param + "\n");
+			fnBody.append("if ((" + param + " != undefined) && ("+param+" != null)) _options.path += '" + param + "='+" + param + "\n");
 			fnBody.append("else _options.path += '" + param + "=';\n");
 		}
 

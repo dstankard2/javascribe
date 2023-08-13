@@ -4,6 +4,6 @@ import java.util.List;
 
 public interface NestingOperation {
 
-	public abstract List<Operation> getOperation();
+	List<Operation> getOperation();
 	
 }
