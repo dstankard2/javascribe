@@ -83,22 +83,6 @@ public class LocalModelElementDirective implements ElementDirective {
 			execCtx.addVariable(ref, modelType.getName());
 		}
 
-		/*
-		for(AttribEntry att : attrs) {
-			String upper = JavascribeUtils.getUpperCamelName(att.getName());
-			code.append(var+"._"+att.getName()+" = undefined;\n");
-			code.append(var+".get"+upper+" = function() { return this._"+att.getName()+";}.bind("+var+");\n");
-			code.append(var+".set"+upper+" = function(value) {\n");
-			code.append("if (value==this._"+att.getName()+") return;\n");
-			code.append("this._"+att.getName()+" = value;\n");
-			if (hasDispatcher) {
-				code.append(DirectiveUtils.EVENT_DISPATCHER_FN_VAR+".dispatch('"+att.getName()
-						+"Changed');\n");
-			}
-			code.append("}.bind("+var+");\n");
-			modelType.addAttribute(att.getName(), att.getType());
-		}
-		*/
 	}
 
 }

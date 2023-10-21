@@ -31,6 +31,8 @@ public class ProcessingData {
 
 	private List<BuildComponentItem> buildsProcessed = new ArrayList<>();
 
+	private Map<String,List<Item>> itemsPerBuild = new HashMap<>();
+
 	//private List<FolderWatcherEntry> folderWatchers = new ArrayList<>();
 	
 	public List<FolderWatcherEntry> getFolderWatchers() {

@@ -43,7 +43,9 @@ public class ModuleSourceFile extends JavascriptSourceFile {
 			String path = im.getRight();
 			if (!imported.contains(name)) {
 				String p = JavascriptUtils.getModuleRelativePath(this.getWebPath(), path);
-				ret.append("import {").append(name).append("} from '"+p+"';\n");
+				if (p!=null) {
+					ret.append("import {").append(name).append("} from '"+p+"';\n");
+				}
 				imported.add(name);
 			}
 		}

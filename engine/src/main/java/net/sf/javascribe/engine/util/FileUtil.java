@@ -53,7 +53,7 @@ public class FileUtil {
 		});
 		folder.getSubFolders().clear();
 		
-		folder.setJasperProperties(null);
+		folder.setJavascribeProperties(null);
 
 	}
 
@@ -96,12 +96,12 @@ public class FileUtil {
 		if (folder.getJasperPropertiesFile()!=null) {
 			if (props==null) {
 				// If the file is removed, clear the folder
-				folder.setJasperProperties(null);
+				folder.setJavascribeProperties(null);
 				clearFolder(folder, ret);
 				return ret;
 			} else if (folder.getJasperPropertiesFile().getLastModified() < props.lastModified()) {
 				// If the file is modified, clear the folder
-				folder.setJasperProperties(null);
+				folder.setJavascribeProperties(null);
 				clearFolder(folder, ret);
 				return ret;
 			}
@@ -178,7 +178,7 @@ public class FileUtil {
 		if (folder.getJasperPropertiesFile()==null) {
 			if ((f!=null) && (!f.isDirectory())) {
 				JavascribePropertiesFile propFile = new JavascribePropertiesFile(f, folder);
-				folder.setJasperProperties(propFile);
+				folder.setJavascribeProperties(propFile);
 				ret.add(propFile);
 				contents.remove(f);
 			}
@@ -320,7 +320,7 @@ public class FileUtil {
 			}
 		});
 		names.forEach(name -> {
-			folder.getSubFolders().get(name).setJasperProperties(null);
+			folder.getSubFolders().get(name).setJavascribeProperties(null);
 			folder.getSubFolders().remove(name);
 		});
 		

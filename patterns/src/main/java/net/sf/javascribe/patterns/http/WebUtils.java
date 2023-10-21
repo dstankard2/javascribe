@@ -19,11 +19,5 @@ public class WebUtils {
 		return ret;
 	}
 
-	/*
-	public static WebServiceContext getWebServiceDefinition(String buildId, String module, ProcessorContext ctx) {
-		String name = ctx.getBuildContext().getName();
-		return getWebServiceDefinition(name,ctx,true);
-	}
-	*/
 }
 

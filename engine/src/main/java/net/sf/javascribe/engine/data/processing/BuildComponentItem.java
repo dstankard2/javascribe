@@ -30,8 +30,7 @@ public class BuildComponentItem implements Item {
 	private BuildComponentProcessor processor = null;
 
 	public BuildComponentItem(int itemId, BuildComponent buildComp, ApplicationFolderImpl folder, 
-			RegisteredBuildComponentPattern pattern, 
-			Map<String,String> configs, 
+			RegisteredBuildComponentPattern pattern, Map<String,String> configs, 
 			ApplicationData application) {
 		this.itemId = itemId;
 		this.buildComp = buildComp;
@@ -58,6 +57,8 @@ public class BuildComponentItem implements Item {
 		return buildComp;
 	}
 
+	// init will set the build component in the folder
+	// TODO: Check if the current folder already has a build component, throw a JavascribeException if it does
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public boolean init() {
 		boolean success = true;
@@ -122,6 +123,10 @@ public class BuildComponentItem implements Item {
 		return 0;
 	}
 
-	
+	@Override
+	public ApplicationFolderImpl getFolder() {
+		return folder;
+	}
+
 }
 

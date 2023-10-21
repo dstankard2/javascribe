@@ -30,7 +30,7 @@ public class DisabledAttributeDirective extends AttributeDirectiveBase {
 		code.append("try {\n");
 		code.append("if ("+cond+") "+ctx.getElementVarName()+".disabled = true;\n");
 		code.append("else "+ctx.getElementVarName()+".disabled = false;\n");
-		code.append("}catch(_err){");
+		code.append("}catch(_err){\n");
 		code.append(ctx.getElementVarName()+".disabled = false;\n");
 		code.append("}\n");
 	}

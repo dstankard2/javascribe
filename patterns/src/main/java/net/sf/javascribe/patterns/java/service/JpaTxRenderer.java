@@ -53,8 +53,8 @@ public class JpaTxRenderer extends OperationRenderer {
 		if (commit) {
 			code.appendCodeText(txRef+".getTransaction().commit();\n");
 		}
-		code.appendCodeText("}\ncatch(Exception e) {\ne.printStackTrace();\n}\n");
-		code.appendCodeText("finally {\ntry {\n"+txRef+".getTransaction().rollback();\n} catch(Exception e) { }\n");
+		code.appendCodeText("}\ncatch(Throwable e) {\ne.printStackTrace();\n}\n");
+		code.appendCodeText("finally {\ntry {\n"+txRef+".getTransaction().rollback();\n} catch(Throwable e) { e.printStackTrace(); }\n");
 
 		JavaUtils.append(code, locatorType.releaseEntityManager(txRef, execCtx));
 		code.appendCodeText("}\n");

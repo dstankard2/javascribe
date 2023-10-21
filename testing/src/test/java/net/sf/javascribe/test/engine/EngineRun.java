@@ -13,6 +13,7 @@ public class EngineRun {
 			new File("C:\\git\\javascribe\\api\\target\\classes"),
 			new File("C:\\git\\javascribe\\java-support\\target\\classes"),
 			new File("C:\\git\\javascribe\\javascript-support\\target\\classes"),
+			new File("C:\\git\\javascribe\\system-plugins\\target\\classes"),
 			new File("C:\\git\\javascribe\\patterns\\target\\classes")
 	};
 
@@ -21,11 +22,14 @@ public class EngineRun {
 		JavascribeAgent agent = null;
 		
 		HashMap<String,String> props = new HashMap<>();
-		props.put("debug", "false");
-		props.put("applicationDir", "C:\\workspaces\\appDefs\\NewsList");
+		props.put("debug", "true");
+		//props.put("applicationDir", "C:\\workspaces\\appDefs\\NewsList");
+		//props.put("outputDir", "c:\\build\\NewsList");
+		props.put("applicationDir", "C:\\workspaces\\kingdoms");
+		props.put("outputDir", "c:\\build\\kingdoms");
 		props.put("singleAppMode", "true");
-		props.put("outputDir", "c:\\build\\NewsList");
 		props.put("once", "false");
+		props.put("engine.plugin.templates", "active");
 
 		try {
 			agent = new JavascribeAgent(libs, props);

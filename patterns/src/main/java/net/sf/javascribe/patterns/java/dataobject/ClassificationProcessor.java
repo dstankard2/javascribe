@@ -71,7 +71,7 @@ public class ClassificationProcessor implements ComponentProcessor<Classificatio
 			} else {
 				typeName = ctx.getSystemAttribute(attr);
 				if (typeName==null) {
-					throw new JavascribeException("Couldn't find type for classification attribute '"+attr+"'");
+					throw new JavascribeException("Couldn't find type for classification property '"+attr+"'");
 				}
 			}
 			JavaVariableType attrType = JavascribeUtils.getType(JavaVariableType.class, typeName, ctx);

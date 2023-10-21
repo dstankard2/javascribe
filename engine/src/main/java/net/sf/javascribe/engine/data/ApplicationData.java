@@ -24,6 +24,7 @@ import net.sf.javascribe.engine.data.files.UserFile;
 import net.sf.javascribe.engine.data.processing.ComponentItem;
 import net.sf.javascribe.engine.data.processing.FileProcessorEntry;
 import net.sf.javascribe.engine.data.processing.FolderWatcherEntry;
+import net.sf.javascribe.engine.data.processing.LogContext;
 import net.sf.javascribe.engine.data.processing.ProcessingState;
 import net.sf.javascribe.engine.data.processing.ProcessorLog;
 import net.sf.javascribe.engine.service.LanguageSupportService;
@@ -33,7 +34,7 @@ import net.sf.javascribe.engine.service.LanguageSupportService;
 @Getter
 @Setter
 @Builder
-public class ApplicationData {
+public class ApplicationData implements LogContext {
 
 	private File applicationDirectory;
 	
@@ -53,7 +54,10 @@ public class ApplicationData {
 	private SystemAttributesFile systemAttributesFile = null;
 	
 	public Map<String,String> getGlobalSystemAttributes() {
-		return systemAttributesFile.getSystemAttributes();
+		if (systemAttributesFile!=null) {
+			return systemAttributesFile.getSystemAttributes();
+		}
+		return new HashMap<>();
 	}
 
 	@Builder.Default
@@ -162,6 +166,11 @@ public class ApplicationData {
 
 	@Builder.Default
 	private List<SourceFile> removedSourceFiles = new ArrayList<>();
-	
+
+	@Override
+	public void appendMessage(ProcessorLogMessage message) {
+		this.getMessages().add(message);
+	}
+
 }
 

@@ -13,6 +13,7 @@ import net.sf.javascribe.api.annotation.Plugin;
 import net.sf.javascribe.api.exception.JavascribeException;
 import net.sf.javascribe.api.plugin.EnginePlugin;
 import net.sf.javascribe.api.plugin.PluginContext;
+import net.sf.javascribe.api.snapshot.ApplicationSnapshot;
 import net.sf.javascribe.langsupport.javascript.JavascriptCode;
 import net.sf.javascribe.langsupport.javascript.modules.ModuleFunction;
 import net.sf.javascribe.langsupport.javascript.modules.ModuleSourceFile;
@@ -45,9 +46,13 @@ public class DirectiveUtils implements EnginePlugin {
 		this.ctx = ctx;
 	}
 
+	public String getPluginConfigName() {
+		return "engine.plugin.templates";
+	}
+
 	@Override
 	public String getPluginName() {
-		return "HtmlTemplateDirectives";
+		return "HtmlTemplateDirectivesLoader";
 	}
 
 	@Override
@@ -74,11 +79,11 @@ public class DirectiveUtils implements EnginePlugin {
 				ctx.getLog().error("Couldn't load attribute directives", e);
 			}
 		}
-	
+		this.ctx.getLog().info("Loaded HTML Template directives");
 	}
 
 	@Override
-	public void scanFinish(String applicationName) {
+	public void scanFinish(ApplicationSnapshot applicationData) {
 		// no-op
 	}
 	

@@ -16,6 +16,11 @@ public class JavascriptUtils {
 	public static String getModuleRelativePath(String path,String modulePath) {
 		if (!path.startsWith("/")) path = "/" + path;
 		if (!modulePath.startsWith("/")) modulePath = "/" + modulePath;
+		
+		if (path.equals(modulePath)) {
+			return null;
+		}
+		
 		StringBuilder build = new StringBuilder();
 		
 		build.append(".");

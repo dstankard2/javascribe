@@ -102,6 +102,13 @@ public class EmbedTomcatMain implements ComponentProcessor<EmbedTomcatFinalizer>
 				body.append("res.setProperty(\"url\", \""+info.getUrl()+"\");");
 				body.append("res.setProperty(\"username\", \""+info.getUsername()+"\");");
 				body.append("res.setProperty(\"password\", \""+info.getPassword()+"\");\n");
+				
+				// TODO: This stuff should be configurable
+				body.append("res.setProperty(\"validationQuery\", \"select 1;\");\n");
+				body.append("res.setProperty(\"validationQueryTimeout\", \"10\");\n");
+				body.append("res.setProperty(\"testOnBorrow\", \"true\");\n");
+				//body.append("res.setProperty(\"testWhileIdle\", \"true\");\n");
+				body.append("res.setProperty(\"maxTotal\", \"5\");\n");
 
 				body.append("ctx.getNamingResources().addResource(res);\n");
 			}

@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 import net.sf.javascribe.api.BuildContext;
-import net.sf.javascribe.api.config.BuildComponent;
 import net.sf.javascribe.api.logging.ProcessorLogLevel;
 import net.sf.javascribe.api.resources.ApplicationFolder;
 import net.sf.javascribe.engine.EngineException;
@@ -30,7 +29,7 @@ public class ApplicationFolderImpl implements WatchedResource,ApplicationFolder 
 	private HashMap<String,ApplicationFolderImpl> subFolders = new HashMap<>();
 	private Map<String,ComponentFile> componentFiles = new HashMap<>();
 	private Map<String,UserFile> userFiles = new HashMap<>();
-	private JavascribePropertiesFile jasperProperties = null;
+	private JavascribePropertiesFile javascribeProperties = null;
 	private ApplicationData application;
 
 	public ApplicationFolderImpl(File file,ApplicationData application) {
@@ -57,14 +56,14 @@ public class ApplicationFolderImpl implements WatchedResource,ApplicationFolder 
 	}
 
 	public boolean isIgnore(String filename) {
-		if (jasperProperties==null) return false;
-		return jasperProperties.isIgnore(filename);
+		if (javascribeProperties==null) return false;
+		return javascribeProperties.isIgnore(filename);
 	}
 
 	// Update the jasper.properties for this folder.
 	// Also calculates derived properties of this folder
-	public void setJasperProperties(JavascribePropertiesFile jasperProperties) {
-		this.jasperProperties = jasperProperties;
+	public void setJavascribeProperties(JavascribePropertiesFile javascribeProperties) {
+		this.javascribeProperties = javascribeProperties;
 		// This folder needs to be processed again.  Mark it as modified
 		lastModified = System.currentTimeMillis() - 1;
 		String logLevel = this.getProperties().get("logLevel");
@@ -74,8 +73,8 @@ public class ApplicationFolderImpl implements WatchedResource,ApplicationFolder 
 		else if (logLevel.equalsIgnoreCase("DEBUG")) this.logLevel = ProcessorLogLevel.DEBUG;
 		else if (logLevel.equalsIgnoreCase("WARN")) this.logLevel = ProcessorLogLevel.WARN;
 		
-		if (jasperProperties!=null) {
-			String ig = jasperProperties.getProperties().get("ignore");
+		if (javascribeProperties!=null) {
+			String ig = javascribeProperties.getProperties().get("ignore");
 			if (ig!=null) {
 				this.ignoreFiles.addAll(Arrays.asList(ig.split(",")));
 			} else {
@@ -190,9 +189,9 @@ public class ApplicationFolderImpl implements WatchedResource,ApplicationFolder 
 		} else {
 			ret = new HashMap<String,String>();
 		}
-		if (jasperProperties!=null) {
-			for(String key : jasperProperties.getProperties().keySet()) {
-				String value = jasperProperties.getProperties().get(key);
+		if (javascribeProperties!=null) {
+			for(String key : javascribeProperties.getProperties().keySet()) {
+				String value = javascribeProperties.getProperties().get(key);
 				ret.put(key, value);
 			}
 		}
@@ -237,7 +236,7 @@ public class ApplicationFolderImpl implements WatchedResource,ApplicationFolder 
 	}
 
 	public JavascribePropertiesFile getJasperPropertiesFile() {
-		return jasperProperties;
+		return javascribeProperties;
 	}
 
 	@Override
@@ -275,13 +274,22 @@ public class ApplicationFolderImpl implements WatchedResource,ApplicationFolder 
 		} else {
 			if (parent!=null) {
 				ret = parent.getCurrentBuildComponent();
-			} else {
+			}
+			/*
+			else {
+				ProcessingUtil processingUtil = ComponentContainer.get().getComponent(ProcessingUtil.class);
 				BuildComponent buildComp = new DefaultBuildComponent();
 				ret = new BuildComponentItem(-1, buildComp, this, null, getProperties(), application);
+				processingUtil.addItem(ret, application);
+				// Initialize the build
+				application.getProcessingData().getBuildsToInit().remove(ret);
+				application.getProcessingData().getBuildsToProcess().add(ret);
+				
 				try {
 					ret.init();
 				} catch(Exception e) { }
 			}
+			*/
 		}
 		
 		return ret;

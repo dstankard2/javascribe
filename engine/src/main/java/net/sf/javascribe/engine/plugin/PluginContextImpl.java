@@ -29,7 +29,7 @@ public class PluginContextImpl implements PluginContext {
 
 	@Override
 	public Log getLog() {
-		return null;
+		return engineResources.getEngineLog();
 	}
 
 	@Override

@@ -19,6 +19,7 @@
 		<module>engine</module>
 		<module>launcher</module>
 		<module>dist</module>
+		<module>system-plugins</module>
 		<module>testing</module>
 	</modules>
 	<properties>

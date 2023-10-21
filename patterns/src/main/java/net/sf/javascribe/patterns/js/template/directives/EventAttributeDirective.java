@@ -61,8 +61,8 @@ public class EventAttributeDirective extends AttributeDirectiveBase {
 		}
 		code.append('\''+eltVar+'\'');
 		code.append("];\n");
-		code.append("if ("+eltVar+")");
-		code.append("_ins("+containerVar+","+eltVar+","+elList+");\n");
+		code.append("if ("+eltVar+") {\n");
+		code.append("_ins("+containerVar+","+eltVar+","+elList+");\n}\n");
 		code.append("}\n");
 		code.append("};\n");
 		

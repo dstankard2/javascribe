@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.StringBufferInputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Map;
 
 import org.mockito.Mockito;
 import org.testng.annotations.BeforeClass;
@@ -15,18 +16,22 @@ import net.sf.javascribe.api.logging.ProcessorLogLevel;
 import net.sf.javascribe.engine.data.ApplicationData;
 import net.sf.javascribe.engine.data.files.ApplicationFolderImpl;
 import net.sf.javascribe.engine.data.files.ComponentFile;
+import net.sf.javascribe.engine.data.files.JavascribePropertiesFile;
 import net.sf.javascribe.engine.data.files.UserFile;
 import net.sf.javascribe.engine.data.processing.ProcessorLog;
+import net.sf.javascribe.engine.util.LogUtil;
 
 public abstract class ManagerTest extends ContainerTest {
 
 	File tempDir;
+	LogUtil logUtil;
 
 	@BeforeClass
 	public void setupManagerTest() throws IOException {
 		Path path = Files.createTempDirectory("jstest");
 		tempDir = path.toFile();
 		tempDir.deleteOnExit();
+		this.logUtil = new LogUtil();
 	}
 
 	protected ApplicationData createApplicationShell(String name) {
@@ -46,6 +51,7 @@ public abstract class ManagerTest extends ContainerTest {
 		return application;
 	}
 	
+	@SuppressWarnings("deprecation")
 	protected UserFile createUserFile(String name, String path, String content) throws IOException {
 		StringBufferInputStream in = new StringBufferInputStream(content);
 		UserFile uf = Mockito.mock(UserFile.class);
@@ -67,14 +73,19 @@ public abstract class ManagerTest extends ContainerTest {
 
 		return f;
 	}
-
-	protected UserFile createUserFile(String filename, ApplicationData application, String content) {
-		UserFile ret = null;
-		File dir = application.getApplicationDirectory();
-		File f = new File(dir, filename);
-		//UserFile userFile = new UserFile()
+	
+	protected void setProperties(ApplicationFolderImpl folder, Map<String,String> properties) {
+		JavascribePropertiesFile f = Mockito.mock(JavascribePropertiesFile.class);
+		Mockito.when(f.getFolder()).thenReturn(folder);
+		Mockito.when(f.getProperties()).thenReturn(properties);
+		Mockito.when(f.getName()).thenReturn("javascribe.properties");
+		Mockito.when(f.getLastModified()).thenReturn(0L);
+		Mockito.when(f.getPath()).thenReturn(folder.getPath()+"javascribe.properties");
+		folder.setJavascribeProperties(f);
+	}
+	
+	protected void clearMessages(ApplicationData applicationData) {
 		
-		return ret;
 	}
 
 }

@@ -15,6 +15,7 @@ import net.sf.javascribe.engine.data.ApplicationData;
 import net.sf.javascribe.engine.data.ProcessingData;
 import net.sf.javascribe.engine.data.files.ApplicationFolderImpl;
 import net.sf.javascribe.engine.data.files.ComponentFile;
+import net.sf.javascribe.engine.data.files.DefaultBuildComponent;
 import net.sf.javascribe.engine.data.files.UserFile;
 import net.sf.javascribe.engine.data.processing.BuildComponentItem;
 import net.sf.javascribe.engine.data.processing.ComponentItem;
@@ -84,10 +85,31 @@ public class ProcessingService implements ProcessingContextOperations {
 
 	public void runProcessing(ApplicationData application) {
 		ProcessingData pd = application.getProcessingData();
+		ApplicationFolderImpl rootFolder = application.getRootFolder();
 		boolean error = false;
 
 		application.setState(ProcessingState.PROCESSING);
 
+		// Before processing, check to see if there is a build in the root directory.
+		// If there isn't, and there isn't a build to init in the root directory, create a 
+		// default build.
+		
+		boolean buildToInitInRootFolder = pd.getBuildsToInit().stream().anyMatch(b -> {
+			return b.getFolder()==rootFolder;
+		});
+		
+		if ((application.getRootFolder().getBuildComponent()==null) && (!buildToInitInRootFolder)) {
+			BuildComponent buildComp = new DefaultBuildComponent();
+			BuildComponentItem item = new BuildComponentItem(pd.nextId(), buildComp, application.getRootFolder(), null, rootFolder.getProperties(), application);
+			processingUtil.addItem(item, application);
+		} else {
+			// If there is a build component in the root folder, and there is a build to init in the root folder, 
+			// remove the build in the root folder
+			if ((application.getRootFolder().getBuildComponent()!=null) && (buildToInitInRootFolder)) {
+				processingUtil.removeItem(application, application.getRootFolder().getBuildComponent().getItemId());
+			}
+		}
+		
 		// Init builds
 		while ((pd.getBuildsToInit().size() > 0) && (!error)) {
 			BuildComponentItem i = pd.getBuildsToInit().get(0);
@@ -108,11 +130,6 @@ public class ProcessingService implements ProcessingContextOperations {
 			}
 		}
 		
-		// TODO: If there is no build in the root directory, add a default build
-		if (application.getRootFolder().getBuildComponent()==null) {
-			
-		}
-
 		// Process items
 		while ((pd.getToProcess().size() > 0) && (!error)) {
 			Collections.sort(pd.getToProcess());
@@ -166,8 +183,9 @@ public class ProcessingService implements ProcessingContextOperations {
 			}
 		}
 
-		// Everything is successful, mark the application state
-		if (application.getState() == ProcessingState.PROCESSING) {
+		if (error) {
+			application.setState(ProcessingState.ERROR);
+		} else {
 			application.setState(ProcessingState.SUCCESS);
 		}
 	}

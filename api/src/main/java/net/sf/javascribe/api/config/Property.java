@@ -6,6 +6,10 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import net.sf.javascribe.api.annotation.Plugin;
 import net.sf.javascribe.api.annotation.XmlConfig;
 
@@ -13,6 +17,10 @@ import net.sf.javascribe.api.annotation.XmlConfig;
 @XmlConfig
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name="property",propOrder={ })
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class Property {
 
 	@XmlAttribute(required=true)
@@ -21,27 +29,4 @@ public class Property {
 	@XmlValue
 	private String value = null;
 
-	public Property() { }
-	
-	public Property(String name,String value) {
-		this.name = name;
-		this.value = value;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getValue() {
-		return value;
-	}
-
-	public void setValue(String value) {
-		this.value = value;
-	}
-	
 }

@@ -65,7 +65,7 @@ public class OutputService {
 			} catch(FileNotFoundException e) {
 				e.printStackTrace();
 			} catch(IOException e) {
-				e.printStackTrace();
+				System.out.println("Couldn't write user file "+uf.getPath()+" - IOException ("+e.getMessage()+")");
 			}
 			application.getUserFiles().put(uf.getPath(), uf);
 		});

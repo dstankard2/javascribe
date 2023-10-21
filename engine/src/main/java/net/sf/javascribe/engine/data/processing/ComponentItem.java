@@ -45,6 +45,11 @@ public class ComponentItem extends ProcessableBase implements Item {
 	}
 
 	@Override
+	public ApplicationFolderImpl getFolder() {
+		return folder;
+	}
+
+	@Override
 	public void setState(ProcessingState state) {
 		this.state = state;
 	}
@@ -88,7 +93,7 @@ public class ComponentItem extends ProcessableBase implements Item {
 					proc.process(component,  ctx);
 				}
 			} catch(JavascribeException e) {
-				this.log.error(e.getMessage(), e);
+				this.log.error(e.getMessage());
 				success = false;
 			} catch(InstantiationException e) {
 				this.log.error("Couldn't invoke component processor - "+e.getMessage(), e);

@@ -1,26 +1,21 @@
 package net.sf.javascribe.engine.data.processing;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.sf.javascribe.api.logging.Log;
 import net.sf.javascribe.api.logging.ProcessorLogLevel;
 import net.sf.javascribe.api.plugin.ProcessorLogMessage;
-import net.sf.javascribe.engine.data.ApplicationData;
 
 public class ProcessorLog implements Log {
 
-	protected List<ProcessorLogMessage> messages = new ArrayList<>();
 	private String name = null;
-	private ApplicationData application;
 	private ProcessorLogLevel targetLevel;
+	private LogContext context;
 
-	public ProcessorLog(String name, ApplicationData application, ProcessorLogLevel targetLevel) {
+	public ProcessorLog(String name, LogContext context, ProcessorLogLevel targetLevel) {
 		this.name = name;
-		this.application = application;
 		this.targetLevel = targetLevel;
+		this.context = context;
 	}
-
+	
 	/*
 	public void outputToSystem() {
 		List<ProcessorLogMessage> msgs = getMessages(true);
@@ -64,37 +59,37 @@ public class ProcessorLog implements Log {
 
 	@Override
 	public void info(String message) {
-		application.getMessages().add(new ProcessorLogMessage(name, ProcessorLogLevel.INFO, targetLevel, message, null));
+		context.appendMessage(new ProcessorLogMessage(name, ProcessorLogLevel.INFO, targetLevel, message, null));
 	}
 
 	@Override
 	public void debug(String message) {
-		application.getMessages().add(new ProcessorLogMessage(name, ProcessorLogLevel.DEBUG, targetLevel, message, null));
+		context.appendMessage(new ProcessorLogMessage(name, ProcessorLogLevel.DEBUG, targetLevel, message, null));
 	}
 
 	@Override
 	public void debug(String message, Throwable e) {
-		application.getMessages().add(new ProcessorLogMessage(name, ProcessorLogLevel.DEBUG, targetLevel, message, e));
+		context.appendMessage(new ProcessorLogMessage(name, ProcessorLogLevel.DEBUG, targetLevel, message, e));
 	}
 
 	@Override
 	public void warn(String message) {
-		application.getMessages().add(new ProcessorLogMessage(name, ProcessorLogLevel.WARN, targetLevel, message, null));
+		context.appendMessage(new ProcessorLogMessage(name, ProcessorLogLevel.WARN, targetLevel, message, null));
 	}
 
 	@Override
 	public void error(String message) {
-		application.getMessages().add(new ProcessorLogMessage(name, ProcessorLogLevel.ERROR, targetLevel, message, null));
+		context.appendMessage(new ProcessorLogMessage(name, ProcessorLogLevel.ERROR, targetLevel, message, null));
 	}
 
 	@Override
 	public void warn(String message, Throwable e) {
-		application.getMessages().add(new ProcessorLogMessage(name, ProcessorLogLevel.WARN, targetLevel, message, e));
+		context.appendMessage(new ProcessorLogMessage(name, ProcessorLogLevel.WARN, targetLevel, message, e));
 	}
 
 	@Override
 	public void error(String message, Throwable e) {
-		application.getMessages().add(new ProcessorLogMessage(name, ProcessorLogLevel.ERROR, targetLevel, message, e));
+		context.appendMessage(new ProcessorLogMessage(name, ProcessorLogLevel.ERROR, targetLevel, message, e));
 	}
 
 }

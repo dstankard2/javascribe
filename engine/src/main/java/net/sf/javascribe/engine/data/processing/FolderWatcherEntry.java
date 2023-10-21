@@ -41,23 +41,10 @@ public class FolderWatcherEntry implements Item {
 	}
 
 	public void applyToUserFile(UserFile file) {
-		//boolean ret = true;
-		
-		//try {
-			FolderWatcherProcessable proc = new FolderWatcherProcessable(
-				id, folderWatcher, file, application, log, configs, folder
-			);
-			application.getProcessingData().getToProcess().add(proc);
-			//ProcessorContextImpl ctx = new ProcessorContextImpl(application, id, configs, folder, log);
-			//folderWatcher.process(ctx, file);
-			/*
-		} catch(JavascribeException e) {
-			this.state = ProcessingState.ERROR;
-			this.log.error("Error when applying file '"+file.getPath()+"'", e);
-			ret = false;
-		}
-		*/
-		//return ret;
+		FolderWatcherProcessable proc = new FolderWatcherProcessable(
+			id, folderWatcher, file, application, log, configs, folder
+		);
+		application.getProcessingData().getToProcess().add(proc);
 	}
 
 	@Override
@@ -78,6 +65,11 @@ public class FolderWatcherEntry implements Item {
 	@Override
 	public ProcessingState getState() {
 		return state;
+	}
+
+	@Override
+	public ApplicationFolderImpl getFolder() {
+		return folder;
 	}
 
 }

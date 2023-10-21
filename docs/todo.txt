@@ -7,8 +7,12 @@ Processing bugs/tasks
 	Bug: When a processed build is modified by a component, the build must be re-generated.
 	Bug: When a component modifies a build that is already processed, the build needs to be reset
 		Most likely items in the build's folder should be reset too.
+	When the build context's runtime platform is manipulated, any item that depends on it should be reset
+		(Maybe it should be an object instead?)
 
 Engine/Processing enhancements:
+	Remove RuntimePlatform concept in its current form.  Use objects for now.
+	Implement logging standard.  Generated code should output errors to log.
 	Show 'scanning' message when there are items to process after remove/add.  Show 'found changed files' if it's userfile changes only.
 	Task: Create ContextBase for ProcessorContextImpl and BuildProcessorContextImpl
 	There should be an association between a build and its components.
@@ -19,9 +23,10 @@ Engine/Processing enhancements:
 	Types should be available on a per-build-context basis instead of on a language basis.
 		Maybe they should be available from build context instead of processor context.
 		ProcessorContext would then have an API to retrieve another build context, to get types from another build context.
+	Support for profiles, where a profile-specific javascribe.properties file is used
 
 Pattern bugs/tasks
-	Bug: When adding a web context listener via handwritten code, the Java web platform should be stale.
+	Bug: Javascript module client needs to read localdatetime properly and/or server needs to send it to client properly.
 	Task: Evaluate web service module and web service client patterns to see if there's a better way to associate them.
 		Add functionName to endpoint.  Use it to set operationName in WebServiceOperation object
 	HTML Template Parser returns a syntax error when template is empty.

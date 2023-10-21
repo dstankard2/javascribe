@@ -3,6 +3,7 @@ package net.sf.javascribe.test.plugin;
 import net.sf.javascribe.api.annotation.Plugin;
 import net.sf.javascribe.api.plugin.EnginePlugin;
 import net.sf.javascribe.api.plugin.PluginContext;
+import net.sf.javascribe.api.snapshot.ApplicationSnapshot;
 
 @Plugin
 public class TestEnginePlugin implements EnginePlugin {
@@ -25,9 +26,14 @@ public class TestEnginePlugin implements EnginePlugin {
 	}
 
 	@Override
-	public void scanFinish(String applicationName) {
+	public void scanFinish(ApplicationSnapshot applicationSnapshot) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public String getPluginConfigName() {
+		return null;
 	}
 
 }

@@ -70,7 +70,7 @@ public class FnElementDirective implements ElementDirective {
 		JavascriptParsingResult result = eval.evalCodeBlock();
 
 		code.append(result.getCode().trim());
-		code.append("\n}catch(_e){console.error(_e);}\n");
+		code.append("\n}catch(_e){\nconsole.error(_e);\n}\n");
 		if (!executeNow) {
 			code.append("}\n");
 		} else {

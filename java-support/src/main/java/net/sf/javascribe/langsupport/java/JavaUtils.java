@@ -173,6 +173,9 @@ public class JavaUtils {
 
 	public static void addProperty(JavaClassSourceFile src,String name,String typeName,ProcessorContext ctx) throws JavascribeException {
 		JavaVariableType type = JavascribeUtils.getType(JavaVariableType.class, typeName, ctx);
+		if (type==null) {
+			throw new JavascribeException("Cannot create property "+name+" on source file "+src.getPath()+" because type "+typeName+" was not found");
+		}
 		src.addImport(type);
 		src.getSrc().addProperty(type.getClassName(), name);
 	}

@@ -74,6 +74,7 @@ public class WsClientsProcessor implements ComponentProcessor<WsClients> {
 			ctx.addVariableType(type);
 			HandwrittenModuleSource src = new HandwrittenModuleSource(name);
 			file.addModule(src);
+			ensureDateParsing(file);
 			for(EndpointOperation op : webModule.getOperations()) {
 				String rootUri = webModule.getModuleUri();
 				appendOperation(comp, ctx, op, src, type, urlPrefix, rootUri);
@@ -310,6 +311,12 @@ public class WsClientsProcessor implements ComponentProcessor<WsClients> {
 			throw new JavascribeException("Was unable to create a Javascript type for type '" + typeName + "'");
 		}
 		return ret;
+	}
+
+	private static final String DATE_PARSING_CODE = "";
+	
+	private void ensureDateParsing(ModuleSourceFile src) {
+		
 	}
 
 }

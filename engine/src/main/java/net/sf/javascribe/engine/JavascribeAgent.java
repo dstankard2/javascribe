@@ -87,6 +87,12 @@ public class JavascribeAgent {
 				application.getApplicationLog().info("*** Scanned application '"+application.getName()+"' and found changes ***");
 			}
 			workspaceManager.scanApplicationDir(application, firstRun, onlyRun);
+			
+			// Engine plugins post-scan
+			if (!onlyRun) {
+				PluginManager pluginManager = ComponentContainer.get().getComponent("PluginManager", PluginManager.class);
+				pluginManager.postScan(application);
+			}
 		}
 	}
 

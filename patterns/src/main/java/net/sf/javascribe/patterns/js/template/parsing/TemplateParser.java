@@ -51,15 +51,6 @@ public class TemplateParser {
 		Element bodyElement = (Element)docNodeList.get(1);
 		bodyChildren = bodyElement.childNodes();
 
-		/*
-		boolean hasElement = false;
-		// Root node is html.  Get right to the children
-		List<Node> htmlChildren = docNodeList.get(0).childNodes();
-		
-		// Second child of html is body.  Get its children
-		bodyChildren = htmlChildren.get(1).childNodes();
-		*/
-		
 		for(Node node : bodyChildren) {
 			if (node instanceof Element) {
 				ElementParser p = new ElementParser((Element)node,ctx,null,obj,serviceOperation,new ArrayList<String>(),this);

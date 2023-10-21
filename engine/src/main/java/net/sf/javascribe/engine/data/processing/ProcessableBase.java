@@ -4,7 +4,9 @@ public abstract class ProcessableBase implements Processable {
 
 	@Override
 	public int compareTo(Processable o) {
-		return getPriority() - o.getPriority();
+		if (getPriority() > o.getPriority()) return 1;
+		else if (getPriority() < o.getPriority()) return -1;
+		return 0;
 	}
 
 }

@@ -116,7 +116,7 @@ public class JavascribeUtils {
 			} else {
 				String typeName = ctx.getSystemAttribute(part.trim());
 				if (typeName==null) {
-					throw new JavascribeException("Couldn't find type for attribute '"+part+"'");
+					throw new JavascribeException("Couldn't find type for property '"+part+"'");
 				}
 				VariableType type = JavascribeUtils.getType(VariableType.class, typeName, ctx);
 				if (type==null) {

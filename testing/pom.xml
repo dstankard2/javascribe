@@ -38,6 +38,16 @@
 			<version>0.1.0</version>
 		</dependency>
 		<dependency>
+			<groupId>net.sf.javascribe</groupId>
+			<artifactId>system-plugins</artifactId>
+			<version>0.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.javascribe</groupId>
+			<artifactId>patterns</artifactId>
+			<version>0.1.0</version>
+		</dependency>
+		<dependency>
 			<groupId>org.jboss.forge.roaster</groupId>
 			<artifactId>roaster-api</artifactId>
 			<version>2.20.1.Final</version>
@@ -52,23 +62,6 @@
 			<artifactId>dom4j</artifactId>
 			<version>2.1.1</version>
 		</dependency>
-		<!--
-		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-			<version>8.0.20</version>
-		</dependency>
-        <dependency>
-            <groupId>com.github.jsqlparser</groupId>
-            <artifactId>jsqlparser</artifactId>
-            <version>1.2</version>
-        </dependency>
-		<dependency>
-    		<groupId>org.jsoup</groupId>
-    		<artifactId>jsoup</artifactId>
-    		<version>1.11.3</version>
-		</dependency>
-		-->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
