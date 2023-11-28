@@ -49,7 +49,6 @@ public class ProcessingService implements ProcessingContextOperations {
 	}
 
 	public void removeComponentFiles(List<ComponentFile> componentFiles, ApplicationData application) {
-		List<Item> itemsToRemove = new ArrayList<>();
 		componentFiles.forEach(cf -> {
 			cf.getComponentSet().getComponent().forEach(comp -> {
 				if (comp instanceof BuildComponent) {
@@ -61,7 +60,6 @@ public class ProcessingService implements ProcessingContextOperations {
 				}
 			});
 		});
-		processingUtil.itemsRemoved(application, itemsToRemove);
 	}
 
 	public void removeUserFiles(List<UserFile> userFiles, ApplicationData application) {
