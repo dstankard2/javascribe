@@ -68,7 +68,7 @@ public class EndpointProcessor implements ComponentProcessor<Endpoint> {
 		HttpMethod httpMethod = comp.getMethod();
 		if ((httpMethod==HttpMethod.POST) || (httpMethod==HttpMethod.PUT)) {
 			if (comp.getRequestBody().trim().length()==0) {
-				ctx.getLog().error("Java HTTP Endpoint is POST or PUT but does not have a request body specified - continuing");
+				ctx.getLog().warn("Java HTTP Endpoint is POST or PUT but does not have a request body specified - continuing");
 			} else {
 				requestBody = comp.getRequestBody();
 				op.setRequestBodyFormat("json");

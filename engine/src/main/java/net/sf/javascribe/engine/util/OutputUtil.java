@@ -13,8 +13,6 @@ public class OutputUtil {
 		File toDelete = new File(rootDir, filePath);
 		
 		if (toDelete.exists()) {
-			application.getSourceFiles().remove(filePath);
-			//application.getAddedSourceFiles().remove(filePath);
 			toDelete.delete();
 		} else {
 			System.out.println("I tried to delete file "+filePath+" but I couldn't find it on the file system");

@@ -6,11 +6,19 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import net.sf.javascribe.api.annotation.Plugin;
 import net.sf.javascribe.api.annotation.XmlConfig;
 import net.sf.javascribe.api.config.Component;
 import net.sf.javascribe.patterns.PatternPriority;
 
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @XmlConfig
 @Plugin
 @XmlRootElement(name="filterGroup")
@@ -22,26 +30,21 @@ public class ServletFilterGroup extends Component {
 		return PatternPriority.SERVLET_FILTER_GROUP;
 	}
 	
+	@Getter
+	@Setter
+	@Builder.Default
 	@XmlAttribute(required = true)
 	private String name = "";
 	
+	@Getter
+	@Setter
+	@Builder.Default
 	@XmlAttribute(required = true)
 	private String filters = "";
 
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getFilters() {
-		return filters;
-	}
-
-	public void setFilters(String filters) {
-		this.filters = filters;
+	@Override
+	public String getComponentName() {
+		return "ServletFilterGroup["+name+"]";
 	}
 
 }

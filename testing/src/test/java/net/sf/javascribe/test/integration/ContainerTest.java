@@ -30,7 +30,7 @@ import net.sf.javascribe.engine.service.PluginService;
 @SuppressWarnings({ "rawtypes" })
 public abstract class ContainerTest {
 
-	private List<Object> mocks = new ArrayList<>();
+	protected ArrayList<Object> mocks = new ArrayList<>();
 
 	Map<String,String> engineOptions = new HashMap<>();
 	
@@ -46,6 +46,13 @@ public abstract class ContainerTest {
 		componentClasses.add((Class<Component>)cl);
 	}
 
+	@SuppressWarnings("unchecked")
+	protected void includePatterns(Class<? extends Component>... classes) {
+		for(Class<? extends Component> cl : classes) {
+			componentClasses.add((Class<Component>)cl);
+		}
+	}
+
 	protected void includeBuildProcessor(Class<BuildComponentProcessor> cl) {
 		buildComponentProcessorClasses.add(cl);
 	}
@@ -55,6 +62,12 @@ public abstract class ContainerTest {
 		componentProcessorClasses.add((Class<ComponentProcessor>)cl);
 	}
 
+	@SuppressWarnings("unchecked")
+	protected void includeProcessors(Class<? extends ComponentProcessor>... classes) {
+		for(Class<? extends ComponentProcessor> cl : classes) {
+			componentProcessorClasses.add((Class<ComponentProcessor>)cl);
+		}
+	}
 	@SuppressWarnings("unchecked")
 	protected void includeLanguageSupport(Class<? extends LanguageSupport> cl) {
 		languageSupportClasses.add((Class<LanguageSupport>)cl);

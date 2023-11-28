@@ -1,5 +1,6 @@
 package net.sf.javascribe.engine.service;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +49,7 @@ public class ProcessingService implements ProcessingContextOperations {
 	}
 
 	public void removeComponentFiles(List<ComponentFile> componentFiles, ApplicationData application) {
+		List<Item> itemsToRemove = new ArrayList<>();
 		componentFiles.forEach(cf -> {
 			cf.getComponentSet().getComponent().forEach(comp -> {
 				if (comp instanceof BuildComponent) {
@@ -59,6 +61,7 @@ public class ProcessingService implements ProcessingContextOperations {
 				}
 			});
 		});
+		processingUtil.itemsRemoved(application, itemsToRemove);
 	}
 
 	public void removeUserFiles(List<UserFile> userFiles, ApplicationData application) {
@@ -145,10 +148,10 @@ public class ProcessingService implements ProcessingContextOperations {
 					pd.getProcessed().add(proc);
 					handleAddedItems(application);
 				} else {
-					proc.setState(ProcessingState.ERROR);
 					application.setState(ProcessingState.ERROR);
 					processingUtil.resetItem(application, proc.getItemId());
 					clearAddedItems(application);
+					proc.setState(ProcessingState.ERROR);
 				}
 			} catch(StaleDependencyException e) {
 				int id = e.getItemId();
@@ -193,7 +196,7 @@ public class ProcessingService implements ProcessingContextOperations {
 	public void outputPendingLogMessages(ApplicationData application) {
 		// Output to log
 		if (application.getMessages().size()>0) {
-			logUtil.outputPendingLogMessages(application, true);
+			logUtil.outputPendingLogMessages(application, false);
 		}
 	}
 	
@@ -218,9 +221,9 @@ public class ProcessingService implements ProcessingContextOperations {
 	}
 
 	// Implementation of ProcessingContextOperations
-	// TODO: Determine if this is necessary.  ItemId will have to be a parameter if so.
+	// TODO: Determine if this is necessary.
 	@Override
-	public void checkVariableTypeStale(String lang, String name, ApplicationData application) throws StaleDependencyException {
+	public void checkVariableTypeStale(int id, String lang, String name, ApplicationData application) throws StaleDependencyException {
 		// TODO Auto-generated method stub
 	}
 

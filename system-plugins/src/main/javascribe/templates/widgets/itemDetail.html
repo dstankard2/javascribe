@@ -1,0 +1,20 @@
+
+<js-param name="item" type="object" />
+
+<div class="widget item-detail">
+
+	<fieldset>
+		<legend>Item {{item.id}}</legend>
+		
+		<div>Name: {{ item.name }}</div>
+		<div js-if="item.originatorId">Originator: {{ window.getItemName(item.originatorId) }}</div>
+		<div js-if="item.logs.length">
+			<div>Log Messages</div>
+			<ul class="log-messages">
+				<li js-loop="msg in item.logs" class="{{ msg.level }}">{{ msg.message }}</li>
+			</ul>
+		</div>
+	</fieldset>
+
+</div>
+

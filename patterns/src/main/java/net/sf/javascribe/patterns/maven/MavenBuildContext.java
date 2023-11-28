@@ -5,8 +5,6 @@ import java.util.List;
 
 import net.sf.javascribe.api.BuildContext;
 import net.sf.javascribe.api.BuildProcessorContext;
-import net.sf.javascribe.api.RuntimePlatform;
-import net.sf.javascribe.api.exception.JavascribeException;
 import net.sf.javascribe.api.resources.ApplicationResource;
 
 public class MavenBuildContext implements BuildContext {
@@ -15,7 +13,6 @@ public class MavenBuildContext implements BuildContext {
 
 	private BuildProcessorContext ctx = null;
 	private MavenBuildComponentProcessor proc = null;
-	private RuntimePlatform runtimePlatform = null;
 	private String id;
 
 	public MavenBuildContext(BuildProcessorContext ctx,MavenBuildComponentProcessor proc, String id) {
@@ -99,16 +96,6 @@ public class MavenBuildContext implements BuildContext {
 		proc.addBuildPhase(goal);
 	}
 	
-	@Override
-	public RuntimePlatform getRuntimePlatform() {
-		return runtimePlatform;
-	}
-
-	@Override
-	public void setRuntimePlatform(RuntimePlatform platform) throws JavascribeException {
-		this.runtimePlatform = platform;
-	}
-
 	@Override
 	public void addBuildCommand(String cmd) {
 		proc.addBuildCommand(cmd);

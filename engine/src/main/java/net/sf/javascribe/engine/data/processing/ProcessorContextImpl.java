@@ -112,7 +112,7 @@ public class ProcessorContextImpl implements ProcessorContext {
 			throw new JavascribeException("No language support selected");
 		}
 		String name = variableType.getName();
-		ops.checkVariableTypeStale(lang, name, application);
+		ops.checkVariableTypeStale(id, lang, name, application);
 	}
 
 	@Override
@@ -147,18 +147,27 @@ public class ProcessorContextImpl implements ProcessorContext {
 		originateSourceFile(file);
 	}
 
+	/**
+	 * Gets the source file.  Returns null if the file doesn't exist.
+	 * If the file exists, and wasn't added this run (application.getAddedSourceFiles()), throw a stale dependency exception.
+	 */
+	// Throwing stale exception correctly?
 	@Override
 	public SourceFile getSourceFile(String path) {
 		SourceFile ret = application.getSourceFiles().get(path);
+		
 		if (ret==null) {
 			ret = application.getAddedSourceFiles().get(path);
 		} else {
-			this.originateSourceFile(ret);
-			throw new StaleDependencyException(id);
+			if (application.getAddedSourceFiles().get(path)==null) {
+				this.originateSourceFile(ret);
+				throw new StaleDependencyException(id);
+			}
 		}
 		if (ret!=null) {
 			originateSourceFile(ret);
 		}
+
 		return ret;
 	}
 

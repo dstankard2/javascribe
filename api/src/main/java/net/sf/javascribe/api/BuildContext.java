@@ -23,10 +23,6 @@ public interface BuildContext {
 
 	ApplicationResource getApplicationResource(String path);
 
-	RuntimePlatform getRuntimePlatform();
-
-	void setRuntimePlatform(RuntimePlatform platform) throws JavascribeException;
-
 	String getName();
 	
 	void addBuildCommand(String cmd);

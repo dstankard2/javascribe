@@ -11,12 +11,20 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import net.sf.javascribe.api.annotation.ConfigProperty;
 import net.sf.javascribe.api.annotation.Plugin;
 import net.sf.javascribe.api.annotation.XmlConfig;
 import net.sf.javascribe.langsupport.java.JavaComponent;
 import net.sf.javascribe.patterns.PatternPriority;
 
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @XmlConfig
 @Plugin
 @XmlRootElement(name="webServiceModule")
@@ -24,6 +32,7 @@ import net.sf.javascribe.patterns.PatternPriority;
 @XmlType(name="webServiceModule",propOrder={ "preprocessing" })
 public class WebServiceModuleComponent extends JavaComponent {
 
+	@Builder.Default
 	@XmlTransient
 	private String uriPrefix = "";
 
@@ -34,13 +43,11 @@ public class WebServiceModuleComponent extends JavaComponent {
 		this.uriPrefix = uriPrefix;
 	}
 
+	@Getter
+	@Builder.Default
 	@XmlTransient
 	private String requestRef = "";
 	
-	public String getRequestRef() {
-		return requestRef;
-	}
-
 	@ConfigProperty(required = false, name = "java.http.requestRef",
 			description = "Reference to HttpServletRequest object, so it can be used in web service logic", 
 			example = "request")
@@ -48,35 +55,43 @@ public class WebServiceModuleComponent extends JavaComponent {
 		this.requestRef = requestRef;
 	}
 
+	@Getter
+	@Builder.Default
 	@XmlTransient
 	private String responseRef = "";
 	
-	public String getResponseRef() {
-		return responseRef;
-	}
-
 	@ConfigProperty(required = false, name = "java.http.responseRef",
 			description = "Reference to HttpServletResponse object, so it can be used in web service logic", 
 			example = "response")
 	public void setResponseRef(String responseRef) {
 		this.responseRef = responseRef;
 	}
-
-	
 	
 	@XmlTransient
-	private String pkg = null;
+	private String pkg;
 
+	@Getter
+	@Setter
+	@Builder.Default
 	@XmlElement
 	private List<Preprocessing> preprocessing = new ArrayList<>();
 
+	@Getter
+	@Setter
+	@Builder.Default
 	@XmlAttribute
 	private String name = "";
-	
+
+	@Getter
+	@Setter
+	@Builder.Default
 	@XmlAttribute
 	private String uri = "";
-	
+
+	@Getter
+	@Setter
 	@XmlAttribute
+	@Builder.Default
 	private String filterGroup = "";
 
 	public String getComponentName() {
@@ -87,38 +102,6 @@ public class WebServiceModuleComponent extends JavaComponent {
 		return PatternPriority.SERVLET_MODULE;
 	}
 	
-	public List<Preprocessing> getPreprocessing() {
-		return preprocessing;
-	}
-
-	public void setPreprocessing(List<Preprocessing> preprocessing) {
-		this.preprocessing = preprocessing;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getUri() {
-		return uri;
-	}
-
-	public void setUri(String uri) {
-		this.uri = uri;
-	}
-
-	public String getFilterGroup() {
-		return filterGroup;
-	}
-
-	public void setFilterGroup(String filterGroup) {
-		this.filterGroup = filterGroup;
-	}
-
 	public String getPkg() {
 		return pkg;
 	}

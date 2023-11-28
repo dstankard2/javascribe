@@ -88,6 +88,10 @@ public class JavascribeUtils {
 	public static List<PropertyEntry> readParametersAsList(String paramString,ProcessorContext ctx) throws JavascribeException {
 		List<PropertyEntry> ret = new ArrayList<>();
 		
+		if (paramString==null) {
+			return ret;
+		}
+
 		paramString = paramString.trim();
 		if (paramString.length()==0) return ret;
 		

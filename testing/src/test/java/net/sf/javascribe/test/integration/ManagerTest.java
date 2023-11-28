@@ -23,7 +23,7 @@ import net.sf.javascribe.engine.util.LogUtil;
 
 public abstract class ManagerTest extends ContainerTest {
 
-	File tempDir;
+	protected File tempDir;
 	LogUtil logUtil;
 
 	@BeforeClass

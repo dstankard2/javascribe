@@ -17,7 +17,7 @@ public class FolderWatcherEntry implements Item {
 	private ApplicationData application;
 	private ApplicationFolderImpl folder;
 	private int id;
-	private ProcessingState state = ProcessingState.CREATED;
+	private ProcessingState state = ProcessingState.SUCCESS;
 	
 	public FolderWatcherEntry(int id, FolderWatcher folderWatcher, String path, int originatorId, 
 			Map<String,String> configs, ApplicationData application, 

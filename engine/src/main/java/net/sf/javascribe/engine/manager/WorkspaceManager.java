@@ -84,7 +84,8 @@ public class WorkspaceManager {
 		return applicationData;
 	}
 
-	public void scanApplicationDir(ApplicationData application, boolean firstRun, boolean onlyRun) {
+	// Returns true if changes were found and the application was updated
+	public boolean scanApplicationDir(ApplicationData application, boolean firstRun, boolean onlyRun) {
 		List<WatchedResource> removedFiles = folderScannerService.findFilesRemoved(application);
 		List<UserFile> removedUserFiles = new ArrayList<>();
 		List<ComponentFile> removedComponentFiles = new ArrayList<>();
@@ -167,6 +168,10 @@ public class WorkspaceManager {
 		// Write added source files, add them to the pre-existing code base
 		if (application.getAddedSourceFiles().size()>0) {
 			outputService.writeSourceFiles(application);
+			application.getAddedSourceFiles().forEach((path,sf) -> {
+				application.getSourceFiles().put(path, sf);
+			});
+			application.getAddedSourceFiles().clear();
 		}
 		// Put added objects into the application object cache
 		application.getAddedObjects().forEach((name, obj) -> {
@@ -192,6 +197,8 @@ public class WorkspaceManager {
 			}
 			processingService.outputMessageToLog("*********************************\n");
 		}
+		
+		return filesChanged;
 	}
 
 }

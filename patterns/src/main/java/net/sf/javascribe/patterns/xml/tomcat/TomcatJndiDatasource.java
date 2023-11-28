@@ -7,12 +7,20 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import net.sf.javascribe.api.annotation.ConfigProperty;
 import net.sf.javascribe.api.annotation.Plugin;
 import net.sf.javascribe.api.annotation.XmlConfig;
 import net.sf.javascribe.api.config.Component;
 import net.sf.javascribe.patterns.PatternPriority;
 
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Plugin
 @XmlConfig
 @XmlRootElement(name="tomcatJndiDatasource")
@@ -20,38 +28,40 @@ import net.sf.javascribe.patterns.PatternPriority;
 @XmlType(name="tomcatJndiDatasource",propOrder={ })
 public class TomcatJndiDatasource extends Component {
 
-	public TomcatJndiDatasource() {
-	}
-	
 	public int getPriority() {
 		return PatternPriority.EMBED_TOMCAT_JAR;
 	}
 
+	@Getter
+	@Setter
+	@Builder.Default
 	@XmlAttribute
 	private String name = "";
 	
+	@Getter
+	@Setter
+	@Builder.Default
 	@XmlAttribute
 	private String username = "";
 	
+	@Getter
+	@Setter
+	@Builder.Default
 	@XmlAttribute
 	private String password = "";
 	
+	@Getter
+	@Setter
+	@Builder.Default
 	@XmlAttribute
 	private String url = "";
 	
+	@Builder.Default
 	@XmlTransient
 	private String driverClass = "";
 	
 	public String getComponentName() {
 		return "TomcatJndiDatasource:"+name;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	public String getDriverClass() {
@@ -63,29 +73,5 @@ public class TomcatJndiDatasource extends Component {
 		this.driverClass = driverClass;
 	}
 
-	public String getUsername() {
-		return username;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	public String getUrl() {
-		return url;
-	}
-
-	public void setUrl(String url) {
-		this.url = url;
-	}
-	
 }
 

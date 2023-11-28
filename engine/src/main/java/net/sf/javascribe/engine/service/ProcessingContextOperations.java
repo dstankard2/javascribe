@@ -17,6 +17,6 @@ public interface ProcessingContextOperations {
 	void addFileProcessor(int originatorId, UserFile userFile, FileProcessor processor, Map<String,String> configs, ApplicationFolderImpl folder, ApplicationData application);
 	void addComponent(int originatorId, Component component, Map<String,String> configs, ApplicationFolderImpl folder, ApplicationData application);
 	void addSourceFile(SourceFile sourceFile, ApplicationData application);
-	void checkVariableTypeStale(String lang, String name, ApplicationData application) throws StaleDependencyException;
+	void checkVariableTypeStale(int itemId, String lang, String name, ApplicationData application) throws StaleDependencyException;
 	
 }

@@ -1,0 +1,22 @@
+
+<js-param name="selected" type="object" />
+<js-param name="files" type="object" />
+<js-param name="selectCallback" type="object" />
+
+<div class="widget file-listing">
+	
+	<js-var name="l" type="object" />
+	<js-fn>
+		l = [];
+		for(const prop in files) {
+			l.push(files[prop]);
+		}
+	</js-fn>
+	
+	<ul class="listing">
+		<li js-loop="file in l" class="{{file==selected ? 'selected': ''}}"
+		js-onclick="selectCallback(file);">{{ file.path }}</li>
+		
+	</ul>
+</div>
+

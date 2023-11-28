@@ -10,12 +10,20 @@ import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import net.sf.javascribe.api.annotation.ConfigProperty;
 import net.sf.javascribe.api.annotation.Plugin;
 import net.sf.javascribe.api.annotation.XmlConfig;
 import net.sf.javascribe.langsupport.java.JavaComponent;
 import net.sf.javascribe.patterns.PatternPriority;
 
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @XmlConfig
 @Plugin
 @XmlRootElement(name="service")
@@ -23,52 +31,33 @@ import net.sf.javascribe.patterns.PatternPriority;
 @XmlType(name="service",propOrder={ })
 public class Service extends JavaComponent {
 
+	@Builder.Default
 	private String pkg = null;
 
+	@Getter
+	@Setter
+	@Builder.Default
 	@XmlElementRef
 	private List<Operation> serviceOperation = new ArrayList<Operation>();
 
+	@Getter
+	@Setter
+	@Builder.Default
 	@XmlAttribute
 	private String params = null;
 	
+	@Getter
+	@Setter
+	@Builder.Default
 	@XmlAttribute
 	private String module = null;
 
+	@Getter
+	@Setter
+	@Builder.Default
 	@XmlAttribute
 	private String name = null;
 
-	public List<Operation> getServiceOperation() {
-		return serviceOperation;
-	}
-
-	public void setServiceOperation(List<Operation> serviceOperation) {
-		this.serviceOperation = serviceOperation;
-	}
-
-	public String getParams() {
-		return params;
-	}
-
-	public void setParams(String params) {
-		this.params = params;
-	}
-
-	public String getModule() {
-		return module;
-	}
-
-	public void setModule(String module) {
-		this.module = module;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-	
 	@Override
 	public int getPriority() {
 		return PatternPriority.BUSINESS_SERVICE;

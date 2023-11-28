@@ -1,0 +1,84 @@
+
+<div class="fragment app-display" js-page-aware="" js-page-ref="p" js-model-ref="model">
+	<js-import ref="widgets" />
+	<js-var name="displayType" type="string" />
+
+	<js-fn>
+		if (!displayType) {
+			displayType = 'items';
+		}
+	</js-fn>
+	
+	<js-fn name="changeDisplayType" params="type:string">
+		displayType = type;
+		p.event('changeDisplay');
+	</js-fn>
+	
+	<div class="selector" js-event="changeDisplay">
+		<span class="option display-type {{ displayType=='items' ? 'selected' : '' }}" js-onclick="changeDisplayType('items');" >All Items</span>
+		<span class="option display-type {{ displayType=='types' ? 'selected' : '' }}" js-onclick="changeDisplayType('types');" >Types</span>
+		<span class="option display-type {{ displayType=='systemAttributes' ? 'selected' : '' }}" js-onclick="changeDisplayType('systemAttributes');" >System Attributes</span>
+		<span class="option display-type {{ displayType=='sourceFiles' ? 'selected' : '' }}" js-onclick="changeDisplayType('sourceFiles');" >Source Files</span>
+	</div>
+	
+	<div class="vertical-spacing-10">&nbsp;</div>
+
+	<div class="data-listing-display">
+		
+		<js-var name="selectedItem" type="object" />
+		<js-var name="selectedType" type="object" />
+		<js-var name="selectedAttribute" type="object" />
+		<js-var name="selectedFile" type="object" />
+		
+		<js-fn name="itemCallback" params="item:object">
+			selectedItem = item;
+			selectedAttribute = selectedType = selectedFile = null;
+			p.event('reselect');
+		</js-fn>
+		<js-fn name="attributeCallback" params="attribute:object">
+			selectedAttribute = attribute;
+			selectedItem = selectedType = selectedFile = null;
+			p.event('reselect');
+		</js-fn>
+		<js-fn name="typeCallback" params="t:object">
+			selectedType = t;
+			selectedAttribute = selectedItem = selectedFile = null;
+			p.event('reselect');
+		</js-fn>
+		<js-fn name="fileCallback" params="t:object">
+			selectedFile = t;
+			selectedAttribute = selectedItem = selectedType = null;
+			p.event('reselect');
+		</js-fn>
+			
+		<div class="data-listing">
+			
+			<widgets.item-listing js-event="reselect,changeDisplay,appDataChanged" 
+				js-if="displayType==='items'" item-list="model.appData.allItems" 
+				select-callback="itemCallback" selected="selectedItem"
+			/>
+			<widgets.file-listing js-event="reselect,changeDisplay,appDataChanged" 
+				js-if="displayType==='sourceFiles'" files="model.appData.sourceFiles" 
+				select-callback="fileCallback" selected="selectedFile"
+			/>
+			<widgets.attribute-listing js-event="reselect,changeDisplay,appDataChanged" 
+				js-if="displayType==='systemAttributes'" attributes="model.appData.allSystemAttributes" 
+				select-callback="attributeCallback" selected="selectedAttribute"
+			/>
+			
+		</div>
+		<div class="data-details">
+
+			<widgets.item-detail js-if="selectedItem && displayType==='items'" 
+			js-event="reselect,changeDisplay" item="selectedItem" />
+
+			<widgets.attribute-detail js-if="selectedAttribute && displayType==='systemAttributes'" 
+			js-event="reselect,changeDisplay" attribute="selectedAttribute" />
+
+			<widgets.file-detail js-if="selectedFile && displayType==='sourceFiles'" 
+			js-event="reselect,changeDisplay" file="selectedFile" />
+
+		</div>
+	</div>
+	
+</div>

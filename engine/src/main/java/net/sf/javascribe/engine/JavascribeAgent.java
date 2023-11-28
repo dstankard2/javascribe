@@ -86,13 +86,16 @@ public class JavascribeAgent {
 			if (firstRun) {
 				application.getApplicationLog().info("*** Scanned application '"+application.getName()+"' and found changes ***");
 			}
-			workspaceManager.scanApplicationDir(application, firstRun, onlyRun);
+			boolean changesDetected = workspaceManager.scanApplicationDir(application, firstRun, onlyRun);
 			
 			// Engine plugins post-scan
-			if (!onlyRun) {
+			if ((!onlyRun) && (changesDetected)) {
 				PluginManager pluginManager = ComponentContainer.get().getComponent("PluginManager", PluginManager.class);
 				pluginManager.postScan(application);
 			}
+
+			// Clear log messages
+			application.getMessages().clear();
 		}
 	}
 

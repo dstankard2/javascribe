@@ -7,6 +7,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import net.sf.javascribe.api.annotation.ConfigProperty;
 import net.sf.javascribe.api.annotation.Plugin;
 import net.sf.javascribe.api.annotation.XmlConfig;
@@ -19,56 +24,40 @@ import net.sf.javascribe.patterns.PatternPriority;
 @XmlRootElement(name="embedTomcatJar")
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name="embedTomcatJar",propOrder={ })
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class EmbedTomcatJar extends Component {
-
-	public EmbedTomcatJar() {
-	}
 
 	public int getPriority() {
 		return PatternPriority.EMBED_TOMCAT_JAR;
 	}
-	
+
+	@Getter
+	@Setter
+	@Builder.Default
 	@XmlAttribute
 	private String jarName = "";
 	
+	@Getter
+	@Setter
+	@Builder.Default
 	@XmlAttribute
 	private String context = "";
 
+	@Getter
+	@Setter
 	@XmlAttribute
-	private Integer port = null;
+	private Integer port;
 
 	@XmlTransient
-	private String pkg = null;
+	private String pkg;
 	
 	@XmlTransient
-	private Integer debugPort = null;
+	private Integer debugPort;
 	
 	public String getPkg() {
 		return pkg;
-	}
-	
-	public String getJarName() {
-		return jarName;
-	}
-
-	public void setJarName(String jarName) {
-		this.jarName = jarName;
-	}
-
-	public String getContext() {
-		return context;
-	}
-
-	public void setContext(String context) {
-		this.context = context;
-	}
-
-	public Integer getPort() {
-		return port;
-	}
-
-	public void setPort(Integer port) {
-		this.port = port;
 	}
 	
 	public String getComponentName() {

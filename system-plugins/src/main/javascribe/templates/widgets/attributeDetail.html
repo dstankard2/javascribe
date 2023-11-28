@@ -1,0 +1,35 @@
+
+<js-param name="attribute" type="object" />
+
+<div class="widget item-detail">
+
+	<table class="info-container" border="1">
+		<tr>
+			<td><span class="key">System Attribute</span></td>
+			<td><div class="value spaced">{{ attribute.name }}</div></td>
+		</tr>
+
+		<tr>
+			<td><span class="key">Type</span></td>
+			<td><div class="value spaced">{{ attribute.type }}</div></td>
+		</tr>
+		<tr>
+			<td><span class="key">Originators</span></td>
+			<td><div class="value spaced" js-loop="o in attribute.originators">{{ window.getItemName(o) }}&nbsp;</div></td>
+		</tr>
+		<tr>
+			<td><span class="key">Dependants</span></td>
+			<td>
+				<div class="value spaced" js-loop="o in attribute.dependants">{{ window.getItemName(o) }}</div>
+			</td>
+		</tr>
+		<!--
+		<tr>
+			<td><span class="key">Dependants</span></td>
+			<td><span class="value spaced" js-loop="o in attribute.dependants">{{ window.getItemName(o) }}</span></td>
+		</tr>
+		-->
+		
+	</table>
+</div>
+

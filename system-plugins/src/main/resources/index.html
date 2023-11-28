@@ -1,0 +1,49 @@
+
+<html>
+	<head>
+		<title>Javascribe Console</title>
+		<script src="js/eventDispatcher.js" type="text/javascript"></script>
+
+		<link href="css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+		<link href="css/index.css" rel="stylesheet" type="text/css" />
+
+		<script type='module' async>
+	import {ConsolePage} from './js/app.js';
+	import {connectionService} from './js/connectionService.js';
+	
+	let container = document.getElementById('page-container');
+	let consolePage = ConsolePage();
+	consolePage.model.appNames = [];
+	consolePage.init(container);
+	
+	window.addApplication = function(data) {
+		let name = data.name;
+		let names = consolePage.model.appNames;
+		if (names.indexOf(name)<0) {
+			names.push(name);
+			consolePage.event('appNamesChanged');
+		}
+		if (!consolePage.model.appData) {
+			consolePage.model.appData = data;
+			consolePage.model.appName = name;
+		}
+		else if (consolePage.model.appName == name) {
+			consolePage.model.appData = data;
+		}
+	}
+
+	connectionService.start();
+	
+	window.selectApp = function(name) {
+		
+	}
+		</script>
+
+	</head>
+	
+	<body>
+		<div id="page-container">
+		</div>
+	</body>
+	
+</html>

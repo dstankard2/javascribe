@@ -62,11 +62,17 @@ public class ProcessingUtil {
 		}).findAny().map(BuildComponentItem.class::cast).orElse(null);
 	}
 
-	// Add item to application's processing data
+	// Add item to application's processing data.
+	// Check if there is already an item with that id
 	public void addItem(Item item, ApplicationData application) {
  		ProcessingData pd = application.getProcessingData();
+		
+		if (pd.getItem(item.getItemId()) != null) {
+			// This item is already in there.  No need to add it
+			return;
+ 		}
 
-		pd.getAllItems().add(item);
+ 		pd.getAllItems().add(item);
 		if (item instanceof Processable) {
 			pd.getToProcess().add((Processable) item);
 		} else if (item instanceof BuildComponentItem) {
@@ -112,7 +118,7 @@ public class ProcessingUtil {
 
 	}
 
-	// TODO: When a folder watcher is reset, we need to apply user files to it.
+	// TODO: Build a list of items to re-add, add them and take duplicates into account.
 	public void resetItem(ApplicationData application, int id) {
 		ProcessingData pd = application.getProcessingData();
 		Item item = pd.getItem(id);
@@ -127,6 +133,8 @@ public class ProcessingUtil {
 		}
 	}
 
+	// TODO: Should return a List<Item> with items to re-add.  No need to de-dupe.
+	
 	// Returns: should this item be re-added (in the case of reset)?
 	// Should this return a list of items that need to be reset?
 	public boolean removeItem(ApplicationData application, int id) {
@@ -196,6 +204,7 @@ public class ProcessingUtil {
 		filesToRemove.forEach(sf -> {
 			itemsToReset.addAll(application.getDependencyData().getSrcDependencies().get(sf.getPath()));
 			if (application.getSourceFiles().values().contains(sf)) {
+				application.getSourceFiles().remove(sf.getPath());
 				outputUtil.deleteSourceFile(sf, application);
 			}
 			application.getDependencyData().getSrcDependencies().remove(sf.getPath());

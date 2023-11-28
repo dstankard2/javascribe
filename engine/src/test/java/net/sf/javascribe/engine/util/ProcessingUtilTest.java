@@ -77,6 +77,7 @@ public class ProcessingUtilTest {
 		Item item = ItemUtil.createComponentItem(testComp, application);
 		processingUtil.addItem(item, application);
 		System.out.println("hi");
+		// TODO: Finish
 	}
 
 }

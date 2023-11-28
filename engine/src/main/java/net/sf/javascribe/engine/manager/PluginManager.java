@@ -1,14 +1,24 @@
 package net.sf.javascribe.engine.manager;
 
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import net.sf.javascribe.api.SourceFile;
 import net.sf.javascribe.api.plugin.EnginePlugin;
+import net.sf.javascribe.api.plugin.ProcessorLogMessage;
 import net.sf.javascribe.api.snapshot.ApplicationSnapshot;
+import net.sf.javascribe.api.snapshot.ItemSnapshot;
+import net.sf.javascribe.api.snapshot.LogMessageSnapshot;
+import net.sf.javascribe.api.snapshot.SourceFileSnapshot;
+import net.sf.javascribe.api.snapshot.SystemAttributeSnapshot;
 import net.sf.javascribe.engine.ComponentDependency;
 import net.sf.javascribe.engine.EngineInitException;
 import net.sf.javascribe.engine.EngineProperties;
 import net.sf.javascribe.engine.data.ApplicationData;
+import net.sf.javascribe.engine.data.DependencyData;
 import net.sf.javascribe.engine.data.ProcessingData;
 import net.sf.javascribe.engine.plugin.PluginContextImpl;
 import net.sf.javascribe.engine.service.ComponentFileService;
@@ -121,10 +131,44 @@ public class PluginManager {
 	}
 
 	private ApplicationSnapshot getApplicationSnapshot(ApplicationData application) {
-		ApplicationSnapshot ret = ApplicationSnapshot.builder().name(application.getName()).build();
+		ApplicationSnapshot ret = ApplicationSnapshot.builder().name(application.getName()).status(application.getState().name()).build();
 		ProcessingData pd = application.getProcessingData();
+		DependencyData dep = application.getDependencyData();
 
-		//pd.
+		Map<String,SourceFile> files = application.getSourceFiles();
+
+		pd.getAllItems().forEach(item -> {
+			ItemSnapshot is = ItemSnapshot.builder().id(item.getItemId())
+					.originatorId(item.getOriginatorId()).state(item.getState().name()).name(item.getName()).build();
+			ret.getAllItems().add(is);
+			List<ProcessorLogMessage> msgs = application.getMessages().stream().filter(msg -> msg.getLogName().equals(item.getName())).collect(Collectors.toList());
+			msgs.forEach(msg -> {
+				is.getLogs().add(LogMessageSnapshot.builder().level(msg.getLevel().name()).message(msg.getMessage()).build());
+			});
+		});
+
+		files.entrySet().forEach(e -> {
+			String path = e.getKey();
+			SourceFileSnapshot s = SourceFileSnapshot.builder().path(path).build();
+			s.getOriginators().addAll(dep.getSrcDependencies().get(path));
+			ret.getSourceFiles().put(path, s);
+		});
+		
+		application.getSystemAttributes().entrySet().forEach(entry -> {
+			String name = entry.getKey();
+			String type = entry.getValue();
+			SystemAttributeSnapshot s = SystemAttributeSnapshot.builder().name(name).type(type).build();
+			Set<Integer> ids = dep.getAttributeDependencies().get(name);
+			if (ids!=null) {
+				s.getDependants().addAll(ids);
+			}
+			ids = dep.getAttributeOriginators().get(name);
+			s.getOriginators().addAll(ids);
+			ret.getAllSystemAttributes().put(name, s);
+		});
+
 		return ret;
 	}
+
 }
+

@@ -1,11 +1,11 @@
 package net.sf.javascribe.api.snapshot;
 
-public class TypeInfo {
+public class TypeSnapshot {
 
 	private String lang = null;
 	private String name = null;
 
-	public TypeInfo(String lang, String name) {
+	public TypeSnapshot(String lang, String name) {
 		super();
 		this.lang = lang;
 		this.name = name;

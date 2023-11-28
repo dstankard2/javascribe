@@ -1,0 +1,41 @@
+
+<div class="page console-page" js-page="ConsolePage" js-page-ref="p" js-model-ref="m">
+	<js-import ref="fragments" />
+
+	<div class="selector" js-event="appNamesChanged,appNameChanged">
+		<span class="option app {{ m.appName == name ? 'selected' : '' }}" js-loop="name in m.appNames" 
+		js-onclick="window.selectApp(name);" js-event="appNameChanged,appNamesChanged">{{ name }}</span> 
+	</div>
+
+	<js-fn event="appDataChanged">
+		console.log('updating item map on window');
+		window.itemMap = {};
+		if (!m.appData) return;
+		let data = m.appData;
+		debugger;
+		data.allItems.forEach(item => {
+			let key = ''+item.id;
+			window.itemMap[key] = item;
+		});
+		p.event('itemsChanged');
+	</js-fn>
+	
+	<js-fn>
+		window.getItemName = (id) => {
+			let key = ''+id;
+			if (!window.itemMap) {
+				return 'NoMap';
+			}
+			if (window.itemMap[key]) {
+				return window.itemMap[key].name;
+			} else {
+				return 'undefined';
+			}
+		};
+	</js-fn>
+
+	<div class="vertical-spacing-10">&nbsp;</div>
+
+	<fragments.app-display />
+	
+</div>

@@ -1,0 +1,10 @@
+<javascribe:componentSet xmlns="http://javascribe.sf.net/patterns/js/page"
+		xmlns:javascribe="http://javascribe.sf.net/config">
+
+	<page name="ConsolePage" />
+	<pageModel pageName="ConsolePage" 
+	properties="appNames:list/string,appName:string,appData:object" 
+	/>
+	
+</javascribe:componentSet>
+

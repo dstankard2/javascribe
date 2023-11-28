@@ -11,7 +11,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.sf.javascribe.api.annotation.ConfigProperty;
 import net.sf.javascribe.api.annotation.Plugin;
@@ -27,36 +30,48 @@ import net.sf.javascribe.patterns.http.HttpMethod;
 @XmlRootElement(name="endpoint")
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name="endpoint",propOrder={ "response" })
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Endpoint extends JavaComponent {
 
 	@XmlAttribute
+	@Builder.Default
 	private String functionName = "";
 	
 	@XmlAttribute
+	@Builder.Default
 	private String module = "";
 
 	@XmlAttribute
 	private HttpMethod method;
 
 	@XmlAttribute
+	@Builder.Default
 	private String path = "";
 	
 	@XmlAttribute
+	@Builder.Default
 	private String requestBody = "";
 	
 	@XmlAttribute
+	@Builder.Default
 	private String requestParameters = "";
 
 	@XmlAttribute
+	@Builder.Default
 	private Boolean asynch = false;
 	
 	@XmlAttribute
+	@Builder.Default
 	private String operation = "";
 
 	@XmlElement
+	@Builder.Default
 	private List<Response> response = new ArrayList<>();
 	
 	@XmlTransient
+	@Builder.Default
 	private String pkg = null;
 
 	@Override
@@ -65,6 +80,7 @@ public class Endpoint extends JavaComponent {
 	}
 	
 	@XmlTransient
+	@Builder.Default
 	private String operationResult = null;
 
 	@ConfigProperty(required = true, name = "java.httpendpoint.operationResult",
@@ -136,22 +152,6 @@ public class Endpoint extends JavaComponent {
 
 	public void setAsynch(Boolean asynch) {
 		this.asynch = asynch;
-	}
-
-	public String getOperation() {
-		return operation;
-	}
-
-	public void setOperation(String operation) {
-		this.operation = operation;
-	}
-
-	public List<Response> getResponse() {
-		return response;
-	}
-
-	public void setResponse(List<Response> response) {
-		this.response = response;
 	}
 
 	public String getPkg() {

@@ -12,7 +12,6 @@ import org.testng.annotations.Test;
 import static org.assertj.core.api.Assertions.*;
 
 import net.sf.javascribe.api.config.Component;
-import net.sf.javascribe.api.config.Property;
 import net.sf.javascribe.api.plugin.ProcessorLogMessage;
 import net.sf.javascribe.engine.data.ApplicationData;
 import net.sf.javascribe.engine.data.DependencyData;
@@ -27,17 +26,31 @@ import net.sf.javascribe.engine.service.LanguageSupportService;
 import net.sf.javascribe.engine.service.OutputService;
 import net.sf.javascribe.engine.service.PatternService;
 import net.sf.javascribe.engine.util.FileUtil;
+import net.sf.javascribe.engine.util.OutputUtil;
 import net.sf.javascribe.langsupport.java.JavaLanguageSupport;
+import net.sf.javascribe.patterns.http.HttpMethod;
 import net.sf.javascribe.patterns.java.dataobject.DataObjectProcessor;
 import net.sf.javascribe.patterns.java.dataobject.JsonObjectProcessor;
+import net.sf.javascribe.patterns.java.http.EndpointProcessor;
+import net.sf.javascribe.patterns.java.http.WebServiceModuleProcessor;
+import net.sf.javascribe.patterns.java.service.ServiceProcessor;
 import net.sf.javascribe.patterns.test.RequireAttributePattern;
 import net.sf.javascribe.patterns.test.RequireAttributeProcessor;
 import net.sf.javascribe.patterns.test.RequireTypePattern;
 import net.sf.javascribe.patterns.test.RequireTypeProcessor;
 import net.sf.javascribe.patterns.test.userfiles.FolderWatchingPattern;
 import net.sf.javascribe.patterns.test.userfiles.FolderWatchingProcessor;
+import net.sf.javascribe.patterns.tomcat.EmbedTomcatFinalizer;
+import net.sf.javascribe.patterns.tomcat.EmbedTomcatJarProcessor;
+import net.sf.javascribe.patterns.tomcat.EmbedTomcatMain;
+import net.sf.javascribe.patterns.tomcat.TomcatJndiDatasourceProcessor;
 import net.sf.javascribe.patterns.xml.java.dataobject.DataObject;
 import net.sf.javascribe.patterns.xml.java.dataobject.JsonObject;
+import net.sf.javascribe.patterns.xml.java.http.Endpoint;
+import net.sf.javascribe.patterns.xml.java.http.WebServiceModuleComponent;
+import net.sf.javascribe.patterns.xml.java.service.Service;
+import net.sf.javascribe.patterns.xml.tomcat.EmbedTomcatJar;
+import net.sf.javascribe.patterns.xml.tomcat.TomcatJndiDatasource;
 import net.sf.javascribe.test.integration.Inject;
 import net.sf.javascribe.test.integration.ManagerTest;
 import net.sf.javascribe.test.integration.MockDependency;
@@ -46,16 +59,19 @@ public class WorkspaceManagerIntegrationTest extends ManagerTest {
 
 	@Inject
 	private WorkspaceManager workspaceManager;
-	
+
 	@MockDependency
 	private FileUtil fileUtil;
-	
+
 	@MockDependency
 	private FolderScannerService folderScannerService;
 	
 	@MockDependency
 	private OutputService outputService;
 
+	@MockDependency
+	private OutputUtil outputUtil;
+	
 	// We need to initialize patterns before this class runs
 	@Inject
 	private PatternService patternService;
@@ -65,7 +81,6 @@ public class WorkspaceManagerIntegrationTest extends ManagerTest {
 	
 	protected void resetFileChanges(ApplicationData application) {
 		Mockito.reset(folderScannerService);
-		application.getAddedSourceFiles().clear();
 	}
 	
 	protected void filesRemoved(ApplicationData application, WatchedResource... files) {
@@ -84,16 +99,25 @@ public class WorkspaceManagerIntegrationTest extends ManagerTest {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	@BeforeClass
 	public void setupClass() {
-		includePattern(FolderWatchingPattern.class);
-		includePattern(RequireTypePattern.class);
+		includePatterns(FolderWatchingPattern.class, RequireTypePattern.class, JsonObject.class, WebServiceModuleComponent.class);
 		includePattern(RequireAttributePattern.class);
-		includePattern(JsonObject.class);
-		includeProcessor(FolderWatchingProcessor.class);
-		includeProcessor(RequireTypeProcessor.class);
+		includePattern(TomcatJndiDatasource.class);
+		includePattern(EmbedTomcatJar.class);
+		includePattern(EmbedTomcatFinalizer.class);
+		includePattern(Endpoint.class);
+		includePattern(Service.class);
+		
+		includeProcessors(FolderWatchingProcessor.class, RequireTypeProcessor.class, WebServiceModuleProcessor.class);
 		includeProcessor(RequireAttributeProcessor.class);
 		includeProcessor(JsonObjectProcessor.class);
+		includeProcessor(TomcatJndiDatasourceProcessor.class);
+		includeProcessor(EmbedTomcatJarProcessor.class);
+		includeProcessor(EmbedTomcatMain.class);
+		includeProcessor(EndpointProcessor.class);
+		includeProcessor(ServiceProcessor.class);
 
 		// Including some standard patterns
 		includePattern(DataObject.class);
@@ -108,8 +132,8 @@ public class WorkspaceManagerIntegrationTest extends ManagerTest {
 	@Test
 	public void testFolderWatchingOverMultipleScans() throws Exception {
 		ApplicationData application = super.createApplicationShell("test");
-		DependencyData deps = application.getDependencyData();
-		ProcessingData pd = application.getProcessingData();
+		// DependencyData deps = application.getDependencyData();
+		// ProcessingData pd = application.getProcessingData();
 
 		Component watcherComp = FolderWatchingPattern.builder().name("TestService").path("/files").build();
 		Component requireType = RequireTypePattern.builder().lang("Java8").requiredType("TestService").build();
@@ -165,7 +189,7 @@ public class WorkspaceManagerIntegrationTest extends ManagerTest {
 		ProcessingData pd = application.getProcessingData();
 		Map<String,String> properties = new HashMap<>();
 
-		DataObject containerObj = DataObject.builder().name("TestContainer").properties("testObj,name:string").build();
+		DataObject containerObj = DataObject.builder().name("TestContainer").properties("testObjList,name:string").build();
 		DataObject testObj = DataObject.builder().name("TestObj").properties("amount:integer").build();
 		
 		properties.put("java.dataObject.package", "test");
@@ -179,9 +203,10 @@ public class WorkspaceManagerIntegrationTest extends ManagerTest {
 		// The workspace should not build the first time.  There should be an error message that a property type couldn't be found
 		workspaceManager.scanApplicationDir(application, true, false);
 		assertThat(application.getState()).isEqualTo(ProcessingState.ERROR);
-		// TODO: the scan should not consume log messages.  There should be an error message.
-		//ProcessorLogMessage msg = application.getMessages().get(application.getMessages().size()-1);
-		
+		ProcessorLogMessage msg = application.getMessages().get(application.getMessages().size()-1);
+		assertThat(application.getAddedSourceFiles().size()).isEqualByComparingTo(0);
+		//Mockito.verifyNoMoreInteractions(mocks.toArray());
+
 		// Fix the ordering of components.  Processing should be successful
 		ComponentFile goodCf = super.createComponentFile("dataObjects.xml", application, testObj, containerObj);
 		filesRemoved(application, badCf);
@@ -190,11 +215,14 @@ public class WorkspaceManagerIntegrationTest extends ManagerTest {
 		assertThat(application.getState()).isEqualTo(ProcessingState.SUCCESS);
 		assertThat(application.getApplicationTypes().get("Java8").get("TestContainer")).isNotNull();
 		assertThat(application.getApplicationTypes().get("Java8").get("TestObj")).isNotNull();
-		
+
 		// Add a separate file that depends on the components in this one at a lesser priority.
 		// Processing should still be successful
-		JsonObject jsonObject = JsonObject.builder().name("TestContainer").build();
-		ComponentFile otherFile = super.createComponentFile("jsonObjects.xml", application, jsonObject);
+
+		DataObject testCont = DataObject.builder().name("ObjContainer").properties("testContainer").build();
+		//JsonObject jsonObject = JsonObject.builder().name("TestContainer").build();
+
+		ComponentFile otherFile = super.createComponentFile("jsonObjects.xml", application, testCont);
 		filesRemoved(application);
 		filesAdded(application, otherFile);
 		workspaceManager.scanApplicationDir(application, false, false);
@@ -208,5 +236,54 @@ public class WorkspaceManagerIntegrationTest extends ManagerTest {
 		
 	}
 
+	// Test object handling using a Tomcat platform object and an added servlet
+	@Test
+	public void testTomcatPlatformApp() throws Exception {
+		ApplicationData application = super.createApplicationShell("tomcat");
+		DependencyData deps = application.getDependencyData();
+		ProcessingData pd = application.getProcessingData();
+		Map<String,String> properties = new HashMap<>();
+		
+		EmbedTomcatJar jarComp = EmbedTomcatJar.builder().jarName("test.jar").port(123).pkg("test").context("/").build();
+		TomcatJndiDatasource dsComp = TomcatJndiDatasource.builder().username("usr").password("pwd").url("url")
+				.build();
+
+		properties.put("java.rootPackage", "com.test");
+		properties.put("tomcat.jndi.datasource.driverClass", "driver");
+		properties.put("outputPath.java", "/");
+		properties.put("java.webservice.pkg", "com.test");
+		properties.put("java.httpendpoint.operationResult", "result");
+		properties.put("java.service.pkg", "service");
+
+		setProperties(application.getRootFolder(), properties);
+
+		// Create a component file with the jar and datasource
+		ComponentFile cf = super.createComponentFile("test.xml", application, jarComp, dsComp);
+
+		filesRemoved(application);
+		filesAdded(application, cf);
+		workspaceManager.scanApplicationDir(application, true, false);
+		assertThat(application.getState()).isEqualTo(ProcessingState.SUCCESS);
+		
+		WebServiceModuleComponent ws = WebServiceModuleComponent.builder().name("mod1").uri("/mod1").build();
+		ComponentFile cf2 = super.createComponentFile("test2.xml", application, ws);
+		
+		filesRemoved(application);
+		filesAdded(application, cf2);
+		workspaceManager.scanApplicationDir(application, true, false);
+		assertThat(application.getState()).isEqualTo(ProcessingState.SUCCESS);
+		
+		// Add an endpoint to the module
+		Endpoint ep = Endpoint.builder().functionName("noop").method(HttpMethod.POST).module("mod1").operation("testService.noop").path("/noop").build();
+		
+		Service service = Service.builder().module("Test").name("noop").serviceOperation(new ArrayList<>()).build();
+		
+		ComponentFile serviceFile = super.createComponentFile("service.xml", application, ep, service);
+		filesRemoved(application);
+		filesAdded(application, serviceFile);
+		workspaceManager.scanApplicationDir(application, true, false);
+		assertThat(application.getState()).isEqualTo(ProcessingState.SUCCESS);
+	}
+	
 }
 

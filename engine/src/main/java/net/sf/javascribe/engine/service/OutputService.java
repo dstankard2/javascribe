@@ -81,13 +81,12 @@ public class OutputService {
 			try (FileWriter writer = new FileWriter(f)) {
 				writer.write(content.toString());
 				writer.flush();
-			} catch(IOException e) {
+			} catch(Exception e) {
 				// TODO: Logging
 				//appLog.error("Couldn't write file "+src.getPath(), e);
 			}
 			
 			application.getSourceFiles().put(path, sf);
 		});
-		files.clear();
 	}
 }

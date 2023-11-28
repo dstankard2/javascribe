@@ -6,26 +6,37 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import net.sf.javascribe.api.RuntimePlatform;
+import lombok.Getter;
+import lombok.Setter;
 
-public abstract class JavaWebappRuntimePlatform implements RuntimePlatform {
+public abstract class JavaWebappRuntimePlatform {
+	
+	@Getter
+	@Setter
 	protected String contextRoot = "";
+
 	protected Map<String,String> servlets = new HashMap<>();
 	protected Map<String,String> mappings = new HashMap<>();
+	
+	@Getter
 	protected List<String> contextListeners = new ArrayList<>();
+
+	@Getter
 	protected Map<String,String> filters = new HashMap<>();
+	
+	@Getter
 	protected Map<String,List<String>> filterMappings = new HashMap<>();
+	
+	@Getter
 	protected Map<String,String> websocketEndpoints = new HashMap<>();
-	//protected List<WebServiceDefinition> services = new ArrayList<>();
+	//protected List<WebServiceDefinition> services = new ArrayList<>()
+
+	@Getter
 	protected List<String> dependencies = new ArrayList<>();
 
 	public void addDependency(String name) {
 		dependencies.add(name);
 	}
-	public List<String> getDependencies() {
-		return dependencies;
-	}
-
 	public List<String> getServletNames() {
 		List<String> ret = new ArrayList<>();
 		
@@ -66,26 +77,14 @@ public abstract class JavaWebappRuntimePlatform implements RuntimePlatform {
 		contextListeners.add(className);
 	}
 
-	public List<String> getServletContextListeners() {
-		return contextListeners;
-	}
-
 	public void addFilter(String filterName,String className) {
 		filters.put(filterName, className);
 	}
 	
-	public Map<String,String> getFilters() {
-		return filters;
-	}
-
 	public List<String> getFiltersForUri(String uri) {
 		return filterMappings.get(uri);
 	}
 	
-	public Map<String,List<String>> getFilterMappings() {
-		return filterMappings;
-	}
-
 	public void addFilterMapping(String uri,String filter) {
 		List<String> filters = filterMappings.get(uri);
 		if (filters==null) {
@@ -97,17 +96,6 @@ public abstract class JavaWebappRuntimePlatform implements RuntimePlatform {
 
 	public void addWebsocketEndpoint(String url,String className) {
 		websocketEndpoints.put(url, className);
-	}
-	public Map<String,String> getWebsocketEndpoints() {
-		return websocketEndpoints;
-	}
-
-	public void setContextRoot(String contextRoot) {
-		this.contextRoot = contextRoot;
-	}
-	
-	public String getContextRoot() {
-		return this.contextRoot;
 	}
 
 }

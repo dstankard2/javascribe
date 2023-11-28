@@ -1,0 +1,128 @@
+html,
+body {
+
+	padding: 10px;
+	margin: 10px;
+
+}
+
+div.vertical-spacing-10 {
+	height: 10px;
+}
+
+div.selector {
+	padding: 3px;
+	cursor: pointer;
+}
+
+span.option {
+	border-radius: 3px;
+	padding: 3px;
+}
+
+span.option.app {
+	outline: 1px solid blue;
+	color: blue;
+}
+
+span.option.app.selected {
+	background-color: blue;
+	color: white;
+}
+
+span.option.display-type {
+	outline: 1px solid green;
+	color: green;
+}
+
+span.option.display-type.selected {
+	background-color: green;
+	color: white;
+}
+
+span.app-option {
+	border-radius: 3px;
+	padding: 3px;
+}
+
+span.app-option.selected {
+	color: white;
+	background-color: blue;
+}
+
+ul.listing li {
+	cursor: pointer;
+}
+
+ul.listing li.selected {
+	background-color: black;
+	color: white;
+}
+
+ul.listing li.SUCCESS {
+	color: green;
+	font-weight: bold;
+}
+
+ul.listing li.ERROR {
+	color: red;
+	font-weight: bold;
+}
+
+ul.listing li.CREATED {
+	color: grey;
+	opacity: .7;
+}
+
+div.data-listing-display {
+	border: 1px solid black;
+	min-height: 200px;
+	border-radius: 5px;
+	display: flex;
+	flex-direction: row;
+}
+
+div.data-listing {
+	flex-grow: 1;
+	border: 1px solid black;
+	min-height: 200px;
+}
+
+div.data-details {
+	flex-grow: 1;
+	border: 1px solid black;
+	min-height: 200px;
+	max-height: 400px;
+	overflow: auto;
+}
+
+div.info-container {
+	display: flex;
+	flex-direction: column;
+	
+}
+
+table.info-container td {
+	max-width: 350px;
+}
+
+span.key {
+	color: gray;
+}
+
+span.value {
+	color: green;
+}
+
+span.spaced {
+	padding-left: 5px;
+}
+
+div.value {
+	color: green;
+}
+
+div.spaced {
+	padding: 1px 5px 1px 5px;
+}
+

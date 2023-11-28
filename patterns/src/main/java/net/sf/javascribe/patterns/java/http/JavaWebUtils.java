@@ -2,14 +2,12 @@ package net.sf.javascribe.patterns.java.http;
 
 import java.util.List;
 
-import net.sf.javascribe.api.BuildContext;
 import net.sf.javascribe.api.ProcessorContext;
-import net.sf.javascribe.api.RuntimePlatform;
 import net.sf.javascribe.api.exception.JavascribeException;
 import net.sf.javascribe.langsupport.java.types.JavaVariableType;
 import net.sf.javascribe.langsupport.java.types.impl.ExceptionJavaType;
 import net.sf.javascribe.langsupport.java.types.impl.JavaVariableTypeImpl;
-import net.sf.javascribe.patterns.web.JavaWebappRuntimePlatform;
+import net.sf.javascribe.patterns.tomcat.EmbedTomcatRuntimePlatform;
 
 public class JavaWebUtils {
 
@@ -60,17 +58,26 @@ public class JavaWebUtils {
 		}
 	}
 	
-	public static JavaWebappRuntimePlatform getWebPlatform(ProcessorContext ctx) throws JavascribeException {
-		BuildContext bctx = ctx.getBuildContext();
-		RuntimePlatform platform = bctx.getRuntimePlatform();
+	public static EmbedTomcatRuntimePlatform addWebPlatform(ProcessorContext ctx) throws JavascribeException {
+		String name = ctx.getBuildContext().getId()+"JavaWebapp";
+		EmbedTomcatRuntimePlatform platform = (EmbedTomcatRuntimePlatform)ctx.getObject(name);
+		
+		if (platform!=null) {
+			throw new JavascribeException("There is already an embedded tomcat component for this build context - can't add another");
+		}
+		platform = new EmbedTomcatRuntimePlatform();
+		ctx.setObject(name, platform);
+		return platform;
+	}
+	
+	public static EmbedTomcatRuntimePlatform getWebPlatform(ProcessorContext ctx) throws JavascribeException {
+		String name = ctx.getBuildContext().getId()+"JavaWebapp";
+		EmbedTomcatRuntimePlatform platform = (EmbedTomcatRuntimePlatform)ctx.getObject(name);
 
 		if (platform==null) {
-			throw new JavascribeException("The current Build Context has no runtime platform defined");
+			throw new JavascribeException("There is no embedded tomcat component - can't add or query web platform items");
 		}
-		if (!(platform instanceof JavaWebappRuntimePlatform)) {
-			throw new JavascribeException("The runtime platform of the current build context is not a Java Web Application");
-		}
-		return (JavaWebappRuntimePlatform)platform;
+		return platform;
 	}
 
 	public static void addServlet(String servletName,String servletClass,ProcessorContext ctx) throws JavascribeException {
@@ -98,21 +105,14 @@ public class JavaWebUtils {
 	
 	public static void applyServletFilterChain(String uri, String name, ProcessorContext ctx) throws JavascribeException {
 		String objName = "FilterChain_"+name;
-		RuntimePlatform platform = ctx.getBuildContext().getRuntimePlatform();
+		EmbedTomcatRuntimePlatform platform = getWebPlatform(ctx);
 		ServletFilterChainDef chainDef = (ServletFilterChainDef)ctx.getObject(objName);
 
 		if (chainDef==null) {
 			throw new JavascribeException("Could not find filter chain '"+name+"'");
 		}
-		if (platform==null) {
-			throw new JavascribeException("Cannot apply servlet filter chain since there is no runtime platform in the current build context");
-		}
-		if (!(platform instanceof JavaWebappRuntimePlatform)) {
-			throw new JavascribeException("The runtime platform of the current build context is not a Java Webapp");
-		}
 		
-		JavaWebappRuntimePlatform webapp = (JavaWebappRuntimePlatform)platform;
-		List<String> filtersCurrentlyMapped = webapp.getFiltersForUri(uri);
+		List<String> filtersCurrentlyMapped = platform.getFiltersForUri(uri);
 		if (filtersCurrentlyMapped!=null) {
 			if (filtersCurrentlyMapped.size()!=chainDef.getFilterNames().size()) {
 				throw new JavascribeException("Found conflicting filter mappings for URI '"+uri+"'");
@@ -124,7 +124,7 @@ public class JavaWebUtils {
 			}
 		} else {
 			for(String s : chainDef.getFilterNames()) {
-				webapp.addFilterMapping(uri, s);
+				platform.addFilterMapping(uri, s);
 			}
 		}
 	}

@@ -1,6 +1,5 @@
 package net.sf.javascribe.patterns.tomcat;
 
-import net.sf.javascribe.api.BuildContext;
 import net.sf.javascribe.api.ComponentProcessor;
 import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.annotation.Plugin;
@@ -16,13 +15,10 @@ import net.sf.javascribe.patterns.xml.tomcat.EmbedTomcatJar;
 public class EmbedTomcatJarProcessor implements ComponentProcessor<EmbedTomcatJar> {
 
 	public void process(EmbedTomcatJar comp, ProcessorContext ctx) throws JavascribeException {
-		BuildContext buildCtx = ctx.getBuildContext();
 		String context = comp.getContext();
 		String jarName = comp.getJarName();
 		Integer port = comp.getPort();
 		String pkg = comp.getPkg();
-		String jarPath = null;
-		//Integer debugPort = comp.getDebugPort();
 
 		ctx.getLog().info("Processing embed tomcat application "+comp.getComponentName());
 
@@ -58,10 +54,8 @@ public class EmbedTomcatJarProcessor implements ComponentProcessor<EmbedTomcatJa
 			exec.setPhase("install");
 			exec.getGoals().add("exec");
 			exec.getConfiguration().addProperty("executable", "java -jar target\\"+jarName+"-jar-with-dependencies.jar");
-			jarPath = "target\\"+jarName+"-jar-with-dependencies.jar";
 		}
-		EmbedTomcatRuntimePlatform platform = new EmbedTomcatRuntimePlatform(jarPath, comp.getDebugPort());
-		buildCtx.setRuntimePlatform(platform);
+		EmbedTomcatRuntimePlatform platform = JavaWebUtils.addWebPlatform(ctx);
 		platform.setContextRoot(context);
 	}
 	

@@ -1,6 +1,5 @@
 package net.sf.javascribe.patterns.tomcat;
 
-import net.sf.javascribe.api.RuntimePlatform;
 import net.sf.javascribe.api.annotation.ConfigProperty;
 import net.sf.javascribe.api.annotation.Plugin;
 import net.sf.javascribe.api.config.Component;
@@ -8,7 +7,6 @@ import net.sf.javascribe.langsupport.java.JavaUtils;
 
 @Plugin
 public class EmbedTomcatFinalizer extends Component {
-	RuntimePlatform platform = null;
 	String jarName = "";
 	String contextRoot = "";
 	int port = 0;
@@ -41,14 +39,6 @@ public class EmbedTomcatFinalizer extends Component {
 	@Override
 	public int getPriority() {
 		return 100000;
-	}
-
-	public RuntimePlatform getPlatform() {
-		return platform;
-	}
-
-	public void setPlatform(RuntimePlatform platform) {
-		this.platform = platform;
 	}
 
 	public String getJarName() {

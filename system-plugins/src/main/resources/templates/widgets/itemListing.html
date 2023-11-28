@@ -1,0 +1,14 @@
+
+<js-param name="selected" type="object" />
+<js-param name="itemList" type="list/object" />
+<js-param name="selectCallback" type="object" />
+
+<div class="widget listing">
+
+	<ul class='listing'>
+		<li js-loop="item in itemList" class="{{item==selected ? 'selected': ''}} {{ item.state }}" 
+		js-onclick="selectCallback(item);">{{ item.name }}</li>
+	</ul>
+
+</div>
+

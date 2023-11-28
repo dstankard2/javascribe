@@ -1,0 +1,16 @@
+<javascribe:componentSet xmlns="http://javascribe.sf.net/patterns/js/html"
+		xmlns:javascribe="http://javascribe.sf.net/config">
+
+	<templateSet ref='widgets' path='widgets' order='8'>
+		<javascribe:property name="page.template.objRef">widgets</javascribe:property>
+	</templateSet>
+
+	<templateSet ref='fragments' path='fragments' order='9'>
+		<javascribe:property name="page.template.objRef">fragments</javascribe:property>
+	</templateSet>
+
+	<templateSet ref='pages' path='pages' order='10'>
+		<javascribe:property name="page.template.objRef">pages</javascribe:property>
+	</templateSet>
+
+</javascribe:componentSet>

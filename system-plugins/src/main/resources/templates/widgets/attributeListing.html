@@ -1,0 +1,22 @@
+
+<js-param name="selected" type="object" />
+<js-param name="attributes" type="object" />
+<js-param name="selectCallback" type="object" />
+
+<div class="widget attribute-listing">
+	
+	<js-var name="l" type="object" />
+	<js-fn>
+		l = [];
+		for(const prop in attributes) {
+			l.push(attributes[prop]);
+		}
+	</js-fn>
+	
+	<ul class="listing">
+		<li js-loop="attr in l" class="{{attr==selected ? 'selected': ''}}"
+		js-onclick="selectCallback(attr);">{{ attr.name }}</li>
+		
+	</ul>
+</div>
+

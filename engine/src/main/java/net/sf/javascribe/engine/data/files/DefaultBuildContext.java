@@ -1,7 +1,6 @@
 package net.sf.javascribe.engine.data.files;
 
 import net.sf.javascribe.api.BuildContext;
-import net.sf.javascribe.api.RuntimePlatform;
 import net.sf.javascribe.api.BuildProcessorContext;
 import net.sf.javascribe.api.exception.JavascribeException;
 import net.sf.javascribe.api.logging.Log;
@@ -15,7 +14,6 @@ public class DefaultBuildContext implements BuildContext {
 
 	private Log log = null;
 	private BuildProcessorContext ctx = null;
-	private RuntimePlatform platform = null;
 	
 	public DefaultBuildContext(BuildProcessorContext ctx) {
 		this.log = ctx.getLog();
@@ -61,17 +59,6 @@ public class DefaultBuildContext implements BuildContext {
 	@Override
 	public ApplicationResource getApplicationResource(String path) {
 		return ctx.getFolder().getResource(path);
-	}
-
-	@Override
-	public RuntimePlatform getRuntimePlatform() {
-		return platform;
-	}
-
-	@Override
-	public void setRuntimePlatform(RuntimePlatform platform) throws JavascribeException {
-		log.warn("Setting runtime platform for the default build context is a no-op");
-		this.platform = platform;
 	}
 
 	@Override

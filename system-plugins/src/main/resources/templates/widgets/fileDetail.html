@@ -1,0 +1,18 @@
+
+<js-param name="file" type="object" />
+
+<div class="widget file-detail">
+
+	<table class="info-container" border="1">
+		<tr>
+			<td><span class="key">Path</span></td>
+			<td><div class="value spaced">{{ file.path }}</div></td>
+		</tr>
+		<tr>
+			<td><span class="key">Originators</span></td>
+			<td><div class="value spaced" js-loop="o in file.originators">{{ window.getItemName(o) }}&nbsp;</div></td>
+		</tr>
+		
+	</table>
+</div>
+

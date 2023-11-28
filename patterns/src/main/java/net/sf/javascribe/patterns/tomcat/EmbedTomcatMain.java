@@ -11,6 +11,7 @@ import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.annotation.Plugin;
 import net.sf.javascribe.api.exception.JavascribeException;
 import net.sf.javascribe.langsupport.java.JavaClassSourceFile;
+import net.sf.javascribe.patterns.java.http.JavaWebUtils;
 
 @Plugin
 public class EmbedTomcatMain implements ComponentProcessor<EmbedTomcatFinalizer> {
@@ -22,12 +23,9 @@ public class EmbedTomcatMain implements ComponentProcessor<EmbedTomcatFinalizer>
 		String className = "TomcatMain";
 		int port = component.getPort();
 		String context = component.getContextRoot();
-		EmbedTomcatRuntimePlatform platform = (EmbedTomcatRuntimePlatform)ctx.getBuildContext().getRuntimePlatform();
+		EmbedTomcatRuntimePlatform platform = JavaWebUtils.getWebPlatform(ctx);
 		String pkg = component.getPkg();
 
-		if (platform==null) {
-			throw new JavascribeException("Found no platform in current build context - expexted a Tomcat Runtime platform");
-		}
 		platform.getDependencies().stream().forEach(dep -> {
 			ctx.getBuildContext().addDependency(dep);
 		});
@@ -114,7 +112,7 @@ public class EmbedTomcatMain implements ComponentProcessor<EmbedTomcatFinalizer>
 			}
 		}
 		
-		List<String> servletContextListeners = platform.getServletContextListeners();
+		List<String> servletContextListeners = platform.getContextListeners();
 		for(String l : servletContextListeners) {
 			body.append("ctx.addApplicationListener(\""+l+"\");\n");
 		}

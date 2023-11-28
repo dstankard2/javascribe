@@ -29,7 +29,8 @@ public class EngineRun {
 		props.put("outputDir", "c:\\build\\kingdoms");
 		props.put("singleAppMode", "true");
 		props.put("once", "false");
-		props.put("engine.plugin.templates", "active");
+		props.put("engine.plugin.templates", "true");
+		props.put("engine.plugin.console", "true");
 
 		try {
 			agent = new JavascribeAgent(libs, props);
@@ -39,4 +40,27 @@ public class EngineRun {
 			e.printStackTrace();
 		}
 	}
+
+	@Test
+	public void buildConsole() {
+		JavascribeAgent agent = null;
+		
+		HashMap<String,String> props = new HashMap<>();
+		props.put("debug", "true");
+		props.put("applicationDir", "C:\\git\\javascribe\\system-plugins\\src\\main\\javascribe");
+		props.put("outputDir", "C:\\git\\javascribe\\system-plugins\\src\\main\\resources");
+		props.put("singleAppMode", "true");
+		props.put("once", "false");
+		props.put("engine.plugin.templates", "true");
+		props.put("engine.plugin.console", "true");
+
+		try {
+			agent = new JavascribeAgent(libs, props);
+			agent.init();
+			agent.run();
+		} catch(Throwable e) {
+			e.printStackTrace();
+		}
+	}
+
 }

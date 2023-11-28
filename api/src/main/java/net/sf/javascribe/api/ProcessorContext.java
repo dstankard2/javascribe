@@ -29,7 +29,7 @@ public interface ProcessorContext {
 	public String getProperty(String name);
 
 	public BuildContext getBuildContext();
-	
+
 	public ApplicationResource getResource(String path);
 
 	public void addComponent(Component component);
@@ -37,10 +37,10 @@ public interface ProcessorContext {
 	Log getLog();
 
 	void addFolderWatcher(String folderPath,FolderWatcher folderWatcher);
-	
+
 	void addFileProcessor(String filePath,FileProcessor fileProcessor);
-	
+
 	ApplicationContext getApplicationContext();
-	
+
 }
 
