@@ -1,7 +1,6 @@
 package net.sf.javascribe.engine.util;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -62,6 +61,7 @@ public class ProcessingUtil {
 		}).findAny().map(BuildComponentItem.class::cast).orElse(null);
 	}
 
+	// TODO: Manage the items per build correctly
 	// Add item to application's processing data.
 	// Check if there is already an item with that id
 	public void addItem(Item item, ApplicationData application) {
@@ -118,6 +118,7 @@ public class ProcessingUtil {
 
 	}
 
+	/*
 	// TODO: Build a list of items to re-add, add them and take duplicates into account.
 	public void resetItem(ApplicationData application, int id) {
 		ProcessingData pd = application.getProcessingData();
@@ -132,18 +133,95 @@ public class ProcessingUtil {
 			addItem(item, application);
 		}
 	}
-
-	// TODO: Should return a List<Item> with items to re-add.  No need to de-dupe.
+*/
 	
-	// Returns: should this item be re-added (in the case of reset)?
-	// Should this return a list of items that need to be reset?
-	public boolean removeItem(ApplicationData application, int id) {
+	// Reset the items for the given ids.
+	// For each id, if we're resetting the originator, don't re-add this one
+	public void resetItems(ApplicationData application, List<Integer> ids) {
+		List<Item> toReadd = new ArrayList<>();
+		ProcessingData pd = application.getProcessingData();
+
+		// Remove each itemId
+		ids.forEach(id -> {
+			Item item = pd.getItem(id);
+			if (item==null) return;
+			
+			toReadd.addAll(this.removeItem(application, id));
+			// If we're resetting this item's originator, we don't re-add this one
+			// TODO: This might not work for items that are added by an item with an originator
+			Item orig = pd.getItem(item.getOriginatorId());
+			if (!toReadd.contains(orig)) {
+				toReadd.add(item);
+			}
+		});
+
+		Set<Item> added = new HashSet<>();
+		List<Integer> readdIds = toReadd.stream().map(Item::getItemId).toList();
+		toReadd.forEach(item -> {
+			// Add this item if we haven't already added it
+			// If this item has an originator, and we're re-adding the originator, don't re-add
+			boolean add = true;
+			if (added.contains(item)) {
+				add = false;
+			}
+			if (readdIds.contains(item.getOriginatorId())) {
+				add = false;
+			}
+			if (application.getProcessingData().getAllItems().contains(item)) {
+				add = false;
+			}
+			if (add) {
+				this.addItem(item, application);
+				application.getApplicationLog().debug("Readding item " + item.getItemId() + " - " + item.getName());
+				added.add(item);
+			}
+		});
+	}
+
+	public void removeItems(ApplicationData application, List<Item> items) {
+		List<Item> toReadd = new ArrayList<>();
+		List<Integer> ids = items.stream().map(Item::getOriginatorId).toList();
+
+		// Remove each itemId
+		items.forEach(item -> {
+			toReadd.addAll(this.removeItem(application, item.getItemId()));
+		});
+
+		Set<Item> added = new HashSet<>();
+		toReadd.forEach(item -> {
+			// Add this item if we haven't already added it
+			// If this item has an originator, and we're resetting the originator, don't re-add
+			boolean add = true;
+			if (added.contains(item)) {
+				add = false;
+			}
+			if (ids.contains(item.getOriginatorId())) {
+				add = false;
+			}
+			if (add) {
+				this.addItem(item, application);
+				added.add(item);
+			}
+		});
+	}
+
+	/**
+	 * Removes the given item ID.  Returns a list of items that should be re-added
+	 * Will call removeItem recursively on items that are deemed to be reset or removed.
+	 * The items to be readded from above line are added to the return result.
+	 */
+	/*
+	 * TODO: We might have to remove all applicable items in batch, to properly manage which ones should 
+	 * be removed vs readded
+	 */
+	private List<Item> removeItem(ApplicationData application, int id) {
 		ProcessingData pd = application.getProcessingData();
 		DependencyData depData = application.getDependencyData();
-		boolean ret = true;
+		List<Item> ret = new ArrayList<>();
+		
 		Item item = pd.getItem(id);
 		if (item == null) {
-			return false;
+			return ret;
 		}
 		Set<Integer> itemsToReset = new HashSet<>();
 		Set<Integer> itemsToRemove = new HashSet<>();
@@ -215,22 +293,21 @@ public class ProcessingUtil {
 		itemsToRemove.addAll(dependencyUtil.getItemsThatOriginateFrom(id, application).stream().map(Item::getItemId)
 				.collect(Collectors.toList()));
 
-		// TODO: Remove processables from toProcess and processed that originate from
-		// this item
-
-		// Find attributes that this item depends on.
+		// Find attributes that this item depends on.  Remove this item from attribute dependencies
+		// If this item originates the attribute, we have to reset all items that originate or depend on the attribute
 		Set<String> attributeDeps = dependencyUtil.getSystemAttributeDependencies(id, application);
 		attributeDeps.forEach(name -> {
 			// Remove this item from the attribute dependencies if it's there
-			depData.getAttributeDependencies().get(name).removeAll(Arrays.asList(id));
+			depData.getAttributeDependencies().get(name).remove(id);
 			// If this item originates the attribute then we need to remove it and items
 			// that originate it.
 			// The attribute might not have any originators if it came from
 			// systemAttributes.properties
 			if (depData.getAttributeOriginators().get(name) != null) {
 				if (depData.getAttributeOriginators().get(name).contains(id)) {
-					// For originated attribute: reset its dependencies, remove it, remove its
+					// For originated attribute: reset its dependencies and originators, remove it, remove its
 					// dependency data
+					// If it has originators, then it has dependencies
 					itemsToReset.addAll(depData.getAttributeDependencies().get(name));
 					itemsToReset.addAll(depData.getAttributeOriginators().get(name));
 					application.getSystemAttributes().remove(name);
@@ -272,20 +349,20 @@ public class ProcessingUtil {
 			application.getDependencyData().getObjectDependencies().remove(name);
 		});
 
-		// Remove all items in itemsToRemove
-		itemsToRemove.forEach(i -> {
-			removeItem(application, i);
+		itemsToReset.remove(id);
+		// For all the items that need to be reset, we need to remove them and then add them to ret
+		itemsToReset.forEach(idToReset -> {
+			Item it = pd.getItem(idToReset);
+			if (it!=null)
+				ret.add(it);
+			List<Item> itemsToReadd = this.removeItem(application, idToReset);
+			itemsToReadd.forEach(i -> {
+				if (!itemsToRemove.contains(i.getItemId())) {
+					ret.add(i);
+				}
+			});
 		});
-
-		// If we're resetting the originator, we don't re-add this one
-		if (itemsToReset.contains(item.getOriginatorId())) {
-			ret = false;
-		}
-
-		// Reset all items in itemsToReset
-		itemsToReset.forEach(i -> {
-			resetItem(application, i);
-		});
+		
 		return ret;
 	}
 

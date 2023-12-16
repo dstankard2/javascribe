@@ -69,6 +69,9 @@ public class DataObjectProcessor implements ComponentProcessor<DataObject> {
 		if (comp.getExtend().trim().length()>0) {
 			String ex = comp.getExtend();
 			JavaDataObjectType exType = JavascribeUtils.getType(JavaDataObjectType.class, ex, ctx);
+			if (exType==null) {
+				throw new JavascribeException("Couldn't find supertype '"+ex+"' for data object");
+			}
 			for(String a : exType.getAttributeNames()) {
 				String aTypeName = exType.getAttributeType(a);
 				JavaVariableType aType = JavascribeUtils.getType(JavaVariableType.class, aTypeName, ctx);

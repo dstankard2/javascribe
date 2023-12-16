@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.assertj.core.util.Lists;
+
 import net.sf.javascribe.api.SourceFile;
 import net.sf.javascribe.api.config.BuildComponent;
 import net.sf.javascribe.api.config.Component;
@@ -49,17 +51,21 @@ public class ProcessingService implements ProcessingContextOperations {
 	}
 
 	public void removeComponentFiles(List<ComponentFile> componentFiles, ApplicationData application) {
+		List<Item> itemsToRemove = new ArrayList<>();
 		componentFiles.forEach(cf -> {
 			cf.getComponentSet().getComponent().forEach(comp -> {
 				if (comp instanceof BuildComponent) {
 					BuildComponentItem item = processingUtil.findItemForBuildComponent(application, (BuildComponent)comp);
-					processingUtil.removeItem(application, item.getItemId());
+					itemsToRemove.add(item);
+					//processingUtil.removeItem(application, item.getItemId());
 				} else {
 					ComponentItem item = processingUtil.findItemForComponent(application, comp);
-					processingUtil.removeItem(application, item.getItemId());
+					itemsToRemove.add(item);
+					//processingUtil.removeItem(application, item.getItemId());
 				}
 			});
 		});
+		processingUtil.removeItems(application, itemsToRemove);
 	}
 
 	public void removeUserFiles(List<UserFile> userFiles, ApplicationData application) {
@@ -71,14 +77,15 @@ public class ProcessingService implements ProcessingContextOperations {
 
 	// For added/removed user files, check folder watchers to see if user files apply to
 	// them.
-	// If they do, reset the originator of the folder watcher.
+	// If they do, reset the folder watcher
+	// If they do, reset the originator of the folder watcher?
 	public void resetFolderWatchersForFiles(ApplicationData application, List<UserFile> userFiles) {
 		List<FolderWatcherEntry> watchers = application.getProcessingData().getFolderWatchers();
 
 		for(FolderWatcherEntry w : watchers) {
 			for (UserFile file : userFiles) {
 				if (file.getPath().startsWith(w.getPath())) {
-					processingUtil.resetItem(application, w.getItemId());
+					processingUtil.resetItems(application, Lists.list(w.getItemId()));
 				}
 			}
 		}
@@ -107,7 +114,7 @@ public class ProcessingService implements ProcessingContextOperations {
 			// If there is a build component in the root folder, and there is a build to init in the root folder, 
 			// remove the build in the root folder
 			if ((application.getRootFolder().getBuildComponent()!=null) && (buildToInitInRootFolder)) {
-				processingUtil.removeItem(application, application.getRootFolder().getBuildComponent().getItemId());
+				processingUtil.removeItems(application, Lists.list((Item)application.getRootFolder().getBuildComponent()));
 			}
 		}
 		
@@ -125,7 +132,7 @@ public class ProcessingService implements ProcessingContextOperations {
 			} else {
 				i.setState(ProcessingState.ERROR);
 				clearAddedItems(application);
-				processingUtil.resetItem(application, i.getItemId());
+				processingUtil.resetItems(application, Lists.list(i.getItemId()));
 				pd.getBuildsToInit().add(i);
 				application.setState(ProcessingState.ERROR);
 			}
@@ -147,13 +154,13 @@ public class ProcessingService implements ProcessingContextOperations {
 					handleAddedItems(application);
 				} else {
 					application.setState(ProcessingState.ERROR);
-					processingUtil.resetItem(application, proc.getItemId());
+					processingUtil.resetItems(application, Lists.list(proc.getItemId()));
 					clearAddedItems(application);
 					proc.setState(ProcessingState.ERROR);
 				}
 			} catch(StaleDependencyException e) {
 				int id = e.getItemId();
-				processingUtil.resetItem(application, id);
+				processingUtil.resetItems(application, Lists.list(id));
 				clearAddedItems(application);
 			} catch (Throwable e) {
 				// This is an internal engine error.
@@ -174,7 +181,7 @@ public class ProcessingService implements ProcessingContextOperations {
 			if (error) {
 				i.setState(ProcessingState.ERROR);
 				clearAddedItems(application);
-				processingUtil.resetItem(application, i.getItemId());
+				processingUtil.resetItems(application, Lists.list(i.getItemId()));
 				pd.getBuildsToInit().add(i);
 				application.setState(ProcessingState.ERROR);
 			} else {
