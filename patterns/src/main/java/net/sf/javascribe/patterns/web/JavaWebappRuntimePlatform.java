@@ -29,7 +29,6 @@ public abstract class JavaWebappRuntimePlatform {
 	
 	@Getter
 	protected Map<String,String> websocketEndpoints = new HashMap<>();
-	//protected List<WebServiceDefinition> services = new ArrayList<>()
 
 	@Getter
 	protected List<String> dependencies = new ArrayList<>();

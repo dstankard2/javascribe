@@ -10,4 +10,8 @@ public class JavaVariableTypeImpl extends JavaVariableTypeBase {
 		super(className,im,buildCtx);
 	}
 	
+	public JavaVariableTypeImpl(String name,String className,String im,BuildContext buildCtx) {
+		super(name,className,im,buildCtx);
+	}
+	
 }

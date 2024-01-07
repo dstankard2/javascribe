@@ -41,6 +41,9 @@ public class JavaWebUtils {
 			type = new JavaVariableTypeImpl("HttpSession", "javax.servlet.http.HttpServletResponse", null);
 			ctx.addVariableType(type);
 		}
+		if (ctx.getVariableType("WebSocketSession")==null) {
+			ctx.addVariableType(new JavaVariableTypeImpl("WebSocketSession", "Session", "javax.websocket.Session", ctx.getBuildContext()));
+		}
 
 		if (ctx.getVariableType("ServletException")==null) {
 			type = new ExceptionJavaType("ServletException", "javax.servlet", null);
