@@ -32,8 +32,10 @@ public class JavascriptParser {
 	
 	public JavascriptParsingResult evalCodeBlock() throws JavascriptParsingException {
 		JavascriptParsingResult ret = new JavascriptParsingResult();
-		// Insert \n after ;
+		// Insert \n after ;, { and }
 		String c = code.replaceAll(";", ";\n");
+		c = code.replaceAll("}", "}\n");
+		c = code.replaceAll("\\{", "{\n");
 		ret.setCode(c);
 		
 		return ret;

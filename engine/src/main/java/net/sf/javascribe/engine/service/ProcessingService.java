@@ -2,10 +2,10 @@ package net.sf.javascribe.engine.service;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-
-import org.assertj.core.util.Lists;
+import java.util.Set;
 
 import net.sf.javascribe.api.SourceFile;
 import net.sf.javascribe.api.config.BuildComponent;
@@ -81,14 +81,18 @@ public class ProcessingService implements ProcessingContextOperations {
 	// If they do, reset the originator of the folder watcher?
 	public void resetFolderWatchersForFiles(ApplicationData application, List<UserFile> userFiles) {
 		List<FolderWatcherEntry> watchers = application.getProcessingData().getFolderWatchers();
+		List<Integer> idsToRemove = new ArrayList<>();
 
 		for(FolderWatcherEntry w : watchers) {
 			for (UserFile file : userFiles) {
 				if (file.getPath().startsWith(w.getPath())) {
-					processingUtil.resetItems(application, Lists.list(w.getItemId()));
+					idsToRemove.add(w.getItemId());
+					// processingUtil.resetItems(application, Collections.singletonList(w.getItemId()));
 				}
 			}
 		}
+		
+		processingUtil.resetItems(application, idsToRemove);
 	}
 
 	public void runProcessing(ApplicationData application) {
@@ -114,7 +118,7 @@ public class ProcessingService implements ProcessingContextOperations {
 			// If there is a build component in the root folder, and there is a build to init in the root folder, 
 			// remove the build in the root folder
 			if ((application.getRootFolder().getBuildComponent()!=null) && (buildToInitInRootFolder)) {
-				processingUtil.removeItems(application, Lists.list((Item)application.getRootFolder().getBuildComponent()));
+				processingUtil.removeItems(application, Collections.singletonList((Item)application.getRootFolder().getBuildComponent()));
 			}
 		}
 		
@@ -132,7 +136,7 @@ public class ProcessingService implements ProcessingContextOperations {
 			} else {
 				i.setState(ProcessingState.ERROR);
 				clearAddedItems(application);
-				processingUtil.resetItems(application, Lists.list(i.getItemId()));
+				processingUtil.resetItems(application, Collections.singletonList(i.getItemId()));
 				pd.getBuildsToInit().add(i);
 				application.setState(ProcessingState.ERROR);
 			}
@@ -154,13 +158,13 @@ public class ProcessingService implements ProcessingContextOperations {
 					handleAddedItems(application);
 				} else {
 					application.setState(ProcessingState.ERROR);
-					processingUtil.resetItems(application, Lists.list(proc.getItemId()));
+					processingUtil.resetItems(application, Collections.singletonList(proc.getItemId()));
 					clearAddedItems(application);
 					proc.setState(ProcessingState.ERROR);
 				}
 			} catch(StaleDependencyException e) {
 				int id = e.getItemId();
-				processingUtil.resetItems(application, Lists.list(id));
+				processingUtil.resetItems(application, Collections.singletonList(id));
 				clearAddedItems(application);
 			} catch (Throwable e) {
 				// This is an internal engine error.
@@ -181,7 +185,7 @@ public class ProcessingService implements ProcessingContextOperations {
 			if (error) {
 				i.setState(ProcessingState.ERROR);
 				clearAddedItems(application);
-				processingUtil.resetItems(application, Lists.list(i.getItemId()));
+				processingUtil.resetItems(application, Collections.singletonList(i.getItemId()));
 				pd.getBuildsToInit().add(i);
 				application.setState(ProcessingState.ERROR);
 			} else {
