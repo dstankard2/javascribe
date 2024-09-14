@@ -88,8 +88,9 @@ public abstract class ContainerTest {
 	public void setupContainerTest() throws Exception {
 		ComponentContainer container = ComponentContainer.get();
 
-		engineOption("debug", "true");
-		ComponentContainer.get().setComponent("debug", true);
+		engineOption("test", "test");
+		ComponentContainer.get().setComponent("debug", false);
+
 		ComponentContainer.get().setComponent("jarFiles", new File[0]);
 		ComponentContainer.get().registerComponent(new EngineResources());
 		

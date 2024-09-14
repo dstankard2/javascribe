@@ -99,9 +99,8 @@ _e0.className = 'widget attribute-listing';
 var l;
 (function() {
 try{
-l = [];
- for(const prop in attributes) { l.push(attributes[prop]);
- }
+l = []; for(const prop in attributes) {
+ l.push(attributes[prop]); }
 }catch(_e){
 console.error(_e);
 }
@@ -627,9 +626,8 @@ _e0.className = 'widget file-listing';
 var l;
 (function() {
 try{
-l = [];
- for(const prop in files) { l.push(files[prop]);
- }
+l = []; for(const prop in files) {
+ l.push(files[prop]); }
 }catch(_e){
 console.error(_e);
 }
@@ -695,16 +693,15 @@ let widgets = TemplateSet_widgets;
 var displayType;
 (function() {
 try{
-if (!displayType) { displayType = 'items';
- }
+if (!displayType) {
+ displayType = 'items'; }
 }catch(_e){
 console.error(_e);
 }
 })();
 function changeDisplayType(type) {
 try{
-displayType = type;
- p.event('changeDisplay');
+displayType = type; p.event('changeDisplay');
 }catch(_e){
 console.error(_e);
 }
@@ -815,36 +812,28 @@ var selectedAttribute;
 var selectedFile;
 function itemCallback(item) {
 try{
-selectedItem = item;
- selectedAttribute = selectedType = selectedFile = null;
- p.event('reselect');
+selectedItem = item; selectedAttribute = selectedType = selectedFile = null; p.event('reselect');
 }catch(_e){
 console.error(_e);
 }
 }
 function attributeCallback(attribute) {
 try{
-selectedAttribute = attribute;
- selectedItem = selectedType = selectedFile = null;
- p.event('reselect');
+selectedAttribute = attribute; selectedItem = selectedType = selectedFile = null; p.event('reselect');
 }catch(_e){
 console.error(_e);
 }
 }
 function typeCallback(t) {
 try{
-selectedType = t;
- selectedAttribute = selectedItem = selectedFile = null;
- p.event('reselect');
+selectedType = t; selectedAttribute = selectedItem = selectedFile = null; p.event('reselect');
 }catch(_e){
 console.error(_e);
 }
 }
 function fileCallback(t) {
 try{
-selectedFile = t;
- selectedAttribute = selectedItem = selectedType = null;
- p.event('reselect');
+selectedFile = t; selectedAttribute = selectedItem = selectedType = null; p.event('reselect');
 }catch(_e){
 console.error(_e);
 }
@@ -1106,15 +1095,9 @@ _e0.$$remove.push(function() {_rv1();});
 _f0();
 function _f1() {
 try{
-console.log('updating item map on window');
- window.itemMap = {};
- if (!m.appData) return;
- let data = m.appData;
- debugger;
- data.allItems.forEach(item => { let key = ''+item.id;
- window.itemMap[key] = item;
- });
- p.event('itemsChanged');
+console.log('updating item map on window'); window.itemMap = {
+}; if (!m.appData) return; let data = m.appData; debugger; data.allItems.forEach(item => {
+ let key = ''+item.id; window.itemMap[key] = item; }); p.event('itemsChanged');
 }catch(_e){
 console.error(_e);
 }
@@ -1123,11 +1106,11 @@ var _cb0 = _dis('appDataChanged',_f1);
 _e0.$$remove.push(_cb0);
 (function() {
 try{
-window.getItemName = (id) => { let key = ''+id;
- if (!window.itemMap) { return 'NoMap';
- } if (window.itemMap[key]) { return window.itemMap[key].name;
- } else { return 'undefined';
- } };
+window.getItemName = (id) => {
+ let key = ''+id; if (!window.itemMap) {
+ return 'NoMap'; } if (window.itemMap[key]) {
+ return window.itemMap[key].name; } else {
+ return 'undefined'; } };
 }catch(_e){
 console.error(_e);
 }

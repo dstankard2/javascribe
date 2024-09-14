@@ -2,10 +2,8 @@ package net.sf.javascribe.engine.service;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import net.sf.javascribe.api.SourceFile;
 import net.sf.javascribe.api.config.BuildComponent;
@@ -260,7 +258,7 @@ public class ProcessingService implements ProcessingContextOperations {
 			ApplicationFolderImpl folder, ApplicationData application) {
 		int id = application.getProcessingData().nextId();
 		RegisteredComponentPattern pattern = patternService.getPattern(component);
-		ComponentItem item = new ComponentItem(id, component, configs, pattern, originatorId, folder, application);
+		ComponentItem item = new ComponentItem(id, component, configs, pattern, originatorId, folder, application, 0);
 		application.getAddedComponents().add(item);
 	}
 

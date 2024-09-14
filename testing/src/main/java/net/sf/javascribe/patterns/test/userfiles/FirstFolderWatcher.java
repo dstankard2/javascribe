@@ -9,44 +9,48 @@ import net.sf.javascribe.api.exception.JavascribeException;
 import net.sf.javascribe.api.resources.ApplicationFile;
 import net.sf.javascribe.api.resources.FolderWatcher;
 import net.sf.javascribe.api.types.ServiceOperation;
+import net.sf.javascribe.langsupport.java.types.impl.JavaDataObjectType;
 import net.sf.javascribe.langsupport.java.types.impl.JavaServiceType;
 
 public class FirstFolderWatcher implements FolderWatcher {
-	String typeName = null;
-	public FirstFolderWatcher(String name) {
-		this.typeName = name;
+	String serviceName = null;
+	String dataObjectName = null;
+	
+	public FirstFolderWatcher(String serviceName, String dataObjectName) {
+		this.serviceName = serviceName;
+		this.dataObjectName = dataObjectName;
 	}
 
 	@Override
 	public void process(ProcessorContext ctx, ApplicationFile changedFile) throws JavascribeException {
-		JavaServiceType type = null;
+		JavaServiceType serviceType = null;
 		String filename = changedFile.getName();
 		int index = filename.indexOf('.');
 		String rulename = filename.substring(0, index);
-		String im = "pkg."+typeName;
+		String im = "pkg."+serviceName;
 
 		ctx.setLanguageSupport("Java8");
 
-		type = JavascribeUtils.getType(JavaServiceType.class, typeName, ctx);
-		if (type==null) {
-			type = new JavaServiceType(typeName, im, ctx.getBuildContext());
-			String attrib = JavascribeUtils.getLowerCamelName(typeName);
-			ctx.addSystemAttribute(attrib, typeName);
-			ctx.addVariableType(type);
+		serviceType = JavascribeUtils.getType(JavaServiceType.class, serviceName, ctx);
+		if (serviceType==null) {
+			serviceType = new JavaServiceType(serviceName, im, ctx.getBuildContext());
+			String attrib = JavascribeUtils.getLowerCamelName(serviceName);
+			ctx.addSystemAttribute(attrib, serviceName);
+			ctx.addVariableType(serviceType);
+		} else {
+			ctx.modifyVariableType(serviceType);
 		}
-
+		
 		ServiceOperation op = new ServiceOperation(rulename);
-		type.addOperation(op);
-		ctx.modifyVariableType(type);
+		serviceType.addOperation(op);
 
-		/*
-		type = JavascribeUtils.getType(JavaDataObjectType.class, name, ctx);
-		if (type == null) {
-			type = new JavaDataObjectType(name, "import", ctx.getBuildContext());
-			type.addProperty("name", "string");
-			ctx.addVariableType(type);
+		JavaDataObjectType objectType = JavascribeUtils.getType(JavaDataObjectType.class, dataObjectName, ctx);
+		if (objectType == null) {
+			im = "pkg."+dataObjectName;
+			objectType = new JavaDataObjectType(dataObjectName, im, ctx.getBuildContext());
+			objectType.addProperty("name", "string");
+			ctx.addVariableType(objectType);
 		}
-		*/
 
 		StringBuilder contents = new StringBuilder();
 

@@ -43,11 +43,6 @@ public class ProcessingUtil {
 		this.outputUtil = outputUtil;
 	}
 
-	// TODO: Implement
-	public boolean originatesAnything(int id, ApplicationData application) {
-		return true;
-	}
-
 	public ComponentItem findItemForComponent(ApplicationData application, Component comp) {
 		return application.getProcessingData().getAllItems().stream().filter(item -> {
 			return ((item instanceof ComponentItem) && (((ComponentItem) item).getComponent() == comp));
@@ -180,11 +175,12 @@ public class ProcessingUtil {
 
 	public void removeItems(ApplicationData application, List<Item> items) {
 		List<Item> toReadd = new ArrayList<>();
-		List<Integer> ids = items.stream().map(Item::getOriginatorId).toList();
+		List<Integer> ids = items.stream().map(Item::getItemId).toList();
 
 		// Remove each itemId
 		items.forEach(item -> {
 			toReadd.addAll(this.removeItem(application, item.getItemId()));
+			toReadd.removeAll(items);
 		});
 
 		Set<Item> added = new HashSet<>();
@@ -217,11 +213,11 @@ public class ProcessingUtil {
 	private List<Item> removeItem(ApplicationData application, int id) {
 		ProcessingData pd = application.getProcessingData();
 		DependencyData depData = application.getDependencyData();
-		List<Item> ret = new ArrayList<>();
+		List<Item> toReadd = new ArrayList<>();
 		
 		Item item = pd.getItem(id);
 		if (item == null) {
-			return ret;
+			return toReadd;
 		}
 		Set<Integer> itemsToReset = new HashSet<>();
 		Set<Integer> itemsToRemove = new HashSet<>();
@@ -350,20 +346,40 @@ public class ProcessingUtil {
 		});
 
 		itemsToReset.remove(id);
-		// For all the items that need to be reset, we need to remove them and then add them to ret
+		
+		// Ensure that items being removed will not be reset.
+		itemsToReset.removeAll(itemsToRemove);
+		
+		// For all the items that need to be reset, we need to remove them and then add them to ret if they are not to be removed
 		itemsToReset.forEach(idToReset -> {
 			Item it = pd.getItem(idToReset);
 			if (it!=null)
-				ret.add(it);
+				toReadd.add(it);
 			List<Item> itemsToReadd = this.removeItem(application, idToReset);
 			itemsToReadd.forEach(i -> {
 				if (!itemsToRemove.contains(i.getItemId())) {
-					ret.add(i);
+					toReadd.add(i);
 				}
 			});
 		});
+
+		// Any item that is to be removed should not be readded
+		itemsToRemove.forEach(idToRemove -> {
+			Item it = pd.getItem(idToRemove);
+			if (it != null) {
+				List<Item> itemsToReadd = this.removeItem(application, idToRemove);
+				itemsToReadd.forEach(i -> {
+					if (!itemsToRemove.contains(i.getItemId())) {
+						toReadd.add(i);
+					}
+				});
+			}
+		});
+
+		// Make sure the item being removed isn't in the list to re-add
+		toReadd.remove(item);
 		
-		return ret;
+		return toReadd;
 	}
 
 	// After a processable has been processed or a folder watcher has been handled,

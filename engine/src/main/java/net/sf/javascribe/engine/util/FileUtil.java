@@ -236,58 +236,6 @@ public class FileUtil {
 		return ret;
 	}
 
-	/*
-	public List<WatchedResource> findFilesAdded(ApplicationFolderImpl folder) {
-		String key = folder.getPath();
-		List<WatchedResource> ret = new ArrayList<>();
-		
-		readWatchKey(folder, key);
-		
-		List<File> addedFiles = this.filesAdded.get(key);
-		
-		// Read javascribe.properties first
-		File jp = addedFiles.stream().filter(f -> f.getName().equals("javascribe.properties")).findFirst().orElse(null);
-		if (jp!=null) {
-			addedFiles.remove(jp);
-			ret.add(readFile(jp, folder));
-		}
-		// Read systemAttributes.properties if this is the root folder
-		File sp = addedFiles.stream().filter(f -> f.getName().equals("systemAttributes.properties")).findFirst().orElse(null);
-		if (sp!=null) {
-			addedFiles.remove(sp);
-			ret.add(readFile(sp, folder));
-		}
-
-		List<File> subdirs = new ArrayList<>();
-		for(File f : addedFiles) {
-			if (!folder.isIgnore(f.getName())) {
-				if (f.isDirectory()) {
-					subdirs.add(f);
-				} else {
-					WatchedResource addition = readFile(f, folder);
-					if (addition != null) {
-						ret.add(addition);
-					}
-				}
-			}
-		}
-		addedFiles.clear();
-
-		subdirs.forEach(d -> {
-			ApplicationFolderImpl subFolder = new ApplicationFolderImpl(d, folder);
-			this.initFolder(subFolder);
-			folder.getSubFolders().put(d.getName(), subFolder);
-		});
-		folder.getSubFolders().entrySet().forEach(entry -> {
-			List<WatchedResource> added = findFilesAdded(entry.getValue());
-			ret.addAll(added);
-			
-		});
-
-		return ret;
-	}
-*/
-
 	protected WatchedResource readFile(File f, ApplicationFolderImpl folder) {
 		String name = f.getName();
 		

@@ -45,7 +45,7 @@ public abstract class ManagerTest extends ContainerTest {
 
 		ApplicationFolderImpl folder = new ApplicationFolderImpl(appDir, application);
 		application.setRootFolder(folder);
-		ProcessorLog log = new ProcessorLog(name, application, ProcessorLogLevel.DEBUG);
+		ProcessorLog log = new ProcessorLog(name, application, ProcessorLogLevel.INFO);
 		application.setApplicationLog(log);
 		
 		return application;

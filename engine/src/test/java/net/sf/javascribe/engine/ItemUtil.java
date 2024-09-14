@@ -17,7 +17,7 @@ public class ItemUtil {
 		RegisteredComponentPattern pattern = null;
 		ApplicationFolderImpl folder = application.getRootFolder();
 		
-		return new ComponentItem(id, component, configs, pattern, 0, folder, application);
+		return new ComponentItem(id, component, configs, pattern, 0, folder, application, 0);
 	}
 
 }

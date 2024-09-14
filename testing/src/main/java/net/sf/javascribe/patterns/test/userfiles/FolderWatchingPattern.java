@@ -18,11 +18,15 @@ import net.sf.javascribe.api.config.Component;
 @Builder
 public class FolderWatchingPattern extends Component {
 
-	private String name;
-	
+	private String serviceName;
+
+	private String dataObjectName;
+
 	@Builder.Default
 	private int priority = 50;
 	
 	private String path;
+	
+	private String dependsOn;
 	
 }

@@ -1,9 +1,11 @@
 package net.sf.javascribe.patterns.test;
 
 import net.sf.javascribe.api.ComponentProcessor;
+import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.annotation.Plugin;
 import net.sf.javascribe.api.exception.JavascribeException;
+import net.sf.javascribe.langsupport.java.types.impl.JavaServiceType;
 
 @Plugin
 public class FirstProcessor implements ComponentProcessor<FirstPattern> {
@@ -12,26 +14,16 @@ public class FirstProcessor implements ComponentProcessor<FirstPattern> {
 	public void process(FirstPattern component, ProcessorContext ctx) throws JavascribeException {
 		ctx.getLog().info("Processing FirstPattern");
 
-		/*
 		ctx.setLanguageSupport("Java8");
-
-		JavaClassSourceFile src = new JavaClassSourceFile(ctx);
-		JavaClassSource cl = src.getSrc();
-		cl.setPackage("test");
-		cl.setName(component.getName());
-		ctx.addSourceFile(src);
 		
-		ctx.getObject("test");
+		JavaServiceType service = null;
+		String name = component.getServiceName();
 		
-		ctx.addSystemAttribute("password", "string");
-		ctx.getSystemAttribute("username");
-		
-		JavaVariableType t = (JavaVariableType)ctx.getVariableType("TestClass");
-		if (t==null) {
-			t = new JavaVariableTypeImpl("TestClass", "net.sf.test.TestClass", ctx.getBuildContext());
-			ctx.addVariableType(t);
+		service = JavascribeUtils.getType(JavaServiceType.class, name, ctx);
+		if (service==null) {
+			service = new JavaServiceType(name, "pkg."+name, ctx.getBuildContext());
+			ctx.addVariableType(service);
 		}
-		*/
 	}
 
 }

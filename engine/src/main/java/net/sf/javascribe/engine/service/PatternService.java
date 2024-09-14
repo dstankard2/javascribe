@@ -56,7 +56,7 @@ public class PatternService {
 	}
 
 	public ComponentItem createComponentItem(int originatorId, Component component, 
-			ComponentFile file, ApplicationData application) {
+			ComponentFile file, ApplicationData application, int index) {
 		ComponentItem ret = null;
 		int id = application.getProcessingData().nextId();
 		ApplicationFolderImpl folder = file.getFolder();
@@ -65,7 +65,7 @@ public class PatternService {
 		RegisteredComponentPattern pattern = componentPatterns.get(patternName);
 
 		ret = new ComponentItem(id, component, configs, pattern, 
-				originatorId, folder, application);
+				originatorId, folder, application, index);
 		
 		return ret;
 	}

@@ -108,13 +108,15 @@ public class WorkspaceManager {
 				removedComponentFiles.add((ComponentFile)res);
 			}
 		}
-		
-		if (removedComponentFiles.size() > 0) {
-			processingService.removeComponentFiles(removedComponentFiles, application);
-		}
+
+		// First reset folder watchers as appropriate
 		if (removedUserFiles.size() > 0) {
 			outputService.deleteRemovedUserFiles(removedUserFiles, application);
 			processingService.removeUserFiles(removedUserFiles, application);
+		}
+		// Then remove items as appropriate.
+		if (removedComponentFiles.size() > 0) {
+			processingService.removeComponentFiles(removedComponentFiles, application);
 		}
 
 		// Find files that have been added
@@ -138,14 +140,16 @@ public class WorkspaceManager {
 			else if (f instanceof ComponentFile) {
 				ComponentFile compFile = (ComponentFile)f;
 				ComponentSet set = compFile.getComponentSet();
-				for(Component comp : set.getComponent()) {
+				for(int i=0;i<set.getComponent().size();i++) {
+					Component comp = set.getComponent().get(i);
+				// for(Component comp : set.getComponent()) {
 					if (comp instanceof BuildComponent) {
 						// TODO: Check if there is more than one build in the folder.  Do something
 						BuildComponent buildComp = (BuildComponent)comp;
 						BuildComponentItem buildItem = patternService.createBuildComponentItem(buildComp, compFile, application);
 						processingService.addItem(application, buildItem);
 					} else {
-						ComponentItem item = patternService.createComponentItem(0, comp, compFile, application);
+						ComponentItem item = patternService.createComponentItem(0, comp, compFile, application, i);
 						processingService.addItem(application, item);
 					}
 				}

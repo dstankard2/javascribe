@@ -18,17 +18,17 @@ public class ComponentItem extends ProcessableBase implements Item {
 	Component component;
 	Map<String,String> configs;
 	RegisteredComponentPattern pattern;
-	//EngineResources engineResources;
 	int originatorId;
 	ApplicationFolderImpl folder;
 	ProcessorLog log = null;
 	private String name;
 	ProcessingState state = ProcessingState.CREATED;
 	private ApplicationData application;
+	protected int ordering;
 
 	public ComponentItem(int id, Component component, Map<String,String> configs, 
-			RegisteredComponentPattern pattern,
-			int originatorId, ApplicationFolderImpl folder, ApplicationData application) {
+			RegisteredComponentPattern pattern, int originatorId, ApplicationFolderImpl folder, 
+			ApplicationData application, int ordering) {
 		this.id = id;
 		this.component = component;
 		this.configs = configs;
@@ -38,6 +38,19 @@ public class ComponentItem extends ProcessableBase implements Item {
 		this.name = component.getComponentName();
 		this.application = application;
 		log = new ProcessorLog(name, application, folder.getLogLevel());
+		this.ordering = ordering;
+	}
+
+	@Override
+	public int compareTo(Processable o) {
+		if (getPriority() > o.getPriority()) return 1;
+		else if (getPriority() < o.getPriority()) return -1;
+		if (o instanceof ComponentItem) {
+			ComponentItem otherComp = (ComponentItem)o;
+			return ordering < otherComp.ordering ? -1 : 1;
+		} else {
+			return 0;
+		}
 	}
 
 	public Component getComponent() {

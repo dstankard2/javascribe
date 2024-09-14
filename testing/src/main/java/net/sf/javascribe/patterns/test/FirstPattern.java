@@ -28,15 +28,15 @@ import net.sf.javascribe.api.config.Component;
 public class FirstPattern extends Component {
 
 	@XmlAttribute
-	private String name;
+	private String serviceName;
 	
 	public String getComponentName() {
-		return "FirstPattern["+name+"]";
+		return "FirstPattern["+serviceName+"]";
 	}
 
 	@Override
 	public int getPriority() {
-		return 500;
+		return 10;
 	}
 
 }

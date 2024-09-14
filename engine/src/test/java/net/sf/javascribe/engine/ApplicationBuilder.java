@@ -48,7 +48,7 @@ public class ApplicationBuilder {
 		RegisteredComponentPattern pattern = null;
 		Map<String,String> configs = new HashMap<>();
 
-		ComponentItem item = new ComponentItem(5, comp, configs, pattern, 0, app.getRootFolder(), app);
+		ComponentItem item = new ComponentItem(5, comp, configs, pattern, 0, app.getRootFolder(), app, 0);
 		if (toProcess) {
 			app.getProcessingData().getToProcess().add(item);
 		} else {
