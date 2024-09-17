@@ -8,6 +8,7 @@ import net.sf.javascribe.api.ComponentProcessor;
 import net.sf.javascribe.api.config.Component;
 import net.sf.javascribe.api.exception.JavascribeException;
 import net.sf.javascribe.engine.ComponentContainer;
+import net.sf.javascribe.engine.EngineException;
 import net.sf.javascribe.engine.data.ApplicationData;
 import net.sf.javascribe.engine.data.files.ApplicationFolderImpl;
 import net.sf.javascribe.engine.service.RegisteredComponentPattern;
@@ -93,6 +94,9 @@ public class ComponentItem extends ProcessableBase implements Item {
 		boolean success = true;
 		ConfigUtil configUtil = ComponentContainer.get().getComponent(ConfigUtil.class);
 
+		if (this.pattern == null) {
+			throw new EngineException("Component "+this.component.getClass().getCanonicalName()+" has no pattern registered");
+		}
 		success = configUtil.populateConfigurations(component, log, configs);
 
 		if (success) {

@@ -7,12 +7,22 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import net.sf.javascribe.api.annotation.Plugin;
 import net.sf.javascribe.api.annotation.XmlConfig;
 import net.sf.javascribe.api.config.Component;
 import net.sf.javascribe.patterns.PatternPriority;
 
+@Builder
+@Getter
+@Setter
 @XmlConfig
+@NoArgsConstructor
+@AllArgsConstructor
 @Plugin
 @XmlRootElement(name="pageFn")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -23,71 +33,29 @@ public class PageFn extends Component {
 		return PatternPriority.PAGE_FN;
 	}
 
+	@Builder.Default
 	@XmlAttribute
 	private Boolean async = false;
 	
+	@Builder.Default
 	@XmlAttribute
 	private String pageName = "";
 	
+	@Builder.Default
 	@XmlAttribute
 	private String service = "";
 	
+	@Builder.Default
 	@XmlAttribute
 	private String name = "";
 
+	@Builder.Default
 	@XmlAttribute
 	private String event = "";
 
+	@Builder.Default
 	@XmlElement(name = "code")
 	private String code = "";
-	
-	public String getEvent() {
-		return event;
-	}
-
-	public void setEvent(String event) {
-		this.event = event;
-	}
-
-	public String getCode() {
-		return code;
-	}
-
-	public void setCode(String code) {
-		this.code = code;
-	}
-
-	public String getPageName() {
-		return pageName;
-	}
-
-	public void setPageName(String pageName) {
-		this.pageName = pageName;
-	}
-
-	public String getService() {
-		return service;
-	}
-
-	public void setService(String service) {
-		this.service = service;
-	}
-
-	public Boolean getAsync() {
-		return async;
-	}
-
-	public void setAsync(Boolean async) {
-		this.async = async;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
 	
 	@Override
 	public String getComponentName() {

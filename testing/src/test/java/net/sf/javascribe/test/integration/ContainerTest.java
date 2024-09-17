@@ -1,6 +1,7 @@
 package net.sf.javascribe.test.integration;
 
 import java.io.File;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,8 +9,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeTest;
@@ -34,43 +38,42 @@ public abstract class ContainerTest {
 
 	Map<String,String> engineOptions = new HashMap<>();
 	
-	private Set<Class<Component>> componentClasses = new HashSet<>();
-	private Set<Class<ComponentProcessor>> componentProcessorClasses = new HashSet<>();
-	private Set<Class<BuildComponentProcessor>> buildComponentProcessorClasses = new HashSet<>();
-	private Set<Class<LanguageSupport>> languageSupportClasses = new HashSet<>();
+	private Set<Class<?>> pluginClasses = new HashSet<>();
 
 	protected PluginService pluginService = null;
 
-	@SuppressWarnings("unchecked")
 	protected void includePattern(Class<? extends Component> cl) {
-		componentClasses.add((Class<Component>)cl);
+		includePlugin(cl);
 	}
 
 	@SuppressWarnings("unchecked")
 	protected void includePatterns(Class<? extends Component>... classes) {
 		for(Class<? extends Component> cl : classes) {
-			componentClasses.add((Class<Component>)cl);
+			includePattern(cl);
 		}
 	}
 
-	protected void includeBuildProcessor(Class<BuildComponentProcessor> cl) {
-		buildComponentProcessorClasses.add(cl);
+	protected void includeBuildProcessor(Class<? extends BuildComponentProcessor> cl) {
+		includePlugin(cl);
 	}
 
-	@SuppressWarnings("unchecked")
 	protected void includeProcessor(Class<? extends ComponentProcessor> cl) {
-		componentProcessorClasses.add((Class<ComponentProcessor>)cl);
+		includePlugin(cl);
 	}
 
 	@SuppressWarnings("unchecked")
 	protected void includeProcessors(Class<? extends ComponentProcessor>... classes) {
 		for(Class<? extends ComponentProcessor> cl : classes) {
-			componentProcessorClasses.add((Class<ComponentProcessor>)cl);
+			includeProcessor(cl);
 		}
 	}
-	@SuppressWarnings("unchecked")
+
 	protected void includeLanguageSupport(Class<? extends LanguageSupport> cl) {
-		languageSupportClasses.add((Class<LanguageSupport>)cl);
+		includePlugin(cl);
+	}
+
+	protected void includePlugin(Class<?> cl) {
+		this.pluginClasses.add(cl);
 	}
 
 	@AfterClass
@@ -84,11 +87,14 @@ public abstract class ContainerTest {
 		});
 	}
 	
+	@SuppressWarnings("unchecked")
 	@BeforeClass
 	public void setupContainerTest() throws Exception {
+		final ContainerTest that = this;
 		ComponentContainer container = ComponentContainer.get();
 
 		engineOption("test", "test");
+		engineOption("debug", "false");
 		ComponentContainer.get().setComponent("debug", false);
 
 		ComponentContainer.get().setComponent("jarFiles", new File[0]);
@@ -99,13 +105,27 @@ public abstract class ContainerTest {
 		// Initialize plugin service to return classes we've asked for
 		// We'll re-use the plugin service between multiple classes
 		pluginService = Mockito.mock(PluginService.class);
-		Mockito.when(pluginService.findClassesThatExtend(Component.class)).thenReturn(componentClasses);
-		Mockito.when(pluginService.findClassesThatExtend(ComponentProcessor.class))
-				.thenReturn(componentProcessorClasses);
-		Mockito.when(pluginService.findClassesThatExtend(BuildComponentProcessor.class))
-				.thenReturn(buildComponentProcessorClasses);
-		Mockito.when(pluginService.findClassesThatExtend(LanguageSupport.class)).thenReturn(languageSupportClasses);
 		ComponentContainer.get().registerComponent("PluginService", pluginService);
+		
+		Answer<Set<Class<?>>> annotationPluginAnswer = new Answer<Set<Class<?>>>() {
+			public Set<Class<?>> answer(InvocationOnMock i) {
+				Class<? extends Annotation> arg = i.getArgument(0, Class.class);
+				Set<Class<?>> ret = that.pluginClasses.stream().filter(cl -> 
+					cl.isAnnotationPresent(arg)).collect(Collectors.toSet());
+				return ret;
+			}
+		};
+		Mockito.when(pluginService.findClassesWithAnnotation(Mockito.any())).thenAnswer(annotationPluginAnswer);
+
+		Answer<Set<Class<?>>> superclassPluginAnswer = new Answer<Set<Class<?>>>() {
+			public Set<Class<?>> answer(InvocationOnMock i) {
+				Class<?> arg = i.getArgument(0, Class.class);
+				Set<Class<?>> ret = that.pluginClasses.stream().filter(cl -> 
+					arg.isAssignableFrom(cl)).collect(Collectors.toSet());
+				return ret;
+			}
+		};
+		Mockito.when(pluginService.findClassesThatExtend(Mockito.any())).thenAnswer(superclassPluginAnswer);
 
 		// Look at fields in this test.  Find the mock dependencies and set them in the 
 		// componentContainer.  Record all the injected dependencies.

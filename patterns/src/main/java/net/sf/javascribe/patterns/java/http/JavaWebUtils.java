@@ -8,6 +8,7 @@ import net.sf.javascribe.langsupport.java.types.JavaVariableType;
 import net.sf.javascribe.langsupport.java.types.impl.ExceptionJavaType;
 import net.sf.javascribe.langsupport.java.types.impl.JavaVariableTypeImpl;
 import net.sf.javascribe.patterns.tomcat.EmbedTomcatRuntimePlatform;
+import net.sf.javascribe.patterns.web.JavaWebappRuntimePlatform;
 
 public class JavaWebUtils {
 
@@ -73,6 +74,15 @@ public class JavaWebUtils {
 		return platform;
 	}
 	
+	// Ensure that the specified build ID has a webapp runtime platform
+	public static void ensureWebPlatform(ProcessorContext ctx, String buildId) throws JavascribeException {
+		String name = buildId+"JavaWebapp";
+		
+		if (ctx.getObject(name)==null) {
+			throw new JavascribeException("There is no embedded tomcat component - can't add or query web platform items");
+		}
+	}
+
 	public static EmbedTomcatRuntimePlatform getWebPlatform(ProcessorContext ctx) throws JavascribeException {
 		String name = ctx.getBuildContext().getId()+"JavaWebapp";
 		EmbedTomcatRuntimePlatform platform = (EmbedTomcatRuntimePlatform)ctx.getObject(name);

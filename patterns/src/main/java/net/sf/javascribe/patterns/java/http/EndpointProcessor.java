@@ -56,13 +56,16 @@ public class EndpointProcessor implements ComponentProcessor<Endpoint> {
 		}
 		String buildId = ctx.getBuildContext().getId();
 
+		// Ensure that there is a web app application platform
+		JavaWebUtils.ensureWebPlatform(ctx, buildId);
+		
+		// Retrieve the web service module definition, to add to it.
 		WebServiceModule moduleDef = WebUtils.getWebServiceDefinition(buildId, module, ctx, true);
 
-		//String contextRoot = moduleDef.getModuleUri();
-		
 		String operationResult = comp.getOperationResult();
 		String requestBody = null;
 		EndpointOperation op = new EndpointOperation(module);
+
 		moduleDef.getOperations().add(op);
 
 		HttpMethod httpMethod = comp.getMethod();

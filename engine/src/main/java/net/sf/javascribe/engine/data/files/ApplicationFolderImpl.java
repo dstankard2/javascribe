@@ -32,6 +32,7 @@ public class ApplicationFolderImpl implements WatchedResource,ApplicationFolder 
 	private JavascribePropertiesFile javascribeProperties = null;
 	private ApplicationData application;
 
+	// Only for root folder
 	public ApplicationFolderImpl(File file,ApplicationData application) {
 		this.folder = file;
 		this.name = file.getName();
@@ -40,6 +41,7 @@ public class ApplicationFolderImpl implements WatchedResource,ApplicationFolder 
 		this.application = application;
 	}
 
+	// For creating subfolders
 	public ApplicationFolderImpl(File file,ApplicationFolderImpl parent) {
 		if (parent==null) {
 			throw new EngineException("Invalid use of application folder constructor");

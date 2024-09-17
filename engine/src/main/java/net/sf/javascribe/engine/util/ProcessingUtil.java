@@ -351,16 +351,21 @@ public class ProcessingUtil {
 		itemsToReset.removeAll(itemsToRemove);
 		
 		// For all the items that need to be reset, we need to remove them and then add them to ret if they are not to be removed
+		// Items with originators should not be reset
 		itemsToReset.forEach(idToReset -> {
 			Item it = pd.getItem(idToReset);
-			if (it!=null)
-				toReadd.add(it);
-			List<Item> itemsToReadd = this.removeItem(application, idToReset);
-			itemsToReadd.forEach(i -> {
-				if (!itemsToRemove.contains(i.getItemId())) {
-					toReadd.add(i);
+			if (it!=null) {
+				boolean originated = it.getOriginatorId() > 0;
+				if ((it!=null) && (!originated)) {
+					toReadd.add(it);
 				}
-			});
+				List<Item> itemsToReadd = this.removeItem(application, idToReset);
+				itemsToReadd.forEach(i -> {
+					if (!itemsToRemove.contains(i.getItemId())) {
+						toReadd.add(i);
+					}
+				});
+			}
 		});
 
 		// Any item that is to be removed should not be readded

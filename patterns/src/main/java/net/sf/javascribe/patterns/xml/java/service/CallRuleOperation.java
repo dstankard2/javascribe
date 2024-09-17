@@ -6,11 +6,21 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import net.sf.javascribe.api.annotation.Plugin;
 import net.sf.javascribe.api.annotation.XmlConfig;
 import net.sf.javascribe.patterns.java.service.CallRuleRenderer;
 import net.sf.javascribe.patterns.java.service.OperationRenderer;
 
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 @Plugin
 @XmlConfig
 @XmlRootElement(name="callRule")
@@ -21,55 +31,17 @@ public class CallRuleOperation extends Operation {
 	@Override 
 	public OperationRenderer getRenderer() { return new CallRuleRenderer(this); }
 
+	@Builder.Default
 	@XmlAttribute
 	private String result = "";
 	
+	@Builder.Default
 	@XmlAttribute
 	private String params = "";
 
+	@Builder.Default
 	@XmlAttribute
 	private String rule = "";
 	
-	public String getResult() {
-		return result;
-	}
-
-	public void setResult(String result) {
-		this.result = result;
-	}
-
-	public String getParams() {
-		return params;
-	}
-
-	public void setParams(String params) {
-		this.params = params;
-	}
-
-	public String getRule() {
-		return rule;
-	}
-
-	public void setRule(String rule) {
-		this.rule = rule;
-	}
-
-	/*
-	@Override
-	public String getResultType(ProcessorContext ctx, CodeExecutionContext execCtx) throws JavascribeException {
-		if (result==null) return null;
-		List<PropertyEntry> paramEntries = JavascribeUtils.readParametersAsList(params, ctx);
-		ServiceOperation op = JavaUtils.findRule(rule,paramEntries,ctx, execCtx);
-
-		return op.getReturnType();
-	}
-
-	@Override
-	public String getResultName(ProcessorContext ctx, CodeExecutionContext execCtx) {
-		if ((result==null) || (result.trim().length()==0)) return null;
-		return result;
-	}
-*/
-
 }
 

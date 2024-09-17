@@ -61,6 +61,32 @@ public abstract class ManagerTest extends ContainerTest {
 		return uf;
 	}
 
+	protected ComponentFile createComponentFileInFolder(String folder, String filename, ApplicationData application, Component... components) {
+		File rootDir = application.getApplicationDirectory();
+		File dir = null;
+		ApplicationFolderImpl finalFolder = null;
+		
+		if (folder!=null) {
+			ensureFolder(application, folder);
+			dir = application.getRootFolder().getSubFolders().get(folder).getFolderFile();
+			finalFolder = application.getRootFolder().getSubFolders().get(folder);
+		} else {
+			dir = rootDir;
+			finalFolder = application.getRootFolder();
+		}
+		
+		File compFile = new File(dir, filename);
+		ComponentSet set = new ComponentSet();
+		ComponentFile f = new ComponentFile(set, compFile, finalFolder);
+
+		for(Component comp : components) {
+			set.getComponent().add(comp);
+		}
+
+		return f;
+	}
+	
+
 	protected ComponentFile createComponentFile(String filename, ApplicationData application, Component... components) {
 		File dir = application.getApplicationDirectory();
 		File compFile = new File(dir, filename);
@@ -88,5 +114,24 @@ public abstract class ManagerTest extends ContainerTest {
 		
 	}
 
+	protected void ensureFolder(ApplicationData applicationData, String path) {
+		String[] folders = path.split("/");
+		ApplicationFolderImpl folder = applicationData.getRootFolder();
+		File folderFile = folder.getFolderFile();
+
+		for(String dir : folders) {
+			if (folder.getSubFolders().get(dir) == null) {
+				File subFile = new File(folderFile, dir);
+				subFile.mkdirs();
+				ApplicationFolderImpl sub = new ApplicationFolderImpl(subFile, folder);
+				folder.getSubFolders().put(dir, sub);
+				folder = sub;
+				folderFile = subFile;
+			} else {
+				folder = folder.getSubFolders().get(dir);
+				folderFile = folder.getFolderFile();
+			}
+		}
+	}
 }
 

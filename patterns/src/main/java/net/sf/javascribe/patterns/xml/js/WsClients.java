@@ -11,15 +11,22 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.sf.javascribe.api.annotation.ConfigProperty;
 import net.sf.javascribe.api.annotation.Plugin;
 import net.sf.javascribe.api.annotation.XmlConfig;
 import net.sf.javascribe.api.config.Component;
 import net.sf.javascribe.patterns.PatternPriority;
+import net.sf.javascribe.patterns.xml.js.page.Page;
 
+@Builder
 @XmlConfig
+@NoArgsConstructor
+@AllArgsConstructor
 @Plugin
 @XmlRootElement(name="wsClients")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -28,18 +35,23 @@ import net.sf.javascribe.patterns.PatternPriority;
 @Setter
 public class WsClients extends Component {
 
+	@Builder.Default
 	@XmlElement
 	private List<ModuleClient> moduleClient = new ArrayList<>();
 	
+	@Builder.Default
 	@XmlAttribute
 	private String buildId = "";
 
+	@Builder.Default
 	@XmlTransient
 	private String preprocessing = "";
 
+	@Builder.Default
 	@XmlTransient
 	private String ajaxProvider = "";
 
+	@Builder.Default
 	@XmlAttribute
 	private String urlPrefix = "";
 	

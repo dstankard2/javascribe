@@ -163,7 +163,8 @@ public class ProcessingService implements ProcessingContextOperations {
 			} catch(StaleDependencyException e) {
 				int id = e.getItemId();
 				processingUtil.resetItems(application, Collections.singletonList(id));
-				clearAddedItems(application);
+				// TODO: Not certain we want to clear added items.  Resetting the stale id might be enough.
+				// clearAddedItems(application);
 			} catch (Throwable e) {
 				// This is an internal engine error.
 				application.getApplicationLog().error("Internal engine error - turn on engine debugging to see the cause");

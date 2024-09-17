@@ -6,12 +6,22 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import net.sf.javascribe.api.annotation.Plugin;
 import net.sf.javascribe.api.annotation.XmlConfig;
 import net.sf.javascribe.api.config.Component;
 import net.sf.javascribe.patterns.PatternPriority;
 
+@Builder
+@Getter
+@Setter
 @XmlConfig
+@NoArgsConstructor
+@AllArgsConstructor
 @Plugin
 @XmlRootElement(name="pageModel")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -22,27 +32,13 @@ public class PageModel extends Component {
 		return PatternPriority.PAGE_MODEL;
 	}
 
+	@Builder.Default
 	@XmlAttribute(required = true)
 	private String pageName = "";
 
+	@Builder.Default
 	@XmlAttribute(required = true)
 	private String properties = "";
-
-	public String getPageName() {
-		return pageName;
-	}
-
-	public void setPageName(String pageName) {
-		this.pageName = pageName;
-	}
-
-	public String getProperties() {
-		return properties;
-	}
-
-	public void setProperties(String properties) {
-		this.properties = properties;
-	}
 
 	@Override
 	public String getComponentName() {

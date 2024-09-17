@@ -200,12 +200,12 @@ public class WsClientsProcessor implements ComponentProcessor<WsClients> {
 		}
 
 		// TODO: This should probably be fetch
-		final String DefaultAjaxProvider = "XMLHttpRequest";
+		final String defaultAjaxProvider = "XMLHttpRequest";
 		// Ajax Provider
 		if (ajaxProvider==null) {
-			ajaxProvider = DefaultAjaxProvider;
+			ajaxProvider = defaultAjaxProvider;
 		} else if (ajaxProvider.trim().length() == 0) {
-			ajaxProvider = DefaultAjaxProvider;
+			ajaxProvider = defaultAjaxProvider;
 		}
 		fnBody.append("var _promise;\n");
 		AjaxClientProvider provider = JavascriptPatternUtils.getAjaxClientProvider(ajaxProvider, ctx);

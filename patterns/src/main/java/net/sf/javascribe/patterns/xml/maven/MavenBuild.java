@@ -8,11 +8,22 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import net.sf.javascribe.api.annotation.ConfigProperty;
 import net.sf.javascribe.api.annotation.Plugin;
 import net.sf.javascribe.api.annotation.XmlConfig;
 import net.sf.javascribe.api.config.BuildComponent;
 
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Plugin
 @XmlConfig
 @XmlRootElement(name="project")
@@ -20,80 +31,47 @@ import net.sf.javascribe.api.config.BuildComponent;
 @XmlType(name="project",propOrder={ "description", "modules", "dependencies" })
 public class MavenBuild extends BuildComponent {
 
+	@Builder.Default
 	@XmlElement
 	private Dependencies dependencies = new Dependencies();
 	
+	@Builder.Default
 	@XmlElement
 	private Modules modules = new Modules();
 
+	@Builder.Default
 	@XmlElement
 	private String description = "";
 	
+	@Builder.Default
 	@XmlAttribute
 	private String artifact = "";
 
+	@Builder.Default
 	@XmlAttribute
 	private String parent = "";
 
+	@Builder.Default
 	@XmlAttribute
 	private String packaging = "";
 	
+	@Getter(AccessLevel.NONE)
+	@Setter(AccessLevel.NONE)
+	@Builder.Default
 	@XmlTransient
 	private String javaVersion = "";
 	
+	@Getter(AccessLevel.NONE)
+	@Setter(AccessLevel.NONE)
+	@Builder.Default
 	@XmlTransient
 	private String buildPhases = "";
 
+	@Getter(AccessLevel.NONE)
+	@Setter(AccessLevel.NONE)
+	@Builder.Default
 	@XmlTransient
 	private String deployPhases = "";
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	public String getArtifact() {
-		return artifact;
-	}
-
-	public void setArtifact(String artifact) {
-		this.artifact = artifact;
-	}
-
-	public String getParent() {
-		return parent;
-	}
-
-	public void setParent(String parent) {
-		this.parent = parent;
-	}
-
-	public String getPackaging() {
-		return packaging;
-	}
-
-	public void setPackaging(String packaging) {
-		this.packaging = packaging;
-	}
-
-	public Modules getModules() {
-		return modules;
-	}
-
-	public void setModules(Modules modules) {
-		this.modules = modules;
-	}
-
-	public Dependencies getDependencies() {
-		return dependencies;
-	}
-
-	public void setDependencies(Dependencies dependencies) {
-		this.dependencies = dependencies;
-	}
 
 	@Override
 	public String getComponentName() {

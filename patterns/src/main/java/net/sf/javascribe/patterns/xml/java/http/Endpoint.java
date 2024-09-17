@@ -99,9 +99,9 @@ public class Endpoint extends JavaComponent {
 		if ((getMethod()!=null) && (getPath().trim().length()>0)) {
 			return getMethod().name()+" "+getPath();
 		} else if ((getMethod()==null) && (getPath().trim().length()==0)) {
-			return "<METHOD> <PATH>";
+			return "HTTP Endpoint <METHOD> <PATH>";
 		} else if (getMethod()==null) {
-			return "<METHOD> "+getPath();
+			return "HTTP Endpoint <METHOD> "+getPath();
 		}
 		return getMethod().name()+" <PATH>";
 	}

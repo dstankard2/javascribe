@@ -5,47 +5,36 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import net.sf.javascribe.api.annotation.Plugin;
 import net.sf.javascribe.api.annotation.XmlConfig;
 
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Plugin
 @XmlConfig
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name="response",propOrder={  })
 public class Response {
 
+	@Builder.Default
 	@XmlAttribute
 	private String condition = "";
 	
+	@Builder.Default
 	@XmlAttribute
 	private Integer httpStatus = null;
 
+	@Builder.Default
 	@XmlAttribute
 	private String responseBody = "";
-
-	public String getCondition() {
-		return condition;
-	}
-
-	public void setCondition(String condition) {
-		this.condition = condition;
-	}
-
-	public Integer getHttpStatus() {
-		return httpStatus;
-	}
-
-	public void setHttpStatus(Integer httpStatus) {
-		this.httpStatus = httpStatus;
-	}
-
-	public String getResponseBody() {
-		return responseBody;
-	}
-
-	public void setResponseBody(String responseBody) {
-		this.responseBody = responseBody;
-	}
 
 }
 
