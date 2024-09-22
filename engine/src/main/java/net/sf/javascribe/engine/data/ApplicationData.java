@@ -72,6 +72,7 @@ public class ApplicationData implements LogContext {
 	@Builder.Default
 	private Map<String,Map<String,VariableType>> baseTypes = new HashMap<>();
 
+	// TODO: Throw stale dependency exception?
 	public VariableType getType(String lang, String name) throws JavascribeException {
 		VariableType ret = null;
 		
@@ -135,14 +136,9 @@ public class ApplicationData implements LogContext {
 
 	public SourceFile getSourceFile(String path) {
 		SourceFile ret = null;
-		Entry<String,SourceFile> entry = addedSourceFiles.entrySet().stream().filter(e -> e.getKey().equals(path)).findFirst().orElse(null);
-		
-		if (entry==null) {
-			entry = sourceFiles.entrySet().stream().filter(e -> e.getKey().equals(path)).findFirst().orElse(null);
-		}
-		
-		if (entry!=null) {
-			ret = entry.getValue();
+		ret = addedSourceFiles.get(path);
+		if (ret==null) {
+			ret = sourceFiles.get(path);
 		}
 		
 		return ret;
@@ -154,19 +150,6 @@ public class ApplicationData implements LogContext {
 	@Builder.Default
 	private Map<String,SourceFile> addedSourceFiles = new HashMap<>();
 	
-	@Builder.Default
-	private List<FolderWatcherEntry> addedFolderWatchers = new ArrayList<>();
-
-	@Builder.Default
-	private List<FileProcessorEntry> addedFileProcessors = new ArrayList<>();
-
-	// TODO: See if this is necessary
-	@Builder.Default
-	private List<ComponentItem> addedComponents = new ArrayList<>();
-
-	@Builder.Default
-	private List<SourceFile> removedSourceFiles = new ArrayList<>();
-
 	@Override
 	public void appendMessage(ProcessorLogMessage message) {
 		this.getMessages().add(message);

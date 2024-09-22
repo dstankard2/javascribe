@@ -2,18 +2,13 @@
 To Do for Javascribe: 
 
 Processing bugs/tasks
-	When a component modifies a type that wasn't added this run, mark it stale and reprocess.
-		Is this necessary?
 	Bug: When a processed build is modified by a component, the build must be re-generated.
 	Bug: When a component modifies a build that is already processed, the build needs to be reset
 		Most likely items in the build's folder should be reset too.
-	When the build context's runtime platform is manipulated, any item that depends on it should be reset
-		(Maybe it should be an object instead?)
 
 Engine/Processing enhancements:
 	Remove RuntimePlatform concept in its current form.  Use objects for now.
 	Implement logging standard.  Generated code should output errors to log.
-	Show 'scanning' message when there are items to process after remove/add.  Show 'found changed files' if it's userfile changes only.
 	Task: Create ContextBase for ProcessorContextImpl and BuildProcessorContextImpl
 	There should be an association between a build and its components.
 	Add defaultVersion to BuildContext.addDependency(String)

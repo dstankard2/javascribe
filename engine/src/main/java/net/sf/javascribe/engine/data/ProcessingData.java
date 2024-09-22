@@ -2,8 +2,10 @@ package net.sf.javascribe.engine.data;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -54,6 +56,19 @@ public class ProcessingData {
 
 		return ret;
 	}
-	
+
+	public Set<Item> getItemsThatOriginateFrom(int id) {
+		Set<Item> ret = new HashSet<>();
+
+		if (id >0) {
+			allItems.forEach(item -> {
+				if (item.getOriginatorId() == id) {
+					ret.add(item);
+				}
+			});
+		}
+		
+		return ret;
+	}
 }
 

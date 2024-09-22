@@ -21,7 +21,6 @@ import java.lang.annotation.Target;
 public @interface Documentation {
 
 	boolean required() default true;
-	String name();
 	String description() default "";
 	String example() default "";
 

@@ -14,5 +14,10 @@ public class DependencyData {
 	private Map<String,Set<Integer>> attributeOriginators = new HashMap<>();
 	private Map<String,Set<Integer>> objectDependencies = new HashMap<>();
 	private Map<String, Map<String,Set<Integer>>> typeDependencies = new HashMap<>();
+	
+	public boolean originatesAttribute(String attribute, int id) {
+		if (attributeOriginators.get(attribute)==null) return false;
+		return attributeOriginators.get(attribute).contains(id);
+	}
 
 }

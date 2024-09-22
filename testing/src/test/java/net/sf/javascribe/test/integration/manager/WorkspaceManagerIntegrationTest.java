@@ -654,6 +654,9 @@ public class WorkspaceManagerIntegrationTest extends ManagerTest {
 		workspaceManager.scanApplicationDir(application, true, false);
 		assertThat(application.getState()).isEqualTo(ProcessingState.SUCCESS);
 		assertThat(pd.getAllItems().size()).isEqualTo(18);
+		
+		// Reset the input stream of the user file since it will be parsed again
+		userFile.getInputStream().reset();
 
 		// Touch a WsClient file.  Still successful.  Same number of items as previous run.
 		filesRemoved(application, clientFile);

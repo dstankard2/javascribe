@@ -1,9 +1,10 @@
 package net.sf.javascribe.engine.service;
 
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import net.sf.javascribe.api.SourceFile;
 import net.sf.javascribe.api.config.BuildComponent;
@@ -47,19 +48,17 @@ public class ProcessingService implements ProcessingContextOperations {
 	public void setLogUtil(LogUtil u) {
 		this.logUtil = u;
 	}
-
+	
 	public void removeComponentFiles(List<ComponentFile> componentFiles, ApplicationData application) {
-		List<Item> itemsToRemove = new ArrayList<>();
+		Set<Item> itemsToRemove = new HashSet<>();
 		componentFiles.forEach(cf -> {
 			cf.getComponentSet().getComponent().forEach(comp -> {
 				if (comp instanceof BuildComponent) {
 					BuildComponentItem item = processingUtil.findItemForBuildComponent(application, (BuildComponent)comp);
 					itemsToRemove.add(item);
-					//processingUtil.removeItem(application, item.getItemId());
 				} else {
 					ComponentItem item = processingUtil.findItemForComponent(application, comp);
 					itemsToRemove.add(item);
-					//processingUtil.removeItem(application, item.getItemId());
 				}
 			});
 		});
@@ -76,21 +75,19 @@ public class ProcessingService implements ProcessingContextOperations {
 	// For added/removed user files, check folder watchers to see if user files apply to
 	// them.
 	// If they do, reset the folder watcher
-	// If they do, reset the originator of the folder watcher?
 	public void resetFolderWatchersForFiles(ApplicationData application, List<UserFile> userFiles) {
 		List<FolderWatcherEntry> watchers = application.getProcessingData().getFolderWatchers();
-		List<Integer> idsToRemove = new ArrayList<>();
+		Set<Item> itemsToRemove = new HashSet<>();
 
 		for(FolderWatcherEntry w : watchers) {
 			for (UserFile file : userFiles) {
 				if (file.getPath().startsWith(w.getPath())) {
-					idsToRemove.add(w.getItemId());
-					// processingUtil.resetItems(application, Collections.singletonList(w.getItemId()));
+					itemsToRemove.add(w);
 				}
 			}
 		}
 		
-		processingUtil.resetItems(application, idsToRemove);
+		processingUtil.resetItems(application, itemsToRemove);
 	}
 
 	public void runProcessing(ApplicationData application) {
@@ -109,6 +106,7 @@ public class ProcessingService implements ProcessingContextOperations {
 		});
 		
 		if ((application.getRootFolder().getBuildComponent()==null) && (!buildToInitInRootFolder)) {
+			// Create a default build
 			BuildComponent buildComp = new DefaultBuildComponent();
 			BuildComponentItem item = new BuildComponentItem(pd.nextId(), buildComp, application.getRootFolder(), null, rootFolder.getProperties(), application);
 			processingUtil.addItem(item, application);
@@ -116,7 +114,7 @@ public class ProcessingService implements ProcessingContextOperations {
 			// If there is a build component in the root folder, and there is a build to init in the root folder, 
 			// remove the build in the root folder
 			if ((application.getRootFolder().getBuildComponent()!=null) && (buildToInitInRootFolder)) {
-				processingUtil.removeItems(application, Collections.singletonList((Item)application.getRootFolder().getBuildComponent()));
+				processingUtil.removeItems(application, Collections.singleton(application.getRootFolder().getBuildComponent()));
 			}
 		}
 		
@@ -130,12 +128,9 @@ public class ProcessingService implements ProcessingContextOperations {
 			if (!error) {
 				i.setState(ProcessingState.INITIALIZED);
 				pd.getBuildsToProcess().add(i);
-				error = !handleAddedItems(application);
 			} else {
 				i.setState(ProcessingState.ERROR);
-				clearAddedItems(application);
-				processingUtil.resetItems(application, Collections.singletonList(i.getItemId()));
-				pd.getBuildsToInit().add(i);
+				processingUtil.resetItems(application, Collections.singleton(i));
 				application.setState(ProcessingState.ERROR);
 			}
 		}
@@ -153,22 +148,22 @@ public class ProcessingService implements ProcessingContextOperations {
 				if (!error) {
 					proc.setState(ProcessingState.SUCCESS);
 					pd.getProcessed().add(proc);
-					handleAddedItems(application);
 				} else {
 					application.setState(ProcessingState.ERROR);
-					processingUtil.resetItems(application, Collections.singletonList(proc.getItemId()));
-					clearAddedItems(application);
+					processingUtil.resetItems(application, Collections.singleton(application.getProcessingData().getItem(proc.getItemId())));
 					proc.setState(ProcessingState.ERROR);
 				}
 			} catch(StaleDependencyException e) {
 				int id = e.getItemId();
-				processingUtil.resetItems(application, Collections.singletonList(id));
-				// TODO: Not certain we want to clear added items.  Resetting the stale id might be enough.
-				// clearAddedItems(application);
+				processingUtil.resetItems(application, Collections.singleton(application.getProcessingData().getItem(id)));
 			} catch (Throwable e) {
 				// This is an internal engine error.
 				application.getApplicationLog().error("Internal engine error - turn on engine debugging to see the cause");
 				application.getApplicationLog().debug(e.getMessage(), e);
+				Item item = application.getProcessingData().getItem(proc.getItemId());
+				if (item!=null) {
+					processingUtil.resetItems(application, Collections.singleton(item));
+				}
 				error = true;
 			}
 		}
@@ -183,14 +178,11 @@ public class ProcessingService implements ProcessingContextOperations {
 
 			if (error) {
 				i.setState(ProcessingState.ERROR);
-				clearAddedItems(application);
-				processingUtil.resetItems(application, Collections.singletonList(i.getItemId()));
-				pd.getBuildsToInit().add(i);
+				processingUtil.resetItems(application, Collections.singleton(i));
 				application.setState(ProcessingState.ERROR);
 			} else {
 				i.setState(ProcessingState.SUCCESS);
 				pd.getBuildsProcessed().add(i);
-				error = !handleAddedItems(application);
 			}
 		}
 
@@ -199,6 +191,7 @@ public class ProcessingService implements ProcessingContextOperations {
 		} else {
 			application.setState(ProcessingState.SUCCESS);
 		}
+		processingUtil.handleAddedItems(application);
 	}
 	
 	public void outputPendingLogMessages(ApplicationData application) {
@@ -210,18 +203,6 @@ public class ProcessingService implements ProcessingContextOperations {
 	
 	public void outputMessageToLog(String message) {
 		logUtil.outputMessageToLog(message);
-	}
-
-	protected void clearAddedItems(ApplicationData application) {
-		application.getAddedComponents().clear();
-		application.getAddedFileProcessors().clear();
-		application.getAddedFolderWatchers().clear();
-		application.getAddedSourceFiles().clear();
-		application.getAddedObjects().clear();
-	}
-
-	public boolean handleAddedItems(ApplicationData application) {
-		return processingUtil.handleAddedItems(application);
 	}
 
 	public void addItem(ApplicationData application, Item item) {
@@ -245,13 +226,13 @@ public class ProcessingService implements ProcessingContextOperations {
 			Map<String,String> configs, ApplicationFolderImpl folder, ApplicationData application) {
 		int id = application.getProcessingData().nextId();
 		FolderWatcherEntry entry = new FolderWatcherEntry(id, watcher, path, originatorId, configs, application, folder);
-		application.getAddedFolderWatchers().add(entry);
+		this.addItem(application, entry);
 	}
 
 	@Override
 	public void addFileProcessor(int originatorId, UserFile userFile, FileProcessor processor, Map<String,String> configs, ApplicationFolderImpl folder, ApplicationData application) {
 		FileProcessorEntry e = new FileProcessorEntry(originatorId, processor, userFile, application, configs, this, folder);
-		application.getAddedFileProcessors().add(e);
+		application.getProcessingData().getToProcess().add(e);
 	}
 
 	@Override
@@ -260,7 +241,7 @@ public class ProcessingService implements ProcessingContextOperations {
 		int id = application.getProcessingData().nextId();
 		RegisteredComponentPattern pattern = patternService.getPattern(component);
 		ComponentItem item = new ComponentItem(id, component, configs, pattern, originatorId, folder, application, 0);
-		application.getAddedComponents().add(item);
+		this.addItem(application, item);
 	}
 
 }

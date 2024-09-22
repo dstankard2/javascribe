@@ -121,37 +121,54 @@ public class ProcessorContextImpl implements ProcessorContext {
 		if (application.getObjects().get(name)!=null) {
 			throw new StaleDependencyException(id);
 		}
+		if (application.getAddedObjects().get(name)!=null) {
+			throw new StaleDependencyException(id);
+		}
 		application.getAddedObjects().put(name, obj);
 	}
 
 	@Override
 	public Object getObject(String name) {
+		objectDependency(name);
+
 		Object ret = application.getAddedObjects().get(name);
+		
 		if (ret==null) {
-			ret = application.getObjects().get(name);
-			objectDependency(name);
-			if (ret!=null) {
-				// The object is in the application but was not added this run.
-				// In this case the item should go stale and be removed.
+			if (application.getObjects().get(name) != null) {
 				throw new StaleDependencyException(id);
 			}
-		} else {
-			objectDependency(name);
 		}
+		
 		return ret;
 	}
-
+	
 	@Override
 	public void addSourceFile(SourceFile file) {
-		application.getAddedSourceFiles().put(file.getPath(), file);
 		originateSourceFile(file);
+		application.getAddedSourceFiles().put(file.getPath(), file);
 	}
 
 	/**
 	 * Gets the source file.  Returns null if the file doesn't exist.
 	 * If the file exists, and wasn't added this run (application.getAddedSourceFiles()), throw a stale dependency exception.
 	 */
-	// Throwing stale exception correctly?
+	@Override
+	public SourceFile getSourceFile(String path) {
+		SourceFile ret = application.getAddedSourceFiles().get(path);
+		
+		if (ret==null) {
+			ret = application.getSourceFiles().get(path);
+			if (ret != null) {
+				originateSourceFile(ret);
+				throw new StaleDependencyException(id);
+			}
+		} else {
+			originateSourceFile(ret);
+		}
+		return ret;
+	}
+
+	/*
 	@Override
 	public SourceFile getSourceFile(String path) {
 		SourceFile ret = application.getSourceFiles().get(path);
@@ -170,6 +187,7 @@ public class ProcessorContextImpl implements ProcessorContext {
 
 		return ret;
 	}
+	*/
 
 	@Override
 	public String getProperty(String name) {

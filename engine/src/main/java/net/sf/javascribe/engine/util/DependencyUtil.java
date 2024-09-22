@@ -32,8 +32,8 @@ public class DependencyUtil {
 		return ret;
 	}
 	
-	public List<Item> getItemsThatOriginateFrom(int id, ApplicationData application) {
-		List<Item> ret = new ArrayList<>();
+	public Set<Item> getItemsThatOriginateFrom(int id, ApplicationData application) {
+		Set<Item> ret = new HashSet<>();
 		
 		application.getProcessingData().getAllItems().forEach(i -> {
 			if (i.getOriginatorId()==id) {

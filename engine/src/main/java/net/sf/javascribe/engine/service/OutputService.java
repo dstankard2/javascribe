@@ -40,16 +40,6 @@ public class OutputService {
 			application.getUserFiles().remove(uf.getPath());
 		});
 		
-		/* TODO: Some cleanup.  Remove these here or in ProcessingUtil.removeItem?
-		application.getRemovedSourceFiles().forEach(sf -> {
-			File f = new File(dir, sf.getPath());
-			if (f.exists()) {
-				f.delete();
-			}
-			application.getSourceFiles().remove(sf.getPath());
-		});
-		application.getRemovedSourceFiles().clear();
-		*/
 	}
 
 	public void writeUserFiles(ApplicationData application, List<UserFile> addedUserFiles) {

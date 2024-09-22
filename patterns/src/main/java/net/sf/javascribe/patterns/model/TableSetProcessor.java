@@ -38,7 +38,6 @@ public class TableSetProcessor implements ComponentProcessor<TableSetComponent> 
 			}
 			schema.setTableInfos(tableInfos);
 			ModelUtils.saveSchemaInfo(schema, id, ctx);
-			ctx.setObject("Schema_"+id, schema);
 		} finally {
 			if (conn!=null) {
 				try {
@@ -57,9 +56,12 @@ public class TableSetProcessor implements ComponentProcessor<TableSetComponent> 
 		try {
 			// select table_schema,table_name,column_name,is_nullable,data_type,column_default,column_type,column_key from information_schema.columns where table_schema = 'webwizard' and table_name = 'User' order by ordinal_position;
 			stmt = conn.prepareStatement(
-					"select column_name,is_nullable,data_type,column_default,column_type,column_key,extra "
-					+ "from information_schema.columns where table_schema = ? and table_name = ? "
-					+ "order by ordinal_position");
+					"""
+					select column_name,is_nullable,data_type,column_default,column_type,column_key,extra 
+					from information_schema.columns where table_schema = ? and table_name = ? 
+					order by ordinal_position
+					"""
+					);
 			stmt.setString(1, schemaName);
 			stmt.setString(2, tableName);
 			res = stmt.executeQuery();
@@ -198,6 +200,7 @@ public class TableSetProcessor implements ComponentProcessor<TableSetComponent> 
 		String attributeType = ctx.getSystemAttribute(attribName);
 		if (attributeType==null) {
 			if (colType.indexOf("smallint")==0) return "integer";
+			if (colType.indexOf("decimal")==0) return "double";
 			if (colType.indexOf("mediumint")==0) return "integer";
 			if (colType.indexOf("bigint")==0) return "longint";
 			if (colType.indexOf("int")==0) return "integer";

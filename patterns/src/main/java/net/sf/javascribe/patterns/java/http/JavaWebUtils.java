@@ -77,7 +77,7 @@ public class JavaWebUtils {
 	// Ensure that the specified build ID has a webapp runtime platform
 	public static void ensureWebPlatform(ProcessorContext ctx, String buildId) throws JavascribeException {
 		String name = buildId+"JavaWebapp";
-		
+
 		if (ctx.getObject(name)==null) {
 			throw new JavascribeException("There is no embedded tomcat component - can't add or query web platform items");
 		}

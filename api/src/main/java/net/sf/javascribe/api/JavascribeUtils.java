@@ -67,6 +67,20 @@ public class JavascribeUtils {
 		return getUpperCamelName(str).equals(str);
 	}
 	
+	public static String getSingle(String name) {
+		String ret = null;
+		
+		if (name.endsWith("List")) {
+			ret = name.substring(0, name.length()-4);
+		} else if (name.endsWith("ies")) {
+			ret = name.substring(0, name.length()-3);
+		} else if (name.endsWith("s")) {
+			ret = name.substring(0, name.length()-1);
+		}
+		
+		return ret;
+	}
+
 	public static String getMultiple(String name) {
 		String ret = null;
 		if (name.endsWith("y")) {

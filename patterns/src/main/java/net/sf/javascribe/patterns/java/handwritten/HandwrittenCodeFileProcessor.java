@@ -28,6 +28,7 @@ public class HandwrittenCodeFileProcessor implements FileProcessor {
 		return handler.getPriority();
 	}
 
+	// TODO: In remove, remove 
 	@Override
 	public void setFile(ApplicationFile changedFile) {
 		try {

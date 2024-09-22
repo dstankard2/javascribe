@@ -1,8 +1,6 @@
 package net.sf.javascribe.patterns.java.domain;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -12,7 +10,6 @@ import net.sf.javascribe.api.CodeExecutionContext;
 import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.exception.JavascribeException;
-import net.sf.javascribe.api.types.ServiceOperation;
 import net.sf.javascribe.langsupport.java.JavaClassSourceFile;
 import net.sf.javascribe.langsupport.java.JavaCode;
 import net.sf.javascribe.langsupport.java.JavaUtils;
@@ -80,6 +77,11 @@ public class DomainRuleUtils {
 		String pkg = comp.getFullPackage();
 		String className = comp.getServiceName();
 		String serviceGroup = comp.getServiceGroupName();
+		
+		if (className.trim().length()==0) {
+			throw new JavascribeException("Found no class name for domain service - This is in configuration property 'java.domain.serviceClass'");
+		}
+		
 		String ref = JavascribeUtils.getLowerCamelName(className);
 		LocatedServiceType serviceType = null;
 		String implClass = comp.getImplClass();
@@ -194,6 +196,19 @@ public class DomainRuleUtils {
 		return rules;
 	}
 
+	/*
+	public static List<String> getRuleRefsForAttribute(String attribute,DomainLogicComponent comp,CodeExecutionContext execCtx, ProcessorContext ctx) throws JavascribeException {
+		List<String> ret = new ArrayList<>();
+		Map<String,JavaServiceType> refs = DomainRuleUtils.getDependencyRefs(comp, ctx);
+		
+		String getOpName = "get"+JavascribeUtils.getUpperCamelName(attribute);
+		String findOpName = "find"+JavascribeUtils.getUpperCamelName(attribute);
+		
+		return ret;
+	}
+	*/
+	
+	/*
 	// Find rules that will return the attribute specified
 	public static List<ServiceOperation> getRulesForAttribute(String attribute,DomainLogicComponent comp,CodeExecutionContext execCtx, ProcessorContext ctx) throws JavascribeException {
 		List<ServiceOperation> ret = new ArrayList<>();
@@ -216,6 +231,7 @@ public class DomainRuleUtils {
 
 		return ret;
 	}
+	*/
 
 }
 

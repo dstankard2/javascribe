@@ -116,6 +116,7 @@ public class PersistenceUnitProcessor implements ComponentProcessor<PersistenceU
 			else if (attrType.equals("date")) colClass = "java.time.LocalDate";
 			else if (attrType.equals("longint")) colClass = "Long";
 			else if (attrType.equals("boolean")) colClass = "Boolean";
+			else if (attrType.equals("double")) colClass = "Double";
 			else {
 				// This may be an enumeration
 				JavaVariableType t = JavascribeUtils.getType(JavaVariableType.class, attrType, ctx);
@@ -128,7 +129,9 @@ public class PersistenceUnitProcessor implements ComponentProcessor<PersistenceU
 					}
 					//isEnum = true;
 				}
-				else throw new JavascribeException("Couldn't find entity property type for attribute type '"+name+"' - column type was '"+colType+"'");
+				else {
+					throw new JavascribeException("Couldn't find entity property type for attribute type '"+name+"' - column type was '"+colType+"'");
+				}
 			}
 			boolean nullible = col.isNullable();
 			entityFile.getSrc().addProperty(colClass, name);
