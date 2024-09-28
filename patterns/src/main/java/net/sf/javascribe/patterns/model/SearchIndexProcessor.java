@@ -39,6 +39,10 @@ public class SearchIndexProcessor implements ComponentProcessor<SearchIndex> {
 		String paramString = comp.getParams();
 		String query = comp.getQueryString();
 
+		if (query.trim().length()==0) {
+			throw new JavascribeException("A search index must have a queryString attribute");
+		}
+
 		ServiceOperation op = new ServiceOperation(name);
 		JavaCode code = new JavaCode();
 		if (multiple==Boolean.TRUE) {

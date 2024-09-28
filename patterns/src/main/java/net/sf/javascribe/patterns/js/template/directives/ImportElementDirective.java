@@ -43,6 +43,9 @@ public class ImportElementDirective implements ElementDirective {
 
 		type = JavascribeUtils.getType(ModuleType.class, typeName, ctx.getProcessorContext());
 
+		if (type==null) {
+			throw new JavascribeException("Could not find an import named '"+typeName+"'");
+		}
 		ctx.importModule(typeName, type.getWebPath());
 		if (type.getExportType()==ModuleExportType.CONSTRUCTOR) {
 			if (ref!=null) {

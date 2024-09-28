@@ -2,15 +2,14 @@
 To Do for Javascribe: 
 
 Processing bugs/tasks
-	Bug: When a processed build is modified by a component, the build must be re-generated.
-	Bug: When a component modifies a build that is already processed, the build needs to be reset
-		Most likely items in the build's folder should be reset too.
+	Maintain items per build
+	When a build is modified by a component it must be re-initialized and its items reprocessed.
+	It seems like when changing a handwritten Java file, there is an extra round of processing.
+	Fail processing if there is a user file with same path as a generated file or vice versa.
 
 Engine/Processing enhancements:
-	Remove RuntimePlatform concept in its current form.  Use objects for now.
+	Configurations should be able to handle env variables ("ENV.*").
 	Implement logging standard.  Generated code should output errors to log.
-	Task: Create ContextBase for ProcessorContextImpl and BuildProcessorContextImpl
-	There should be an association between a build and its components.
 	Add defaultVersion to BuildContext.addDependency(String)
 	Task: Support for commands.txt in folders that have build components.
 		Support a standing command that runs every time a build in that folder changes.
@@ -18,17 +17,20 @@ Engine/Processing enhancements:
 	Types should be available on a per-build-context basis instead of on a language basis.
 		Maybe they should be available from build context instead of processor context.
 		ProcessorContext would then have an API to retrieve another build context, to get types from another build context.
-	Support for profiles, where a profile-specific javascribe.properties file is used
+	Support for profiles in application, where a different javascribe.properties is used.
+	Support for profiles in engine, where a different engine.poperties is used.
 
 Pattern bugs/tasks
+	Javascript Module sourcefile: Prevent duplicate variable definitions in internal code.
+		Create javascript variable, name/type/mode - const/let/function.  Have variables in source file.
 	Bug: Javascript module client needs to read localdatetime properly and/or server needs to send it to client properly.
-	Task: Evaluate web service module and web service client patterns to see if there's a better way to associate them.
-		Add functionName to endpoint.  Use it to set operationName in WebServiceOperation object
 	HTML Template Parser returns a syntax error when template is empty.
+	Retrieve Data rules.  Resolve list return types?
+	EntityRelationship components to create search indexes in Dao types.
 	Task: Build more defaults into processors, especially for dependency versions and Maven's Java version.
 		Have MavenBuildProcessor default Java to version 17 or 19.
 		Output WARN or INFO when using a default.
-	Bug?  HTTP Endpoint should read requestParameters as propertyList.
+		EndpointProcessor should read request parameters as propertyList.
 	Task: TableSet should take jdbc parameters as environment variable references.
 	Task: Tomcat JNDI Datasource should take JDBC username, password, URL as environment variables.
 	Task/Bug: HTTP Endpoint should understand return value properly and understand that the value makes sense in the code execution context.

@@ -1,6 +1,7 @@
 package net.sf.javascribe.engine.util;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -77,7 +78,7 @@ public class ProcessingUtil {
 			if ((item.getFolder() == application.getRootFolder()) && (application.getRootFolder().getBuildComponent() != null)) {
 				if (application.getRootFolder().getBuildComponent().getBuildComponent() instanceof DefaultBuildComponent) {
 					// remove the build item in the root folder
-					this.removeItem(application, application.getRootFolder().getBuildComponent().getItemId());
+					this.removeItems(application, Set.of(application.getRootFolder().getBuildComponent()));
 				}
 			}
 			// root build needs to be processed first
@@ -109,310 +110,264 @@ public class ProcessingUtil {
 				watcher.applyToUserFile(f);
 			}
 		}
-		handleAddedItems(application);
-
 	}
 
-	/*
-	// TODO: Build a list of items to re-add, add them and take duplicates into account.
-	public void resetItem(ApplicationData application, int id) {
+	// For any item, if it has a non-build originator, we should not reset it.  Just remove it and reset the originator
+	// For folder watchers, we do not reset the folder watcher.  Instead, reset its originator
+	public void resetItems(ApplicationData application, Set<Item> items) {
+		items.remove(null); // It's possible to have a null entry in items.  See cases around stale dependency exception
+		Set<Item> toAdd = new HashSet<>();
 		ProcessingData pd = application.getProcessingData();
-		Item item = pd.getItem(id);
+		Set<Item> toRemove = new HashSet<>();
+		
+		items.forEach(item -> {
+			if (item.getOriginatorId()==0) {
+				toAdd.add(item);
+			} else {
+				Item originator = pd.getItem(item.getOriginatorId());
+				if (!(item instanceof BuildComponentItem)) {
+					toAdd.add(originator);
+					toRemove.add(originator);
+				}
+			}
+		});
+		toRemove.addAll(items);
+		this.removeItems(application, toRemove);
+		toAdd.forEach(item -> {
+			this.addItem(item, application);
+		});
+	}
 
-		if (item == null)
-			return;
-
-		boolean reAdd = removeItem(application, id);
-		if (reAdd) {
-			application.getApplicationLog().debug("Re-adding item " + id);
-			addItem(item, application);
+	public void removeItems(ApplicationData application, Set<Item> items) {
+		items.remove(null); // It's possible to have a null entry in items.  See cases around stale dependency exception
+		if (items.size()>0) {
+			Set<Item> toReadd = removeItemsWithoutReset(application, items);
+			toReadd.forEach(item -> {
+				if (item!=null) {
+					this.addItem(item, application);
+				}
+			});
 		}
 	}
-*/
 	
-	// Reset the items for the given ids.
-	// For each id, if we're resetting the originator, don't re-add this one
-	public void resetItems(ApplicationData application, List<Integer> ids) {
-		List<Item> toReadd = new ArrayList<>();
-		ProcessingData pd = application.getProcessingData();
-
-		// Remove each itemId
-		ids.forEach(id -> {
-			Item item = pd.getItem(id);
-			if (item==null) return;
-			
-			toReadd.addAll(this.removeItem(application, id));
-			// If we're resetting this item's originator, we don't re-add this one
-			// TODO: This might not work for items that are added by an item with an originator
-			Item orig = pd.getItem(item.getOriginatorId());
-			if (!toReadd.contains(orig)) {
-				toReadd.add(item);
-			}
-		});
-
-		Set<Item> added = new HashSet<>();
-		List<Integer> readdIds = toReadd.stream().map(Item::getItemId).toList();
-		toReadd.forEach(item -> {
-			// Add this item if we haven't already added it
-			// If this item has an originator, and we're re-adding the originator, don't re-add
-			boolean add = true;
-			if (added.contains(item)) {
-				add = false;
-			}
-			if (readdIds.contains(item.getOriginatorId())) {
-				add = false;
-			}
-			if (application.getProcessingData().getAllItems().contains(item)) {
-				add = false;
-			}
-			if (add) {
-				this.addItem(item, application);
-				application.getApplicationLog().debug("Readding item " + item.getItemId() + " - " + item.getName());
-				added.add(item);
-			}
-		});
-	}
-
-	public void removeItems(ApplicationData application, List<Item> items) {
-		List<Item> toReadd = new ArrayList<>();
-		List<Integer> ids = items.stream().map(Item::getItemId).toList();
-
-		// Remove each itemId
-		items.forEach(item -> {
-			toReadd.addAll(this.removeItem(application, item.getItemId()));
-			toReadd.removeAll(items);
-		});
-
-		Set<Item> added = new HashSet<>();
-		toReadd.forEach(item -> {
-			// Add this item if we haven't already added it
-			// If this item has an originator, and we're resetting the originator, don't re-add
-			boolean add = true;
-			if (added.contains(item)) {
-				add = false;
-			}
-			if (ids.contains(item.getOriginatorId())) {
-				add = false;
-			}
-			if (add) {
-				this.addItem(item, application);
-				added.add(item);
-			}
-		});
-	}
-
-	/**
-	 * Removes the given item ID.  Returns a list of items that should be re-added
-	 * Will call removeItem recursively on items that are deemed to be reset or removed.
-	 * The items to be readded from above line are added to the return result.
-	 */
-	/*
-	 * TODO: We might have to remove all applicable items in batch, to properly manage which ones should 
-	 * be removed vs readded
-	 */
-	private List<Item> removeItem(ApplicationData application, int id) {
+	protected Set<Item> removeItemsWithoutReset(ApplicationData application, Set<Item> items) {
+		// Set<Integer> ids = items.stream().map(Item::getItemId).collect(Collectors.toSet());
+		Set<Item> removed = new HashSet<>();
+		Set<Item> itemsToReset = new HashSet<>();
+		Set<Item> othersToRemove = new HashSet<>();
 		ProcessingData pd = application.getProcessingData();
 		DependencyData depData = application.getDependencyData();
-		List<Item> toReadd = new ArrayList<>();
 		
-		Item item = pd.getItem(id);
-		if (item == null) {
-			return toReadd;
-		}
-		Set<Integer> itemsToReset = new HashSet<>();
-		Set<Integer> itemsToRemove = new HashSet<>();
-		if (item instanceof FolderWatcherEntry) {
-			application.getApplicationLog().debug("Removing a folder watcher");
-		}
+		items.forEach(item -> {
+			if (item==null) return;
+			BuildComponentItem build = (item instanceof BuildComponentItem) ? (BuildComponentItem)item : null;
+			FolderWatcherEntry watcher = (item instanceof FolderWatcherEntry) ? (FolderWatcherEntry)item : null;
+			int id = item.getItemId();
 
-		BuildComponentItem buildItem = (item instanceof BuildComponentItem) ? (BuildComponentItem) item : null;
-
-		application.getApplicationLog().debug("Removing item " + id + " - " + item.getName());
-
-		// Remove this item from the application's item list
-		application.getProcessingData().getAllItems().remove(item);
-
-		// Remove from toProcess and processed with that itemId or originatorId
-		List<Processable> processables = application.getProcessingData().getToProcess().stream().filter(proc -> {
-			return proc.getItemId() == id || proc.getOriginatorId() == id;
-		}).toList();
-		application.getProcessingData().getToProcess().removeAll(processables);
-		processables = application.getProcessingData().getProcessed().stream().filter(proc -> {
-			return proc.getItemId() == id || proc.getOriginatorId() == id;
-		}).toList();
-		application.getProcessingData().getProcessed().removeAll(processables);
-
-		// Do not reset the item's originator
-		/*
-		 * if (item.getOriginatorId() > 0) { itemsToReset.add(item.getOriginatorId()); }
-		 */
-
-		// For a build, remove from buildsToInit, buildsToProcess and buildsProcessed
-		// Remove availableBuildContext, remove items related to this build
-		if (buildItem != null) {
-			String buildId = buildItem.getBuildComponent().getId();
-			pd.getBuildsToInit().remove(buildItem);
-			pd.getBuildsToProcess().remove(buildItem);
-			pd.getBuildsProcessed().remove(buildItem);
-			pd.getAvailableBuildContexts().remove(buildId);
-			List<Item> itemsPerBuild = pd.getItemsPerBuild().get(buildId);
-			if (itemsPerBuild!=null) {
-				itemsPerBuild.forEach(i -> {
-					itemsToReset.add(i.getItemId());
-				});
-				pd.getItemsPerBuild().remove(buildId);
+			if (application.getProcessingData().getItem(id)==null) {
+				// This item has already been removed
+				return;
 			}
-		} else {
-			// For the item being removed, remove it from the items for its build.
-			String buildId = item.getFolder().getBuildContext().getId();
-			List<Item> items = pd.getItemsPerBuild().get(buildId);
-			if (items!=null) { // items will be null if build isn't initialized yet
-				items.remove(item);
-			}
-		}
+			removed.add(item);
 
-		// Find source files that originate from this item
-		List<SourceFile> filesToRemove = dependencyUtil.getSourceFilesFromId(id, application);
-		// Delete these source files, reset items that originate the same file, delete
-		// the source file dependency data
-		filesToRemove.forEach(sf -> {
-			itemsToReset.addAll(application.getDependencyData().getSrcDependencies().get(sf.getPath()));
-			if (application.getSourceFiles().values().contains(sf)) {
-				application.getSourceFiles().remove(sf.getPath());
-				outputUtil.deleteSourceFile(sf, application);
-			}
-			application.getDependencyData().getSrcDependencies().remove(sf.getPath());
-		});
-		// Done removing source files
+			// Remove the item now
+			application.getApplicationLog().debug("Removing item " + id + " - " + item.getName());
 
-		// Remove items that originate from this item
-		itemsToRemove.addAll(dependencyUtil.getItemsThatOriginateFrom(id, application).stream().map(Item::getItemId)
-				.collect(Collectors.toList()));
+			// Remove this item from the application's item list
+			application.getProcessingData().getAllItems().remove(item);
 
-		// Find attributes that this item depends on.  Remove this item from attribute dependencies
-		// If this item originates the attribute, we have to reset all items that originate or depend on the attribute
-		Set<String> attributeDeps = dependencyUtil.getSystemAttributeDependencies(id, application);
-		attributeDeps.forEach(name -> {
-			// Remove this item from the attribute dependencies if it's there
-			depData.getAttributeDependencies().get(name).remove(id);
-			// If this item originates the attribute then we need to remove it and items
-			// that originate it.
-			// The attribute might not have any originators if it came from
-			// systemAttributes.properties
-			if (depData.getAttributeOriginators().get(name) != null) {
-				if (depData.getAttributeOriginators().get(name).contains(id)) {
-					// For originated attribute: reset its dependencies and originators, remove it, remove its
-					// dependency data
-					// If it has originators, then it has dependencies
-					itemsToReset.addAll(depData.getAttributeDependencies().get(name));
-					itemsToReset.addAll(depData.getAttributeOriginators().get(name));
-					application.getSystemAttributes().remove(name);
-					depData.getAttributeDependencies().get(name).clear();
-					depData.getAttributeOriginators().get(name).clear();
+			// Remove from toProcess and processed with that itemId or originatorId
+			Set<Processable> processables = application.getProcessingData().getToProcess().stream().filter(proc -> {
+				return isOfId(proc, id);
+			}).collect(Collectors.toSet());
+			application.getProcessingData().getToProcess().removeAll(processables);
+			processables = application.getProcessingData().getProcessed().stream().filter(proc -> {
+				return isOfId(proc, id);
+			}).collect(Collectors.toSet());
+			application.getProcessingData().getProcessed().removeAll(processables);
+
+			// For a build, remove from buildsToInit, buildsToProcess and buildsProcessed
+			// Remove availableBuildContext, remove/reAdd items related to this build
+			if (build != null) {
+				String buildId = build.getBuildComponent().getId();
+				pd.getBuildsToInit().remove(build);
+				pd.getBuildsToProcess().remove(build);
+				pd.getBuildsProcessed().remove(build);
+				pd.getAvailableBuildContexts().remove(buildId);
+				if (build.getFolder().getBuildComponent() == build) {
+					build.getFolder().setBuildComponent(null);
+				}
+
+				List<Item> itemsPerBuild = pd.getItemsPerBuild().get(buildId);
+
+				if (itemsPerBuild!=null) {
+					itemsPerBuild.forEach(i -> {
+						itemsToReset.add(i);
+					});
+					pd.getItemsPerBuild().remove(buildId);
+				}
+			} else {
+				// For the item being removed, remove it from the items for its build.
+				String buildId = item.getFolder().getBuildContext().getId();
+				List<Item> itemsForBuild = pd.getItemsPerBuild().get(buildId);
+				if (itemsForBuild!=null) { // items will be null if build isn't initialized yet
+					itemsForBuild.remove(item);
 				}
 			}
-			if (depData.getAttributeDependencies().get(name).size() == 0) {
-				depData.getAttributeDependencies().remove(name);
+			
+			// When removing a folder watcher, reset its originator
+			if (watcher != null) {
+				int i = watcher.getOriginatorId();
+				itemsToReset.add(pd.getItem(i));
 			}
-			if (depData.getAttributeOriginators().get(name) != null) {
-				if (depData.getAttributeOriginators().get(name).size() == 0) {
+
+			// Find source files that originate from this item
+			List<SourceFile> filesToRemove = dependencyUtil.getSourceFilesFromId(id, application);
+			// Delete these source files, reset items that originate the same file, delete
+			// the source file dependency data
+			filesToRemove.forEach(sf -> {
+				String path = sf.getPath();
+				itemsToReset.addAll(getItems(application, application.getDependencyData().getSrcDependencies().get(path)));
+				if (application.getSourceFiles().get(path)!=null) {
+					application.getSourceFiles().remove(path);
+					outputUtil.deleteSourceFile(sf, application);
+				}
+				application.getAddedSourceFiles().remove(path);
+				application.getDependencyData().getSrcDependencies().remove(sf.getPath());
+			});
+			// Done removing source files
+
+			// Find attributes that this item depends on.  Remove this item from attribute dependencies
+			// If this item originates the attribute, we have to reset all items that originate or depend on the attribute
+			Set<String> attributeDeps = dependencyUtil.getSystemAttributeDependencies(id, application);
+			attributeDeps.forEach(name -> {
+				// Remove this item from the attribute dependencies if it's there
+				depData.getAttributeDependencies().get(name).remove(id);
+				// If this item originates the attribute then we need to remove it and items
+				// that originate it.
+				// The attribute might not have any originators if it came from
+				// systemAttributes.properties
+				if (depData.getAttributeDependencies().get(name).size()==0) {
+					depData.getAttributeDependencies().remove(name);
+				}
+				if (depData.originatesAttribute(name, id)) {
+					itemsToReset.addAll(getItems(application, depData.getAttributeOriginators().get(name)));
+					itemsToReset.addAll(getItems(application, depData.getAttributeDependencies().get(name)));
+					application.getSystemAttributes().remove(name);
+					depData.getAttributeDependencies().remove(name);
 					depData.getAttributeOriginators().remove(name);
 				}
-			}
 
+			});
+			// End of handling of system attributes
+
+			// Remove items that originate from this item
+			Set<Item> toRemove = dependencyUtil.getItemsThatOriginateFrom(id, application);
+			othersToRemove.addAll(toRemove);
+			
+			// Find types that this item originates. Mark their dependencies for reset.  Remove the type and its dependency data
+			List<Pair<String, String>> typeDependencies = dependencyUtil.getTypeDependencies(id, application);
+			typeDependencies.forEach(pair -> {
+				String lang = pair.getLeft();
+				String name = pair.getRight();
+
+				// For each type: reset items that depend on it, remove the type and remove its
+				// dependency data
+				itemsToReset.addAll(getItems(application, application.getDependencyData().getTypeDependencies().get(lang).get(name)));
+				application.getDependencyData().getTypeDependencies().get(lang).remove(name);
+				application.getApplicationTypes().get(lang).remove(name);
+			});
+
+			// Find objects that this item depends on.
+			List<String> objectNames = dependencyUtil.getObjectDependencies(id, application);
+			objectNames.forEach(name -> {
+				// For each object, reset items that depend on it. Then remove the object and
+				// its dependency data
+				itemsToReset.addAll(getItems(application, application.getDependencyData().getObjectDependencies().get(name)));
+				application.getObjects().remove(name);
+				application.getAddedObjects().remove(name);
+				application.getDependencyData().getObjectDependencies().remove(name);
+			});
+
+			// Find items that originate from this item.  They will be removed.
+			Set<Item> derivedItems = pd.getItemsThatOriginateFrom(id);
+			othersToRemove.addAll(derivedItems);
 		});
 
-		// Find types that this item originates. Mark their dependencies for reset.
-		List<Pair<String, String>> typeDependencies = dependencyUtil.getTypeDependencies(id, application);
-		typeDependencies.forEach(pair -> {
-			String lang = pair.getLeft();
-			String name = pair.getRight();
+		// Items to re-add after we finish removing appropriate ones.
+		Set<Item> toReadd = new HashSet<>();
+		toReadd.removeAll(removed);
+		toReadd.removeAll(othersToRemove);
+		itemsToReset.removeAll(removed);
+		itemsToReset.removeAll(othersToRemove);
 
-			// For each type: reset items that depend on it, remove the type and remove its
-			// dependency data
-			itemsToReset.addAll(application.getDependencyData().getTypeDependencies().get(lang).get(name));
-			application.getApplicationTypes().get(lang).remove(name);
-			depData.getTypeDependencies().get(lang).remove(name);
-		});
+		// Remove others to be removed, along with items to reset
+		othersToRemove.addAll(itemsToReset);
 
-		// Find objects that this item depends on.
-		List<String> objectNames = dependencyUtil.getObjectDependencies(id, application);
-		objectNames.forEach(name -> {
-			// For each object, reset items that depend on it. Then remove the object and
-			// its dependency data
-			itemsToReset.addAll(application.getDependencyData().getObjectDependencies().get(name));
-			application.getObjects().remove(name);
-			application.getDependencyData().getObjectDependencies().remove(name);
-		});
-
-		itemsToReset.remove(id);
-		
-		// Ensure that items being removed will not be reset.
-		itemsToReset.removeAll(itemsToRemove);
-		
-		// For all the items that need to be reset, we need to remove them and then add them to ret if they are not to be removed
-		// Items with originators should not be reset
-		itemsToReset.forEach(idToReset -> {
-			Item it = pd.getItem(idToReset);
-			if (it!=null) {
-				boolean originated = it.getOriginatorId() > 0;
-				if ((it!=null) && (!originated)) {
-					toReadd.add(it);
+		// Do not reset items that have originators.
+		// Instead, remove the item and reset the originator.
+		// TODO: We cannot reset a build because it will need to be initialized.  We also may just not want to reset it and reset the child instead.
+		// We may want to introduce a stale build exception that triggers re-initialization of builds, or perhaps in some cases.
+		// For now, try resetting the child and not the build
+		Set<Item> removal = new HashSet<>();
+		Set<Item> addition = new HashSet<>();
+		itemsToReset.forEach(item -> {
+			if (item==null) return;
+			if (item.getOriginatorId()>0) {
+				Item originator = pd.getItem(item.getOriginatorId());
+				if (originator instanceof BuildComponentItem) {
+					// Reset the item, leave the build alone
+				} else {
+					// remove the item and reset the originator.
+					removal.add(item);
+					addition.add(originator);
 				}
-				List<Item> itemsToReadd = this.removeItem(application, idToReset);
-				itemsToReadd.forEach(i -> {
-					if (!itemsToRemove.contains(i.getItemId())) {
-						toReadd.add(i);
-					}
-				});
 			}
 		});
-
-		// Any item that is to be removed should not be readded
-		itemsToRemove.forEach(idToRemove -> {
-			Item it = pd.getItem(idToRemove);
-			if (it != null) {
-				List<Item> itemsToReadd = this.removeItem(application, idToRemove);
-				itemsToReadd.forEach(i -> {
-					if (!itemsToRemove.contains(i.getItemId())) {
-						toReadd.add(i);
-					}
-				});
-			}
-		});
-
-		// Make sure the item being removed isn't in the list to re-add
-		toReadd.remove(item);
+		itemsToReset.removeAll(removal);
+		itemsToReset.addAll(addition);
+		
+		if (othersToRemove.size()>0) {
+			itemsToReset.addAll(this.removeItemsWithoutReset(application, othersToRemove));
+		}
+		toReadd.addAll(itemsToReset);
+		toReadd.removeAll(removed);
+		
+		// toReadd.removeAll(othersToRemove);
 		
 		return toReadd;
 	}
 
-	// After a processable has been processed or a folder watcher has been handled,
-	// Look at the application for added items and add them.
-	public boolean handleAddedItems(ApplicationData application) {
-		ProcessingData pd = application.getProcessingData();
-		boolean ret = true;
-
-		application.getAddedComponents().forEach(i -> {
-			addItem(i, application);
-		});
-		application.getAddedComponents().clear();
-		// pd.getToProcess().addAll(application.getAddedComponents());
-
-		pd.getToProcess().addAll(application.getAddedFileProcessors());
-		application.getAddedFileProcessors().clear();
-
-		List<FolderWatcherEntry> watchers = new ArrayList<>();
-		if (application.getAddedFolderWatchers().size() > 0) {
-			watchers.addAll(application.getAddedFolderWatchers());
-			application.getAddedFolderWatchers().clear();
+	private Set<Item> getItems(ApplicationData application, Collection<Integer> itemIds) {
+		Set<Item> ret = new HashSet<>();
+		
+		if (itemIds!=null) {
+			itemIds.forEach(itemId -> {
+				Item i = application.getProcessingData().getItem(itemId);
+				if (i!=null) {
+					ret.add(i);
+				}
+			});
 		}
-
-		for (FolderWatcherEntry e : watchers) {
-			addItem(e, application);
-		}
-
+		
 		return ret;
+	}
+
+	private boolean isOfId(Processable proc, int id) {
+		return (proc.getItemId() == id) || ((proc.getItemId() == 0) && (proc.getOriginatorId() == id));
+	}
+	
+	// After a round of processing, look at the application for added items and add them.  Then clear added items.
+	public void handleAddedItems(ApplicationData application) {
+		ProcessingData pd = application.getProcessingData();
+
+		// Added source files will be taken care of when they are written, in the workspaceManager.
+
+		// Objects
+		application.getAddedObjects().entrySet().forEach(e -> {
+			application.getObjects().put(e.getKey(), e.getValue());
+		});
+		application.getAddedObjects().clear();
 	}
 
 	public boolean processItem(Processable processable, ApplicationData application) throws JavascribeException {

@@ -23,9 +23,13 @@ public class TomcatJndiDatasourceProcessor implements ComponentProcessor<TomcatJ
 			throw new JavascribeException("Cannot create a Tomcat JNDI Datasource unless the current runtime platform is Embed Tomcat");
 		}
 		
+		String name = comp.getName();
+		if (!name.startsWith("jdbc/")) {
+			name = "jdbc/"+name;
+		}
 		EmbedTomcatRuntimePlatform tomcat = (EmbedTomcatRuntimePlatform)platform;
 		info.setDriverClass(comp.getDriverClass());
-		info.setName(comp.getName());
+		info.setName(name);
 		info.setPassword(comp.getPassword());
 		info.setUsername(comp.getUsername());
 		info.setUrl(comp.getUrl());

@@ -23,9 +23,11 @@ public class JavascriptSourceFile implements SourceFile {
 	public JavascriptSourceFile() {
 	}
 	
+	// Check for duplicate modules
 	public void importModule(Pair<String,String> module) {
 		this.importedModules.add(module);
 	}
+	// Check if the module has already been imported
 	public void importModule(ModuleType type) {
 		importedModules.add(Pair.of(type.getName(), type.getWebPath()));
 	}

@@ -11,6 +11,7 @@ import net.sf.javascribe.langsupport.javascript.types.ArrayType;
 import net.sf.javascribe.langsupport.javascript.types.BooleanType;
 import net.sf.javascribe.langsupport.javascript.types.DOMElementType;
 import net.sf.javascribe.langsupport.javascript.types.DOMEventType;
+import net.sf.javascribe.langsupport.javascript.types.DateType;
 import net.sf.javascribe.langsupport.javascript.types.DoubleType;
 import net.sf.javascribe.langsupport.javascript.types.FunctionType;
 import net.sf.javascribe.langsupport.javascript.types.IntegerType;
@@ -36,7 +37,7 @@ public class JavascriptLanguageSupport implements LanguageSupport {
 				new ArrayType(), new DOMElementType(), new DOMEventType(), new DoubleType(), 
 				new IntegerType(), new NodeListType(), new NodeType(), new ObjectType(), new StringType(),
 				PromiseType.noResultPromise("Promise"), new LongintType(), new BooleanType(),
-				new FunctionType()
+				new FunctionType(), new DateType()
 		);
 	}
 
