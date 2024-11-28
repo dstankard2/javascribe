@@ -14,44 +14,95 @@
 
 	<includeBaseDirectory>false</includeBaseDirectory>
 
-	<moduleSets>
-		<moduleSet>
-			<useAllReactorProjects>true</useAllReactorProjects>
-			<includes>
-				<include>net.sf.javascribe:api</include>
-				<include>net.sf.javascribe:java-support</include>
-				<include>net.sf.javascribe:javascript-support</include>
-				<include>net.sf.javascribe:patterns</include>
-				<include>net.sf.javascribe:engine</include>
-			</includes>
-			<binaries>
-				<outputDirectory>lib</outputDirectory>
-				<unpack>false</unpack>
-			</binaries>
-		</moduleSet>
-
-		<moduleSet>
-			<useAllReactorProjects>true</useAllReactorProjects>
-			<includes>
-				<include>net.sf.javascribe:launcher</include>
-			</includes>
-			<binaries>
-				<outputDirectory></outputDirectory>
-				<unpack>false</unpack>
-			</binaries>
-		</moduleSet>
-
-	</moduleSets>
-
 	<fileSets>
 		<fileSet>
 			<directory>../docs/included</directory>
-			<outputDirectory>docs</outputDirectory>
+			<outputDirectory>javascribe-${project.version}\docs</outputDirectory>
 		</fileSet>
 		<fileSet>
 			<directory>src/main/bin</directory>
-			<outputDirectory>bin</outputDirectory>
+			<outputDirectory>javascribe-${project.version}\bin</outputDirectory>
 		</fileSet>
+		<fileSet>
+			<directory>src/main/resources</directory>
+			<includes>
+				<include>engine.properties</include>
+			</includes>
+			<outputDirectory>javascribe-${project.version}</outputDirectory>
+		</fileSet>
+		<fileSet>
+			<directory>../api/target</directory>
+			<includes>
+				<include>*.jar</include>
+			</includes>
+			<outputDirectory>javascribe-${project.version}\lib</outputDirectory>
+		</fileSet>
+		<fileSet>
+			<directory>../api/target/lib</directory>
+			<includes>
+				<include>*.jar</include>
+			</includes>
+			<outputDirectory>javascribe-${project.version}\lib</outputDirectory>
+		</fileSet>
+
+		<fileSet>
+			<directory>../patterns/target</directory>
+			<includes>
+				<include>patterns.jar</include>
+			</includes>
+			<outputDirectory>javascribe-${project.version}\lib</outputDirectory>
+		</fileSet>
+		<fileSet>
+			<directory>../patterns/target/lib</directory>
+			<includes>
+				<include>*.jar</include>
+			</includes>
+			<outputDirectory>javascribe-${project.version}\lib</outputDirectory>
+		</fileSet>
+		<fileSet>
+			<directory>../patterns-user-api/target</directory>
+			<includes>
+				<include>*.jar</include>
+			</includes>
+			<outputDirectory>javascribe-${project.version}\bin</outputDirectory>
+		</fileSet>
+		<fileSet>
+			<directory>../system-plugin/target</directory>
+			<includes>
+				<include>*.jar</include>
+			</includes>
+			<outputDirectory>javascribe-${project.version}\lib</outputDirectory>
+		</fileSet>
+		<fileSet>
+			<directory>../javascript-support/target</directory>
+			<includes>
+				<include>*.jar</include>
+			</includes>
+			<outputDirectory>javascribe-${project.version}\lib</outputDirectory>
+		</fileSet>
+		<fileSet>
+			<directory>../java-support/target</directory>
+			<includes>
+				<include>*.jar</include>
+			</includes>
+			<outputDirectory>javascribe-${project.version}\lib</outputDirectory>
+		</fileSet>
+		<fileSet>
+			<directory>../engine/target</directory>
+			<includes>
+				<include>*.jar</include>
+			</includes>
+			<outputDirectory>javascribe-${project.version}\lib</outputDirectory>
+		</fileSet>
+
+		<fileSet>
+			<directory>../launcher/target</directory>
+			<includes>
+				<include>*.jar</include>
+			</includes>
+			<outputDirectory>javascribe-${project.version}\bin</outputDirectory>
+		</fileSet>
+
 	</fileSets>
 
 </assembly>

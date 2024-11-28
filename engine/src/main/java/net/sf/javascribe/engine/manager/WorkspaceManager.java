@@ -53,6 +53,7 @@ public class WorkspaceManager {
 		this.outputService = outputService;
 	}
 	
+	// TODO: Test coverage
 	public List<ApplicationData> initializeApplications(String workspaceDir, boolean singleApp) {
 		List<ApplicationData> ret = new ArrayList<>();
 
@@ -70,6 +71,7 @@ public class WorkspaceManager {
 		return ret;
 	}
 
+	// TODO: Test coverage
 	private ApplicationData initializeApplication(File appDir) {
 		String appName = appDir.getName();
 		// Circular dependency between ApplicationData and ApplicationFolderImpl

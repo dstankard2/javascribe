@@ -551,6 +551,8 @@ public class WorkspaceManagerIntegrationTest extends ManagerTest {
 		assertThat(pd.getAllItems().size()).isEqualTo(18);
 
 		// Touch a WsClient file.  Still successful.  Same number of items as previous run.
+		// The userFile will be re-processed.  Need to reset the input stream
+		userFile.getInputStream().reset();
 		filesRemoved(application, clientFile);
 		filesAdded(application, clientFile);
 		workspaceManager.scanApplicationDir(application, true, false);

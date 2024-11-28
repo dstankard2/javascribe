@@ -35,6 +35,9 @@ public class PageAttributeDirective extends AttributeDirectiveBase {
 			throw new JavascribeException("Found no page called '"+pageName+"'");
 		}
 
+		if (pageInfo.getPageRendererObj() != null) {
+			throw new JavascribeException("Page '"+pageName+"' may only be rendered by one HTML template");
+		}
 		String modelTypeName = pageInfo.getModelTypeName();
 		ServiceOperation op = ctx.getFunction();
 		StringBuilder fnCode = ctx.getCode();

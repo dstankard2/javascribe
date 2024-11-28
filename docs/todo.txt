@@ -21,6 +21,12 @@ Engine/Processing enhancements:
 	Support for profiles in engine, where a different engine.poperties is used.
 
 Pattern bugs/tasks
+	Javascript parser doesn't handle strings properly.
+	Embed Tomcat min/max threads
+		tomcat.getConnector().setAttribute("maxThreads", 3);
+		tomcat.getConnector().setAttribute("minThreads", 1);
+	Embed Tomcat and DB-related configurations to connect to environment should be configurable from env variables.
+
 	Javascript Module sourcefile: Prevent duplicate variable definitions in internal code.
 		Create javascript variable, name/type/mode - const/let/function.  Have variables in source file.
 	Bug: Javascript module client needs to read localdatetime properly and/or server needs to send it to client properly.

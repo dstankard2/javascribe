@@ -17,26 +17,12 @@
 	<name>Engine</name>
 
 	<dependencies>
-        <dependency>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-impl</artifactId>
-            <version>2.3.3</version>
-        </dependency>
         
 		<dependency>
 			<groupId>net.sf.javascribe</groupId>
 			<artifactId>api</artifactId>
 			<version>0.1.0</version>
 		</dependency>
-
-<!--
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.13</version>
-			<scope>test</scope>
-		</dependency>
--->
 
 		<!-- https://mvnrepository.com/artifact/org.testng/testng -->
 		<dependency>
@@ -50,14 +36,8 @@
 		<dependency>
 		    <groupId>org.mockito</groupId>
 		    <artifactId>mockito-core</artifactId>
-		    <version>5.3.0</version>
+		    <version>5.14.0</version>
 		    <scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-			<version>3.0</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.assertj/assertj-core -->

@@ -12,9 +12,7 @@ public class JavascriptParser {
 	private List<String> impliedVariables = new ArrayList<>();
 	
 	public JavascriptParser(String code,CodeExecutionContext execCtx) {
-		//this.input = new ParsingInput(code);
 		this.code = code;
-		//this.execCtx = execCtx;
 	}
 	
 	public JavascriptParser addImpliedVariable(String name) {
@@ -22,7 +20,7 @@ public class JavascriptParser {
 		return this;
 	}
 	
-	public JavascriptParsingResult evalExpression() throws JavascriptParsingException {
+	public JavascriptParsingResult evalExpression() {
 		JavascriptParsingResult ret = new JavascriptParsingResult();
 		
 		ret.setCode(code);
@@ -30,12 +28,10 @@ public class JavascriptParser {
 		return ret;
 	}
 	
-	public JavascriptParsingResult evalCodeBlock() throws JavascriptParsingException {
+	public JavascriptParsingResult evalCodeBlock() {
 		JavascriptParsingResult ret = new JavascriptParsingResult();
 		// Insert \n after ;, { and }
-		String c = code.replaceAll(";", ";\n");
-		c = code.replaceAll("}", "}\n");
-		c = code.replaceAll("\\{", "{\n");
+		String c = code.replaceAll(";", ";\n").replaceAll("}", "}\n").replaceAll("\\{", "{\n");
 		ret.setCode(c);
 		
 		return ret;

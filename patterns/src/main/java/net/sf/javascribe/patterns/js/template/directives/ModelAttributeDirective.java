@@ -23,6 +23,7 @@ public class ModelAttributeDirective extends AttributeDirectiveBase {
 		StringBuilder b = ctx.getCode();
 		String eltName = ctx.getElementName();
 		String setAfterFn = null;
+		String changeFn = ctx.newVarName("cfn", "function", ctx.getExecCtx());
 
 		String var = ctx.getElementVarName();
 		String template = null;
@@ -55,6 +56,7 @@ public class ModelAttributeDirective extends AttributeDirectiveBase {
 			else changeEvent = "change";
 			template = INPUT_MODEL_TEXT;
 			templateParams.put("DOMEVENT", changeEvent);
+			templateParams.put("CHANGEFN", changeFn);
 		} else if (eltName.equals("textarea")) {
 			template = INPUT_MODEL_TEXT;
 			templateParams.put("DOMEVENT", "input");
@@ -71,14 +73,35 @@ public class ModelAttributeDirective extends AttributeDirectiveBase {
 		}
 	}
 	
+	private static final String INPUT_MODEL_TEXT = """
+			aaaELTVAR.addEventListener('aaaDOMEVENT', function() {
+			const val = aaaELTVAR.value;
+			try {
+			aaaMODEL_REF = val;
+			_dis('aaaCHANGE_EVENT');
+			} catch(err) { }
+			});
+			const aaaCHANGEFN = function() {
+				try {
+				var val = aaaMODEL_REF;
+				if ((val===null) || (val===undefined)) val = '';
+				aaaELTVAR.value = val;
+				} catch(err) {}
+			};
+			aaaCHANGEFN();
+			const aaaREM_FN = _dis('aaaCHANGE_EVENT',aaaCHANGEFN);
+			aaaELTVAR.$$remove.push(aaaREM_FN);
+			""";
+
+	/*
 	private static final String INPUT_MODEL_TEXT = "aaaELTVAR.addEventListener('aaaDOMEVENT', function() {\n"
 			+ "var val = aaaELTVAR.value;\n"
 			+ "try {\n"
 			+ "aaaMODEL_REF = val;\n"
-			+ "_page.event('aaaCHANGE_EVENT');\n"
+			+ "_dis('aaaCHANGE_EVENT');\n"
 			+ "} catch(err) { }\n"
 			+ "});\n"
-			+ "var aaaREM_FN = _page.event('aaaCHANGE_EVENT', function() {\n"
+			+ "var aaaREM_FN = _dis('aaaCHANGE_EVENT', function() {\n"
 			+ "try {\n"
 			+ "var val = aaaMODEL_REF;\n"
 			+ "if ((val===null) || (val===undefined)) val = '';\n"
@@ -86,7 +109,8 @@ public class ModelAttributeDirective extends AttributeDirectiveBase {
 			+ "} catch(err) {}\n"
 			+ "});\n"
 			+ "aaaELTVAR.$$remove.push(aaaREM_FN);\n";
-
+*/
+	
 	private static final String SELECT_MODEL = "aaaELTVAR.onchange = function() {\r\n" + 
 			"var val = aaaELTVAR.value;\r\n" + 
 			"try {\r\n" + 
@@ -104,8 +128,8 @@ public class ModelAttributeDirective extends AttributeDirectiveBase {
 			"			break;\r\n" + 
 			"		}\r\n" + 
 			"	}\r\n" + 
-			"}.bind(_page);\r\n" + 
-			"var aaaREM_FN = _page.event('aaaCHANGE_EVENT',aaaFN);\r\n" + 
+			"};\r\n" + 
+			"var aaaREM_FN = _dis('aaaCHANGE_EVENT',aaaFN);\r\n" + 
 			"aaaFN();\r\n" + 
 			"aaaELTVAR.$$remove.push(aaaREM_FN);\r\n";
 }

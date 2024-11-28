@@ -1,0 +1,11 @@
+
+Usage of ProcessorContext setObject
+
+Java - Storing code execution context when a rule is comprised from multiple components.
+Java - Storing schema information for a TableSet component
+Java - Storing servlet filter chain in FilterChain component
+Java - Storing web platform information
+Java - Storing domain data rules
+Java - Storing web service definitions
+Javascript - Storing Page Info for a front end page.
+

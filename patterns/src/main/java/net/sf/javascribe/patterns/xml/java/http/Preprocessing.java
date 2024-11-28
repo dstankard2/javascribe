@@ -6,9 +6,19 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import net.sf.javascribe.api.annotation.Plugin;
 import net.sf.javascribe.api.annotation.XmlConfig;
 
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @XmlConfig
 @Plugin
 @XmlRootElement(name="preprocessing")
@@ -16,37 +26,16 @@ import net.sf.javascribe.api.annotation.XmlConfig;
 @XmlType(name="preprocessing",propOrder={  })
 public class Preprocessing {
 
+	@Builder.Default
 	@XmlAttribute
 	private String ref = "";
 	
+	@Builder.Default
 	@XmlAttribute
 	private String rule = "";
 	
+	@Builder.Default
 	@XmlAttribute
 	private String source = "";
-
-	public String getRef() {
-		return ref;
-	}
-
-	public void setRef(String ref) {
-		this.ref = ref;
-	}
-
-	public String getRule() {
-		return rule;
-	}
-
-	public void setRule(String rule) {
-		this.rule = rule;
-	}
-
-	public String getSource() {
-		return source;
-	}
-
-	public void setSource(String source) {
-		this.source = source;
-	}
 
 }

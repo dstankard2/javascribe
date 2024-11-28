@@ -16,4 +16,7 @@
 
 	<name>Javascribe Developer APIs</name>
 
+	<build>
+		<finalName>patterns-user-api</finalName>
+	</build>
 </project>

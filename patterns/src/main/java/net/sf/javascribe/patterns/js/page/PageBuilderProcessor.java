@@ -36,10 +36,17 @@ public class PageBuilderProcessor implements ComponentProcessor<PageBuilderCompo
 			if (type instanceof ModuleType) {
 				ModuleType moduleType = (ModuleType)type;
 				f.importModule(moduleType);
+				String append = null;
 				if (moduleType.getExportType()==ModuleExportType.CONST) {
-					f.getInternalCode().appendCodeText("const "+ref+" = "+moduleType.getModuleName()+";\n");
+					append = "const "+ref+" = "+moduleType.getModuleName()+";\n";
+					// f.getInternalCode().appendCodeText("const "+ref+" = "+moduleType.getModuleName()+";\n");
 				} else {
-					f.getInternalCode().appendCodeText("const "+ref+" = "+moduleType.getName()+"();\n");
+					append = "const "+ref+" = "+moduleType.getName()+"();\n";
+					// f.getInternalCode().appendCodeText("const "+ref+" = "+moduleType.getName()+"();\n");
+				}
+				// Check to see if this ref is already declared in the internal code for this module
+				if (!f.getInternalCode().getCodeText().contains(append)) {
+					f.getInternalCode().appendCodeText(append);
 				}
 			}
 		}

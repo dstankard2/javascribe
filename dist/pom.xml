@@ -11,10 +11,44 @@
 
 	<groupId>net.sf.javascribe</groupId>
 	<artifactId>dist</artifactId>
-	<packaging>jar</packaging>
+	<packaging>pom</packaging>
 	<version>0.1.0</version>
 
 	<name>Javascribe Distribution</name>
+
+	<dependencies>
+		<dependency>
+			<groupId>net.sf.javascribe</groupId>
+			<artifactId>api</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.javascribe</groupId>
+			<artifactId>engine</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.javascribe</groupId>
+			<artifactId>javascript-support</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.javascribe</groupId>
+			<artifactId>java-support</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.javascribe</groupId>
+			<artifactId>patterns</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.javascribe</groupId>
+			<artifactId>system-plugins</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+	</dependencies>
 
 	<build>
 		<finalName>javascribe-${project.version}</finalName>

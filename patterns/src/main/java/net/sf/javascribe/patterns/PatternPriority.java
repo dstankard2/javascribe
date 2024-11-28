@@ -16,6 +16,8 @@ public class PatternPriority {
 	
 	public static final int JPA_DAO_FACTORY = 10000;
 
+	public static final int ENTITY_RELATIONSHIPS = 11250;
+
 	public static final int SEARCH_INDEX = 12500;
 
 	public static final int CLASSIFICATION = 13750;

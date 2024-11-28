@@ -11,8 +11,8 @@ public class HandwrittenCodeFileProcessor implements FileProcessor {
 	int priority = 0;
 	FileHandler handler = null;
 	String path = null;
-	
-	String errorMessage = null;
+
+	Exception exception = null;
 	
 	public HandwrittenCodeFileProcessor(String path) {
 		this.path = path;
@@ -25,7 +25,10 @@ public class HandwrittenCodeFileProcessor implements FileProcessor {
 
 	@Override
 	public int getPriority() {
-		return handler.getPriority();
+		if (handler!=null) {
+			return handler.getPriority();
+		}
+		return 0;
 	}
 
 	// TODO: In remove, remove 
@@ -34,8 +37,9 @@ public class HandwrittenCodeFileProcessor implements FileProcessor {
 		try {
 			ctx.getLog().info("Creating file handler for "+changedFile.getPath());
 			handler = new FileHandler(changedFile,ctx);
+			exception = null;
 		} catch(Exception e) {
-			errorMessage = e.getMessage();
+			this.exception = e;
 		}
 	}
 	
@@ -46,8 +50,8 @@ public class HandwrittenCodeFileProcessor implements FileProcessor {
 
 	@Override
 	public void process() throws JavascribeException {
-		if (errorMessage!=null) {
-			throw new JavascribeException("Couldn't read application file - "+errorMessage);
+		if (exception!=null) {
+			throw new JavascribeException("Couldn't read application file", exception);
 		}
 		handler.process();
 	}

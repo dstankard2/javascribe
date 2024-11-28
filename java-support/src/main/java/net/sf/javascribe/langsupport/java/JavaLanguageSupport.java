@@ -11,6 +11,7 @@ import net.sf.javascribe.langsupport.java.types.JavaVariableType;
 import net.sf.javascribe.langsupport.java.types.impl.BooleanJavaType;
 import net.sf.javascribe.langsupport.java.types.impl.LocalDateJavaType;
 import net.sf.javascribe.langsupport.java.types.impl.IntegerJavaType;
+import net.sf.javascribe.langsupport.java.types.impl.DoubleJavaType;
 import net.sf.javascribe.langsupport.java.types.impl.JavaListType;
 import net.sf.javascribe.langsupport.java.types.impl.LongJavaType;
 import net.sf.javascribe.langsupport.java.types.impl.ObjectJavaType;
@@ -36,6 +37,7 @@ public class JavaLanguageSupport implements LanguageSupport {
 		ret.add(new JavaListType());
 		ret.add(new BooleanJavaType());
 		ret.add(new ObjectJavaType());
+		ret.add(new DoubleJavaType());
 		return ret;
 	}
 

@@ -204,6 +204,7 @@ public class TableSetProcessor implements ComponentProcessor<TableSetComponent> 
 			if (colType.indexOf("mediumint")==0) return "integer";
 			if (colType.indexOf("bigint")==0) return "longint";
 			if (colType.indexOf("int")==0) return "integer";
+			if (colType.indexOf("tinyint")==0) return "boolean";
 			else if (colType.equals("varchar")) return "string";
 			else if (colType.equals("text")) return "string";
 			else if (colType.equals("longtext")) return "string";

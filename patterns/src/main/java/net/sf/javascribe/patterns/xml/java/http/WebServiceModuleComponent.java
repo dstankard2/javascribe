@@ -79,7 +79,7 @@ public class WebServiceModuleComponent extends JavaComponent {
 	@Getter
 	@Setter
 	@Builder.Default
-	@XmlAttribute
+ 	@XmlAttribute
 	private String name = "";
 
 	@Getter
