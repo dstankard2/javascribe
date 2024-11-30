@@ -65,8 +65,8 @@ public class EngineProperties {
 		return userOptions.get("singleAppMode")!=null;
 	}
 
-	public String getApplicationDir() {
-		return userOptions.get("applicationDir");
+	public String getWorkspaceDir() {
+		return userOptions.get("workspaceDir");
 	}
 
 	public String getOutputDir() {

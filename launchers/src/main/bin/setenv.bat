@@ -1,1 +1,0 @@
-set JAVASCRIBE_HOME=..

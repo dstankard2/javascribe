@@ -1,7 +1,7 @@
 
-@echo off
+@echo on
 
 REM Run the Javascribe engine.
 
-java -jar launcher.jar %*
+java -jar launcher.jar
 

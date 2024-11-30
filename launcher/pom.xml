@@ -18,26 +18,19 @@
 
 	<build>
 		<finalName>launcher</finalName>
-		
 		<plugins>
 	      <plugin>
 	        <groupId>org.apache.maven.plugins</groupId>
 	        <artifactId>maven-jar-plugin</artifactId>
-	        <!-- Here come other details
-	        ...
-	        -->
 	        <configuration>
 	          <archive>
 	            <manifest>
-	            <!-- 
-	              <addClasspath>true</addClasspath>
-				-->
 	              <mainClass>net.sf.javascribe.launcher.Main</mainClass>
 	            </manifest>
 	          </archive>
 	        </configuration>
 	      </plugin>
-	    </plugins>		
+	    </plugins>
 
 	</build>
 

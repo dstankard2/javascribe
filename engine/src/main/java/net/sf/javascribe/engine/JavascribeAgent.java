@@ -27,8 +27,19 @@ public class JavascribeAgent {
 		this.libs = libs;
 	}
 	
-	public void init() {
+	public boolean init() {
 		boolean debug = properties.getDebug();
+		String appDir = properties.getWorkspaceDir();
+		String outputDir = properties.getOutputDir();
+
+		if (appDir==null) {
+			System.err.println("Couldn't find workspace directory as engine property \"workspaceDir\" or CLI parameter \"workspaceDir\"");
+			return false;
+		}
+		if (outputDir==null) {
+			System.err.println("Couldn't find output directory as engine property \"outputDir\" or CLI parameter \"outputDir\"");
+			return false;
+		}
 		
 		ComponentContainer.get().registerServices();
 
@@ -43,8 +54,6 @@ public class JavascribeAgent {
 		PluginManager pluginManager = ComponentContainer.get().getComponent("PluginManager", PluginManager.class);
 		OutputManager outputManager = ComponentContainer.get().getComponent("OutputManager", OutputManager.class);
 		
-		String appDir = properties.getApplicationDir();
-		String outputDir = properties.getOutputDir();
 		boolean singleApp = properties.getSingleApp();
 		boolean runOnce = properties.getRunOnce();
 		
@@ -53,7 +62,7 @@ public class JavascribeAgent {
 		
 		// Initialize output folder(s)
 		outputManager.initOutputDirectory(outputDir, applications, singleApp);
-
+		return true;
 	}
 
 	public void run() {

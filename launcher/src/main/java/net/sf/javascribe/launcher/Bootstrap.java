@@ -38,7 +38,11 @@ public class Bootstrap {
 		if (index>=0) {
 			String name = param.substring(0, index);
 			String value = param.substring(index+1);
-			return handleParameter(name, value);
+			boolean ret = handleParameter(name, value);
+			if (!ret) {
+				printUsage();
+			}
+			return ret;
 		} else if (param.equals("-h")) {
 			printUsage();
 			return false;
@@ -76,20 +80,24 @@ public class Bootstrap {
 	
 	private void startEngine() {
 		URL[] urls = new URL[libs.length];
-		System.out.println("Found "+libs.length+" libs");
+		System.err.println("Found "+libs.length+" libs");
+		ClassLoader original = Thread.currentThread().getContextClassLoader();
 		try {
 			for(int i=0;i<libs.length;i++) {
 				urls[i] = libs[i].toURL();
-				System.out.println("Using lib "+libs[i].getAbsolutePath());
+				// System.err.println("Using lib "+libs[i].getAbsolutePath());
 			}
 			
 			URLClassLoader loader = new URLClassLoader(urls);
+			Thread.currentThread().setContextClassLoader(loader);
 			Class<?> cl = loader.loadClass("net.sf.javascribe.engine.JavascribeAgent");
 			Constructor<?> con = cl.getConstructors()[0];
 			Object instance = con.newInstance(libs, engineProperties);
-			cl.getMethod("init").invoke(instance);
-			cl.getMethod("run").invoke(instance);
-		} catch(Exception e) {
+			Object initResult = cl.getMethod("init").invoke(instance);
+			if (Boolean.TRUE.equals(initResult)) {
+				cl.getMethod("run").invoke(instance);
+			}
+		} catch(Throwable e) {
 			e.printStackTrace();
 			/*
 		} catch(MalformedURLException e) {
@@ -104,6 +112,8 @@ public class Bootstrap {
 			
 		} catch(NoSuchMethodException e) {
 			*/
+		} finally {
+			Thread.currentThread().setContextClassLoader(original);
 		}
 	}
 
@@ -130,16 +140,16 @@ public class Bootstrap {
 		File propFile = new File(homeDir, "engine.properties");
 		
 		if ((!propFile.exists()) || (propFile.isDirectory())) {
-			System.out.println("WARN: Couldn't find file engine.properties");
+			System.err.println("WARN: Couldn't find file engine.properties");
 		} else {
 			Properties prop = new Properties();
 			try (InputStream in = new FileInputStream(propFile)) {
 				prop.load(in);
 				engineProperties = (Map)prop;
 			} catch(FileNotFoundException e) {
-				System.out.println("WARN: Couldn't find file engine.properties");
+				System.err.println("WARN: Couldn't find file engine.properties");
 			} catch(IOException e) {
-				System.out.println("WARN: Couldn't find file engine.properties");
+				System.err.println("WARN: Couldn't find file engine.properties");
 			}
 		}
 	}
@@ -148,19 +158,22 @@ public class Bootstrap {
 		homeDir = new File(home);
 		
 		if ((!homeDir.exists()) || (!homeDir.isDirectory())) {
-			System.err.println("Couldn't find home directory "+homeDir);
+			System.out.println("Couldn't find home directory "+homeDir);
 			return false;
 		}
 		return true;
 	}
 
 	private boolean handleParameter(String name, String value) {
-		if (name.equals("-workspace")) {
-			explicitProperties.put("workspace", value);
+// 		System.out.println("Handling parameter '"+name+"' = '"+value+"'");
+		if (name.equals("-workspaceDir")) {
+			explicitProperties.put("workspaceDir", value);
+			System.out.println("setting workspace dir as "+value);
 			// workspace = value;
 			return true;
-		} else if (name.equals("-out")) {
+		} else if (name.equals("-outputDir")) {
 			explicitProperties.put("outputDir", value);
+			System.out.println("setting output dir as "+value);
 			// out = value;
 			return true;
 		}

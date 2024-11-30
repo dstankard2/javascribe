@@ -19,12 +19,16 @@
 		<module>engine</module>
 		<module>launcher</module>
 		<module>system-plugins</module>
-		<module>dist</module>
+		<module>patterns</module>
 		<module>testing</module>
+		<module>dist</module>
 	</modules>
 	<properties>
 		<maven.compiler.source>21</maven.compiler.source>
 		<maven.compiler.target>21</maven.compiler.target>
+		<testng.version>7.7.1</testng.version>
+		<mockito-core.version>5.14.0</mockito-core.version>
+		<assertj-core.version>3.24.2</assertj-core.version>
 	</properties>
 
 	<dependencies>
@@ -45,13 +49,6 @@
             <artifactId>jaxb-impl</artifactId>
             <version>4.0.0</version>
         </dependency>
-		<!--
-        <dependency>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-impl</artifactId>
-            <version>2.3.3</version>
-        </dependency>
-		-->
 
 	</dependencies>
 	
