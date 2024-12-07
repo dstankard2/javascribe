@@ -143,6 +143,7 @@ public class EndpointProcessor implements ComponentProcessor<Endpoint> {
 				throw new JavascribeException("Path parameter '"+param+"' was already a variable in the web service's code execution context");
 			}
 			appendPathParamCode(src,param,code,execCtx, ctx);
+			op.getPathVariables().add(param);
 		}
 		
 		// Handle parsing of request body

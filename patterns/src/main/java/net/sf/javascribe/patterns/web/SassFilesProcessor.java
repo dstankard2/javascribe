@@ -1,5 +1,7 @@
 package net.sf.javascribe.patterns.web;
 
+import java.util.ArrayList;
+
 import net.sf.javascribe.api.ComponentProcessor;
 import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.annotation.Plugin;
@@ -8,6 +10,7 @@ import net.sf.javascribe.patterns.maven.ExecutionConfig;
 import net.sf.javascribe.patterns.maven.MavenBuildContext;
 import net.sf.javascribe.patterns.maven.MavenUtils;
 import net.sf.javascribe.patterns.maven.PluginConfig;
+import net.sf.javascribe.patterns.maven.PropertySet;
 import net.sf.javascribe.patterns.xml.web.SassFiles;
 
 @Plugin
@@ -34,11 +37,14 @@ public class SassFilesProcessor implements ComponentProcessor<SassFiles> {
 	
 	protected void handleMaven(String src,String dest,ProcessorContext ctx) {
 		MavenBuildContext bctx = MavenUtils.getMavenBuildContext(ctx);
-		PluginConfig cfg = new PluginConfig("nl.geodienstencentrum.maven:sass-maven-plugin:3.5.5");
+		PluginConfig cfg = null;
 		ExecutionConfig execConfig = new ExecutionConfig();
 		String srcPath = ctx.getResource(".").getPath();
 		String buildPath = bctx.getApplicationFolderPath();
 
+		cfg = PluginConfig.builder().artifact("nl.geodienstencentrum.maven:sass-maven-plugin:3.5.5").configuration(new PropertySet("configuration")).dependencies(new ArrayList<>())
+				.executions(new ArrayList<>()).build();
+		
 		cfg.getExecutions().add(execConfig);
 		srcPath = srcPath.substring(buildPath.length()) + src;
 		execConfig.setId("sassProcessSource");

@@ -6,6 +6,7 @@ import java.util.List;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
+import lombok.Getter;
 import net.sf.javascribe.api.BuildComponentProcessor;
 import net.sf.javascribe.api.BuildContext;
 import net.sf.javascribe.api.BuildProcessorContext;
@@ -30,7 +31,9 @@ public class MavenBuildComponentProcessor implements BuildComponentProcessor<Mav
 	private List<PluginConfig> plugins = new ArrayList<>();
 	private String finalName = null;
 	private String artifact = null;
-
+	@Getter
+	private List<String> annotationProcessors = new ArrayList<>();
+	
 	private List<Command> build = new ArrayList<>();
 	private List<Command> clean = new ArrayList<>();
 
@@ -207,7 +210,7 @@ public class MavenBuildComponentProcessor implements BuildComponentProcessor<Mav
 				}
 			}
 		}
-		if ((plugins.size()>0) || (finalName!=null)) {
+		if ((plugins.size() > 0) || (finalName != null) || (annotationProcessors.size() > 0)) {
 			Element buildElt = root.addElement("build");
 			if (finalName!=null) {
 				Element finalNameElt = buildElt.addElement("finalName");
@@ -267,6 +270,28 @@ public class MavenBuildComponentProcessor implements BuildComponentProcessor<Mav
 						}
 					}
 				}
+			}
+			if (annotationProcessors.size() > 0) {
+				Element pluginElt = pluginsElt.addElement("plugin");
+				pluginElt.addElement("groupId").setText("org.apache.maven.plugins");
+				pluginElt.addElement("artifactId").setText("maven-compiler-plugin");
+				// TODO: Configurable version
+				pluginElt.addElement("version").setText("3.8.1");
+				Element configElt = pluginElt.addElement("configuration");
+				Element pathsElt = configElt.addElement("annotationProcessorPaths");
+
+				for(String id : annotationProcessors) {
+				// annotationProcessors.forEach(id -> {
+					String groupId = MavenUtils.getGroupId(id);
+					String artifact = MavenUtils.getArtifactId(id);
+					String procVersion = MavenUtils.getVersion(id);
+
+					Element pathElt = pathsElt.addElement("path");
+					pathElt.addElement("groupId").setText(groupId);
+					pathElt.addElement("artifactId").setText(artifact);
+					pathElt.addElement("version").setText(procVersion);
+				}
+				// });
 			}
 		}
 	}

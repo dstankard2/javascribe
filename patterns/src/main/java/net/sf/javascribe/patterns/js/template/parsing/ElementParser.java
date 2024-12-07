@@ -115,7 +115,7 @@ public class ElementParser implements DirectiveContext {
 			AttributeDirective next = attributeDirectives.get(0);
 			attributeDirectives.remove(0);
 			
-			if ((!elementCreated) && (next.getPriority()>=3)) {
+			if ((!isElementDirective) && (!elementCreated) && (next.getPriority()>=3)) {
 				elementCreated = true;
 				if (!isTemplateCall) {
 					code.append(eltVar+" = "+DirectiveUtils.DOCUMENT_REF+
@@ -144,7 +144,7 @@ public class ElementParser implements DirectiveContext {
 						code.append(containerVar+".appendChild("+eltVar+");\n");
 				}
 			} else {
-				if (!elementCreated) {
+				if ((!elementCreated) && (!isElementDirective)) {
 					code.append(eltVar+" = "+DirectiveUtils.DOCUMENT_REF+
 							".createElement('"+elt.nodeName()+"');\n");
 					code.append(eltVar+"._elt = '"+eltVar+"';\n");
@@ -154,8 +154,12 @@ public class ElementParser implements DirectiveContext {
 				if (containerVar!=null)
 					code.append(containerVar+".appendChild("+eltVar+");\n");
 				// Process children
+				String cntr = eltVar;
+				if (cntr==null) {
+					cntr = containerVar;
+				}
 				if ((elt.childNodes()!=null) && (elt.childNodes().size()>0)) {
-					String append = caller.processChildNodeList(elt.childNodes(), eltVar, execCtx);
+					String append = caller.processChildNodeList(elt.childNodes(), cntr, execCtx);
 					code.append(append);
 				}
 			}

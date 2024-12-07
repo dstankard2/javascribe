@@ -21,6 +21,7 @@ Engine/Processing enhancements:
 	Support for profiles in engine, where a different engine.poperties is used.
 
 Pattern bugs/tasks
+	HTML template if element directive - handling of event and elements inside of if block.
 	Javascript parser doesn't handle strings properly.
 	Embed Tomcat min/max threads
 		tomcat.getConnector().setAttribute("maxThreads", 3);

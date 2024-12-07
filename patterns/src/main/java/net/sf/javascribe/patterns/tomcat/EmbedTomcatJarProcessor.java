@@ -1,5 +1,7 @@
 package net.sf.javascribe.patterns.tomcat;
 
+import java.util.ArrayList;
+
 import net.sf.javascribe.api.ComponentProcessor;
 import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.annotation.Plugin;
@@ -9,6 +11,7 @@ import net.sf.javascribe.patterns.maven.ExecutionConfig;
 import net.sf.javascribe.patterns.maven.MavenBuildContext;
 import net.sf.javascribe.patterns.maven.MavenUtils;
 import net.sf.javascribe.patterns.maven.PluginConfig;
+import net.sf.javascribe.patterns.maven.PropertySet;
 import net.sf.javascribe.patterns.xml.tomcat.EmbedTomcatJar;
 
 @Plugin
@@ -33,7 +36,8 @@ public class EmbedTomcatJarProcessor implements ComponentProcessor<EmbedTomcatJa
 		
 		// For a Maven Build, add the Maven assembly plugin to build a Jar with dependencies
 		if (MavenUtils.isMavenBuild(ctx)) {
-			PluginConfig cfg = new PluginConfig("org.apache.maven.plugins:maven-assembly-plugin");
+			PluginConfig cfg = PluginConfig.builder().artifact("org.apache.maven.plugins:maven-assembly-plugin").configuration(new PropertySet("configuration"))
+					.dependencies(new ArrayList<>()).executions(new ArrayList<>()).build();
 			cfg.getConfiguration().addNestingProperty("archive").addPropertyWithNestedProperties("manifestEntries").addPropertySingleValue("Main-Class", pkg+'.'+"TomcatMain");
 			ExecutionConfig exec = new ExecutionConfig();
 			exec.setPhase("package");
@@ -47,7 +51,8 @@ public class EmbedTomcatJarProcessor implements ComponentProcessor<EmbedTomcatJa
 			bctx.addBuildPhase("package");
 			bctx.setFinalName(jarName);
 
-			cfg = new PluginConfig("org.codehaus.mojo:exec-maven-plugin");
+			cfg = PluginConfig.builder().artifact("org.codehaus.mojo:exec-maven-plugin").configuration(new PropertySet("configuration")).dependencies(new ArrayList<>())
+					.executions(new ArrayList<>()).build();
 			exec = new ExecutionConfig();
 			cfg.getExecutions().add(exec);
 			exec.setId("Embed Tomcat");

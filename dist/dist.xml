@@ -67,21 +67,7 @@
 			<outputDirectory>javascribe-${project.version}\bin</outputDirectory>
 		</fileSet>
 		<fileSet>
-			<directory>../system-plugin/target</directory>
-			<includes>
-				<include>*.jar</include>
-			</includes>
-			<outputDirectory>javascribe-${project.version}\lib</outputDirectory>
-		</fileSet>
-		<fileSet>
-			<directory>../javascript-support/target</directory>
-			<includes>
-				<include>*.jar</include>
-			</includes>
-			<outputDirectory>javascribe-${project.version}\lib</outputDirectory>
-		</fileSet>
-		<fileSet>
-			<directory>../java-support/target</directory>
+			<directory>../system-plugins/target</directory>
 			<includes>
 				<include>*.jar</include>
 			</includes>

@@ -21,6 +21,10 @@ public class MavenBuildContext implements BuildContext {
 		this.id = id;
 	}
 
+	public void addAnnotationProcessor(String artifact) {
+		proc.getAnnotationProcessors().add(artifact);
+	}
+
 	public String getId() {
 		return id;
 	}

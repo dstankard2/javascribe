@@ -80,7 +80,6 @@ public class Bootstrap {
 	
 	private void startEngine() {
 		URL[] urls = new URL[libs.length];
-		System.err.println("Found "+libs.length+" libs");
 		ClassLoader original = Thread.currentThread().getContextClassLoader();
 		try {
 			for(int i=0;i<libs.length;i++) {
