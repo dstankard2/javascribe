@@ -186,8 +186,8 @@ public class Bootstrap {
 Javascribe Usage: javascribe(.bat) <param> <param>
 * Valid parameters:
  - "-h" - Print this message
- - "-workspace=<workspaceDir>" - Set workspace directory
- - "-out=<outputDirectory>" - Set Javascribe output directory
+ - "-workspaceDir=<workspaceDir>" - Set workspace directory
+ - "-outputDir=<outputDirectory>" - Set Javascribe output directory
 """;
 		System.err.println(helpText);
 	}

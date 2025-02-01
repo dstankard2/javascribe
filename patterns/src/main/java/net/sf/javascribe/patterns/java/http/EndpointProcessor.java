@@ -28,16 +28,19 @@ import net.sf.javascribe.patterns.http.WebUtils;
 import net.sf.javascribe.patterns.xml.java.http.Endpoint;
 import net.sf.javascribe.patterns.xml.java.http.Response;
 
+// TODO: Clean this class up a bit
 @Plugin
 public class EndpointProcessor implements ComponentProcessor<Endpoint> {
 
 	private static final String JACKSON_DEPENDENCY = "jackson-databind";
+	private static final String JACKSON_JSR310 = "jackson-datatype-jsr310";
 	
 	public void process(Endpoint comp, ProcessorContext ctx) throws JavascribeException {
 		ctx.setLanguageSupport("Java8");
 
 		// Add dependencies for this pattern
 		ctx.getBuildContext().addDependency(JACKSON_DEPENDENCY);
+		ctx.getBuildContext().addDependency(JACKSON_JSR310);
 
 		HttpMethod method = comp.getMethod();
 		if (method==null) {
@@ -195,11 +198,16 @@ public class EndpointProcessor implements ComponentProcessor<Endpoint> {
 					// We have dependency on Jackson databind API
 					JavaDataObjectType objType = (JavaDataObjectType)bodyType;
 					src.getSrc().addImport("com.fasterxml.jackson.databind.ObjectMapper");
+					src.getSrc().addImport("com.fasterxml.jackson.datatype.jsr310.JavaTimeModule");
 					src.addImport(objType);
-					code.append("ObjectMapper _objectMapper = new ObjectMapper();\n");
+					code.append("ObjectMapper _objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());\n");
 					code.append(objType.declare(requestBody, execCtx).getCodeText());
 					code.append(requestBody+" = _objectMapper.readValue(_httpRequest.getReader(),"+objType.getClassName()+".class);\n");
 					execCtx.addVariable(requestBody, objType.getName());
+					
+					// Ensure there is a javascript type for the request body
+					WebUtils.ensureJavascriptDataObjectType(bodyType.getName(), ctx);
+					ctx.setLanguageSupport("Java8");
 				} else {
 					throw new JavascribeException("Cannot specify request body with type '"+bodyType.getName()+"' - only data objects, integers, strings and enumerations are supported");
 				}
@@ -268,6 +276,9 @@ public class EndpointProcessor implements ComponentProcessor<Endpoint> {
 			if (dobj.getAttributeNames().size()==0) {
 				invalidResponseBodyType = true;
 			}
+			// Ensure there is a javascript type for the result.
+			WebUtils.ensureJavascriptDataObjectType(resultTypeName, ctx);
+			ctx.setLanguageSupport("Java8");
 		}
 		JavaUtils.append(invokeCode, resultType.declare(operationResult, execCtx));
 		execCtx.addVariable(operationResult, resultTypeName);
@@ -304,11 +315,13 @@ public class EndpointProcessor implements ComponentProcessor<Endpoint> {
 				//ctx.getLog().warn("Found service result '"+resultTypeName+"' with no attributes - this cannot be the responsesending no response body from web service");
 
 				op.setResponseBodyFormat("json");
-				op.setResponseBody(resultTypeName);
+				op.setResponseBodyType(resultTypeName);
 				String bodyValue = JavascribeUtils.evaluateReference(responseBodyRef, execCtx);
 				code.append("_httpResponse.setContentType(\"application/json\");\n");
-				code.append("String _serialized = new ObjectMapper().writeValueAsString("+bodyValue+");\n");
+				code.append("");
+				code.append("String _serialized = new ObjectMapper().registerModule(new JavaTimeModule()).writeValueAsString("+bodyValue+");\n");
 				code.append("_httpResponse.setContentLength(_serialized.length());\n");
+				src.getSrc().addImport("com.fasterxml.jackson.datatype.jsr310.JavaTimeModule");
 				src.getSrc().addImport("java.io.Writer");
 				src.getSrc().addImport("com.fasterxml.jackson.databind.ObjectMapper");
 				code.append("Writer _writer = _httpResponse.getWriter();\n");

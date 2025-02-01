@@ -20,6 +20,21 @@ Engine/Processing enhancements:
 	Support for profiles in application, where a different javascribe.properties is used.
 	Support for profiles in engine, where a different engine.poperties is used.
 
+Pattern todo:
+	Create SPA Host
+		Includes embedded tomcat to serve HTML, JS, CSS and binary files
+		/app -> render HTML and default page logic.
+		/app/PageName -> show page on SPA
+		/app/PageName/{pathParam} -> show page on SPA, with path param
+		/app/PageName?param=x -> show page on SPA, with request param
+		/app/PageName/{pathParam}/abc?param=x -> show page on SPA, with both path and request params
+		Handles browser history, includes page navigation service in UI.
+		Ability to add pages to navigation.
+		Path parameters must be model properties on page.
+		Request parameters are set as model properties on page.
+		Page event 'show' is triggered when navigating to the page, after setting parameters.
+		Page event 'hide' is triggered when navigating away from a page.
+
 Pattern bugs/tasks
 	HTML template if element directive - handling of event and elements inside of if block.
 	Javascript parser doesn't handle strings properly.

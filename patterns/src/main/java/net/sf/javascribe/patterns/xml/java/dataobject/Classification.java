@@ -27,7 +27,15 @@ public class Classification extends JavaComponent {
 	private String name = "";
 	
 	@XmlAttribute
-	private String attributes = "";
+	private String properties = "";
+
+	public String getProperties() {
+		return properties;
+	}
+
+	public void setProperties(String properties) {
+		this.properties = properties;
+	}
 
 	@XmlAttribute(name = "extends")
 	private String extend = "";
@@ -45,14 +53,6 @@ public class Classification extends JavaComponent {
 		this.name = name;
 	}
 
-	public String getAttributes() {
-		return attributes;
-	}
-
-	public void setAttributes(String attributes) {
-		this.attributes = attributes;
-	}
-	
 	public String getExtend() {
 		return extend;
 	}

@@ -119,10 +119,12 @@ public class EmbedTomcatMain implements ComponentProcessor<EmbedTomcatFinalizer>
 		
 		Map<String,String> websocketEndpoints = platform.getWebsocketEndpoints();
 
+		/* It seems this is unnecessary
 		if (websocketEndpoints.size()>0) {
 			j.addImport("org.apache.tomcat.websocket.server.WsSci");
 			body.append("ctx.addServletContainerInitializer(new WsSci(), null);\n");
 		}
+		*/
 		body.append("tomcat.start();\ntomcat.getConnector().start();\n");
 		
 		if (websocketEndpoints.size()>0) {

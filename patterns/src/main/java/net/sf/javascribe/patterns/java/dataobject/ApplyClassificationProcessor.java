@@ -26,8 +26,14 @@ public class ApplyClassificationProcessor implements ComponentProcessor<ApplyCla
 			ctx.getLog().warn("Classification auto-apply is not currently supported");
 		}
 		JavaDataObjectType clType = JavascribeUtils.getType(JavaDataObjectType.class, cl, ctx);
+		if (clType==null) {
+			throw new JavascribeException("Cannot apply classification to object '"+cl+"' - type not found");
+		}
 		for(String dataObj : dos) {
 			JavaDataObjectType ty = JavascribeUtils.getType(JavaDataObjectType.class, dataObj, ctx);
+			if (ty==null) {
+				throw new JavascribeException("Didn't find type '"+dataObj+"' to apply classification to");
+			}
 			for(String attr : clType.getAttributeNames()) {
 				if (!clType.getAttributeType(attr).equals(ty.getAttributeType(attr))) {
 					throw new JavascribeException("Could not apply classification '"+cl+"' to data object '"+dataObj+"' - data object does not have attribute '"+attr+"'");

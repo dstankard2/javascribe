@@ -40,6 +40,9 @@ public class ClassificationProcessor implements ComponentProcessor<Classificatio
 			String exs[] = comp.getExtend().split(",");
 			for(String ex : exs) {
 				JavaDataObjectType exType = JavascribeUtils.getType(JavaDataObjectType.class, ex, ctx);
+				if (exType==null) {
+					throw new JavascribeException("Could not find classification type '"+ex+"' to extend");
+				}
 				if (!exType.getIsInterface()) {
 					throw new JavascribeException("A classification may only extend another classification");
 				}
@@ -53,44 +56,46 @@ public class ClassificationProcessor implements ComponentProcessor<Classificatio
 			}
 		}
 		
-		if (comp.getAttributes().trim().length()==0) {
-			throw new JavascribeException("Classification must define one or more attributes");
+		if (comp.getProperties().trim().length()==0) {
+			ctx.getLog().warn("Classification has no properties in the 'properties' attribute");
 		}
-		String[] attribs = comp.getAttributes().split(",");
-		for(String attr : attribs) {
-			String typeName = null;
-			if (attr.indexOf(':')>0) {
-				int i = attr.indexOf(':');
-				typeName = attr.substring(i+1);
-				attr = attr.substring(0, i);
-				String existingType = ctx.getSystemAttribute(attr);
-				if ((existingType!=null) && (!existingType.equals(typeName))) {
-					throw new JavascribeException("Found inconsistent types for system attribute '"+attr+"'");
+		if (comp.getProperties().trim().length() > 0) {
+			String[] attribs = comp.getProperties().trim().split(",");
+			for(String attr : attribs) {
+				String typeName = null;
+				if (attr.indexOf(':')>0) {
+					int i = attr.indexOf(':');
+					typeName = attr.substring(i+1);
+					attr = attr.substring(0, i);
+					String existingType = ctx.getSystemAttribute(attr);
+					if ((existingType!=null) && (!existingType.equals(typeName))) {
+						throw new JavascribeException("Found inconsistent types for system attribute '"+attr+"'");
+					}
+					ctx.addSystemAttribute(attr, typeName);
+				} else {
+					typeName = ctx.getSystemAttribute(attr);
+					if (typeName==null) {
+						throw new JavascribeException("Couldn't find type for classification property '"+attr+"'");
+					}
 				}
-				ctx.addSystemAttribute(attr, typeName);
-			} else {
-				typeName = ctx.getSystemAttribute(attr);
-				if (typeName==null) {
-					throw new JavascribeException("Couldn't find type for classification property '"+attr+"'");
+				JavaVariableType attrType = JavascribeUtils.getType(JavaVariableType.class, typeName, ctx);
+				String propertyClass = null;
+				if (typeName.startsWith("list")) {
+					propertyClass = JavaUtils.getClassDisplayForList(typeName, ctx);
+				} else {
+					propertyClass = attrType.getClassName();
 				}
+				String upperCamel = JavascribeUtils.getUpperCamelName(attr);
+				file.addImport(attrType);
+				src.addMethod().setName("set"+upperCamel).setPublic().addParameter(propertyClass, attr);
+				src.addMethod().setName("get"+upperCamel).setPublic().setReturnType(propertyClass);
+				file.addImport(attrType);
 			}
-			JavaVariableType attrType = JavascribeUtils.getType(JavaVariableType.class, typeName, ctx);
-			String propertyClass = null;
-			if (typeName.startsWith("list")) {
-				propertyClass = JavaUtils.getClassDisplayForList(typeName, ctx);
-			} else {
-				propertyClass = attrType.getClassName();
-			}
-			String upperCamel = JavascribeUtils.getUpperCamelName(attr);
-			file.addImport(attrType);
-			src.addMethod().setName("set"+upperCamel).setPublic().addParameter(propertyClass, attr);
-			src.addMethod().setName("get"+upperCamel).setPublic().setReturnType(propertyClass);
-			file.addImport(attrType);
 		}
 		
 		ctx.addSourceFile(file);
 		ctx.addVariableType(type);
 	}
 
-	
 }
+

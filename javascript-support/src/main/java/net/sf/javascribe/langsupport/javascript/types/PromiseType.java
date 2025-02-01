@@ -1,7 +1,16 @@
 package net.sf.javascribe.langsupport.javascript.types;
 
+import net.sf.javascribe.api.JavascribeUtils;
+import net.sf.javascribe.api.ProcessorContext;
+import net.sf.javascribe.api.exception.JavascribeException;
+
 public abstract class PromiseType extends JavascriptServiceType {
 
+	protected ProcessorContext ctx;
+	public void setProcessorContext(ProcessorContext ctx) {
+		this.ctx = ctx;
+	}
+	
 	public PromiseType() {
 		super("Promise");
 	}
@@ -14,7 +23,7 @@ public abstract class PromiseType extends JavascriptServiceType {
 		this.name = name;
 	}
 
-	public static PromiseType noResultPromise(String typeName) {
+	public static PromiseType noResultPromise() {
 		PromiseType ret = new PromiseType() {
 			
 			@Override
@@ -28,25 +37,34 @@ public abstract class PromiseType extends JavascriptServiceType {
 			}
 
 		};
-		ret.name(typeName);
+		ret.name("Promise");
 		return ret;
 	}
 
-	public static PromiseType getPromise(JavascriptType resolveType,String typeName) {
+	public static PromiseType getPromise(String resolveTypeName, ProcessorContext ctx) {
 		PromiseType ret = new PromiseType() {
-
+			
 			@Override
 			public JavascriptType getResolveType() {
-				return resolveType;
+				try {
+					this.ctx.setLanguageSupport("Javascript");
+					return JavascribeUtils.getType(JavascriptType.class, resolveTypeName, this.ctx);
+				} catch(JavascribeException e) {
+					System.out.println("ugh");
+					// no-op
+				}
+				return null;
 			}
 
 			@Override
 			public String getResolveTypeName() {
-				return resolveType.getName();
+				return resolveTypeName;
+				// return resolveType.getName();
 			}
 
 		};
-		ret.name(typeName);
+		ret.name(resolveTypeName+"Promise");
+		ret.setProcessorContext(ctx);
 		return ret;
 	}
 	

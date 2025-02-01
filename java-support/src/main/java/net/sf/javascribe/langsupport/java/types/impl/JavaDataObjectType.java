@@ -39,7 +39,7 @@ public class JavaDataObjectType extends JavaVariableTypeBase implements DataObje
 	}
 
 	@Override
-	public String getAttributeType(String attrib) throws JavascribeException {
+	public String getAttributeType(String attrib) {
 		return attribMap.get(attrib);
 	}
 

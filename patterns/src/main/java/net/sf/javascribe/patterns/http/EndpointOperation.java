@@ -18,7 +18,7 @@ public class EndpointOperation {
 	private String path = "";
 	private String requestBody = null;
 	private String requestBodyFormat = null;
-	private String responseBody = null;
+	private String responseBodyType = null;
 	private String responseBodyFormat = null;
 	private List<String> requestParameters = new ArrayList<>();
 	private List<String> pathVariables = new ArrayList<>();

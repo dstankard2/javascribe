@@ -31,6 +31,9 @@ public class EventAttributeDirective extends AttributeDirectiveBase {
 		if (parent==null) {
 			throw new JavascribeException("You may not use js-event on the root element of a template");
 		}
+		if (event == null) {
+			throw new JavascribeException("Found a js-event directive with an empty event");
+		}
 		
 		String dispatcherTypeName = execCtx.getVariableType(DirectiveUtils.EVENT_DISPATCHER_FN_VAR);
 		if (dispatcherTypeName==null) {

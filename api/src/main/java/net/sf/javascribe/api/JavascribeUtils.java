@@ -197,7 +197,9 @@ public class JavascribeUtils {
 		if (typeName==null) throw new JavascribeException("Could not find system attribute '"+name+"'");
 		
 		type = ctx.getVariableType(typeName);
-		if (type==null) throw new JavascribeException("Couldn't find type '"+typeName+"'");
+		if (type==null) {
+			throw new JavascribeException("Couldn't find type '"+typeName+"'");
+		}
 		if (cl.isAssignableFrom(type.getClass())) {
 			ret = (T)type;
 		} else {

@@ -38,13 +38,13 @@ public class DataObjectProcessor implements ComponentProcessor<DataObject> {
 		ctx.addSystemAttribute(lowerCamel+"List", "list/"+name);
 		ctx.addSystemAttribute(multiple, "list/"+name);
 
-		List<PropertyEntry> attribs = JavascribeUtils.readParametersAsList(props, ctx);
+		List<PropertyEntry> properties = JavascribeUtils.readParametersAsList(props, ctx);
 
 		if (name.equals(lowerCamel)) {
 			throw new JavascribeException("Type name '"+name+"' is not a valid name for a data object");
 		}
 		
-		else if (attribs.size()==0) {
+		else if (properties.size()==0) {
 			throw new JavascribeException("Data Object "+name+" has no attributes");
 		}
 
@@ -56,9 +56,12 @@ public class DataObjectProcessor implements ComponentProcessor<DataObject> {
 		MethodSource<?> constructor = src.getSrc().addMethod().setConstructor(true).setPublic();
 		JavaCode constructorCode = new JavaCode();
 
-		for(PropertyEntry a : attribs) {
+		for(PropertyEntry a : properties) {
 			String n = a.getName();
 			JavaVariableType type = (JavaVariableType)a.getType();
+			if (newType.getAttributeNames().contains(n)) {
+				throw new JavascribeException("DataObject already contains property named '"+n+"'");
+			}
 			src.addImport(type);
 			src.getSrc().addProperty(type.getClassName(), n);
 			newType.addProperty(n, type.getName());

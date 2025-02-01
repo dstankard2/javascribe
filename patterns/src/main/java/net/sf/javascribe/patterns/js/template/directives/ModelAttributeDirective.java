@@ -49,11 +49,7 @@ public class ModelAttributeDirective extends AttributeDirectiveBase {
 			setAfterFn = fn;
 		} else if (eltName.equals("input")) {
 			String type = ctx.getDomAttribute("type");
-			String changeEvent;
-			if (type==null) changeEvent = "keyup";
-			else if (type.equals("text")) changeEvent = "input";
-			else if (type.equals("password")) changeEvent = "input";
-			else changeEvent = "change";
+			String changeEvent = "input";
 			template = INPUT_MODEL_TEXT;
 			templateParams.put("DOMEVENT", changeEvent);
 			templateParams.put("CHANGEFN", changeFn);
@@ -69,7 +65,7 @@ public class ModelAttributeDirective extends AttributeDirectiveBase {
 		b.append(code);
 		ctx.continueRenderElement();
 		if (setAfterFn != null) {
-			code = code + setAfterFn+"();\r\n";
+			b.append(setAfterFn+"();\r\n");
 		}
 	}
 	
@@ -115,6 +111,7 @@ public class ModelAttributeDirective extends AttributeDirectiveBase {
 			"var val = aaaELTVAR.value;\r\n" + 
 			"try {\r\n" + 
 			"aaaMODEL_REF = val;\r\n" + 
+			"_dis('aaaCHANGE_EVENT');\n" +
 			"} catch(_err) { }\r\n" + 
 			"}\r\n" + 
 			"var aaaFN = function() {\r\n" + 
