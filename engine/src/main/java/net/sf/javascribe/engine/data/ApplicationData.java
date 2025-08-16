@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,9 +20,6 @@ import net.sf.javascribe.engine.ComponentContainer;
 import net.sf.javascribe.engine.data.files.ApplicationFolderImpl;
 import net.sf.javascribe.engine.data.files.SystemAttributesFile;
 import net.sf.javascribe.engine.data.files.UserFile;
-import net.sf.javascribe.engine.data.processing.ComponentItem;
-import net.sf.javascribe.engine.data.processing.FileProcessorEntry;
-import net.sf.javascribe.engine.data.processing.FolderWatcherEntry;
 import net.sf.javascribe.engine.data.processing.LogContext;
 import net.sf.javascribe.engine.data.processing.ProcessingState;
 import net.sf.javascribe.engine.data.processing.ProcessorLog;

@@ -129,8 +129,8 @@ public class EndpointProcessor implements ComponentProcessor<Endpoint> {
 		
 		code.append("_params = retrieveParameters(\""+path+"\",_path);\n");
 		String methodString = httpMethod.name();
-		code.append("if ((_params != null) && (_method.equals(\""+methodString+"\"))) {\n");
-		
+		code.append("if ((!_requestHandled) && (_params != null) && (_method.equals(\""+methodString+"\"))) {\n");
+		code.append("_requestHandled = true;\n");
 		// Set op method and path
 		op.setMethod(httpMethod);
 		op.setPath(path);
@@ -223,6 +223,7 @@ public class EndpointProcessor implements ComponentProcessor<Endpoint> {
 			execCtx.addVariable(param, type.getName());
 			JavaCode c = type.declare(param, execCtx);
 			code.append(c.getCodeText());
+			src.addImports(c);
 			String typeName = type.getName();
 			if (typeName.equals("string")) {
 				code.append(param+" = _httpRequest.getParameter(\""+param+"\");\n");
@@ -252,6 +253,16 @@ public class EndpointProcessor implements ComponentProcessor<Endpoint> {
 				// TODO: Log exception
 				code.append("try {"+param+" = "+enumClassName+".valueOf("+n+");} catch(IllegalArgumentException e) { }\n");
 				code.append("}");
+			} else if (typeName.equals("date")) {
+				src.getSrc().addImport("java.time.format.DateTimeFormatter");
+				String n = "_"+param+"String";
+				code.append("String "+n+" = _httpRequest.getParameter(\""+param+"\");\n");
+				code.append("if ("+n+"!=null) {\n");
+				code.append("try {\n");
+				code.append("DateTimeFormatter _formatter = DateTimeFormatter.ofPattern(\"yyyy-MM-dd\");");
+				code.append(param+" = LocalDate.parse("+n+", _formatter);} catch(Exception e) { }\n");
+				code.append("}");
+				
 			}
 		}
 		

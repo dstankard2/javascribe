@@ -39,6 +39,10 @@ public class ModelAttributeDirective extends AttributeDirectiveBase {
 		}
 		if (model.indexOf('.')>=0) {
 			attrName = model.substring(0, model.indexOf('.'));
+		} else {
+			// If the model is a local model property, then no event is required because updating the model property will trigger the event.
+			// Therefore, use a dummy change event.
+			attrName = "_dummyEvent_doNotUse";
 		}
 		templateParams.put("CHANGE_EVENT", attrName+"Changed");
 

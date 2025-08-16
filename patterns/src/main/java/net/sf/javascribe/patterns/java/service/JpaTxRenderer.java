@@ -34,6 +34,11 @@ public class JpaTxRenderer extends OperationRenderer {
 		}
 
 		locatorType = JavascribeUtils.getType(EntityManagerLocator.class, locator, ctx.ctx());
+		
+		if (locatorType == null) {
+			throw new JavascribeException("Could not find tx locator '" + locator + "'");
+		}
+		
 		EntityManagerType emType = locatorType.getEntityManagerType();
 
 		

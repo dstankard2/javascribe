@@ -8,7 +8,6 @@ import net.sf.javascribe.langsupport.java.types.JavaVariableType;
 import net.sf.javascribe.langsupport.java.types.impl.ExceptionJavaType;
 import net.sf.javascribe.langsupport.java.types.impl.JavaVariableTypeImpl;
 import net.sf.javascribe.patterns.tomcat.EmbedTomcatRuntimePlatform;
-import net.sf.javascribe.patterns.web.JavaWebappRuntimePlatform;
 
 public class JavaWebUtils {
 

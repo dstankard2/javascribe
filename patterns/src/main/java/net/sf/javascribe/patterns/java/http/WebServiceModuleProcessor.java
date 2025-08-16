@@ -54,6 +54,7 @@ public class WebServiceModuleProcessor implements ComponentProcessor<WebServiceM
 		bodyCode.append("String _template = null;\n");
 		bodyCode.append("Map<String,String> _params = null;\n");
 		bodyCode.append("String _method = _httpRequest.getMethod();\n");
+		bodyCode.append("boolean _requestHandled = false;\n");
 
 		if ((comp.getRequestRef()!=null) && (comp.getRequestRef().trim().length()>0)) {
 			String ref = comp.getRequestRef();

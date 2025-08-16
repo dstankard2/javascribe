@@ -15,7 +15,6 @@ import net.sf.javascribe.api.annotation.Plugin;
 import net.sf.javascribe.api.annotation.XmlConfig;
 import net.sf.javascribe.api.config.Component;
 import net.sf.javascribe.patterns.PatternPriority;
-import net.sf.javascribe.patterns.xml.java.dataobject.DataObject;
 
 @Builder
 @XmlConfig

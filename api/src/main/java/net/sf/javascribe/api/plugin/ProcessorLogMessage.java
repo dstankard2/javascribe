@@ -1,7 +1,6 @@
 package net.sf.javascribe.api.plugin;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import net.sf.javascribe.api.logging.ProcessorLogLevel;

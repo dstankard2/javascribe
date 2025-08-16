@@ -9,7 +9,6 @@ import net.sf.javascribe.api.JavascribeUtils;
 import net.sf.javascribe.api.ProcessorContext;
 import net.sf.javascribe.api.annotation.Plugin;
 import net.sf.javascribe.api.exception.JavascribeException;
-import net.sf.javascribe.api.types.DataObjectType;
 import net.sf.javascribe.api.types.ServiceOperation;
 import net.sf.javascribe.api.types.VariableType;
 import net.sf.javascribe.langsupport.java.types.JavaVariableType;

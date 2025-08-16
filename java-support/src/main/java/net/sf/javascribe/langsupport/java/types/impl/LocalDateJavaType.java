@@ -5,7 +5,7 @@ import net.sf.javascribe.langsupport.java.types.JavaVariableTypeBase;
 public class LocalDateJavaType extends JavaVariableTypeBase {
 
 	public LocalDateJavaType() {
-		super("LocalDate","java.time.LocalDate",null);
+		super("date", "LocalDate","java.time.LocalDate",null);
 	}
 
 	@Override

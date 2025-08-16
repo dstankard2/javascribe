@@ -43,6 +43,7 @@ public class ConsolePlugin implements EnginePlugin {
 	private Map<String,ApplicationSnapshot> lastSnapshots = new HashMap<>();
 	
 	public static ConsolePlugin get() { return instance; }
+
 	public synchronized void addClient(Session session) {
 		clients.add(session);
 		lastSnapshots.values().forEach(snapshot -> {
@@ -87,10 +88,9 @@ public class ConsolePlugin implements EnginePlugin {
 		File tempDir = null;
 		
 		try {
-			//tempDir = new File("C:\\git\\javascribe\\system-plugins\\src\\main\\webapp");
 			tempDir = Files.createTempDirectory("javascribe_console_tomcat").toFile();
-			String tempPath = tempDir.getAbsolutePath();
 			tempDir.deleteOnExit();
+			String tempPath = tempDir.getAbsolutePath();
 			this.ctx.getLog().info("Starting console plugin");
 	
 			Tomcat tomcat = new Tomcat();
